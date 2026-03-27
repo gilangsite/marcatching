@@ -1,0 +1,207 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+  padding: 160px 0 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.heroTitle {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.12;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.heroAccent {
+  display: block;
+  background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* Decorative background blobs */
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(96, 165, 250, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(255,255,255,0.04) 0%, transparent 60%);
+}
+
+/* ── Links Section ───────────────────────────────────────── */
+.linksSection {
+  padding: 80px 0;
+  background: var(--off-white);
+  flex: 1;
+}
+
+.container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.sectionDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 48px 0;
+}
+
+/* ── Contact Section ─────────────────────────────────────── */
+.contactSection {
+  padding: 80px 0;
+  background: var(--white);
+}
+
+.contactCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 36px;
+  background: var(--navy);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.contactIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  color: var(--white);
+}
+
+.contactBody {
+  flex: 1;
+}
+
+.contactTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.contactDesc {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.emailLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #93c5fd;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.emailLink:hover {
+  color: var(--white);
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 130px 0 80px;
+  }
+  .contactCard {
+    flex-direction: column;
+    padding: 28px 24px;
+  }
+  .linksSection, .contactSection {
+    padding: 56px 0;
+  }
+}
