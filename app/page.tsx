@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
@@ -38,34 +39,38 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar links={links} />
 
       <main className={styles.main}>
         {/* ── Hero ────────────────────────────────────────── */}
         <section className={styles.hero}>
-          <div className={styles.heroContent}>
-            <div className={styles.heroBadge}>
-              <span className={styles.dot} />
-              Platform Marketing Indonesia
-            </div>
-            <h1 className={styles.heroTitle}>
-              Find Your<br />
-              <span className={styles.heroAccent}>Market Match</span>
-            </h1>
-            <p className={styles.heroSubtitle}>
-              Marcatching menghubungkan brand dengan audiens yang tepat.<br />
-              Strategi, insight, dan tools untuk tumbuhkan bisnis Anda.
-            </p>
-          </div>
           <div className={styles.heroDecor} />
+          <div className={styles.heroContent}>
+            <Image
+              src="/logo-shape-navy.png"
+              alt="Marcatching Logo"
+              width={160}
+              height={160}
+              className={styles.heroLogoShape}
+              priority
+            />
+            <h1 className={styles.heroTagline}>
+              Learning to understand how marketing really works.
+            </h1>
+          </div>
         </section>
 
         {/* ── Links ───────────────────────────────────────── */}
         <section className={styles.linksSection}>
           <div className={styles.container}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Temukan Kami</h2>
-              <p className={styles.sectionDesc}>Platform dan kanal resmi Marcatching</p>
+              <Image
+                src="/logo-type-navy.png"
+                alt="Marcatching"
+                width={180}
+                height={50}
+                style={{ objectFit: 'contain', margin: '0 auto' }}
+              />
             </div>
             <div className={styles.linksList}>
               {links.length > 0 ? (

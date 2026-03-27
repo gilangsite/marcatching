@@ -1,9 +1,17 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
+import { Menu, X, Camera as Instagram, Music2 } from 'lucide-react'
+import type { Link } from '@/lib/supabaseClient'
 import styles from './Navbar.module.css'
 
-export default function Navbar() {
+export default function Navbar({ links = [] }: { links?: Link[] }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const igLink = links.find(l => l.title.toLowerCase().includes('instagram'))?.url || 'https://www.instagram.com/marcatching.id/'
+  const tiktokLink = links.find(l => l.title.toLowerCase().includes('tiktok'))?.url || 'https://www.tiktok.com/@marcatching'
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.inner}>
@@ -17,9 +25,29 @@ export default function Navbar() {
             style={{ objectFit: 'contain', height: '32px', width: 'auto' }}
           />
         </div>
-        <button className={`btn btn-outline ${styles.cta}`} disabled>
-          Explore Website
-        </button>
+        
+        <div className={styles.dropdownWrap}>
+          <button 
+            className={styles.hamburgerBtn} 
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Menu"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          
+          {isOpen && (
+            <div className={styles.dropdownMenu}>
+              <a href={igLink} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
+                <Instagram size={20} />
+                <span>Instagram</span>
+              </a>
+              <a href={tiktokLink} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
+                <Music2 size={20} />
+                <span>TikTok</span>
+              </a>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   )
