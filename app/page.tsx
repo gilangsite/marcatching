@@ -42,36 +42,26 @@ export default async function HomePage() {
       <Navbar links={links} />
 
       <main className={styles.main}>
-        {/* ── Hero ────────────────────────────────────────── */}
+        {/* ── Main Content ────────────────────────────────── */}
         <section className={styles.hero}>
           <div className={styles.heroDecor} />
           <div className={styles.heroContent}>
-            <Image
-              src="/logo-shape-navy.png"
-              alt="Marcatching Logo"
-              width={160}
-              height={160}
-              className={styles.heroLogoShape}
-              priority
-            />
-            <h1 className={styles.heroTagline}>
-              Learning to understand how marketing really works.
-            </h1>
-          </div>
-        </section>
-
-        {/* ── Links ───────────────────────────────────────── */}
-        <section className={styles.linksSection}>
-          <div className={styles.container}>
-            <div className={styles.sectionHeader}>
+            
+            <div className={styles.homeLogoWrap}>
               <Image
                 src="/logo-type-navy.png"
-                alt="Marcatching"
-                width={180}
-                height={50}
-                style={{ objectFit: 'contain', margin: '0 auto' }}
+                alt="Marcatching Logo"
+                width={800}
+                height={200}
+                className={styles.homeLogoType}
+                priority
               />
             </div>
+            
+            <p className={styles.homeTagline}>
+              Learning to understand how marketing really works.
+            </p>
+
             <div className={styles.linksList}>
               {links.length > 0 ? (
                 links.map((link, i) => (
@@ -81,6 +71,7 @@ export default async function HomePage() {
                 <p className={styles.emptyState}>Belum ada link tersedia.</p>
               )}
             </div>
+            
           </div>
         </section>
 
