@@ -332,14 +332,49 @@
     width: 100%;
     height: auto;
     position: relative;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: 16px;
-    gap: 8px;
+    gap: 12px;
   }
-  .sidebarLogo { border-bottom: none; padding-bottom: 0; margin-bottom: 0; width: 100%; }
-  .sidenav { flex-direction: row; flex: unset; }
-  .sidebarBottom { border-top: none; padding-top: 0; flex-direction: row; margin-left: auto; }
+  .sidebarLogo {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 12px;
+    margin-bottom: 0;
+    width: 100%;
+  }
+  .sidenav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+  .navItem {
+    width: auto;
+    white-space: nowrap;
+    justify-content: center;
+  }
+  .sidebarBottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logoutBtn { width: auto; }
   .content { padding: 24px 16px; }
   .formGrid { grid-template-columns: 1fr; }
+  
+  .linkRow {
+    flex-wrap: wrap;
+    padding: 16px;
+    gap: 12px;
+  }
+  .linkActions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--gray-100);
+  }
 }
+

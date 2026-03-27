@@ -97,8 +97,6 @@
 
 .contactCard {
   width: 100%;
-  max-width: 552px;
-  margin: 0 auto;
   display: flex;
   align-items: flex-start;
   gap: 20px;

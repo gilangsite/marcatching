@@ -77,7 +77,7 @@ export default async function HomePage() {
 
         {/* ── Contact ─────────────────────────────────────── */}
         <section className={styles.contactSection}>
-          <div className={styles.container}>
+          <div className={styles.heroContent}>
             <div className={styles.contactCard}>
               <div className={styles.contactIcon}>
                 <Mail size={24} strokeWidth={1.75} />
