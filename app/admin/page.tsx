@@ -3,7 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Reorder } from 'framer-motion'
+import { Reorder, useDragControls } from 'framer-motion'
 import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
   Mail, Link as LinkIcon, Camera, Video,
@@ -36,6 +36,60 @@ const emptyLink: Partial<Link> = {
   type: 'button', btn_color: '', text_color: '#000000', text_size: '1rem',
   text_align: 'center', text_bold: false, text_italic: false,
   carousel_aspect_ratio: '16:9', image_data: []
+}
+
+// ─── Sortable Item Component ──────────────────────────────────
+function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: Link) => void, onDelete: (id: string) => void }) {
+  const controls = useDragControls()
+  const IconComp = ICON_MAP[link.icon] ?? LinkIcon
+
+  return (
+    <Reorder.Item value={link} dragListener={false} dragControls={controls} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+      <div 
+        className={styles.linkDragHandle} 
+        title="Tarik untuk memindahkan" 
+        onPointerDown={(e) => controls.start(e)}
+        style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none' }}
+      >
+        <GripVertical size={16} color="var(--text-secondary)" />
+      </div>
+      
+      <div 
+         onClick={() => onEdit(link)} 
+         style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer', gap: '16px' }}
+      >
+        <div className={styles.linkIcon} style={{ margin: 0 }}>
+          <IconComp size={18} strokeWidth={1.75} />
+        </div>
+        <div className={styles.linkInfo}>
+          <span className={styles.linkTypeBadge}>{link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
+          <span className={styles.linkTitle} style={{marginTop: 4, display: 'block'}}>{link.title}</span>
+          {link.type === 'button' && (
+            <span className={styles.linkUrl}>
+              {link.url ?? '—'} ·{' '}
+              <span className={link.status === 'active' ? styles.statusActive : styles.statusSoon}>
+                {link.status === 'active' ? 'Active' : 'Coming Soon'}
+              </span>
+            </span>
+          )}
+          {link.type === 'carousel' && (
+            <span className={styles.linkUrl}>
+              {link.carousel_aspect_ratio} · {Array.isArray(link.image_data) ? link.image_data.length : 0} Images
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.linkActions}>
+        <button className={styles.editBtn} onClick={() => onEdit(link)} title="Edit">
+          <Pencil size={15} />
+        </button>
+        <button className={styles.deleteBtn} onClick={() => onDelete(link.id)} title="Hapus">
+          <Trash2 size={15} />
+        </button>
+      </div>
+    </Reorder.Item>
+  )
 }
 
 // ─── Main component ───────────────────────────────────────────
@@ -548,44 +602,9 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <Reorder.Group axis="y" values={links} onReorder={handleReorder} className={styles.linksList} style={{ listStyleType: 'none', padding: 0, margin: 0, gap: '12px', display: 'flex', flexDirection: 'column' }}>
-                {links.map(link => {
-                  const IconComp = ICON_MAP[link.icon] ?? LinkIcon
-                  return (
-                    <Reorder.Item value={link} key={link.id} className={styles.linkRow} initial={false} style={{ cursor: 'grab' }}>
-                      <div className={styles.linkDragHandle} title="Tarik untuk memindahkan" style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <GripVertical size={16} color="var(--text-secondary)" />
-                      </div>
-                      <div className={styles.linkIcon}>
-                        <IconComp size={18} strokeWidth={1.75} />
-                      </div>
-                      <div className={styles.linkInfo}>
-                        <span className={styles.linkTypeBadge}>{link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
-                        <span className={styles.linkTitle} style={{marginTop: 4}}>{link.title}</span>
-                        {link.type === 'button' && (
-                          <span className={styles.linkUrl}>
-                            {link.url ?? '—'} ·{' '}
-                            <span className={link.status === 'active' ? styles.statusActive : styles.statusSoon}>
-                              {link.status === 'active' ? 'Active' : 'Coming Soon'}
-                            </span>
-                          </span>
-                        )}
-                        {link.type === 'carousel' && (
-                          <span className={styles.linkUrl}>
-                            {link.carousel_aspect_ratio} · {Array.isArray(link.image_data) ? link.image_data.length : 0} Images
-                          </span>
-                        )}
-                      </div>
-                      <div className={styles.linkActions}>
-                        <button className={styles.editBtn} onClick={() => openEditLink(link)} title="Edit">
-                          <Pencil size={15} />
-                        </button>
-                        <button className={styles.deleteBtn} onClick={() => deleteLink(link.id)} title="Hapus">
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </Reorder.Item>
-                  )
-                })}
+                {links.map(link => (
+                  <SortableLinkItem key={link.id} link={link} onEdit={openEditLink} onDelete={deleteLink} />
+                ))}
               </Reorder.Group>
             )}
           </div>
