@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import ButtonCard from '@/components/ButtonCard'
 import TextBlock from '@/components/TextBlock'
 import ImageCarousel from '@/components/ImageCarousel'
+import VideoEmbed from '@/components/VideoEmbed'
 import FloatingLogo from '@/components/FloatingLogo'
 import Footer from '@/components/Footer'
 import { Mail, ArrowRight } from 'lucide-react'
@@ -72,6 +73,9 @@ export default async function HomePage() {
                   }
                   if (link.type === 'carousel') {
                     return <ImageCarousel key={link.id} link={link} />
+                  }
+                  if (link.type === 'video') {
+                    return <VideoEmbed key={link.id} link={link} />
                   }
                   return <ButtonCard key={link.id} link={link} index={i} />
                 })

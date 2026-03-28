@@ -48,6 +48,7 @@ export default function AdminDashboard() {
   // Links state
   const [links, setLinks] = useState<Link[]>([])
   const [linksLoading, setLinksLoading] = useState(true)
+  const [showAddMenu, setShowAddMenu] = useState(false)
   const [showLinkForm, setShowLinkForm] = useState(false)
   const [editingLink, setEditingLink] = useState<Link | null>(null)
   const [linkForm, setLinkForm] = useState<Partial<Link>>(emptyLink)
@@ -93,9 +94,11 @@ export default function AdminDashboard() {
   }
 
   // ── Link CRUD ─────────────────────────────────────────────────
-  function openAddLink() {
+  function handleAddSpecific(type: 'button'|'text'|'carousel'|'video') {
+    setShowAddMenu(false)
+    setTab('links')
     setEditingLink(null)
-    setLinkForm({ ...emptyLink, order_index: links.length + 1 })
+    setLinkForm({ ...emptyLink, type, order_index: links.length + 1 })
     setLinkError('')
     setShowLinkForm(true)
   }
@@ -119,6 +122,9 @@ export default function AdminDashboard() {
     if (!linkForm.title) { setLinkError('Judul wajib diisi.'); return }
     if (linkForm.type === 'button' && linkForm.status === 'active' && !linkForm.url) {
       setLinkError('URL wajib diisi untuk link aktif.'); return
+    }
+    if (linkForm.type === 'video' && !linkForm.url) {
+      setLinkError('URL Video wajib diisi.'); return
     }
     setLinkSaving(true)
     setLinkError('')
@@ -288,6 +294,25 @@ export default function AdminDashboard() {
             <Mail size={18} />
             Contact Info
           </button>
+
+          <div style={{ marginTop: 'auto', paddingTop: '24px', position: 'relative' }}>
+             <button 
+               className={styles.navItem} 
+               onClick={() => setShowAddMenu(!showAddMenu)}
+               style={{ background: 'rgba(255,255,255,0.05)', color: 'white', justifyContent: 'center', fontWeight: 'bold' }}
+             >
+               <Plus size={18} />
+               Tambah Link
+             </button>
+             {showAddMenu && (
+                <div className={styles.addMenuDropdown}>
+                   <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
+                   <button onClick={() => handleAddSpecific('text')}><Type size={14}/> Text Block</button>
+                   <button onClick={() => handleAddSpecific('carousel')}><ImageIcon size={14}/> Image Carousel</button>
+                   <button onClick={() => handleAddSpecific('video')}><Video size={14}/> Video Embed</button>
+                </div>
+             )}
+          </div>
         </nav>
 
         <div className={styles.sidebarBottom}>
@@ -313,10 +338,6 @@ export default function AdminDashboard() {
                 <h1 className={styles.contentTitle}>Links & Buttons</h1>
                 <p className={styles.contentDesc}>Kelola link yang tampil di landing page</p>
               </div>
-              <button className="btn btn-navy" onClick={openAddLink}>
-                <Plus size={16} />
-                Tambah Link
-              </button>
             </div>
 
             {/* Add/Edit Form */}
@@ -335,10 +356,13 @@ export default function AdminDashboard() {
                   <div className={styles.formGrid}>
                     <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                       <label className="label">Tipe Block</label>
-                      <div className={styles.typeSelector}>
-                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'button' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'button' }))}><MousePointerClick size={16}/> Link Button</button>
-                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'text' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'text' }))}><Type size={16}/> Text Block</button>
-                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'carousel' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'carousel' }))}><ImageIcon size={16}/> Image Carousel</button>
+                      <div className={styles.typeSelector} style={{pointerEvents: 'none', opacity: 0.9}}>
+                          <span className={`${styles.typeBtn} ${styles.typeBtnActive}`} style={{justifyContent: 'center', display: 'flex'}}>
+                            {linkForm.type === 'button' && <><MousePointerClick size={16}/> Link Button</>}
+                            {linkForm.type === 'text' && <><Type size={16}/> Text Block</>}
+                            {linkForm.type === 'carousel' && <><ImageIcon size={16}/> Image Carousel</>}
+                            {linkForm.type === 'video' && <><Video size={16}/> Video Embed</>}
+                          </span>
                       </div>
                     </div>
 
@@ -432,6 +456,23 @@ export default function AdminDashboard() {
                       </>
                     )}
 
+                    {linkForm.type === 'video' && (
+                      <>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Judul Video (Internal) *</label>
+                          <input className="input" placeholder="cth: Video TikTok Promo"
+                            value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} />
+                        </div>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">URL Video *</label>
+                          <small style={{display: 'block', color: 'var(--text-secondary)', marginBottom: 8}}>Support link dari TikTok, Instagram Reels, YouTube, dan Google Drive.</small>
+                          <input className="input" placeholder="https://..."
+                            value={linkForm.url ?? ''}
+                            onChange={e => setLinkForm(f => ({ ...f, url: e.target.value }))} />
+                        </div>
+                      </>
+                    )}
+
                     {linkForm.type === 'carousel' && (
                       <>
                         <div className="form-group" style={{ gridColumn: '1 / -1' }}>
@@ -518,7 +559,7 @@ export default function AdminDashboard() {
                         <IconComp size={18} strokeWidth={1.75} />
                       </div>
                       <div className={styles.linkInfo}>
-                        <span className={styles.linkTypeBadge}>{link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
+                        <span className={styles.linkTypeBadge}>{link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
                         <span className={styles.linkTitle} style={{marginTop: 4}}>{link.title}</span>
                         {link.type === 'button' && (
                           <span className={styles.linkUrl}>

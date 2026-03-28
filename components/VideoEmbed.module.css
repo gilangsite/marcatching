@@ -1,0 +1,45 @@
+.videoContainer {
+  width: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 16px 0;
+  background: var(--gray-100, #f1f1f1);
+  display: flex;
+  justify-content: center;
+}
+
+.videoContainer.vertical {
+  max-width: 400px;
+  margin: 16px auto; /* center it if the hero is wider */
+}
+
+.videoIframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: none;
+  display: block;
+}
+
+.fallbackLinkWrap {
+  padding: 24px;
+  text-align: center;
+  background: var(--navy, #0d3369);
+  width: 100%;
+}
+
+.fallbackLink {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.fallbackLink:hover {
+  background: rgba(255,255,255,0.1);
+}
