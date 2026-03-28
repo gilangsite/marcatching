@@ -12,6 +12,9 @@ export default function TextBlock({ link }: { link: Link }) {
         textAlign: (link.text_align as any) || 'center',
         fontWeight: link.text_bold ? 'bold' : 'normal',
         fontStyle: link.text_italic ? 'italic' : 'normal',
+        wordBreak: 'break-word',
+        whiteSpace: 'pre-wrap',
+        overflowWrap: 'break-word'
       }}
     >
       {link.title}

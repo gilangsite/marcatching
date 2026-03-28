@@ -343,10 +343,15 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarLogo}>
-          <Image src="/logo-type-white.png" alt="Marcatching" width={140} height={34}
-            style={{ objectFit: 'contain', height: '32px', width: 'auto' }} />
+        <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '8px' }}>
+          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <Menu size={24} color="var(--white)" />
+          </button>
+          <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26}
+            style={{ objectFit: 'contain', margin: '0 auto' }} />
         </div>
+
+        <hr className={styles.divider} style={{ borderColor: 'rgba(255,255,255,0.1)', marginBottom: 12 }} />
 
         <nav className={styles.sidenav}>
           <button
@@ -364,17 +369,17 @@ export default function AdminDashboard() {
             Contact Info
           </button>
 
-          <div style={{ marginTop: 'auto', paddingTop: '24px', position: 'relative' }}>
+          <div style={{ position: 'relative' }}>
              <button 
                className={styles.navItem} 
                onClick={() => setShowAddMenu(!showAddMenu)}
-               style={{ background: 'rgba(255,255,255,0.05)', color: 'white', justifyContent: 'center', fontWeight: 'bold' }}
+               style={{ background: 'var(--navy-dark)', color: 'white', fontWeight: 'bold' }}
              >
                <Plus size={18} />
                Tambah Link
              </button>
              {showAddMenu && (
-                <div className={styles.addMenuDropdown}>
+                <div className={styles.addMenuDropdown} style={{position: 'relative', zIndex: 60}}>
                    <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
                    <button onClick={() => handleAddSpecific('text')}><Type size={14}/> Text Block</button>
                    <button onClick={() => handleAddSpecific('carousel')}><ImageIcon size={14}/> Image Carousel</button>
@@ -384,13 +389,15 @@ export default function AdminDashboard() {
           </div>
         </nav>
 
-        <div className={styles.sidebarBottom}>
-          <a href="/" target="_blank" rel="noopener noreferrer" className={styles.viewSite}>
-            <ChevronRight size={14} />
+        <hr className={styles.divider} style={{ borderColor: 'rgba(255,255,255,0.1)', marginTop: 'auto', marginBottom: 12 }} />
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24 }}>
+          <a href="/" target="_blank" rel="noopener noreferrer" className={styles.navItem}>
+            <Globe size={18} />
             Lihat Website
           </a>
-          <button onClick={handleLogout} className={styles.logoutBtn}>
-            <LogOut size={16} />
+          <button onClick={handleLogout} className={styles.navItem} style={{ color: '#ff4444' }}>
+            <LogOut size={18} />
             Keluar
           </button>
         </div>
