@@ -269,9 +269,8 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarLogo}>
-          <Image src="/logo-type-navy.png" alt="Marcatching" width={130} height={34}
-            style={{ objectFit: 'contain', height: '28px', width: 'auto' }} />
-          <span className={styles.adminBadge}>Admin</span>
+          <Image src="/logo-type-white.png" alt="Marcatching" width={140} height={34}
+            style={{ objectFit: 'contain', height: '32px', width: 'auto' }} />
         </div>
 
         <nav className={styles.sidenav}>
