@@ -8,7 +8,7 @@ import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
   Mail, Link as LinkIcon, Camera, Video,
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
-  Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical
+  Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical, Menu
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact } from '@/lib/supabaseClient'
@@ -98,6 +98,7 @@ export default function AdminDashboard() {
 
   // Tab state
   const [tab, setTab] = useState<'links' | 'contact'>('links')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Links state
   const [links, setLinks] = useState<Link[]>([])
@@ -326,8 +327,22 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
+      {/* Mobile Header */}
+      <div className={styles.mobileHeader}>
+        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}>
+          <Menu size={24} />
+        </button>
+        <Image src="/logo-type-navy.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
+      </div>
+
+      {/* Sidebar Overlay */}
+      <div 
+        className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogo}>
           <Image src="/logo-type-white.png" alt="Marcatching" width={140} height={34}
             style={{ objectFit: 'contain', height: '32px', width: 'auto' }} />
@@ -336,14 +351,14 @@ export default function AdminDashboard() {
         <nav className={styles.sidenav}>
           <button
             className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`}
-            onClick={() => setTab('links')}
+            onClick={() => { setTab('links'); setIsSidebarOpen(false); }}
           >
             <ExternalLink size={18} />
             Links & Buttons
           </button>
           <button
             className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`}
-            onClick={() => setTab('contact')}
+            onClick={() => { setTab('contact'); setIsSidebarOpen(false); }}
           >
             <Mail size={18} />
             Contact Info
