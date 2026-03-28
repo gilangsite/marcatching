@@ -159,7 +159,7 @@ export default function AdminDashboard() {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || files.length === 0) return
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyoNYZf5E1DeClNROxoNO_Hig7ViVm3ioTcyh5fqF1rewFw_Y6JDPS5MLlqWC5On2FA/exec'
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbymLzpMUo1uT_TC8v96JbJLpQw49UX_o9we76fr4bdV6OCQOKQMrRL7Ehin04ukmXdg/exec'
     if (!appScriptUrl) {
       alert("Apps Script URL is not configured. Please add NEXT_PUBLIC_APPS_SCRIPT_URL to .env.local")
       return
