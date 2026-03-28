@@ -116,7 +116,7 @@ export default function AdminDashboard() {
   async function saveLink(e: FormEvent) {
     e.preventDefault()
     if (!linkForm.title) { setLinkError('Judul wajib diisi.'); return }
-    if (linkForm.status === 'active' && !linkForm.url) {
+    if (linkForm.type === 'button' && linkForm.status === 'active' && !linkForm.url) {
       setLinkError('URL wajib diisi untuk link aktif.'); return
     }
     setLinkSaving(true)
