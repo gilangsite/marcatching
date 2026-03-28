@@ -1,32 +1,39 @@
-// Google Apps Script to upload image to Google Drive
-// 1. Go to script.google.com
-// 2. Create a new project, paste this code.
-// 3. Deploy > New Deployment > Web App
-// 4. Execute as: Me, Who has access: Anyone
-// 5. Copy the Web App URL and place it in .env.local as NEXT_PUBLIC_APPS_SCRIPT_URL
-// Folder ID: 1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA
+// ==========================================================
+// GOOGLE APPS SCRIPT - IMAGE UPLOAD TO DRIVE
+// ==========================================================
+// PENTING UNTUK DEPLOYMENT:
+// 1. Pilih tombol biru "Deploy" di kanan atas > "New deployment"
+// 2. Select type: "Web app"
+// 3. Execute as: "Me (akun-kamu@gmail.com)" <--- INI SANGAT PENTING! JANGAN PILIH YANG LAIN!
+// 4. Who has access: "Anyone" <--- INI JUGA PENTING AGAR APLIKASI BISA KIRIM GAMBAR!
+// 5. Klik "Deploy"
+// ==========================================================
+
+// Folder ID Drive (Pastikan akun yang mendeploy punya akses Edit ke folder ini)
+const FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 
 function doPost(e) {
   try {
+    // Parser data dari Next.js (Website)
     const data = JSON.parse(e.postData.contents);
     
-    // We expect base64 data, filename, and mimeType
+    // Konversi base64 kembali menjadi gambar (blob)
     const base64Data = data.base64.split(",")[1] || data.base64;
     const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType, data.filename);
     
-    // Change this to your exact folder ID
-    const folderId = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
-    const folder = DriveApp.getFolderById(folderId);
+    // Buka folder Google Drive kamu
+    const folder = DriveApp.getFolderById(FOLDER_ID);
     
-    // Create the file in the folder
+    // Buat/simpan file gambar ke dalam folder tersebut
     const file = folder.createFile(blob);
     
-    // Set file sharing to Anyone with the link can view
+    // Ubah izin file agar "Siapa saja yang memiliki link bisa melihat" (Public)
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     
-    // Return the direct download/view URL
-    // You can also use file.getDownloadUrl() or file.getUrl() depending on the need
+    // Dapatkan ID dari file yang baru saja dibuat
     const fileId = file.getId();
+    
+    // Return sebagai URL gambar langsung (bisa di-load di tag <img> website)
     const directUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
     
     return ContentService.createTextOutput(JSON.stringify({
@@ -38,12 +45,19 @@ function doPost(e) {
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       status: 'error',
-      message: error.toString()
+      message: error.toString() + " | Pastikan Deploy -> Execute As: Me"
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-// Handle preflight CORS requests
+// Handle CORS Pre-flight requests dari browser (Wajib ada)
 function doOptions(e) {
-  return ContentService.createTextOutput('OK').setMimeType(ContentService.MimeType.TEXT);
+  return ContentService.createTextOutput('OK')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+// Endpoint GET sederhana untuk ngetest URL Web App nyala atau nggak saat dibuka di browser
+function doGet(e) {
+  return ContentService.createTextOutput('✅ Web App Marcatching by Google Apps Script berjalan normal!')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
