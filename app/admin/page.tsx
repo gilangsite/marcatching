@@ -3,11 +3,12 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Reorder } from 'framer-motion'
 import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
   Mail, Link as LinkIcon, Camera, Video,
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
-  Upload, Image as ImageIcon, Type, MousePointerClick
+  Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact } from '@/lib/supabaseClient'
@@ -220,6 +221,20 @@ export default function AdminDashboard() {
     if (!confirm('Hapus link ini?')) return
     await supabase.from('links').delete().eq('id', id)
     fetchLinks()
+  }
+
+  const [reordering, setReordering] = useState(false)
+
+  async function handleReorder(newOrder: Link[]) {
+    setLinks(newOrder)
+    setReordering(true)
+
+    const updates = newOrder.map((link, idx) => 
+      supabase.from('links').update({ order_index: idx + 1 }).eq('id', link.id)
+    )
+    
+    await Promise.all(updates)
+    setReordering(false)
   }
 
   // ── Contact CRUD ─────────────────────────────────────────────
@@ -468,16 +483,6 @@ export default function AdminDashboard() {
                       </>
                     )}
 
-                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                      <hr className={styles.divider}/>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="label">Urutan Tampil (Order)</label>
-                      <input className="input" type="number" min={1}
-                        value={linkForm.order_index ?? 1}
-                        onChange={e => setLinkForm(f => ({ ...f, order_index: Number(e.target.value) }))} />
-                    </div>
                   </div>
 
                   {linkError && <p className={styles.formError}>{linkError}</p>}
@@ -502,11 +507,14 @@ export default function AdminDashboard() {
                 <p>Belum ada link. Tambahkan link pertama Anda.</p>
               </div>
             ) : (
-              <div className={styles.linksList}>
+              <Reorder.Group axis="y" values={links} onReorder={handleReorder} className={styles.linksList} style={{ listStyleType: 'none', padding: 0, margin: 0, gap: '12px', display: 'flex', flexDirection: 'column' }}>
                 {links.map(link => {
                   const IconComp = ICON_MAP[link.icon] ?? LinkIcon
                   return (
-                    <div key={link.id} className={styles.linkRow}>
+                    <Reorder.Item value={link} key={link.id} className={styles.linkRow} initial={false} style={{ cursor: 'grab' }}>
+                      <div className={styles.linkDragHandle} title="Tarik untuk memindahkan" style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <GripVertical size={16} color="var(--text-secondary)" />
+                      </div>
                       <div className={styles.linkIcon}>
                         <IconComp size={18} strokeWidth={1.75} />
                       </div>
@@ -535,10 +543,10 @@ export default function AdminDashboard() {
                           <Trash2 size={15} />
                         </button>
                       </div>
-                    </div>
+                    </Reorder.Item>
                   )
                 })}
-              </div>
+              </Reorder.Group>
             )}
           </div>
         )}
