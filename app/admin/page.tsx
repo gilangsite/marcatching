@@ -443,17 +443,26 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className={styles.imageList}>
-                            {(linkForm.image_data || []).map((img: any, idx: number) => (
+                            {(linkForm.image_data || []).map((img: any, idx: number) => {
+                              let previewUrl = img.url;
+                              if (previewUrl && previewUrl.includes('drive.google.com/uc')) {
+                                const fileIdMatch = previewUrl.match(/id=([^&]+)/);
+                                if (fileIdMatch && fileIdMatch[1]) {
+                                  // Fix Google Drive generic hotlinking block in preview
+                                  previewUrl = `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w500-h500`;
+                                }
+                              }
+                              return (
                               <div key={idx} className={styles.imageItem}>
                                 <div className={styles.imagePreviewWrap} style={{aspectRatio: linkForm.carousel_aspect_ratio?.replace(':', '/') || '16/9'}}>
-                                  <img src={img.url} alt={`Preview ${idx}`} className={styles.imagePreview} />
+                                  <img src={previewUrl} alt={`Preview ${idx}`} className={styles.imagePreview} />
                                 </div>
                                 <div className={styles.imageItemDetails}>
                                   <input type="text" className="input" style={{fontSize: '0.8rem', padding: '0.4rem 0.6rem'}} placeholder="Link tujuan saat di klik (opsional)" value={img.link || ''} onChange={(e) => handleImageLinkChange(idx, e.target.value)} />
                                   <button type="button" className="btn btn-ghost" style={{padding: '0.4rem', color: '#ff4444'}} onClick={() => removeImage(idx)}><Trash2 size={16}/></button>
                                 </div>
                               </div>
-                            ))}
+                            )})}
                           </div>
                         </div>
                       </>
