@@ -11,7 +11,18 @@ create table if not exists links (
   icon text not null default 'Link',
   status text not null default 'active', -- 'active' | 'coming_soon'
   order_index integer not null default 0,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+
+  -- New fields for Text, Button, and Carousel blocks
+  type text not null default 'button',
+  btn_color text,
+  text_color text,
+  text_size text,
+  text_align text,
+  text_bold boolean default false,
+  text_italic boolean default false,
+  carousel_aspect_ratio text,
+  image_data jsonb default '[]'::jsonb
 );
 
 -- Table: contact

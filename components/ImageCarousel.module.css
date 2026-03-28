@@ -1,0 +1,93 @@
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+}
+
+.carouselScrollArea {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 16px;
+  width: 100%;
+  padding-bottom: 8px; /* For scrollbar */
+  -webkit-overflow-scrolling: touch;
+}
+
+.carouselScrollArea::-webkit-scrollbar {
+  height: 6px;
+}
+.carouselScrollArea::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+.carouselScrollArea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.imageLinkWrapper {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  text-decoration: none;
+  display: block;
+}
+
+.imageItem {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--gray-100, #f1f1f1);
+}
+
+.imageItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Nav Buttons */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--navy, #0d3369);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.navBtn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.prevBtn {
+  left: -20px;
+}
+
+.nextBtn {
+  right: -20px;
+}
+
+@media (max-width: 768px) {
+  .prevBtn { left: -10px; }
+  .nextBtn { right: -10px; }
+}

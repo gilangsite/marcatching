@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import ButtonCard from '@/components/ButtonCard'
+import TextBlock from '@/components/TextBlock'
+import ImageCarousel from '@/components/ImageCarousel'
 import FloatingLogo from '@/components/FloatingLogo'
 import Footer from '@/components/Footer'
 import { Mail, ArrowRight } from 'lucide-react'
@@ -64,9 +66,15 @@ export default async function HomePage() {
 
             <div className={styles.linksList}>
               {links.length > 0 ? (
-                links.map((link, i) => (
-                  <ButtonCard key={link.id} link={link} index={i} />
-                ))
+                links.map((link, i) => {
+                  if (link.type === 'text') {
+                    return <TextBlock key={link.id} link={link} />
+                  }
+                  if (link.type === 'carousel') {
+                    return <ImageCarousel key={link.id} link={link} />
+                  }
+                  return <ButtonCard key={link.id} link={link} index={i} />
+                })
               ) : (
                 <p className={styles.emptyState}>Belum ada link tersedia.</p>
               )}

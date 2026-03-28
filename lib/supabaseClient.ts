@@ -13,6 +13,17 @@ export type Link = {
   status: 'active' | 'coming_soon'
   order_index: number
   created_at: string
+
+  // New fields for Text & Image blocks
+  type: 'button' | 'text' | 'carousel'
+  btn_color?: string | null
+  text_color?: string | null
+  text_size?: string | null
+  text_align?: string | null
+  text_bold?: boolean | null
+  text_italic?: boolean | null
+  carousel_aspect_ratio?: string | null
+  image_data?: any // jsonb array of { url: string, link: string }
 }
 
 export type Contact = {

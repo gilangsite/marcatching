@@ -7,6 +7,7 @@ import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
   Mail, Link as LinkIcon, Camera, Video,
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
+  Upload, Image as ImageIcon, Type, MousePointerClick
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact } from '@/lib/supabaseClient'
@@ -31,6 +32,9 @@ const ICON_MAP: Record<string, React.ElementType> = Object.fromEntries(
 // ─── Empty forms ─────────────────────────────────────────────
 const emptyLink: Partial<Link> = {
   title: '', url: '', icon: 'Globe', status: 'active', order_index: 0,
+  type: 'button', btn_color: '', text_color: '#000000', text_size: '1rem',
+  text_align: 'center', text_bold: false, text_italic: false,
+  carousel_aspect_ratio: '16:9', image_data: []
 }
 
 // ─── Main component ───────────────────────────────────────────
@@ -55,6 +59,9 @@ export default function AdminDashboard() {
   const [contactEmail, setContactEmail] = useState('')
   const [contactSaving, setContactSaving] = useState(false)
   const [contactMsg, setContactMsg] = useState('')
+
+  // Upload state
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   // ── Fetch links ─────────────────────────────────────────────
   async function fetchLinks() {
@@ -94,7 +101,8 @@ export default function AdminDashboard() {
 
   function openEditLink(link: Link) {
     setEditingLink(link)
-    setLinkForm({ ...link })
+    // Merge existing link data with defaults in case we edit an old link
+    setLinkForm({ ...emptyLink, ...link })
     setLinkError('')
     setShowLinkForm(true)
   }
@@ -120,6 +128,15 @@ export default function AdminDashboard() {
       icon: linkForm.icon ?? 'Globe',
       status: linkForm.status ?? 'active',
       order_index: linkForm.order_index ?? links.length + 1,
+      type: linkForm.type ?? 'button',
+      btn_color: linkForm.btn_color || null,
+      text_color: linkForm.text_color || null,
+      text_size: linkForm.text_size || null,
+      text_align: linkForm.text_align || null,
+      text_bold: linkForm.text_bold ?? false,
+      text_italic: linkForm.text_italic ?? false,
+      carousel_aspect_ratio: linkForm.carousel_aspect_ratio || null,
+      image_data: linkForm.image_data || [],
     }
 
     let error
@@ -137,6 +154,66 @@ export default function AdminDashboard() {
       setEditingLink(null)
       fetchLinks()
     }
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL
+    if (!appScriptUrl) {
+      alert("Apps Script URL is not configured. Please add NEXT_PUBLIC_APPS_SCRIPT_URL to .env.local")
+      return
+    }
+
+    setUploadingImage(true)
+    const newImages = [...(linkForm.image_data || [])]
+    
+    for (let i = 0; i < files.length; i++) {
+       const file = files[i]
+       const reader = new FileReader()
+       await new Promise<void>((resolve) => {
+         reader.onload = async (event) => {
+           const base64 = event.target?.result as string
+           try {
+             const res = await fetch(appScriptUrl, {
+               method: 'POST',
+               body: JSON.stringify({
+                 filename: file.name,
+                 mimeType: file.type,
+                 base64: base64
+               })
+             })
+             const data = await res.json()
+             if (data.status === 'success') {
+               newImages.push({ url: data.url, link: '' })
+             } else {
+               alert("Gagal upload: " + data.message)
+             }
+           } catch(err) {
+             console.error(err)
+             alert("Terjadi kesalahan saat upload gambar.")
+           }
+           resolve()
+         }
+         reader.readAsDataURL(file)
+       })
+    }
+    setLinkForm(f => ({ ...f, image_data: newImages }))
+    setUploadingImage(false)
+  }
+
+  function handleImageLinkChange(index: number, url: string) {
+    const newImages = [...(linkForm.image_data || [])]
+    if (newImages[index]) {
+      newImages[index].link = url
+      setLinkForm(f => ({ ...f, image_data: newImages }))
+    }
+  }
+
+  function removeImage(index: number) {
+    const newImages = [...(linkForm.image_data || [])]
+    newImages.splice(index, 1)
+    setLinkForm(f => ({ ...f, image_data: newImages }))
   }
 
   async function deleteLink(id: string) {
@@ -242,43 +319,152 @@ export default function AdminDashboard() {
 
                 <form onSubmit={saveLink} className={styles.form}>
                   <div className={styles.formGrid}>
-                    <div className="form-group">
-                      <label className="label">Judul *</label>
-                      <input className="input" placeholder="cth: Instagram Marcatching"
-                        value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} />
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label className="label">Tipe Block</label>
+                      <div className={styles.typeSelector}>
+                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'button' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'button' }))}><MousePointerClick size={16}/> Link Button</button>
+                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'text' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'text' }))}><Type size={16}/> Text Block</button>
+                        <button type="button" className={`${styles.typeBtn} ${linkForm.type === 'carousel' ? styles.typeBtnActive : ''}`} onClick={() => setLinkForm(f => ({ ...f, type: 'carousel' }))}><ImageIcon size={16}/> Image Carousel</button>
+                      </div>
+                    </div>
+
+                    {linkForm.type === 'button' && (
+                      <>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Judul Tombol *</label>
+                          <input className="input" placeholder="cth: Instagram Marcatching"
+                            value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} />
+                        </div>
+                        <div className="form-group">
+                          <label className="label">URL</label>
+                          <input className="input" placeholder="https://..."
+                            value={linkForm.url ?? ''}
+                            disabled={linkForm.status === 'coming_soon'}
+                            onChange={e => setLinkForm(f => ({ ...f, url: e.target.value }))} />
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Warna Tombol</label>
+                          <div className={styles.colorInputWrap}>
+                            <input type="color" className={styles.colorPicker} value={linkForm.btn_color || '#ffffff'} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} />
+                            <input type="text" className="input" style={{flex: 1}} placeholder="#0d3369 atau kosong" value={linkForm.btn_color || ''} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Icon</label>
+                          <select className="select"
+                            value={linkForm.icon ?? 'Globe'}
+                            onChange={e => setLinkForm(f => ({ ...f, icon: e.target.value }))}>
+                            {ICON_OPTIONS.map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Status</label>
+                          <select className="select"
+                            value={linkForm.status ?? 'active'}
+                            onChange={e => setLinkForm(f => ({ ...f, status: e.target.value as 'active' | 'coming_soon' }))}>
+                            <option value="active">Active</option>
+                            <option value="coming_soon">Coming Soon</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
+
+                    {linkForm.type === 'text' && (
+                      <>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Isi Text *</label>
+                          <textarea className="input" placeholder="Masukkan text di sini..." rows={3}
+                            value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} />
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Warna Text</label>
+                          <div className={styles.colorInputWrap}>
+                            <input type="color" className={styles.colorPicker} value={linkForm.text_color || '#000000'} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} />
+                            <input type="text" className="input" style={{flex: 1}} placeholder="#000000 atau #ffffff" value={linkForm.text_color || ''} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Ukuran Text</label>
+                          <select className="select" value={linkForm.text_size || '1rem'} onChange={e => setLinkForm(f => ({ ...f, text_size: e.target.value }))}>
+                            <option value="0.875rem">Kecil (Small)</option>
+                            <option value="1rem">Normal (Base)</option>
+                            <option value="1.25rem">Besar (Large)</option>
+                            <option value="1.5rem">Lebih Besar (Extra Large)</option>
+                            <option value="2rem">Judul Utama (Title)</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Alignment</label>
+                          <select className="select" value={linkForm.text_align || 'center'} onChange={e => setLinkForm(f => ({ ...f, text_align: e.target.value }))}>
+                            <option value="left">Rata Kiri</option>
+                            <option value="center">Rata Tengah</option>
+                            <option value="right">Rata Kanan</option>
+                            <option value="justify">Rata Kiri Kanan</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Style Font</label>
+                          <div className={styles.checkboxGroup}>
+                            <label className={styles.checkboxLabel}>
+                              <input type="checkbox" checked={linkForm.text_bold || false} onChange={e => setLinkForm(f => ({ ...f, text_bold: e.target.checked }))} /> Bold
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                              <input type="checkbox" checked={linkForm.text_italic || false} onChange={e => setLinkForm(f => ({ ...f, text_italic: e.target.checked }))} /> Italic
+                            </label>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {linkForm.type === 'carousel' && (
+                      <>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Judul Internal (Hanya penanda) *</label>
+                          <input className="input" placeholder="cth: Poster Event"
+                            value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} />
+                        </div>
+                        <div className="form-group">
+                          <label className="label">Aspect Ratio Gambar</label>
+                          <select className="select" value={linkForm.carousel_aspect_ratio || '16:9'} onChange={e => setLinkForm(f => ({ ...f, carousel_aspect_ratio: e.target.value }))}>
+                            <option value="16:9">16:9 (Landscape)</option>
+                            <option value="9:16">9:16 (Potrait)</option>
+                            <option value="4:5">4:5 (Standard IG)</option>
+                          </select>
+                        </div>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Upload Gambar <small>(Bisa pilih lebih dari 1)</small></label>
+                          <div className={styles.uploadArea}>
+                            <input type="file" multiple accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} />
+                            <div className={styles.uploadLabel}>
+                              <Upload size={20} />
+                              {uploadingImage ? 'Mengupload gambar...' : 'Klik atau Drag & Drop gambar di sini'}
+                            </div>
+                          </div>
+                          <div className={styles.imageList}>
+                            {(linkForm.image_data || []).map((img: any, idx: number) => (
+                              <div key={idx} className={styles.imageItem}>
+                                <div className={styles.imagePreviewWrap} style={{aspectRatio: linkForm.carousel_aspect_ratio?.replace(':', '/') || '16/9'}}>
+                                  <img src={img.url} alt={`Preview ${idx}`} className={styles.imagePreview} />
+                                </div>
+                                <div className={styles.imageItemDetails}>
+                                  <input type="text" className="input" style={{fontSize: '0.8rem', padding: '0.4rem 0.6rem'}} placeholder="Link tujuan saat di klik (opsional)" value={img.link || ''} onChange={(e) => handleImageLinkChange(idx, e.target.value)} />
+                                  <button type="button" className="btn btn-ghost" style={{padding: '0.4rem', color: '#ff4444'}} onClick={() => removeImage(idx)}><Trash2 size={16}/></button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <hr className={styles.divider}/>
                     </div>
 
                     <div className="form-group">
-                      <label className="label">URL</label>
-                      <input className="input" placeholder="https://..."
-                        value={linkForm.url ?? ''}
-                        disabled={linkForm.status === 'coming_soon'}
-                        onChange={e => setLinkForm(f => ({ ...f, url: e.target.value }))} />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="label">Icon</label>
-                      <select className="select"
-                        value={linkForm.icon ?? 'Globe'}
-                        onChange={e => setLinkForm(f => ({ ...f, icon: e.target.value }))}>
-                        {ICON_OPTIONS.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="label">Status</label>
-                      <select className="select"
-                        value={linkForm.status ?? 'active'}
-                        onChange={e => setLinkForm(f => ({ ...f, status: e.target.value as 'active' | 'coming_soon' }))}>
-                        <option value="active">Active</option>
-                        <option value="coming_soon">Coming Soon</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="label">Urutan</label>
+                      <label className="label">Urutan Tampil (Order)</label>
                       <input className="input" type="number" min={1}
                         value={linkForm.order_index ?? 1}
                         onChange={e => setLinkForm(f => ({ ...f, order_index: Number(e.target.value) }))} />
@@ -316,13 +502,21 @@ export default function AdminDashboard() {
                         <IconComp size={18} strokeWidth={1.75} />
                       </div>
                       <div className={styles.linkInfo}>
-                        <span className={styles.linkTitle}>{link.title}</span>
-                        <span className={styles.linkUrl}>
-                          {link.url ?? '—'} ·{' '}
-                          <span className={link.status === 'active' ? styles.statusActive : styles.statusSoon}>
-                            {link.status === 'active' ? 'Active' : 'Coming Soon'}
+                        <span className={styles.linkTypeBadge}>{link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
+                        <span className={styles.linkTitle} style={{marginTop: 4}}>{link.title}</span>
+                        {link.type === 'button' && (
+                          <span className={styles.linkUrl}>
+                            {link.url ?? '—'} ·{' '}
+                            <span className={link.status === 'active' ? styles.statusActive : styles.statusSoon}>
+                              {link.status === 'active' ? 'Active' : 'Coming Soon'}
+                            </span>
                           </span>
-                        </span>
+                        )}
+                        {link.type === 'carousel' && (
+                          <span className={styles.linkUrl}>
+                            {link.carousel_aspect_ratio} · {Array.isArray(link.image_data) ? link.image_data.length : 0} Images
+                          </span>
+                        )}
                       </div>
                       <div className={styles.linkActions}>
                         <button className={styles.editBtn} onClick={() => openEditLink(link)} title="Edit">

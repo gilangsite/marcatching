@@ -28,8 +28,13 @@
 }
 
 @keyframes bgDrift {
-  0% { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.05) translate(20px, -20px); }
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  100% {
+    transform: scale(1.05) translate(20px, -20px);
+  }
 }
 
 .heroContent {
@@ -46,7 +51,8 @@
 }
 
 .homeLogoWrap {
-  width: 80%; /* Almost 75-80% screen width on mobile, capped by max-width */
+  width: 80%;
+  /* Almost 75-80% screen width on mobile, capped by max-width */
   max-width: 480px;
   margin: 0 auto 12px;
   display: flex;
@@ -113,7 +119,7 @@
   width: 52px;
   height: 52px;
   min-width: 52px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   color: var(--white);
 }
@@ -132,7 +138,7 @@
 
 .contactDesc {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 18px;
   line-height: 1.6;
 }
@@ -156,11 +162,14 @@
   .hero {
     padding: 130px 0 80px;
   }
+
   .contactCard {
     flex-direction: column;
     padding: 28px 24px;
   }
-  .linksSection, .contactSection {
+
+  .linksSection,
+  .contactSection {
     padding: 56px 0;
   }
 }

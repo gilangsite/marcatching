@@ -38,7 +38,10 @@ export default function ButtonCard({ link, index = 0 }: ButtonCardProps) {
   const isComingSoon = link.status === 'coming_soon'
 
   const content = (
-    <div className={`${styles.card} ${isComingSoon ? styles.disabled : ''}`}>
+    <div 
+      className={`${styles.card} ${isComingSoon ? styles.disabled : ''}`}
+      style={link.btn_color ? { backgroundColor: link.btn_color } : undefined}
+    >
       <div className={styles.iconWrap}>
         <IconComponent size={20} strokeWidth={1.75} />
       </div>
