@@ -353,6 +353,13 @@
   font-size: 0.9rem;
 }
 
+/* ── Mobile Elements (Hidden on Desktop) ─────────────────── */
+.mobileHeader,
+.sidebarOverlay,
+.hamburgerBtnSidebar {
+  display: none;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .page { flex-direction: column; }
@@ -447,5 +454,3 @@
     flex-direction: column;
   }
 }
-
-.hamburgerBtnSidebar { display: none; }
