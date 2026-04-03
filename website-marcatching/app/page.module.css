@@ -19,14 +19,16 @@
 /* animated subtle mesh/gradient for elegance */
 .heroDecor {
   position: absolute;
-  inset: -50%;
+  bottom: -200px;
+  left: 0;
+  right: 0;
+  height: 400px;
   z-index: 0;
   background:
-    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.25) 0%, transparent 40%),
-    radial-gradient(circle at 70% 30%, rgba(236, 72, 153, 0.22) 0%, transparent 40%),
-    radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.25) 0%, transparent 45%);
+    radial-gradient(ellipse at 30% 100%, rgba(13, 51, 105, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 100%, rgba(59, 130, 246, 0.3) 0%, transparent 60%);
   animation: bgDrift 15s ease-in-out infinite alternate;
-  filter: blur(80px);
+  filter: blur(60px);
 }
 
 @keyframes bgDrift {
@@ -113,9 +115,9 @@
   align-items: flex-start;
   gap: 20px;
   padding: 36px;
-  background: var(--navy);
+  background: #ffffff;
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
 }
 
 .contactIcon {
@@ -125,9 +127,9 @@
   width: 52px;
   height: 52px;
   min-width: 52px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(13, 51, 105, 0.1);
   border-radius: 14px;
-  color: var(--white);
+  color: var(--navy);
 }
 
 .contactBody {
@@ -138,14 +140,14 @@
 .contactTitle {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 
 .contactDesc {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #1a1a1a;
   margin-bottom: 18px;
   line-height: 1.6;
   text-align: justify;
@@ -157,12 +159,12 @@
   gap: 6px;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #93c5fd;
+  color: var(--navy);
   transition: color 0.2s ease, gap 0.2s ease;
 }
 
 .emailLink:hover {
-  color: var(--white);
+  color: #1d4ed8;
   gap: 10px;
 }
 

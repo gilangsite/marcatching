@@ -14,16 +14,16 @@
   align-items: center;
   gap: 16px;
   padding: 18px 22px;
-  background: var(--white);
-  border: 1.5px solid var(--gray-200);
+  background: #ffffff;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-lg);
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .wrapper:not([aria-disabled='true']):hover .card {
-  border-color: var(--navy);
-  box-shadow: var(--shadow-md);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
   transform: translateY(-2px);
 }
 
@@ -40,15 +40,15 @@
   width: 44px;
   height: 44px;
   min-width: 44px;
-  background: rgba(13, 51, 105, 0.07);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 12px;
-  color: var(--navy);
+  color: #000000;
   transition: background 0.22s ease, color 0.22s ease;
 }
 
 .wrapper:not([aria-disabled='true']):hover .iconWrap {
-  background: var(--navy);
-  color: var(--white);
+  background: #000000;
+  color: #ffffff;
 }
 
 .textWrap {
@@ -61,7 +61,7 @@
 .title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #000000;
 }
 
 .badge {
@@ -69,8 +69,8 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gray-600);
-  background: var(--gray-200);
+  color: #1e293b;
+  background: #f1f5f9;
   border-radius: 999px;
   padding: 3px 9px;
 }
@@ -78,11 +78,11 @@
 .arrow {
   display: flex;
   align-items: center;
-  color: var(--gray-400);
+  color: #000000;
   transition: color 0.22s ease, transform 0.22s ease;
 }
 
 .wrapper:not([aria-disabled='true']):hover .arrow {
-  color: var(--navy);
+  color: #3b82f6;
   transform: translateX(2px);
 }
