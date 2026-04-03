@@ -1,0 +1,29 @@
+.floating {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 50;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s ease;
+}
+
+.floating:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 16px 48px rgba(13, 51, 105, 0.22), 0 4px 16px rgba(13, 51, 105, 0.12);
+}
+
+@media (max-width: 640px) {
+  .floating {
+    bottom: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+  }
+}

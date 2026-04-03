@@ -1,0 +1,183 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+  padding: 130px 0 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+/* animated subtle mesh/gradient for elegance */
+.heroDecor {
+  position: absolute;
+  inset: -50%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  animation: bgDrift 20s ease-in-out infinite alternate;
+  filter: blur(50px);
+}
+
+@keyframes bgDrift {
+  0% {
+    transform: rotate(0deg) translate(0px, 0px) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) translate(50px, -50px) scale(1.05);
+  }
+
+  100% {
+    transform: rotate(360deg) translate(-50px, 50px) scale(1);
+  }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.homeLogoWrap {
+  width: 80%;
+  /* Almost 75-80% screen width on mobile, capped by max-width */
+  max-width: 480px;
+  margin: 0 auto 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.homeLogoType {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.homeTagline {
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--navy);
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.linksList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 48px 0;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 48px 0;
+}
+
+/* ── Contact Section ─────────────────────────────────────── */
+.contactSection {
+  padding: 80px 0;
+  background: var(--white);
+}
+
+.contactCard {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 36px;
+  background: var(--navy);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.contactIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: var(--white);
+}
+
+.contactBody {
+  flex: 1;
+  text-align: left;
+}
+
+.contactTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.contactDesc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 18px;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.emailLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #93c5fd;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.emailLink:hover {
+  color: var(--white);
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 130px 0 80px;
+  }
+
+  .contactCard {
+    flex-direction: column;
+    padding: 28px 24px;
+  }
+
+  .linksSection,
+  .contactSection {
+    padding: 56px 0;
+  }
+}
