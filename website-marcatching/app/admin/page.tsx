@@ -254,16 +254,16 @@ export default function AdminDashboard() {
     <div className={styles.page}>
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#0f172a" /></button>
-        <Image src="/logo-type-navy.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
+        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#ffffff" /></button>
+        <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0 24px', position: 'relative' }}>
-          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ position: 'absolute', left: 8 }}><Menu size={24} color="#334155" /></button>
-          <Image src="/logo-type-navy.png" alt="Marcatching" width={140} height={33} style={{ objectFit: 'contain' }} />
+          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ position: 'absolute', left: 8 }}><Menu size={24} color="rgba(255,255,255,0.85)" /></button>
+          <Image src="/logo-type-white.png" alt="Marcatching" width={140} height={33} style={{ objectFit: 'contain' }} />
         </div>
         <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginBottom: 12 }} />
         <nav className={styles.sidenav}>
@@ -274,7 +274,7 @@ export default function AdminDashboard() {
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
 
           <div style={{ position: 'relative' }}>
-            <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: '#e2e8f0', color: '#0f172a', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
+            <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
             {showAddMenu && (
               <div className={styles.addMenuDropdown} style={{position: 'relative', zIndex: 60}}>
                 <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
@@ -288,7 +288,7 @@ export default function AdminDashboard() {
         <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginTop: 'auto', marginBottom: 12 }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24 }}>
           <a href="/" target="_blank" rel="noopener noreferrer" className={styles.navItem}><Globe size={18} /> Lihat Website</a>
-          <button onClick={handleLogout} className={styles.navItem} style={{ color: '#dc2626' }}><LogOut size={18} /> Keluar</button>
+          <button onClick={handleLogout} className={styles.navItem} style={{ color: '#fca5a5' }}><LogOut size={18} /> Keluar</button>
         </div>
       </aside>
 

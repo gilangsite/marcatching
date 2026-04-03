@@ -98,7 +98,7 @@ export default async function HomePage() {
                           <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
                         )}
                       </div>
-                      <div className={styles.productCardInfo}>
+                    <div className={styles.productCardInfo}>
                         <h3 className={styles.productCardName}>{product.name}</h3>
                         {product.sub_headline && (
                           <p className={styles.productCardSub}>{product.sub_headline}</p>

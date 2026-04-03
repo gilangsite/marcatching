@@ -254,9 +254,10 @@
   .posterSide {
     position: relative;
     width: 100vw;
-    height: 56vw; /* roughly 4:5 ratio by feel */
-    max-height: 65vh;
-    min-height: 260px;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
     left: 0;
     overflow: hidden;
