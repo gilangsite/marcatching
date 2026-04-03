@@ -56,7 +56,7 @@ body {
 img { display: block; max-width: 100%; height: auto; }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: var(--font); border: none; background: none; }
-input, textarea, select { font-family: var(--font); }
+input, textarea, select { font-family: var(--font); font-size: 16px !important; }
 ul, ol { list-style: none; }
 
 /* ─── Typography ─────────────────────────────────────────── */

@@ -28,9 +28,9 @@
 }
 
 .card.disabled {
-  background: var(--gray-100);
-  border-color: var(--gray-200);
-  opacity: 0.75;
+  background: #ffffff;
+  border-color: transparent;
+  opacity: 0.6;
 }
 
 .iconWrap {
