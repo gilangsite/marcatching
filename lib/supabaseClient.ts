@@ -31,3 +31,45 @@ export type Contact = {
   email: string
   created_at: string
 }
+
+export type Product = {
+  id: string
+  name: string
+  slug: string
+  sub_headline: string | null
+  description: string | null
+  image_url: string | null
+  price_before_discount: number
+  price_after_discount: number
+  discount_percentage: number
+  features: string[]
+  is_active: boolean
+  created_at: string
+}
+
+export type Voucher = {
+  id: string
+  code: string
+  discount_value: number
+  discount_type: 'fixed' | 'percentage'
+  is_active: boolean
+  created_at: string
+}
+
+export type Order = {
+  id: string
+  product_id: string | null
+  product_name: string
+  full_name: string
+  email: string
+  whatsapp: string
+  background: string | null
+  referral_source: string | null
+  voucher_code: string | null
+  price_original: number
+  price_discounted: number
+  voucher_discount: number
+  total_paid: number
+  status: string
+  created_at: string
+}
