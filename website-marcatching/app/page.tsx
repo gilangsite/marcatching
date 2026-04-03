@@ -103,12 +103,6 @@ export default async function HomePage() {
                         {product.sub_headline && (
                           <p className={styles.productCardSub}>{product.sub_headline}</p>
                         )}
-                        <div className={styles.productCardPrice}>
-                          <span className={styles.productCardPriceActual}>{formatRupiah(product.price_after_discount)}</span>
-                          {product.price_before_discount > 0 && product.price_before_discount !== product.price_after_discount && (
-                            <span className={styles.productCardPriceOld}>{formatRupiah(product.price_before_discount)}</span>
-                          )}
-                        </div>
                       </div>
                     </Link>
                   )

@@ -254,16 +254,16 @@ export default function AdminDashboard() {
     <div className={styles.page}>
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} /></button>
-        <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
+        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#0f172a" /></button>
+        <Image src="/logo-type-navy.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '8px' }}>
-          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}><Menu size={24} color="#334155" /></button>
-          <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} style={{ objectFit: 'contain', margin: '0 auto' }} />
+        <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0 24px', position: 'relative' }}>
+          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ position: 'absolute', left: 8 }}><Menu size={24} color="#334155" /></button>
+          <Image src="/logo-type-navy.png" alt="Marcatching" width={140} height={33} style={{ objectFit: 'contain' }} />
         </div>
         <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginBottom: 12 }} />
         <nav className={styles.sidenav}>

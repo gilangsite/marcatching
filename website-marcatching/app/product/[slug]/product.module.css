@@ -251,9 +251,10 @@
 
   .posterSide {
     position: relative;
-    height: auto;
-    aspect-ratio: 4/5;
-    max-height: 60vh;
+    height: 60vh;
+    width: 100%;
+    aspect-ratio: unset;
+    max-height: none;
   }
 
   .contentSide {
