@@ -67,10 +67,11 @@ export default async function HomePage() {
             <div className={styles.linksList}>
               {links.length > 0 ? (
                 links.map((link, i) => {
-                  if (link.type === 'text') return <TextBlock key={link.id} link={link} />
-                  if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
-                  if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
-                  if (link.type === 'product') {
+                  const linkType = link.type as string
+                  if (linkType === 'text') return <TextBlock key={link.id} link={link} />
+                  if (linkType === 'carousel') return <ImageCarousel key={link.id} link={link} />
+                  if (linkType === 'video') return <VideoEmbed key={link.id} link={link} />
+                  if (linkType === 'product') {
                     const product = products.find(p => p.id === link.url)
                     if (!product) return null
                     let posterUrl = product.image_url || ''
