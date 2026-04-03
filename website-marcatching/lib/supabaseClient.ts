@@ -23,7 +23,7 @@ export type Link = {
   text_bold?: boolean | null
   text_italic?: boolean | null
   carousel_aspect_ratio?: string | null
-  image_data?: any // jsonb array of { url: string, link: string }
+  image_data?: { url: string, link: string }[]
 }
 
 export type Contact = {

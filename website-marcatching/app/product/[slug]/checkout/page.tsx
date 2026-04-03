@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Copy, Check, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Product } from '@/lib/supabaseClient'
@@ -73,7 +74,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       <div className={styles.checkoutPage}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b', gap: 16, padding: 24 }}>
           <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0d3369' }}>Produk tidak ditemukan</p>
-          <a href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</a>
+          <Link href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</Link>
         </div>
       </div>
     )

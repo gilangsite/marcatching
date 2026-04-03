@@ -136,7 +136,10 @@ export default function AdminDashboard() {
     else fetchOrders()
   }
 
-  useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
+  useEffect(() => { 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() 
+  }, [])
 
   async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/admin/login') }
 
@@ -290,10 +293,10 @@ export default function AdminDashboard() {
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
             {showAddMenu && (
               <div className={styles.addMenuDropdown} style={{position: 'relative', zIndex: 60}}>
-                <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
-                <button onClick={() => handleAddSpecific('text')}><Type size={14}/> Text Block</button>
-                <button onClick={() => handleAddSpecific('carousel')}><ImageIcon size={14}/> Image Carousel</button>
-                <button onClick={() => handleAddSpecific('video')}><Video size={14}/> Video Embed</button>
+                <button type="button" onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
+                <button type="button" onClick={() => handleAddSpecific('text')}><Type size={14}/> Text Block</button>
+                <button type="button" onClick={() => handleAddSpecific('carousel')}><ImageIcon size={14}/> Image Carousel</button>
+                <button type="button" onClick={() => handleAddSpecific('video')}><Video size={14}/> Video Embed</button>
               </div>
             )}
           </div>
@@ -348,7 +351,7 @@ export default function AdminDashboard() {
                       <div className="form-group"><label className="label">Aspect Ratio</label><select className="select" value={linkForm.carousel_aspect_ratio || '16:9'} onChange={e => setLinkForm(f => ({ ...f, carousel_aspect_ratio: e.target.value }))}><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="4:5">4:5</option></select></div>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Upload Gambar</label>
                         <div className={styles.uploadArea}><input type="file" multiple accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} /><div className={styles.uploadLabel}><Upload size={20} />{uploadingImage ? 'Mengupload...' : 'Klik atau Drag & Drop'}</div></div>
-                        <div className={styles.imageList}>{(linkForm.image_data || []).map((img: any, idx: number) => { let previewUrl = img.url; if (previewUrl?.includes('drive.google.com/uc')) { const m = previewUrl.match(/id=([^&]+)/); if (m?.[1]) previewUrl = `https://drive.google.com/thumbnail?id=${m[1]}&sz=w500-h500` } return (<div key={idx} className={styles.imageItem}><div className={styles.imagePreviewWrap} style={{aspectRatio: linkForm.carousel_aspect_ratio?.replace(':', '/') || '16/9'}}><img src={previewUrl} alt={`Preview ${idx}`} className={styles.imagePreview} /></div><div className={styles.imageItemDetails}><input type="text" className="input" style={{fontSize: '0.8rem', padding: '0.4rem 0.6rem'}} placeholder="Link tujuan (opsional)" value={img.link || ''} onChange={(e) => handleImageLinkChange(idx, e.target.value)} /><button type="button" className="btn btn-ghost" style={{padding: '0.4rem', color: '#ff4444'}} onClick={() => removeImage(idx)}><Trash2 size={16}/></button></div></div>) })}</div>
+                        <div className={styles.imageList}>{(linkForm.image_data || []).map((img: { url: string, link?: string }, idx: number) => { let previewUrl = img.url; if (previewUrl?.includes('drive.google.com/uc')) { const m = previewUrl.match(/id=([^&]+)/); if (m?.[1]) previewUrl = `https://drive.google.com/thumbnail?id=${m[1]}&sz=w500-h500` } return (<div key={idx} className={styles.imageItem}><div className={styles.imagePreviewWrap} style={{aspectRatio: linkForm.carousel_aspect_ratio?.replace(':', '/') || '16/9'}}><img src={previewUrl} alt={`Preview ${idx}`} className={styles.imagePreview} /></div><div className={styles.imageItemDetails}><input type="text" className="input" style={{fontSize: '0.8rem', padding: '0.4rem 0.6rem'}} placeholder="Link tujuan (opsional)" value={img.link || ''} onChange={(e) => handleImageLinkChange(idx, e.target.value)} /><button type="button" className="btn btn-ghost" style={{padding: '0.4rem', color: '#ff4444'}} onClick={() => removeImage(idx)}><Trash2 size={16}/></button></div></div>) })}</div>
                       </div>
                     </>)}
                   </div>

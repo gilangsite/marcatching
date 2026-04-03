@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Check, ChevronDown, ArrowRight } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Product } from '@/lib/supabaseClient'
@@ -52,10 +53,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         <div className={styles.notFound}>
           <h1 className={styles.notFoundTitle}>Produk Tidak Ditemukan</h1>
           <p className={styles.notFoundDesc}>Produk yang kamu cari tidak tersedia atau sudah tidak aktif.</p>
-          <a href="/" className={styles.backLink}>
+          <Link href="/" className={styles.backLink}>
             <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} />
             Kembali ke Beranda
-          </a>
+          </Link>
         </div>
       </div>
     )

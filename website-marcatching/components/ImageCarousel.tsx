@@ -35,7 +35,7 @@ export default function ImageCarousel({ link }: { link: Link }) {
       )}
       
       <div className={styles.carouselScrollArea} ref={scrollRef}>
-        {images.map((img: any, idx: number) => {
+        {images.map((img: { url: string, link?: string }, idx: number) => {
           // Fix Google Drive hotlinking block by using the thumbnail API or lh3.googleusercontent
           let finalUrl = img.url;
           if (finalUrl && finalUrl.includes('drive.google.com/uc')) {
