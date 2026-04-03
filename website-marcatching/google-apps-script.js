@@ -11,7 +11,7 @@
 // ==========================================================
 
 // Google Drive Folder ID for image uploads
-const FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
+const FOLDER_ID = "1rccC9WHU1dCmIeYFCrQUq2REG5MbITHu";
 
 // Google Sheets ID for checkout data
 const SPREADSHEET_ID = "14QTnyV8hCvuNIGVdgcUrN42NfPKmxqmCJhw61Tut870";
