@@ -246,20 +246,34 @@
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .splitLayout {
-    grid-template-columns: 1fr;
+    display: block; /* use block instead of grid to prevent column sizing issues */
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .posterSide {
     position: relative;
-    height: 60vh;
+    width: 100vw;
+    height: 56vw; /* roughly 4:5 ratio by feel */
+    max-height: 65vh;
+    min-height: 260px;
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
+    left: 0;
+    overflow: hidden;
+  }
+
+  .posterImage {
     width: 100%;
-    aspect-ratio: unset;
-    max-height: none;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
   }
 
   .contentSide {
     max-height: none;
-    padding: 28px 20px 140px;
+    padding: 24px 20px 140px;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .productName {
@@ -272,6 +286,9 @@
 
   .fixedCTA {
     width: 100%;
+    left: 0;
+    right: 0;
     padding: 14px 20px;
   }
 }
+
