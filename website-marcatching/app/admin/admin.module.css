@@ -1,7 +1,20 @@
 .page {
   display: flex;
   min-height: 100vh;
-  background: var(--off-white);
+  width: 100%;
+  background: #f8fafc;
+  color: #0f172a;
+  
+  /* Override global dark theme variables for Admin */
+  --white: #ffffff;
+  --off-white: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-400: #94a3b8;
+  --gray-600: #475569;
+  --gray-800: #1e293b;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
 }
 
 /* ── Sidebar ─────────────────────────────────────────────── */
@@ -170,24 +183,24 @@
 .contentTitle {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0f172a;
   letter-spacing: -0.01em;
   margin-bottom: 4px;
 }
 
 .contentDesc {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #64748b;
 }
 
 /* ── Form Card ───────────────────────────────────────────── */
 .formCard {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-lg);
   padding: 28px;
   margin-bottom: 28px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* very light shadow */
 }
 
 .formCardHeader {
@@ -198,25 +211,29 @@
 }
 
 .formTitle {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0f172a;
+  margin: 0;
 }
 
 .closeBtn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--gray-100);
-  color: var(--text-secondary);
-  border: none;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
-.closeBtn:hover { background: var(--gray-200); color: var(--text-primary); }
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
 
 .form {
   display: flex;
@@ -235,7 +252,7 @@
   color: #dc2626;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   padding: 10px 14px;
 }
 
@@ -244,15 +261,17 @@
   color: #16a34a;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   padding: 10px 14px;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding-top: 4px;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
 }
 
 /* ── Links list ──────────────────────────────────────────── */
@@ -267,13 +286,13 @@
   align-items: center;
   gap: 14px;
   padding: 16px 20px;
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   transition: border-color 0.18s ease;
 }
-.linkRow:hover { border-color: var(--navy); }
+.linkRow:hover { border-color: #0d3369; }
 
 .linkIcon {
   display: flex;
@@ -284,7 +303,7 @@
   min-width: 40px;
   background: rgba(13, 51, 105, 0.07);
   border-radius: 10px;
-  color: var(--navy);
+  color: #0d3369;
 }
 
 .linkInfo {
@@ -298,7 +317,7 @@
 .linkTitle {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -306,7 +325,7 @@
 
 .linkUrl {
   font-size: 0.78rem;
-  color: var(--text-secondary);
+  color: #64748b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -341,22 +360,33 @@
 
 .editBtn {
   background: rgba(13, 51, 105, 0.07);
-  color: var(--navy);
+  color: #0d3369;
 }
-.editBtn:hover { background: var(--navy); color: var(--white); }
+.editBtn:hover { background: #0d3369; color: #ffffff; }
 
 .deleteBtn {
   background: rgba(220, 38, 38, 0.07);
   color: #dc2626;
 }
-.deleteBtn:hover { background: #dc2626; color: var(--white); }
+.deleteBtn:hover { background: #dc2626; color: #ffffff; }
 
 /* ── States ──────────────────────────────────────────────── */
 .loading, .emptyState {
   text-align: center;
   padding: 48px 0;
-  color: var(--text-secondary);
+  color: #64748b;
   font-size: 0.9rem;
+}
+
+.emptyState {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
 }
 
 /* ── Mobile Elements (Hidden on Desktop) ─────────────────── */
@@ -417,8 +447,8 @@
     display: flex;
     align-items: center;
     padding: 16px 24px;
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
     position: sticky;
     top: 0;
     z-index: 50;
@@ -432,7 +462,7 @@
     margin-right: 12px;
     display: flex;
     align-items: center;
-    color: var(--navy);
+    color: #0d3369;
   }
   .mobileHeaderLogo {
     height: 24px;
@@ -454,7 +484,7 @@
     width: 100%;
     justify-content: flex-end;
     padding-top: 8px;
-    border-top: 1px solid var(--gray-100);
+    border-top: 1px solid #f1f5f9;
   }
   .sidenav {
     flex-direction: column;
