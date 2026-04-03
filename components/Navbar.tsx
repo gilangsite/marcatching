@@ -17,7 +17,7 @@ export default function Navbar({ links = [] }: { links?: Link[] }) {
       <div className={styles.inner}>
         <div className={styles.logo}>
           <Image
-            src="/logo-type-navy.png"
+            src="/logo-type-white.png"
             alt="Marcatching"
             width={140}
             height={36}

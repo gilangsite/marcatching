@@ -332,7 +332,7 @@ export default function AdminDashboard() {
         <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}>
           <Menu size={24} />
         </button>
-        <Image src="/logo-type-navy.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
+        <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
       </div>
 
       {/* Sidebar Overlay */}

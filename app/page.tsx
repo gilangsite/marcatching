@@ -52,7 +52,7 @@ export default async function HomePage() {
             
             <div className={styles.homeLogoWrap}>
               <Image
-                src="/logo-type-navy.png"
+                src="/logo-type-white.png"
                 alt="Marcatching Logo"
                 width={800}
                 height={200}

@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
       <div className={styles.card}>
         <div className={styles.logoWrap}>
           <Image
-            src="/logo-type-navy.png"
+            src="/logo-type-white.png"
             alt="Marcatching"
             width={160}
             height={40}

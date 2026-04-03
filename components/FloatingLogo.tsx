@@ -7,7 +7,7 @@ export default function FloatingLogo() {
   return (
     <div className={styles.floating}>
       <Image
-        src="/logo-shape-navy.png"
+        src="/logo-shape-white.png"
         alt="Marcatching"
         width={36}
         height={36}
