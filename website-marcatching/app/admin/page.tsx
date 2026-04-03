@@ -130,6 +130,12 @@ export default function AdminDashboard() {
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
 
+  async function updateOrderStatus(id: string, newStatus: string) {
+    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', id)
+    if (error) alert('Gagal update status: ' + error.message)
+    else fetchOrders()
+  }
+
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
 
   async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/admin/login') }
@@ -229,7 +235,14 @@ export default function AdminDashboard() {
     setProductSaving(true); setProductError('')
     const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active }
     let error
-    if (editingProduct) { ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) } else { ({ error } = await supabase.from('products').insert(payload)) }
+    if (editingProduct) { ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) } else { 
+      const { data: newProd, error: insertErr } = await supabase.from('products').insert(payload).select().single()
+      error = insertErr
+      if (!error && newProd) {
+        await supabase.from('links').insert({ title: newProd.name, url: newProd.id, type: 'product', order_index: links.length + 1, status: 'active', icon: 'ShoppingBag' })
+        fetchLinks()
+      }
+    }
     setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts() }
   }
   async function deleteProduct(id: string) { if (!confirm('Hapus product ini?')) return; await supabase.from('products').delete().eq('id', id); fetchProducts() }
@@ -464,7 +477,21 @@ export default function AdminDashboard() {
                       <td style={{ padding: '10px 8px' }}><div style={{ fontWeight: 600 }}>{o.full_name}</div><div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{o.email}</div></td>
                       <td style={{ padding: '10px 8px' }}>{o.product_name}</td>
                       <td style={{ padding: '10px 8px', fontWeight: 600 }}>Rp {formatRp(o.total_paid)}</td>
-                      <td style={{ padding: '10px 8px' }}><span style={{ padding: '3px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600, background: o.status === 'confirmed' ? '#dcfce7' : '#fef3c7', color: o.status === 'confirmed' ? '#16a34a' : '#d97706' }}>{o.status}</span></td>
+                      <td style={{ padding: '10px 8px' }}>
+                        <select 
+                          value={o.status} 
+                          onChange={(e) => updateOrderStatus(o.id, e.target.value)}
+                          style={{
+                            padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600,
+                            border: '1px solid #e2e8f0', cursor: 'pointer', outline: 'none',
+                            background: o.status === 'confirmed' || o.status === 'accepted' ? '#dcfce7' : '#fef3c7', 
+                            color: o.status === 'confirmed' || o.status === 'accepted' ? '#16a34a' : '#d97706'
+                          }}
+                        >
+                          <option value="pending">pending</option>
+                          <option value="confirmed">accepted</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}</tbody>
                 </table>

@@ -70,6 +70,35 @@ export default async function HomePage() {
                   if (link.type === 'text') return <TextBlock key={link.id} link={link} />
                   if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
                   if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
+                  if (link.type === 'product') {
+                    const product = products.find(p => p.id === link.url)
+                    if (!product) return null
+                    let posterUrl = product.image_url || ''
+                    if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
+                      const match = posterUrl.match(/id=([^&]+)/)
+                      if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
+                    }
+                    return (
+                      <Link key={link.id} href={`/product/${product.slug}`} className={styles.productCard}>
+                        <div className={styles.productPoster} style={{ aspectRatio: '16/9' }}>
+                          {posterUrl ? (
+                            <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
+                          ) : (
+                            <div className={styles.productPosterPlaceholder}>No Image</div>
+                          )}
+                          {product.discount_percentage > 0 && (
+                            <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
+                          )}
+                        </div>
+                        <div className={styles.productCardInfo}>
+                          <h3 className={styles.productCardName}>{product.name}</h3>
+                          {product.sub_headline && (
+                            <p className={styles.productCardSub}>{product.sub_headline}</p>
+                          )}
+                        </div>
+                      </Link>
+                    )
+                  }
                   return <ButtonCard key={link.id} link={link} index={i} />
                 })
               ) : (
@@ -78,37 +107,43 @@ export default async function HomePage() {
             </div>
 
             {/* ── Product Cards ────────────────────────────── */}
-            {products.length > 0 && (
-              <div className={styles.productGrid}>
-                {products.map(product => {
-                  let posterUrl = product.image_url || ''
-                  if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
-                    const match = posterUrl.match(/id=([^&]+)/)
-                    if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
-                  }
-                  return (
-                    <Link key={product.id} href={`/product/${product.slug}`} className={styles.productCard}>
-                      <div className={styles.productPoster}>
-                        {posterUrl ? (
-                          <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
-                        ) : (
-                          <div className={styles.productPosterPlaceholder}>No Image</div>
-                        )}
-                        {product.discount_percentage > 0 && (
-                          <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
-                        )}
-                      </div>
-                    <div className={styles.productCardInfo}>
-                        <h3 className={styles.productCardName}>{product.name}</h3>
-                        {product.sub_headline && (
-                          <p className={styles.productCardSub}>{product.sub_headline}</p>
-                        )}
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
+            {(() => {
+              const linkedProductIds = new Set(links.filter(l => l.type === 'product').map(l => l.url))
+              const unlinkedProducts = products.filter(p => !linkedProductIds.has(p.id))
+              if (unlinkedProducts.length === 0) return null
+
+              return (
+                <div className={styles.productGrid}>
+                  {unlinkedProducts.map(product => {
+                    let posterUrl = product.image_url || ''
+                    if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
+                      const match = posterUrl.match(/id=([^&]+)/)
+                      if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
+                    }
+                    return (
+                      <Link key={product.id} href={`/product/${product.slug}`} className={styles.productCard}>
+                        <div className={styles.productPoster}>
+                          {posterUrl ? (
+                            <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
+                          ) : (
+                            <div className={styles.productPosterPlaceholder}>No Image</div>
+                          )}
+                          {product.discount_percentage > 0 && (
+                            <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
+                          )}
+                        </div>
+                        <div className={styles.productCardInfo}>
+                          <h3 className={styles.productCardName}>{product.name}</h3>
+                          {product.sub_headline && (
+                            <p className={styles.productCardSub}>{product.sub_headline}</p>
+                          )}
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )
+            })()}
             
           </div>
         </section>

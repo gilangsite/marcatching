@@ -15,7 +15,7 @@ export type Link = {
   created_at: string
 
   // New fields for Text & Image blocks
-  type: 'button' | 'text' | 'carousel' | 'video'
+  type: 'button' | 'text' | 'carousel' | 'video' | 'product'
   btn_color?: string | null
   text_color?: string | null
   text_size?: string | null
