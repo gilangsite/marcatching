@@ -165,6 +165,8 @@
   padding: 40px;
   margin-left: 240px; /* Offset for fixed sidebar */
   min-height: 100vh;
+  background: #f8fafc; /* Explicit bg so body black doesn't bleed through */
+  color: #0f172a;
 }
 
 .tabContent {
@@ -416,7 +418,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
     padding-bottom: 12px;
     margin-bottom: 0;
     width: 100%;
@@ -469,7 +471,7 @@
     width: auto;
     object-fit: contain;
   }
-  .content { flex: 1; padding: 24px 16px; min-width: 0; }
+  .content { flex: 1; padding: 24px 16px 80px; min-width: 0; margin-left: 0; background: #f8fafc; color: #0f172a; }
   .formGrid { grid-template-columns: 1fr; }
   .linkRow {
     flex-wrap: wrap;
