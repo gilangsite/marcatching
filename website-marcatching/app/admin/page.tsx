@@ -229,8 +229,13 @@ export default function AdminDashboard() {
     setProductSaving(true); setProductError('')
     const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active }
     let error
-    if (editingProduct) { ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) } else { ({ error } = await supabase.from('products').insert(payload)) }
-    setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts() }
+    if (editingProduct) { 
+      ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) 
+    } else { 
+      ({ error } = await supabase.from('products').insert(payload)) 
+      if (!error) { await supabase.from('links').insert({ title: payload.name, url: '/product/' + payload.slug, icon: 'ShoppingBag', status: 'active', type: 'button', order_index: links.length + 1 }) }
+    }
+    setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts(); fetchLinks() }
   }
   async function deleteProduct(id: string) { if (!confirm('Hapus product ini?')) return; await supabase.from('products').delete().eq('id', id); fetchProducts() }
 
@@ -248,6 +253,12 @@ export default function AdminDashboard() {
   }
   async function deleteVoucher(id: string) { if (!confirm('Hapus voucher ini?')) return; await supabase.from('vouchers').delete().eq('id', id); fetchVouchers() }
   async function toggleVoucher(v: Voucher) { await supabase.from('vouchers').update({ is_active: !v.is_active }).eq('id', v.id); fetchVouchers() }
+
+  async function toggleOrderStatus(order: Order) {
+    const newStatus = order.status === 'pending' ? 'confirmed' : 'pending'
+    await supabase.from('orders').update({ status: newStatus }).eq('id', order.id)
+    fetchOrders()
+  }
 
   // ─────────────────────────────────────────────────────────────
   return (
@@ -468,7 +479,16 @@ export default function AdminDashboard() {
                       <td style={{ padding: '10px 8px' }}><div style={{ fontWeight: 600 }}>{o.full_name}</div><div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{o.email}</div></td>
                       <td style={{ padding: '10px 8px' }}>{o.product_name}</td>
                       <td style={{ padding: '10px 8px', fontWeight: 600 }}>Rp {formatRp(o.total_paid)}</td>
-                      <td style={{ padding: '10px 8px' }}><span style={{ padding: '3px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600, background: o.status === 'confirmed' ? '#dcfce7' : '#fef3c7', color: o.status === 'confirmed' ? '#16a34a' : '#d97706' }}>{o.status}</span></td>
+                      <td style={{ padding: '10px 8px' }}>
+                        <button 
+                          onClick={() => toggleOrderStatus(o)} 
+                          style={{ border: 'none', cursor: 'pointer', padding: '4px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600, background: o.status === 'confirmed' ? '#dcfce7' : '#fef3c7', color: o.status === 'confirmed' ? '#16a34a' : '#d97706', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          title={`Ubah menjadi ${o.status === 'pending' ? 'Confirmed' : 'Pending'}`}
+                        >
+                          {o.status === 'confirmed' ? <Check size={12}/> : null}
+                          {o.status.toUpperCase()}
+                        </button>
+                      </td>
                     </tr>
                   ))}</tbody>
                 </table>
