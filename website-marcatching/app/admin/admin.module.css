@@ -22,13 +22,18 @@
   --text-secondary: #475569;
 }
 
+/* ── Force light background on html/body inside admin ─────── */
+.page {
+  color-scheme: light;
+}
+
 /* ── Page Layout ─────────────────────────────────────────── */
 .page {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #f8fafc !important;
+  color: #0f172a !important;
 }
 
 /* ── Sidebar (Fixed) ─────────────────────────────────────── */
@@ -39,18 +44,30 @@
   display: flex;
   flex-direction: column;
   padding: 0 16px 24px;
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   height: 100vh;
   overflow-y: auto;
   border-right: none;
   z-index: 50;
-  box-shadow: 4px 0 20px rgba(13, 51, 105, 0.15);
+  box-shadow: 4px 0 24px rgba(13, 51, 105, 0.25);
+}
+
+/* ── Sidebar Navy Logo (Desktop Top) ─────────────────────── */
+.sidebarLogoDesktop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  margin: 0 -16px 12px;
+  background: #0d3369;
+  flex-shrink: 0;
 }
 
 .sidebarLogo {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   padding: 20px 0 16px;
@@ -182,8 +199,8 @@
   padding: 40px;
   margin-left: 240px;
   min-height: 100vh;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #f8fafc !important;
+  color: #0f172a !important;
 }
 
 .tabContent {
@@ -202,24 +219,25 @@
 .contentTitle {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0d3369;
+  color: #0d3369 !important;
   letter-spacing: -0.01em;
   margin-bottom: 4px;
 }
 
 .contentDesc {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #475569 !important;
 }
 
 /* ── Form Card ───────────────────────────────────────────── */
 .formCard {
-  background: #ffffff;
+  background: #ffffff !important;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 28px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(13,51,105,0.08);
+  color: #0f172a !important;
 }
 
 .formCardHeader {
@@ -232,7 +250,7 @@
 .formTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0d3369;
+  color: #0d3369 !important;
   margin: 0;
 }
 
@@ -305,15 +323,16 @@
   align-items: center;
   gap: 14px;
   padding: 16px 20px;
-  background: #ffffff;
+  background: #ffffff !important;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  color: #0f172a !important;
 }
 .linkRow:hover {
   border-color: #0d3369;
-  box-shadow: 0 2px 8px rgba(13,51,105,0.1);
+  box-shadow: 0 4px 12px rgba(13,51,105,0.12);
 }
 
 .linkIcon {
@@ -339,7 +358,7 @@
 .linkTitle {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0f172a;
+  color: #0f172a !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -347,7 +366,7 @@
 
 .linkUrl {
   font-size: 0.78rem;
-  color: #64748b;
+  color: #64748b !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -615,6 +634,10 @@
     transform: translateX(0);
   }
 
+  .sidebarLogoDesktop {
+    display: none;
+  }
+
   .sidebarLogo {
     display: flex;
     justify-content: space-between;
@@ -685,8 +708,8 @@
     padding: 24px 16px 100px;
     min-width: 0;
     margin-left: 0;
-    background: #f8fafc;
-    color: #0f172a;
+    background: #f8fafc !important;
+    color: #0f172a !important;
   }
 
   .formGrid { grid-template-columns: 1fr; }

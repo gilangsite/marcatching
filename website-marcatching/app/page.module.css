@@ -200,6 +200,7 @@
   aspect-ratio: 4/5;
   overflow: hidden;
   background: #f1f5f9;
+  display: block;
 }
 
 .productPosterImg {
@@ -251,21 +252,15 @@
 }
 
 .productCardPrice {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: none;
 }
 
 .productCardPriceActual {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #0d3369;
+  display: none;
 }
 
 .productCardPriceOld {
-  font-size: 0.82rem;
-  color: #dc2626;
-  text-decoration: line-through;
+  display: none;
 }
 
 @media (max-width: 640px) {
@@ -285,5 +280,23 @@
 
   .productGrid {
     grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 16px;
+  }
+
+  .productCard {
+    border-radius: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .productPoster {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    aspect-ratio: 4/5;
+  }
+
+  .linksList {
+    gap: 12px;
   }
 }

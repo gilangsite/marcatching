@@ -277,11 +277,15 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
+        {/* Desktop: Navy logotype at the very top */}
+        <div className={styles.sidebarLogoDesktop}>
+          <Image src="/logo-type-navy.png" alt="Marcatching" width={160} height={38} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+        </div>
+        {/* Mobile: Hamburger + logo row */}
         <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 0 24px', position: 'relative' }}>
           <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ position: 'absolute', left: 8 }}><Menu size={24} color="rgba(255,255,255,0.85)" /></button>
-          <Image src="/logo-type-white.png" alt="Marcatching" width={140} height={33} style={{ objectFit: 'contain' }} />
         </div>
-        <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginBottom: 12 }} />
+        <hr style={{ borderColor: 'rgba(255,255,255,0.12)', marginBottom: 12 }} />
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>

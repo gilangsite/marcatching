@@ -81,7 +81,7 @@ export default async function HomePage() {
                     }
                     return (
                       <Link key={link.id} href={`/product/${product.slug}`} className={styles.productCard}>
-                        <div className={styles.productPoster} style={{ aspectRatio: '16/9' }}>
+                        <div className={styles.productPoster} style={{ aspectRatio: '4/5' }}>
                           {posterUrl ? (
                             <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
                           ) : (
