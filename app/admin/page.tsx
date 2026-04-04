@@ -254,18 +254,22 @@ export default function AdminDashboard() {
     <div className={styles.page}>
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} /></button>
+        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#ffffff" /></button>
         <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarLogo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '8px' }}>
-          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}><Menu size={24} color="#334155" /></button>
-          <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} style={{ objectFit: 'contain', margin: '0 auto' }} />
+        {/* Desktop: Navy logotype at the very top */}
+        <div className={styles.sidebarLogoDesktop}>
+          <Image src="/logo-type-white.png" alt="Marcatching" width={160} height={38} style={{ objectFit: 'contain' }} />
         </div>
-        <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginBottom: 12 }} />
+        {/* Mobile: Hamburger row */}
+        <div className={styles.sidebarLogo}>
+          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}><Menu size={24} color="rgba(255,255,255,0.85)" /></button>
+        </div>
+        <hr style={{ borderColor: 'rgba(255,255,255,0.12)', marginBottom: 12 }} />
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
@@ -274,7 +278,7 @@ export default function AdminDashboard() {
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
 
           <div style={{ position: 'relative' }}>
-            <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: '#e2e8f0', color: '#0f172a', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
+            <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
             {showAddMenu && (
               <div className={styles.addMenuDropdown} style={{position: 'relative', zIndex: 60}}>
                 <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
