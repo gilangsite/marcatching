@@ -135,7 +135,7 @@ export default function AdminDashboard() {
   async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/admin/login') }
 
   // ── Link CRUD (kept from original) ─────────────────────────
-  function handleAddSpecific(type: 'button'|'text'|'carousel'|'video') { setShowAddMenu(false); setTab('links'); setEditingLink(null); setLinkForm({ ...emptyLink, type, order_index: links.length + 1 }); setLinkError(''); setShowLinkForm(true) }
+  function handleAddSpecific(type: 'button'|'text'|'carousel'|'video'|'product') { setShowAddMenu(false); setTab('links'); setEditingLink(null); setLinkForm({ ...emptyLink, type, order_index: links.length + 1 }); setLinkError(''); setShowLinkForm(true) }
   function openEditLink(link: Link) { setEditingLink(link); setLinkForm({ ...emptyLink, ...link }); setLinkError(''); setShowLinkForm(true) }
   function cancelLinkForm() { setShowLinkForm(false); setEditingLink(null); setLinkError('') }
 
@@ -144,6 +144,7 @@ export default function AdminDashboard() {
     if (!linkForm.title) { setLinkError('Judul wajib diisi.'); return }
     if (linkForm.type === 'button' && linkForm.status === 'active' && !linkForm.url) { setLinkError('URL wajib diisi untuk link aktif.'); return }
     if (linkForm.type === 'video' && !linkForm.url) { setLinkError('URL Video wajib diisi.'); return }
+    if (linkForm.type === 'product' && !linkForm.url) { setLinkError('Pilih produk wajib diisi.'); return }
     setLinkSaving(true); setLinkError('')
     const payload = { title: linkForm.title, url: linkForm.status === 'coming_soon' ? null : (linkForm.url || null), icon: linkForm.icon ?? 'Globe', status: linkForm.status ?? 'active', order_index: linkForm.order_index ?? links.length + 1, type: linkForm.type ?? 'button', btn_color: linkForm.btn_color || null, text_color: linkForm.text_color || null, text_size: linkForm.text_size || null, text_align: linkForm.text_align || null, text_bold: linkForm.text_bold ?? false, text_italic: linkForm.text_italic ?? false, carousel_aspect_ratio: linkForm.carousel_aspect_ratio || null, image_data: linkForm.image_data || [] }
     let error
@@ -292,6 +293,7 @@ export default function AdminDashboard() {
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
             {showAddMenu && (
               <div className={styles.addMenuDropdown} style={{position: 'relative', zIndex: 60}}>
+                <button onClick={() => handleAddSpecific('product')}><Package size={14}/> Product Card</button>
                 <button onClick={() => handleAddSpecific('button')}><MousePointerClick size={14}/> Link Button</button>
                 <button onClick={() => handleAddSpecific('text')}><Type size={14}/> Text Block</button>
                 <button onClick={() => handleAddSpecific('carousel')}><ImageIcon size={14}/> Image Carousel</button>
@@ -321,6 +323,7 @@ export default function AdminDashboard() {
                   <div className={styles.formGrid}>
                     <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Tipe Block</label>
                       <div className={styles.typeSelector} style={{pointerEvents: 'none', opacity: 0.9}}><span className={`${styles.typeBtn} ${styles.typeBtnActive}`} style={{justifyContent: 'center', display: 'flex'}}>
+                        {linkForm.type === 'product' && <><Package size={16}/> Product Card</>}
                         {linkForm.type === 'button' && <><MousePointerClick size={16}/> Link Button</>}
                         {linkForm.type === 'text' && <><Type size={16}/> Text Block</>}
                         {linkForm.type === 'carousel' && <><ImageIcon size={16}/> Image Carousel</>}
@@ -340,6 +343,20 @@ export default function AdminDashboard() {
                       <div className="form-group"><label className="label">Ukuran Text</label><select className="select" value={linkForm.text_size || '1rem'} onChange={e => setLinkForm(f => ({ ...f, text_size: e.target.value }))}><option value="0.875rem">Kecil</option><option value="1rem">Normal</option><option value="1.25rem">Besar</option><option value="1.5rem">Extra Large</option><option value="2rem">Judul Utama</option></select></div>
                       <div className="form-group"><label className="label">Alignment</label><select className="select" value={linkForm.text_align || 'center'} onChange={e => setLinkForm(f => ({ ...f, text_align: e.target.value }))}><option value="left">Rata Kiri</option><option value="center">Rata Tengah</option><option value="right">Rata Kanan</option><option value="justify">Rata Kiri Kanan</option></select></div>
                       <div className="form-group"><label className="label">Style Font</label><div className={styles.checkboxGroup}><label className={styles.checkboxLabel}><input type="checkbox" checked={linkForm.text_bold || false} onChange={e => setLinkForm(f => ({ ...f, text_bold: e.target.checked }))} /> Bold</label><label className={styles.checkboxLabel}><input type="checkbox" checked={linkForm.text_italic || false} onChange={e => setLinkForm(f => ({ ...f, text_italic: e.target.checked }))} /> Italic</label></div></div>
+                    </>)}
+                    {linkForm.type === 'product' && (<>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                        <label className="label">Pilih Produk *</label>
+                        <select className="select" value={linkForm.url || ''} onChange={e => {
+                          const p = products.find(prod => `/product/${prod.slug}` === e.target.value)
+                          if (p) setLinkForm(f => ({ ...f, url: `/product/${p.slug}`, title: p.name, icon: 'ShoppingBag' }))
+                        }}>
+                          <option value="">-- Pilih Produk --</option>
+                          {products.map(p => (
+                            <option key={p.id} value={`/product/${p.slug}`}>{p.name}</option>
+                          ))}
+                        </select>
+                      </div>
                     </>)}
                     {linkForm.type === 'video' && (<>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Judul Video *</label><input className="input" placeholder="cth: Video TikTok Promo" value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} /></div>
