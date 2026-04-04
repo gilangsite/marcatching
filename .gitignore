@@ -1,5 +1,12 @@
-node_modules
-.next
+# Root-level gitignore
+# Ignore macOS artifacts
 .DS_Store
-.env.local
-.env
+
+# Ignore website-marcatching build/dep artifacts
+website-marcatching/.next/
+website-marcatching/node_modules/
+website-marcatching/.env.local
+website-marcatching/tsconfig.tsbuildinfo
+
+# Ignore logo-marcathing (old local asset folder, not part of project)
+logo-marcathing/
