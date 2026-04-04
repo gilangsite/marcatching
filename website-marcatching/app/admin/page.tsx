@@ -61,7 +61,7 @@ function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: 
       <div onClick={() => onEdit(link)} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer', gap: '16px' }}>
         <div className={styles.linkIcon} style={{ margin: 0 }}><IconComp size={18} strokeWidth={1.75} /></div>
         <div className={styles.linkInfo}>
-          <span className={styles.linkTypeBadge}>{link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
+          <span className={styles.linkTypeBadge}>{link.type === 'product' || link.url?.includes('/product/') ? 'Product' : link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
           <span className={styles.linkTitle} style={{marginTop: 4, display: 'block'}}>{link.title}</span>
           {link.type === 'button' && (
             <span className={styles.linkUrl}>{link.url ?? '—'} · <span className={link.status === 'active' ? styles.statusActive : styles.statusSoon}>{link.status === 'active' ? 'Active' : 'Coming Soon'}</span></span>

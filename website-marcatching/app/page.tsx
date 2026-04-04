@@ -70,45 +70,45 @@ export default async function HomePage() {
                   if (link.type === 'text') return <TextBlock key={link.id} link={link} />
                   if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
                   if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
+                  if (link.type === 'product' || link.url?.includes('/product/')) {
+                    const slug = link.url?.replace('/product/', '')
+                    const product = products.find(p => p.slug === slug)
+                    if (product) {
+                      let posterUrl = product.image_url || ''
+                      if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
+                        const match = posterUrl.match(/id=([^&]+)/)
+                        if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
+                      }
+                      return (
+                        <div key={link.id} className={styles.productGrid} style={{marginTop: 0, marginBottom: 8}}>
+                          <Link href={`/product/${product.slug}`} className={styles.productCard}>
+                            <div className={styles.productPoster}>
+                              {posterUrl ? (
+                                <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
+                              ) : (
+                                <div className={styles.productPosterPlaceholder}>No Image</div>
+                              )}
+                              {product.discount_percentage > 0 && (
+                                <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
+                              )}
+                            </div>
+                            <div className={styles.productCardInfo}>
+                              <h3 className={styles.productCardName}>{product.name}</h3>
+                              {product.sub_headline && (
+                                <p className={styles.productCardSub}>{product.sub_headline}</p>
+                              )}
+                            </div>
+                          </Link>
+                        </div>
+                      )
+                    }
+                  }
                   return <ButtonCard key={link.id} link={link} index={i} />
                 })
               ) : (
                 <p className={styles.emptyState}>Belum ada link tersedia.</p>
               )}
             </div>
-
-            {/* ── Product Cards ────────────────────────────── */}
-            {products.length > 0 && (
-              <div className={styles.productGrid}>
-                {products.map(product => {
-                  let posterUrl = product.image_url || ''
-                  if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
-                    const match = posterUrl.match(/id=([^&]+)/)
-                    if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
-                  }
-                  return (
-                    <Link key={product.id} href={`/product/${product.slug}`} className={styles.productCard}>
-                      <div className={styles.productPoster}>
-                        {posterUrl ? (
-                          <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
-                        ) : (
-                          <div className={styles.productPosterPlaceholder}>No Image</div>
-                        )}
-                        {product.discount_percentage > 0 && (
-                          <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
-                        )}
-                      </div>
-                      <div className={styles.productCardInfo}>
-                        <h3 className={styles.productCardName}>{product.name}</h3>
-                        {product.sub_headline && (
-                          <p className={styles.productCardSub}>{product.sub_headline}</p>
-                        )}
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
             
           </div>
         </section>
