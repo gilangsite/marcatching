@@ -235,7 +235,7 @@ export default function AdminDashboard() {
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files; if (!files || files.length === 0) return
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbyc5FDReHAFo7r_Bj62kzBoJZHKF75xaJwuuiU-6n4G24WrjylHmijOJm5OcazNJU1i/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbyF10qd24VXbGEX-_D0060h34CSqr7qI25-8ltLH2XOCMsqFxBS8DBrLXqFLN_3XsCy/exec'
     setUploadingImage(true)
     const newImages = [...(linkForm.image_data || [])]
     for (let i = 0; i < files.length; i++) {
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbyc5FDReHAFo7r_Bj62kzBoJZHKF75xaJwuuiU-6n4G24WrjylHmijOJm5OcazNJU1i/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbyF10qd24VXbGEX-_D0060h34CSqr7qI25-8ltLH2XOCMsqFxBS8DBrLXqFLN_3XsCy/exec'
     setUploadingPoster(true)
     const reader = new FileReader()
     reader.onload = async (event) => {
