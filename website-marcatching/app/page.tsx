@@ -61,7 +61,7 @@ export default async function HomePage() {
             </div>
             
             <p className={styles.homeTagline}>
-              Learning to understand how marketing really works.
+              Where Innovation Meets Marketing
             </p>
 
             <div className={styles.linksList}>
