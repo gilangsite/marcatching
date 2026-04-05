@@ -411,19 +411,18 @@ export default function CourseDetailPage() {
                                         title={mat.title}
                                         allow="autoplay"
                                         allowFullScreen
-                                        style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px', background: '#f8fafc' }}
+                                        style={{ width: '100%', height: '100%', border: 'none' }}
                                       />
-                                      <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                                      <div style={{ position: 'absolute', bottom: '16px', right: '16px', zIndex: 10 }}>
                                         <button 
                                           onClick={() => {
                                             setFullScreenPdfUrl(embedUrl);
                                             setFullScreenTitle(mat.title);
                                           }}
-                                          style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(14, 165, 233, 0.2)' }}
-                                          onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                          onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                          className={styles.openBtn}
+                                          style={{ background: '#0ea5e9', fontSize: '0.75rem', padding: '8px 14px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}
                                         >
-                                          <BookOpen size={16} /> Mode Ebook (Layar Penuh)
+                                          <BookOpen size={14} /> Full Screen
                                         </button>
                                       </div>
                                     </div>
@@ -443,32 +442,27 @@ export default function CourseDetailPage() {
         </div>
       </main>
 
-      {/* FULLSCREEN PDF OVERLAY */}
+      {/* FULLSCREEN PDF OVERLAY (E-BOOK MODE) */}
       {fullScreenPdfUrl && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 99999, background: '#0f172a', display: 'flex', flexDirection: 'column'
-        }}>
-          <div style={{ 
-            height: '60px', background: '#1e293b', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className={styles.pdfOverlay}>
+          <div className={styles.pdfOverlayHeader}>
+            <div className={styles.pdfOverlayTitle}>
               <BookOpen size={20} color="#38bdf8" />
-              <h2 style={{ color: '#f8fafc', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>{fullScreenTitle}</h2>
+              <h2>{fullScreenTitle}</h2>
             </div>
             <button 
+              className={styles.pdfOverlayClose}
               onClick={() => setFullScreenPdfUrl(null)}
-              style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}
-              onMouseOver={(e) => e.currentTarget.style.background = '#dc2626'}
-              onMouseOut={(e) => e.currentTarget.style.background = '#ef4444'}
             >
-              <ArrowLeft size={16} /> Kembali ke Course
+              <ArrowLeft size={16} />
+              <span>Kembali</span>
             </button>
           </div>
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div className={styles.pdfOverlayBody}>
             <iframe
               src={fullScreenPdfUrl}
               title={fullScreenTitle}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              className={styles.pdfOverlayIframe}
             />
           </div>
         </div>
