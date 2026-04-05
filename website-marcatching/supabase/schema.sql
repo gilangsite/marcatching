@@ -89,25 +89,31 @@ create policy "Public read links" on links for select using (true);
 create policy "Public read contact" on contact for select using (true);
 create policy "Public read products" on products for select using (true);
 create policy "Public read vouchers" on vouchers for select using (true);
+create policy "Public read orders" on orders for select using (true);
 
 -- Allow public insert for orders (checkout)
 create policy "Public insert orders" on orders for insert with check (true);
 
--- Allow all operations for authenticated users (admin)
-create policy "Authenticated full access links" on links
-  for all using (auth.role() = 'authenticated');
+-- Allow public write access for admin-managed tables
+-- (Admin auth is handled via cookie-based auth at Next.js layer, not Supabase Auth)
+create policy "Public insert links" on links for insert with check (true);
+create policy "Public update links" on links for update using (true);
+create policy "Public delete links" on links for delete using (true);
 
-create policy "Authenticated full access contact" on contact
-  for all using (auth.role() = 'authenticated');
+create policy "Public insert contact" on contact for insert with check (true);
+create policy "Public update contact" on contact for update using (true);
+create policy "Public delete contact" on contact for delete using (true);
 
-create policy "Authenticated full access products" on products
-  for all using (auth.role() = 'authenticated');
+create policy "Public insert products" on products for insert with check (true);
+create policy "Public update products" on products for update using (true);
+create policy "Public delete products" on products for delete using (true);
 
-create policy "Authenticated full access vouchers" on vouchers
-  for all using (auth.role() = 'authenticated');
+create policy "Public insert vouchers" on vouchers for insert with check (true);
+create policy "Public update vouchers" on vouchers for update using (true);
+create policy "Public delete vouchers" on vouchers for delete using (true);
 
-create policy "Authenticated full access orders" on orders
-  for all using (auth.role() = 'authenticated');
+create policy "Public update orders" on orders for update using (true);
+create policy "Public delete orders" on orders for delete using (true);
 
 -- ============================================================
 -- Seed Data
@@ -181,25 +187,24 @@ alter table course_access_emails enable row level security;
 
 -- course_materials: public read (any logged-in user via enrollment check in app)
 create policy "Public read course_materials" on course_materials for select using (true);
+create policy "Public insert course_materials" on course_materials for insert with check (true);
+create policy "Public update course_materials" on course_materials for update using (true);
+create policy "Public delete course_materials" on course_materials for delete using (true);
 
 -- course_access_emails: public read (needed for registration validation)
 create policy "Public read course_access_emails" on course_access_emails for select using (true);
+create policy "Public insert course_access_emails" on course_access_emails for insert with check (true);
+create policy "Public update course_access_emails" on course_access_emails for update using (true);
+create policy "Public delete course_access_emails" on course_access_emails for delete using (true);
 
 -- course_enrollments: users can read their own
 create policy "User read own enrollments" on course_enrollments
   for select using (auth.uid() = user_id);
 
--- course_enrollments: authenticated (admin) can do all
-create policy "Authenticated full access enrollments" on course_enrollments
-  for all using (auth.role() = 'authenticated');
+-- course_enrollments: public insert (for registration flow)
+create policy "Public insert enrollments" on course_enrollments
+  for insert with check (true);
 
 -- learning_progress: users can read/insert/update their own
 create policy "User manage own progress" on learning_progress
   for all using (auth.uid() = user_id);
-
--- Admin full access to all course tables
-create policy "Authenticated full access course_materials" on course_materials
-  for all using (auth.role() = 'authenticated');
-
-create policy "Authenticated full access course_access_emails" on course_access_emails
-  for all using (auth.role() = 'authenticated');
