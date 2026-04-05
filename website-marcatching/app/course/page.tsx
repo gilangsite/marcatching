@@ -182,7 +182,7 @@ export default function CourseDashboardPage() {
         {/* Greeting */}
         <div className={styles.greetingSection}>
           <p className={styles.greetingLabel}>Marcatching E-Course</p>
-          <h1 className={styles.greetingName}>Halo, {userName}! 👋</h1>
+          <h1 className={styles.greetingName}>Halo, {userName}!</h1>
           <p className={styles.greetingSubtitle}>
             Berikut adalah course yang kamu miliki. Selamat belajar!
           </p>

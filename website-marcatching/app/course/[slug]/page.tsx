@@ -259,7 +259,7 @@ export default function CourseDetailPage() {
 
                 {total === 0 ? (
                   <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>
-                    Materi sedang disiapkan. Cek kembali nanti ya! 🚀
+                    Materi sedang disiapkan. Cek kembali nanti ya!
                   </p>
                 ) : (
                   <>

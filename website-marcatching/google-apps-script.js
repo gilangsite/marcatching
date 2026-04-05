@@ -107,7 +107,7 @@ function handleSendCourseEmail(data) {
 
 // ─── COURSE ACCESS EMAIL TEMPLATE ──────────────────────────
 function sendCourseAccessEmail(data) {
-  var subject = '🎓 Akses E-Course Kamu Sudah Aktif — ' + (data.productName || 'Marcatching');
+  var subject = 'Akses E-Course Kamu Sudah Aktif — ' + (data.productName || 'Marcatching');
   
   var htmlBody = `
   <!DOCTYPE html>
@@ -122,13 +122,13 @@ function sendCourseAccessEmail(data) {
       <!-- Header -->
       <div style="background:#111111;padding:36px 28px;text-align:center;">
         <img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:30px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />
-        <h1 style="color:#ffffff;font-size:22px;margin:0;font-weight:800;">Akses E-Course Sudah Aktif! 🎉</h1>
+        <h1 style="color:#ffffff;font-size:22px;margin:0;font-weight:800;">Akses E-Course Sudah Aktif!</h1>
         <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0;">Pembayaranmu telah dikonfirmasi</p>
       </div>
 
       <!-- Body -->
       <div style="padding:36px 28px;">
-        <p style="font-size:16px;color:#111827;margin:0 0 8px;">Halo <strong>${data.fullName || 'Member Marcatching'}</strong>! 👋</p>
+        <p style="font-size:16px;color:#111827;margin:0 0 8px;">Halo <strong>${data.fullName || 'Member Marcatching'}</strong>!</p>
         <p style="font-size:14px;color:#4a5568;line-height:1.7;margin:0 0 28px;">
           Selamat! Pembayaran untuk course <strong>${data.productName || '-'}</strong> sudah dikonfirmasi.
           Kamu sekarang bisa mengakses semua materi yang tersedia di Marcatching E-Course.
@@ -138,26 +138,38 @@ function sendCourseAccessEmail(data) {
         <div style="background:#f8fafc;border-radius:14px;padding:20px 24px;margin-bottom:28px;border:1px solid #e2e8f0;">
           <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Course yang Kamu Dapatkan</div>
           <div style="font-size:18px;font-weight:800;color:#111827;">${data.productName || '-'}</div>
-          <div style="font-size:13px;color:#64748b;margin-top:4px;">Akses seumur hidup · Belajar sesuai kecepatan kamu</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">Akses seumur hidup &middot; Belajar sesuai kecepatan kamu</div>
         </div>
 
         <!-- How to access -->
         <div style="margin-bottom:28px;">
           <p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 12px;">Cara Mengakses E-Course:</p>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;border-bottom:1px solid #f1f5f9;">
-              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
-              Klik tombol di bawah untuk masuk ke halaman Marcatching E-Course
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;border-bottom:1px solid #f1f5f9;">
-              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">2</span>
-              Daftar akun menggunakan email <strong>${data.email || '-'}</strong> (email yang kamu pakai saat checkout)
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;">
-              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">3</span>
-              Buat password dan mulai belajar! 🚀
-            </div>
-          </div>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+            <tr>
+              <td width="30" valign="top" style="padding:12px 0; border-bottom:1px solid #f1f5f9;">
+                <div style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-block;text-align:center;line-height:20px;font-size:11px;font-weight:700;">1</div>
+              </td>
+              <td valign="top" style="padding:12px 0 12px 10px; border-bottom:1px solid #f1f5f9; font-size:13px; color:#4a5568; line-height:1.5;">
+                Klik tombol di bawah untuk masuk ke halaman Marcatching E-Course
+              </td>
+            </tr>
+            <tr>
+              <td width="30" valign="top" style="padding:12px 0; border-bottom:1px solid #f1f5f9;">
+                <div style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-block;text-align:center;line-height:20px;font-size:11px;font-weight:700;">2</div>
+              </td>
+              <td valign="top" style="padding:12px 0 12px 10px; border-bottom:1px solid #f1f5f9; font-size:13px; color:#4a5568; line-height:1.5;">
+                Daftar akun menggunakan email <strong>${data.email || '-'}</strong> (email ini wajib digunakan)
+              </td>
+            </tr>
+            <tr>
+              <td width="30" valign="top" style="padding:12px 0;">
+                <div style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-block;text-align:center;line-height:20px;font-size:11px;font-weight:700;">3</div>
+              </td>
+              <td valign="top" style="padding:12px 0 12px 10px; font-size:13px; color:#4a5568; line-height:1.5;">
+                Buat password kamu dan mulai belajar!
+              </td>
+            </tr>
+          </table>
         </div>
 
         <!-- CTA Button -->
