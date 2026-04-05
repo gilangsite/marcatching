@@ -5,6 +5,10 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Service role client for admin server-side operations (uses service role key if available)
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
 export type Link = {
   id: string
   title: string
@@ -71,5 +75,40 @@ export type Order = {
   voucher_discount: number
   total_paid: number
   status: string
+  created_at: string
+}
+
+export type CourseMaterial = {
+  id: string
+  product_id: string
+  title: string
+  type: 'pdf' | 'video'
+  content_url: string
+  order_index: number
+  created_at: string
+}
+
+export type CourseEnrollment = {
+  id: string
+  user_id: string
+  product_id: string
+  order_id: string | null
+  email: string
+  created_at: string
+}
+
+export type LearningProgress = {
+  id: string
+  user_id: string
+  material_id: string
+  completed_at: string
+  created_at: string
+}
+
+export type CourseAccessEmail = {
+  id: string
+  email: string
+  product_id: string
+  order_id: string
   created_at: string
 }

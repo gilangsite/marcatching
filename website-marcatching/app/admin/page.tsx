@@ -9,10 +9,11 @@ import {
   Mail, Link as LinkIcon, Camera, Video,
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
   Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical, Menu,
-  Package, Tag, ClipboardList, Eye, EyeOff
+  Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
+  FileText
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link, Contact, Product, Voucher, Order } from '@/lib/supabaseClient'
+import type { Link, Contact, Product, Voucher, Order, CourseMaterial } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -79,7 +80,7 @@ function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: 
 // ─── Main component ───────────────────────────────────────────
 export default function AdminDashboard() {
   const router = useRouter()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -123,12 +124,91 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
 
+  // ── E-Course state ────────────────────────────────────────
+  const [courseMaterials, setCourseMaterials] = useState<Record<string, CourseMaterial[]>>({})
+  const [courseLoading, setCourseLoading] = useState<Record<string, boolean>>({})
+  const [expandedCourse, setExpandedCourse] = useState<string | null>(null)
+  const [showMaterialForm, setShowMaterialForm] = useState<string | null>(null) // product_id
+  const [materialForm, setMaterialForm] = useState({ title: '', type: 'video' as 'video' | 'pdf', content_url: '' })
+  const [materialSaving, setMaterialSaving] = useState(false)
+  const [materialError, setMaterialError] = useState('')
+  const [uploadingPdf, setUploadingPdf] = useState(false)
+
   // ── Fetch all ─────────────────────────────────────────────
   async function fetchLinks() { setLinksLoading(true); const { data } = await supabase.from('links').select('*').order('order_index'); setLinks(data ?? []); setLinksLoading(false) }
   async function fetchContact() { setContactLoading(true); const { data } = await supabase.from('contact').select('*').limit(1).single(); setContact(data); setContactEmail(data?.email ?? ''); setContactLoading(false) }
   async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+
+  async function fetchCourseMaterials(productId: string) {
+    setCourseLoading(prev => ({ ...prev, [productId]: true }))
+    const { data } = await supabase.from('course_materials').select('*').eq('product_id', productId).order('order_index')
+    setCourseMaterials(prev => ({ ...prev, [productId]: data ?? [] }))
+    setCourseLoading(prev => ({ ...prev, [productId]: false }))
+  }
+
+  async function saveMaterial(e: FormEvent, productId: string) {
+    e.preventDefault()
+    if (!materialForm.title) { setMaterialError('Judul materi wajib diisi.'); return }
+    if (!materialForm.content_url) { setMaterialError('URL konten wajib diisi.'); return }
+    setMaterialSaving(true); setMaterialError('')
+    const existing = courseMaterials[productId] || []
+    await supabase.from('course_materials').insert({
+      product_id: productId,
+      title: materialForm.title,
+      type: materialForm.type,
+      content_url: materialForm.content_url,
+      order_index: existing.length + 1
+    })
+    setMaterialForm({ title: '', type: 'video', content_url: '' })
+    setShowMaterialForm(null)
+    setMaterialSaving(false)
+    fetchCourseMaterials(productId)
+  }
+
+  async function deleteMaterial(materialId: string, productId: string) {
+    if (!confirm('Hapus materi ini?')) return
+    await supabase.from('course_materials').delete().eq('id', materialId)
+    fetchCourseMaterials(productId)
+  }
+
+  async function reorderMaterials(newOrder: CourseMaterial[], productId: string) {
+    setCourseMaterials(prev => ({ ...prev, [productId]: newOrder }))
+    await Promise.all(newOrder.map((m, idx) => supabase.from('course_materials').update({ order_index: idx + 1 }).eq('id', m.id)))
+  }
+
+  async function handlePdfBatchUpload(e: React.ChangeEvent<HTMLInputElement>, productId: string) {
+    const files = e.target.files; if (!files || files.length === 0) return
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
+    setUploadingPdf(true)
+    const uploaded: { filename: string; url: string }[] = []
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]; const reader = new FileReader()
+      await new Promise<void>((resolve) => {
+        reader.onload = async (event) => {
+          const base64 = event.target?.result as string
+          try {
+            const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'uploadPdf', filename: file.name, mimeType: file.type, base64 }) })
+            const data = await res.json()
+            if (data.status === 'success') uploaded.push({ filename: file.name.replace('.pdf', ''), url: data.url })
+            else alert('Gagal upload ' + file.name + ': ' + data.message)
+          } catch { alert('Error upload ' + file.name) }
+          resolve()
+        }; reader.readAsDataURL(file)
+      })
+    }
+    // Auto-insert all uploaded PDFs as materials
+    const existing = courseMaterials[productId] || []
+    let baseIdx = existing.length + 1
+    for (const pdf of uploaded) {
+      await supabase.from('course_materials').insert({
+        product_id: productId, title: pdf.filename, type: 'pdf', content_url: pdf.url, order_index: baseIdx++
+      })
+    }
+    setUploadingPdf(false)
+    fetchCourseMaterials(productId)
+  }
 
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
 
@@ -258,6 +338,33 @@ export default function AdminDashboard() {
   async function toggleOrderStatus(order: Order) {
     const newStatus = order.status === 'pending' ? 'confirmed' : 'pending'
     await supabase.from('orders').update({ status: newStatus }).eq('id', order.id)
+
+    // When confirming an order: add to course_access_emails + send course access email
+    if (newStatus === 'confirmed' && order.product_id) {
+      // Add to course_access_emails so user can register
+      await supabase.from('course_access_emails').upsert({
+        email: order.email.toLowerCase().trim(),
+        product_id: order.product_id,
+        order_id: order.id
+      }, { onConflict: 'email,product_id' })
+
+      // Send course access email via Apps Script
+      try {
+        await fetch('/api/course-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: order.email,
+            fullName: order.full_name,
+            productName: order.product_name,
+            orderId: order.id
+          })
+        })
+      } catch (err) {
+        console.warn('Failed to send course email:', err)
+      }
+    }
+
     fetchOrders()
   }
 
@@ -285,6 +392,7 @@ export default function AdminDashboard() {
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
+          <button className={`${styles.navItem} ${tab === 'ecourse' ? styles.navActive : ''}`} onClick={() => { setTab('ecourse'); setIsSidebarOpen(false) }}><BookMarked size={18} /> E-Course</button>
           <button className={`${styles.navItem} ${tab === 'vouchers' ? styles.navActive : ''}`} onClick={() => { setTab('vouchers'); setIsSidebarOpen(false) }}><Tag size={18} /> Vouchers</button>
           <button className={`${styles.navItem} ${tab === 'orders' ? styles.navActive : ''}`} onClick={() => { setTab('orders'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Orders</button>
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
@@ -509,6 +617,166 @@ export default function AdminDashboard() {
                     </tr>
                   ))}</tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── E-COURSE TAB ─── */}
+        {tab === 'ecourse' && (
+          <div className={styles.tabContent} style={{ maxWidth: 900 }}>
+            <div className={styles.contentHeader}>
+              <div>
+                <h1 className={styles.contentTitle}>E-Course</h1>
+                <p className={styles.contentDesc}>Kelola materi untuk setiap course / produk</p>
+              </div>
+            </div>
+
+            {productsLoading ? (
+              <div className={styles.loading}>Memuat products...</div>
+            ) : products.length === 0 ? (
+              <div className={styles.emptyState}>
+                <p>Belum ada produk. Tambahkan produk terlebih dahulu di tab Products.</p>
+              </div>
+            ) : (
+              <div className={styles.linksList}>
+                {products.map(product => {
+                  const isExpanded = expandedCourse === product.id
+                  const mats = courseMaterials[product.id] || []
+                  const isLoadingMats = courseLoading[product.id]
+
+                  return (
+                    <div key={product.id} style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', marginBottom: 4 }}>
+                      {/* Product header row */}
+                      <div
+                        style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', cursor: 'pointer', borderBottom: isExpanded ? '1px solid #f1f5f9' : 'none' }}
+                        onClick={() => {
+                          if (isExpanded) { setExpandedCourse(null) }
+                          else { setExpandedCourse(product.id); fetchCourseMaterials(product.id) }
+                        }}
+                      >
+                        <div style={{ width: 36, height: 36, borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <BookMarked size={17} color="#374151" />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>{product.name}</div>
+                          <div style={{ fontSize: '0.77rem', color: '#94a3b8', marginTop: 1 }}>
+                            {isExpanded && !isLoadingMats ? `${mats.length} materi` : 'Klik untuk kelola materi'}
+                          </div>
+                        </div>
+                        <ChevronRight size={16} color="#94a3b8" style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+                      </div>
+
+                      {/* Expanded materials panel */}
+                      {isExpanded && (
+                        <div style={{ padding: '16px 20px' }}>
+                          {isLoadingMats ? (
+                            <div style={{ color: '#94a3b8', fontSize: '0.85rem', padding: '8px 0' }}>Memuat materi...</div>
+                          ) : (
+                            <>
+                              {mats.length === 0 ? (
+                                <div style={{ color: '#94a3b8', fontSize: '0.85rem', padding: '12px 0', textAlign: 'center' }}>Belum ada materi. Tambahkan materi di bawah.</div>
+                              ) : (
+                                <Reorder.Group
+                                  axis="y"
+                                  values={mats}
+                                  onReorder={(newOrder) => reorderMaterials(newOrder, product.id)}
+                                  style={{ listStyleType: 'none', padding: 0, margin: '0 0 16px', display: 'flex', flexDirection: 'column', gap: 8 }}
+                                >
+                                  {mats.map(mat => {
+                                    const MatDragItem = () => {
+                                      const dragControls = useDragControls()
+                                      return (
+                                        <Reorder.Item
+                                          value={mat}
+                                          dragListener={false}
+                                          dragControls={dragControls}
+                                          initial={false}
+                                          style={{ listStyle: 'none' }}
+                                        >
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                                            <div
+                                              onPointerDown={(e) => dragControls.start(e)}
+                                              style={{ cursor: 'grab', display: 'flex', alignItems: 'center', color: '#94a3b8', touchAction: 'none' }}
+                                            >
+                                              <GripVertical size={15} />
+                                            </div>
+                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : <Video size={15} color="#dc2626" />}
+                                            </div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{mat.title}</div>
+                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : 'Video'}</div>
+                                            </div>
+                                            <button
+                                              onClick={() => deleteMaterial(mat.id, product.id)}
+                                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#dc2626', borderRadius: 4 }}
+                                              title="Hapus materi"
+                                            >
+                                              <Trash2 size={14} />
+                                            </button>
+                                          </div>
+                                        </Reorder.Item>
+                                      )
+                                    }
+                                    return <MatDragItem key={mat.id} />
+                                  })}
+                                </Reorder.Group>
+                              )}
+
+                              {/* Add material buttons */}
+                              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                                {/* PDF batch upload */}
+                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#eff6ff', color: '#2563eb', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #93c5fd' }}>
+                                  <Upload size={14} />
+                                  {uploadingPdf ? 'Mengupload PDF...' : 'Upload PDF (Batch)'}
+                                  <input
+                                    type="file"
+                                    multiple
+                                    accept="application/pdf"
+                                    style={{ display: 'none' }}
+                                    disabled={uploadingPdf}
+                                    onChange={(e) => handlePdfBatchUpload(e, product.id)}
+                                  />
+                                </label>
+
+                                {/* Add video button */}
+                                <button
+                                  onClick={() => { setShowMaterialForm(showMaterialForm === product.id ? null : product.id); setMaterialForm({ title: '', type: 'video', content_url: '' }); setMaterialError('') }}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#fef3c7', color: '#92400e', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #fcd34d', outline: 'none' }}
+                                >
+                                  <Video size={14} /> Tambah Video
+                                </button>
+                              </div>
+
+                              {/* Video form */}
+                              {showMaterialForm === product.id && (
+                                <form onSubmit={(e) => saveMaterial(e, product.id)} style={{ background: '#f8fafc', borderRadius: 10, padding: '16px', border: '1px solid #e2e8f0' }}>
+                                  <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#374151', marginBottom: 12 }}>Tambah Materi Video YouTube</div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    <div>
+                                      <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 4 }}>Judul Materi *</label>
+                                      <input className="input" placeholder="cth: Pengenalan Apple Copywriting" value={materialForm.title} onChange={e => setMaterialForm(f => ({ ...f, title: e.target.value }))} />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 4 }}>URL YouTube *</label>
+                                      <input className="input" placeholder="https://youtube.com/watch?v=..." value={materialForm.content_url} onChange={e => setMaterialForm(f => ({ ...f, content_url: e.target.value, type: 'video' }))} />
+                                    </div>
+                                  </div>
+                                  {materialError && <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: 8 }}>{materialError}</p>}
+                                  <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                                    <button type="button" className="btn btn-ghost" onClick={() => setShowMaterialForm(null)}>Batal</button>
+                                    <button type="submit" className="btn btn-navy" disabled={materialSaving}>{materialSaving ? 'Menyimpan...' : <><Check size={14} /> Simpan Materi</>}</button>
+                                  </div>
+                                </form>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>

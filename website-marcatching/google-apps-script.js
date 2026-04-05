@@ -13,6 +13,9 @@
 // Google Drive Folder ID for image uploads
 const FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 
+// Google Drive Folder ID for PDF course materials (create a 'Course PDFs' subfolder)
+const PDF_FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA"; // Change this to a separate folder if desired
+
 // Google Sheets ID for checkout data
 const SPREADSHEET_ID = "14QTnyV8hCvuNIGVdgcUrN42NfPKmxqmCJhw61Tut870";
 
@@ -25,6 +28,10 @@ function doPost(e) {
       return handleCheckout(data);
     } else if (data.action === 'upload') {
       return handleImageUpload(data);
+    } else if (data.action === 'uploadPdf') {
+      return handlePdfUpload(data);
+    } else if (data.action === 'sendCourseEmail') {
+      return handleSendCourseEmail(data);
     } else {
       // Default: treat as image upload (backward compatibility)
       return handleImageUpload(data);
@@ -55,6 +62,130 @@ function handleImageUpload(data) {
     url: directUrl,
     id: fileId
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── PDF UPLOAD (Course Materials) ─────────────────────────
+function handlePdfUpload(data) {
+  const base64Data = data.base64.split(",")[1] || data.base64;
+  const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType || 'application/pdf', data.filename);
+  
+  const folder = DriveApp.getFolderById(PDF_FOLDER_ID);
+  const file = folder.createFile(blob);
+  // Set to anyone with link can VIEW (not download via direct URL)
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  
+  const fileId = file.getId();
+  // Return the /file/d/ URL so frontend can build Google Drive preview embed
+  const previewUrl = "https://drive.google.com/file/d/" + fileId + "/view";
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'success',
+    url: previewUrl,
+    id: fileId
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── SEND COURSE ACCESS EMAIL ───────────────────────────────
+function handleSendCourseEmail(data) {
+  if (!data.email) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: 'Email is required'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  try {
+    sendCourseAccessEmail(data);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', message: 'Course access email sent'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── COURSE ACCESS EMAIL TEMPLATE ──────────────────────────
+function sendCourseAccessEmail(data) {
+  var subject = '🎓 Akses E-Course Kamu Sudah Aktif — ' + (data.productName || 'Marcatching');
+  
+  var htmlBody = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="margin:0;padding:0;background:#f5f6fa;font-family:'Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:600px;margin:32px auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="background:#111111;padding:36px 28px;text-align:center;">
+        <img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:30px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />
+        <h1 style="color:#ffffff;font-size:22px;margin:0;font-weight:800;">Akses E-Course Sudah Aktif! 🎉</h1>
+        <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0;">Pembayaranmu telah dikonfirmasi</p>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:36px 28px;">
+        <p style="font-size:16px;color:#111827;margin:0 0 8px;">Halo <strong>${data.fullName || 'Member Marcatching'}</strong>! 👋</p>
+        <p style="font-size:14px;color:#4a5568;line-height:1.7;margin:0 0 28px;">
+          Selamat! Pembayaran untuk course <strong>${data.productName || '-'}</strong> sudah dikonfirmasi.
+          Kamu sekarang bisa mengakses semua materi yang tersedia di Marcatching E-Course.
+        </p>
+
+        <!-- Course Info Card -->
+        <div style="background:#f8fafc;border-radius:14px;padding:20px 24px;margin-bottom:28px;border:1px solid #e2e8f0;">
+          <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Course yang Kamu Dapatkan</div>
+          <div style="font-size:18px;font-weight:800;color:#111827;">${data.productName || '-'}</div>
+          <div style="font-size:13px;color:#64748b;margin-top:4px;">Akses seumur hidup · Belajar sesuai kecepatan kamu</div>
+        </div>
+
+        <!-- How to access -->
+        <div style="margin-bottom:28px;">
+          <p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 12px;">Cara Mengakses E-Course:</p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
+              Klik tombol di bawah untuk masuk ke halaman Marcatching E-Course
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">2</span>
+              Daftar akun menggunakan email <strong>${data.email || '-'}</strong> (email yang kamu pakai saat checkout)
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#4a5568;padding:10px 0;">
+              <span style="background:#111111;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">3</span>
+              Buat password dan mulai belajar! 🚀
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Button -->
+        <div style="text-align:center;margin-bottom:28px;">
+          <a href="https://marcatching.vercel.app/course/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
+            Akses E-Course Sekarang →
+          </a>
+        </div>
+
+        <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;border-top:1px solid #f1f5f9;padding-top:20px;">
+          Simpan email ini sebagai referensi. Jika ada kendala, hubungi kami melalui Instagram atau WhatsApp Marcatching.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background:#f8fafc;padding:20px 28px;text-align:center;border-top:1px solid #e2e8f0;">
+        <p style="font-size:12px;color:#94a3b8;margin:0;">© ${new Date().getFullYear()} Marcatching. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+  
+  MailApp.sendEmail({
+    to: data.email,
+    subject: subject,
+    htmlBody: htmlBody
+  });
 }
 
 // ─── CHECKOUT: Save to Sheet + Send Email ───────────────────

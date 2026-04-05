@@ -1,0 +1,745 @@
+/* ============================================================
+   Marcatching E-Course — Course Dashboard Styles
+   Light design, black sidebar (desktop + mobile)
+   ============================================================ */
+
+/* ── Base reset & tokens ─────────────────────────────────── */
+.page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ── Mobile Header ───────────────────────────────────────── */
+.mobileHeader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #111111;
+  height: 56px;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+@media (max-width: 768px) {
+  .mobileHeader { display: flex; }
+}
+
+.mobileHeaderLogo {
+  object-fit: contain;
+}
+
+.hamburgerBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: #111111;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 90;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+}
+
+.sidebarLogoDesktop {
+  padding: 24px 20px 16px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+  }
+  .sidebar.sidebarOpen {
+    transform: translateX(0);
+  }
+  .sidebarLogoDesktop {
+    display: none;
+  }
+}
+
+.sidebarLogo {
+  display: none;
+  padding: 12px 16px;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .sidebarLogo { display: flex; }
+}
+
+.hamburgerBtnSidebar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebarOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 80;
+}
+.sidebarOverlayOpen {
+  display: block;
+}
+
+/* ── Sidebar Nav ─────────────────────────────────────────── */
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  flex: 1;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+}
+.navItem:hover {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+.navItemActive {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
+
+/* ── Main Content ────────────────────────────────────────── */
+.content {
+  flex: 1;
+  margin-left: 240px;
+  padding: 32px;
+  min-height: 100vh;
+}
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    padding: 80px 16px 32px;
+  }
+}
+
+/* ── User Greeting ───────────────────────────────────────── */
+.greetingSection {
+  margin-bottom: 32px;
+}
+.greetingLabel {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.greetingName {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+}
+.greetingSubtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Section Header ──────────────────────────────────────── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* ── Course Grid ─────────────────────────────────────────── */
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+@media (max-width: 480px) {
+  .courseGrid { grid-template-columns: 1fr; }
+}
+
+.courseCard {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border: 1px solid #f1f5f9;
+}
+.courseCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.courseCardImage {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  background: #f1f5f9;
+}
+.courseCardImagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #111111 0%, #374151 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.3);
+}
+
+.courseCardBody {
+  padding: 16px;
+}
+.courseCardTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+.courseCardSub {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 12px;
+}
+.courseCardMeta {
+  font-size: 0.77rem;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+/* ── Progress Bar ────────────────────────────────────────── */
+.progressBar {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #111111, #374151);
+  transition: width 0.5s ease;
+}
+.progressFillGreen {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+.progressLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 60px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px dashed #e2e8f0;
+}
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  background: #f8fafc;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: #94a3b8;
+}
+.emptyTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 8px;
+}
+.emptyDesc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  gap: 10px;
+}
+
+/* ── Course Detail Page ──────────────────────────────────── */
+.courseDetailPage {
+  max-width: 860px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  font-weight: 500;
+  transition: color 0.15s;
+  text-decoration: none;
+}
+.backBtn:hover { color: #111111; }
+
+.courseDetailHeader {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+}
+.courseDetailTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 6px;
+}
+.courseDetailSub {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0 0 20px;
+}
+.courseDetailProgress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.courseDetailProgressBar {
+  flex: 1;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.courseDetailProgressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #111111, #374151);
+  transition: width 0.5s ease;
+}
+.courseDetailProgressLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* ── Materials List ──────────────────────────────────────── */
+.materialsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.materialCard {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+  overflow: hidden;
+}
+.materialCard:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.materialCardDone {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.materialCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+}
+
+.materialIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #374151;
+}
+.materialIconWrapDone {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.materialInfo {
+  flex: 1;
+  min-width: 0;
+}
+.materialTitle {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 2px;
+}
+.materialTitleDone {
+  color: #16a34a;
+}
+.materialType {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.materialActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.openBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #111111;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.openBtn:hover { background: #374151; }
+
+.completeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #f1f5f9;
+  color: #374151;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.completeBtn:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #16a34a;
+}
+.completeBtnDone {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #16a34a;
+}
+
+/* ── Viewer Panel ────────────────────────────────────────── */
+.viewerPanel {
+  margin: 0 20px 20px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+
+.youtubeWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+.youtubeWrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.pdfWrap {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1e293b;
+  user-select: none;
+}
+.pdfWrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Invisible overlay to block right-click on PDF */
+.pdfOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: transparent;
+}
+
+/* ── Login / Register Page ───────────────────────────────── */
+.authPage {
+  min-height: 100vh;
+  background: #f5f6fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.authCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+}
+@media (max-width: 480px) {
+  .authCard { padding: 32px 24px; }
+}
+
+.authLogo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.authLogoInner {
+  background: #111111;
+  border-radius: 12px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.authTitle {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.authSubtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.formLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+.formInput {
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #111827;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.formInput:focus {
+  border-color: #111111;
+}
+
+.authBtn {
+  padding: 13px;
+  background: #111111;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 4px;
+}
+.authBtn:hover { background: #374151; }
+.authBtn:active { transform: scale(0.98); }
+.authBtn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.authError {
+  padding: 12px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.authSuccess {
+  padding: 12px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  color: #16a34a;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.authDividerLine {
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+.authDividerText {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.authSwitch {
+  text-align: center;
+  margin-top: 4px;
+}
+.authSwitchText {
+  font-size: 0.83rem;
+  color: #64748b;
+}
+.authSwitchBtn {
+  background: none;
+  border: none;
+  color: #111111;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.83rem;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 4px;
+}
+.authSwitchBtn:hover { color: #374151; }
+
+/* ── Badge ───────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badgeBlack {
+  background: #111111;
+  color: #ffffff;
+}
+.badgeGreen {
+  background: #dcfce7;
+  color: #16a34a;
+}

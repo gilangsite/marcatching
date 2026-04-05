@@ -1,0 +1,60 @@
+[
+  {
+    "route": "/admin",
+    "firstLoadUncompressedJsBytes": 896580,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/0fsi8lw5utejl.js",
+      ".next/static/chunks/0d3tkj33oycf2.js",
+      ".next/static/chunks/0mdw4o2le65_5.js",
+      ".next/static/chunks/0xo5wz0q737oo.js",
+      ".next/static/chunks/0.dg.0t.~47fg.js",
+      ".next/static/chunks/11qk_vpw_zwkf.js",
+      ".next/static/chunks/0cje14_narrpx.js",
+      ".next/static/chunks/0odtgka8um5sc.js",
+      ".next/static/chunks/0h4bq73pogmtb.js",
+      ".next/static/chunks/turbopack-0cloz~.gj.065.js"
+    ]
+  },
+  {
+    "route": "/",
+    "firstLoadUncompressedJsBytes": 662270,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/0fsi8lw5utejl.js",
+      ".next/static/chunks/0d3tkj33oycf2.js",
+      ".next/static/chunks/0mkbzqcq0s5nf.js",
+      ".next/static/chunks/14k0yrvqxbce0.js",
+      ".next/static/chunks/11qk_vpw_zwkf.js",
+      ".next/static/chunks/0cje14_narrpx.js",
+      ".next/static/chunks/0odtgka8um5sc.js",
+      ".next/static/chunks/0h4bq73pogmtb.js",
+      ".next/static/chunks/turbopack-0cloz~.gj.065.js"
+    ]
+  },
+  {
+    "route": "/admin/login",
+    "firstLoadUncompressedJsBytes": 532070,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/0fsi8lw5utejl.js",
+      ".next/static/chunks/0d3tkj33oycf2.js",
+      ".next/static/chunks/0852~413n4k3z.js",
+      ".next/static/chunks/11qk_vpw_zwkf.js",
+      ".next/static/chunks/0cje14_narrpx.js",
+      ".next/static/chunks/0odtgka8um5sc.js",
+      ".next/static/chunks/0h4bq73pogmtb.js",
+      ".next/static/chunks/turbopack-0cloz~.gj.065.js"
+    ]
+  },
+  {
+    "route": "/_not-found",
+    "firstLoadUncompressedJsBytes": 513775,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/0fsi8lw5utejl.js",
+      ".next/static/chunks/0d3tkj33oycf2.js",
+      ".next/static/chunks/11qk_vpw_zwkf.js",
+      ".next/static/chunks/0cje14_narrpx.js",
+      ".next/static/chunks/0odtgka8um5sc.js",
+      ".next/static/chunks/0h4bq73pogmtb.js",
+      ".next/static/chunks/turbopack-0cloz~.gj.065.js"
+    ]
+  }
+]
