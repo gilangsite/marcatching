@@ -77,7 +77,7 @@ export default async function HomePage() {
                       let posterUrl = product.image_url || ''
                       if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
                         const match = posterUrl.match(/id=([^&]+)/)
-                        if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400-h500`
+                        if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600-h2000`
                       }
                       return (
                         <div key={link.id} className={styles.productGrid} style={{marginTop: 0, marginBottom: 8}}>

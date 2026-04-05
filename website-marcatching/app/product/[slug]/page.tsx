@@ -68,7 +68,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
     const match = posterUrl.match(/id=([^&]+)/)
     if (match && match[1]) {
-      posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800-h1000`
+      posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600-h2000`
     }
   }
 

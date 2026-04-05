@@ -50,6 +50,8 @@ export default function CourseDetailPage() {
   const [loading, setLoading] = useState(true)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [notEnrolled, setNotEnrolled] = useState(false)
+  const [fullScreenPdfUrl, setFullScreenPdfUrl] = useState<string | null>(null)
+  const [fullScreenTitle, setFullScreenTitle] = useState<string>('')
 
   const loadCourse = useCallback(async () => {
     setLoading(true)
@@ -400,10 +402,7 @@ export default function CourseDetailPage() {
                                 })()
                               ) : (
                                 (() => {
-                                  const fileId = getDriveFileId(mat.content_url)
-                                  const embedUrl = fileId
-                                    ? `https://drive.google.com/file/d/${fileId}/preview`
-                                    : mat.content_url
+                                  const embedUrl = `/api/pdf?url=${encodeURIComponent(mat.content_url)}#toolbar=0&navpanes=0&scrollbar=0`
 
                                   return (
                                     <div className={styles.pdfWrap}>
@@ -412,7 +411,21 @@ export default function CourseDetailPage() {
                                         title={mat.title}
                                         allow="autoplay"
                                         allowFullScreen
+                                        style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px', background: '#f8fafc' }}
                                       />
+                                      <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button 
+                                          onClick={() => {
+                                            setFullScreenPdfUrl(embedUrl);
+                                            setFullScreenTitle(mat.title);
+                                          }}
+                                          style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(14, 165, 233, 0.2)' }}
+                                          onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                          onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        >
+                                          <BookOpen size={16} /> Mode Ebook (Layar Penuh)
+                                        </button>
+                                      </div>
                                     </div>
                                   )
                                 })()
@@ -429,6 +442,37 @@ export default function CourseDetailPage() {
           )}
         </div>
       </main>
+
+      {/* FULLSCREEN PDF OVERLAY */}
+      {fullScreenPdfUrl && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 99999, background: '#0f172a', display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ 
+            height: '60px', background: '#1e293b', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <BookOpen size={20} color="#38bdf8" />
+              <h2 style={{ color: '#f8fafc', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>{fullScreenTitle}</h2>
+            </div>
+            <button 
+              onClick={() => setFullScreenPdfUrl(null)}
+              style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.background = '#dc2626'}
+              onMouseOut={(e) => e.currentTarget.style.background = '#ef4444'}
+            >
+              <ArrowLeft size={16} /> Kembali ke Course
+            </button>
+          </div>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <iframe
+              src={fullScreenPdfUrl}
+              title={fullScreenTitle}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

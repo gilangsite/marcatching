@@ -230,7 +230,7 @@ export default function CourseDashboardPage() {
                     <img
                       src={
                         course.image_url.includes('drive.google.com/uc')
-                          ? course.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w600-h450'
+                          ? course.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w1200-h900'
                           : course.image_url
                       }
                       alt={course.name}
