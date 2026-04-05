@@ -388,7 +388,6 @@ export default function AdminDashboard() {
         <div className={styles.sidebarLogo}>
           <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}><Menu size={24} color="rgba(255,255,255,0.85)" /></button>
         </div>
-        <hr style={{ borderColor: 'rgba(255,255,255,0.12)', marginBottom: 12 }} />
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
@@ -410,8 +409,7 @@ export default function AdminDashboard() {
             )}
           </div>
         </nav>
-        <hr style={{ borderColor: 'rgba(0,0,0,0.08)', marginTop: 'auto', marginBottom: 12 }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24, marginTop: 'auto' }}>
           <a href="/" target="_blank" rel="noopener noreferrer" className={styles.navItem}><Globe size={18} /> Lihat Website</a>
           <button onClick={handleLogout} className={styles.navItem} style={{ color: '#dc2626' }}><LogOut size={18} /> Keluar</button>
         </div>
