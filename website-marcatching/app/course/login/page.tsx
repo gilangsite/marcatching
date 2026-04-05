@@ -124,12 +124,12 @@ export default function CourseLoginPage() {
       <div className={styles.authCard}>
         {/* Logo */}
         <div className={styles.authLogo}>
-          <div className={styles.authLogoInner}>
+          <div className={styles.authLogoInner} style={{ background: 'transparent', padding: 0 }}>
             <Image
-              src="/logo-type-white.png"
+              src="/logo-type-black.png"
               alt="Marcatching"
-              width={130}
-              height={30}
+              width={160}
+              height={36}
               style={{ objectFit: 'contain' }}
             />
           </div>
