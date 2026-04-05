@@ -406,16 +406,12 @@ export default function CourseDetailPage() {
                                     : mat.content_url
 
                                   return (
-                                    <div
-                                      className={styles.pdfWrap}
-                                      onContextMenu={(e) => e.preventDefault()}
-                                    >
-                                      {/* Transparent overlay to block right-click */}
-                                      <div className={styles.pdfOverlay} onContextMenu={(e) => e.preventDefault()} />
+                                    <div className={styles.pdfWrap}>
                                       <iframe
-                                        src={embedUrl + '#toolbar=0&navpanes=0&scrollbar=0'}
+                                        src={embedUrl}
                                         title={mat.title}
-                                        sandbox="allow-same-origin allow-scripts"
+                                        allow="autoplay"
+                                        allowFullScreen
                                       />
                                     </div>
                                   )

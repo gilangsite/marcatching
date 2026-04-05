@@ -556,13 +556,7 @@
   border: none;
 }
 
-/* Invisible overlay to block right-click on PDF */
-.pdfOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: transparent;
-}
+
 
 /* ── Login / Register Page ───────────────────────────────── */
 .authPage {
