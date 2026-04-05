@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Send checkout data to Google Sheets + Email via Apps Script
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbyF10qd24VXbGEX-_D0060h34CSqr7qI25-8ltLH2XOCMsqFxBS8DBrLXqFLN_3XsCy/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbwmirNLCld8dHSy9uULA82-D7nTj2BG109IErbRpdbDlJWLZ4nJVsjCuyVVSru8XCu0/exec'
     
     try {
       await fetch(appScriptUrl, {
