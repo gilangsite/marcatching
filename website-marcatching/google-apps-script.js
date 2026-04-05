@@ -255,7 +255,7 @@ function handleCheckout(data) {
 
 // ─── CONFIRMATION EMAIL ─────────────────────────────────────
 function sendConfirmationEmail(data) {
-  var subject = '🎉 Pembayaran Sedang Dikonfirmasi — ' + (data.productName || 'Marcatching');
+  var subject = 'Pembayaran Sedang Dikonfirmasi — ' + (data.productName || 'Marcatching');
   
   var htmlBody = `
   <!DOCTYPE html>
