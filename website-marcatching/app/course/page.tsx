@@ -41,11 +41,11 @@ export default function CourseDashboardPage() {
     const namePart = email.split('@')[0]
     setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1))
 
-    // Get enrollments for this user
+    // Get enrollments for this user by their registered email
     const { data: enrollments } = await supabase
-      .from('course_enrollments')
+      .from('course_access_emails')
       .select('product_id')
-      .eq('user_id', user.id)
+      .eq('email', email.toLowerCase().trim())
 
     if (!enrollments || enrollments.length === 0) {
       setLoading(false)

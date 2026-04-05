@@ -75,11 +75,11 @@ export default function CourseDetailPage() {
 
     // Check enrollment
     const { data: enrollment } = await supabase
-      .from('course_enrollments')
+      .from('course_access_emails')
       .select('id')
-      .eq('user_id', user.id)
+      .eq('email', email.toLowerCase().trim())
       .eq('product_id', prod.id)
-      .single()
+      .maybeSingle()
 
     if (!enrollment) {
       setNotEnrolled(true)
