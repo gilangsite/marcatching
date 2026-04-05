@@ -642,6 +642,8 @@
   flex: 1;
   position: relative;
   background: #0f172a;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pdfOverlayIframe {
