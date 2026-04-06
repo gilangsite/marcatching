@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useRef, Suspense, FormEvent } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Reorder, useDragControls } from 'framer-motion'
 import {
@@ -48,6 +48,12 @@ function parseRp(str: string): number {
 function slugify(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
+function formatWaNumber(wa: string): string {
+  const clean = wa.replace(/\D/g, '')
+  if (clean.startsWith('62')) return clean
+  if (clean.startsWith('0')) return '62' + clean.slice(1)
+  return '62' + clean
+}
 
 // ─── Sortable Item ─────────────────────────────────────────
 function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: Link) => void, onDelete: (id: string) => void }) {
@@ -78,11 +84,13 @@ function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: 
 }
 
 // ─── Main component ───────────────────────────────────────────
-export default function AdminDashboard() {
+function AdminDashboardInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
 
   // Links state
   const [links, setLinks] = useState<Link[]>([])
@@ -123,6 +131,7 @@ export default function AdminDashboard() {
   // Orders state
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
+  const [contactMenuOrder, setContactMenuOrder] = useState<string | null>(null)
 
   // ── E-Course state ────────────────────────────────────────
   const [courseMaterials, setCourseMaterials] = useState<Record<string, CourseMaterial[]>>({})
@@ -212,6 +221,25 @@ export default function AdminDashboard() {
 
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
 
+  // Read ?tab param from URL (e.g. email button "Buka Dashboard Admin → Orders")
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') as TabType | null
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse'].includes(tabParam)) {
+      setTab(tabParam)
+    }
+  }, [searchParams])
+
+  // Close contact dropdown when clicking outside
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (contactMenuRef.current && !contactMenuRef.current.contains(e.target as Node)) {
+        setContactMenuOrder(null)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [])
+
   async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/admin/login') }
 
   // ── Link CRUD (kept from original) ─────────────────────────
@@ -235,7 +263,7 @@ export default function AdminDashboard() {
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files; if (!files || files.length === 0) return
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbwmirNLCld8dHSy9uULA82-D7nTj2BG109IErbRpdbDlJWLZ4nJVsjCuyVVSru8XCu0/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbxmapzVnHBm44cu8D-eCX_tZe6rxbNhye41vvEMJ6WRW6BtiYFHtLnWNQK00thcJy17/exec'
     setUploadingImage(true)
     const newImages = [...(linkForm.image_data || [])]
     for (let i = 0; i < files.length; i++) {
@@ -296,7 +324,7 @@ export default function AdminDashboard() {
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbwmirNLCld8dHSy9uULA82-D7nTj2BG109IErbRpdbDlJWLZ4nJVsjCuyVVSru8XCu0/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbxmapzVnHBm44cu8D-eCX_tZe6rxbNhye41vvEMJ6WRW6BtiYFHtLnWNQK00thcJy17/exec'
     setUploadingPoster(true)
     const reader = new FileReader()
     reader.onload = async (event) => {
@@ -584,7 +612,7 @@ export default function AdminDashboard() {
 
         {/* ── ORDERS TAB ─── */}
         {tab === 'orders' && (
-          <div className={styles.tabContent} style={{ maxWidth: 1000 }}>
+          <div className={styles.tabContent} style={{ maxWidth: 1100 }}>
             <div className={styles.contentHeader}><div><h1 className={styles.contentTitle}>Orders</h1><p className={styles.contentDesc}>Semua pembelian yang masuk</p></div></div>
             {ordersLoading ? <div className={styles.loading}>Memuat...</div> : orders.length === 0 ? <div className={styles.emptyState}>Belum ada order.</div> : (
               <div style={{ overflowX: 'auto' }}>
@@ -595,8 +623,39 @@ export default function AdminDashboard() {
                     <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Product</th>
                     <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Total</th>
                     <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Status</th>
+                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Aksi</th>
                   </tr></thead>
-                  <tbody>{orders.map(o => (
+                  <tbody ref={contactMenuRef}>{orders.map(o => {
+                    const waNum = formatWaNumber(o.whatsapp || '')
+                    const totalFormatted = `Rp ${formatRp(o.total_paid)}`
+
+                    function buildWaMsg(type: 'success' | 'pending') {
+                      const greeting = `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${o.product_name} di Marcatching!`
+                      if (type === 'success') {
+                        return encodeURIComponent(
+`${greeting}
+
+aku udah kirim Email Aktivasi akun untuk kamu daftarkan di Marcatching Course. silahkan check email kamu untuk Daftar akun, Login, dan akses Coursenya, Enjoy!`
+                        )
+                      } else {
+                        return encodeURIComponent(
+`${greeting}
+
+aku liat kamu belum melakukan pembayaran ke Rekening tertera ya? yuk selesaikan dulu pembayaranya biar aku bisa kirim email aktivasi akun untuk akses Marcatching Course
+
+Nama Course : ${o.product_name}
+Total bayar : ${totalFormatted}
+
+Transfer ke Rekening
+Nomor Rekening : 6030485643
+Atas Nama : Gilang Ramadhan
+
+Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
+                        )
+                      }
+                    }
+
+                    return (
                     <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '10px 8px', whiteSpace: 'nowrap' }}>{new Date(o.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td style={{ padding: '10px 8px' }}><div style={{ fontWeight: 600 }}>{o.full_name}</div><div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{o.email}</div></td>
@@ -612,8 +671,60 @@ export default function AdminDashboard() {
                           {o.status.toUpperCase()}
                         </button>
                       </td>
+                      <td style={{ padding: '10px 8px', position: 'relative' }}>
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <button
+                            onClick={() => setContactMenuOrder(contactMenuOrder === o.id ? null : o.id)}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 12px', background: '#0d3369', color: '#fff', border: 'none', borderRadius: 8, fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Contact Buyer
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                          </button>
+
+                          {contactMenuOrder === o.id && (
+                            <div
+                              style={{
+                                position: 'absolute', top: '110%', right: 0, zIndex: 200,
+                                background: '#ffffff', border: '1px solid #e2e8f0',
+                                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.13)',
+                                minWidth: 210, overflow: 'hidden'
+                              }}
+                            >
+                              <div style={{ padding: '8px 12px', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #f1f5f9' }}>
+                                WA: {o.whatsapp}
+                              </div>
+                              <a
+                                href={`https://wa.me/${waNum}?text=${buildWaMsg('success')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setContactMenuOrder(null)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 14px', textDecoration: 'none', color: '#16a34a', fontWeight: 700, fontSize: '0.82rem', borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf4')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Pembayaran Berhasil
+                              </a>
+                              <a
+                                href={`https://wa.me/${waNum}?text=${buildWaMsg('pending')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setContactMenuOrder(null)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 14px', textDecoration: 'none', color: '#d97706', fontWeight: 700, fontSize: '0.82rem', transition: 'background 0.15s' }}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#fffbeb')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Pembayaran Belum Berhasil
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </td>
                     </tr>
-                  ))}</tbody>
+                    )
+                  })}</tbody>
                 </table>
               </div>
             )}
@@ -798,5 +909,13 @@ export default function AdminDashboard() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={null}>
+      <AdminDashboardInner />
+    </Suspense>
   )
 }

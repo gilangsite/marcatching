@@ -32,6 +32,8 @@ function doPost(e) {
       return handlePdfUpload(data);
     } else if (data.action === 'sendCourseEmail') {
       return handleSendCourseEmail(data);
+    } else if (data.action === 'notifyAdmin') {
+      return handleNotifyAdmin(data);
     } else {
       // Default: treat as image upload (backward compatibility)
       return handleImageUpload(data);
@@ -195,6 +197,112 @@ function sendCourseAccessEmail(data) {
   
   MailApp.sendEmail({
     to: data.email,
+    subject: subject,
+    htmlBody: htmlBody
+  });
+}
+
+// ─── ADMIN NOTIFICATION EMAIL ──────────────────────────────
+function handleNotifyAdmin(data) {
+  try {
+    sendAdminNotificationEmail(data);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', message: 'Admin notification sent'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function sendAdminNotificationEmail(data) {
+  function formatRp(num) {
+    return 'Rp ' + Number(num).toLocaleString('id-ID');
+  }
+
+  var subject = '🛒 Pembelian Baru: ' + (data.productName || 'Produk') + ' — Marcatching';
+
+  var htmlBody = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+  <body style="margin:0;padding:0;background:#f5f6fa;font-family:'Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:580px;margin:32px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.09);">
+
+      <!-- Header -->
+      <div style="background:#0d3369;padding:28px 24px;text-align:center;">
+        <img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:28px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />
+        <h1 style="color:#ffffff;font-size:18px;margin:0;font-weight:700;">Ada Pembelian Baru!</h1>
+        <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk untuk <strong style="color:#ffffff;">${data.productName || '-'}</strong></p>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:28px 24px;">
+        <p style="font-size:14px;color:#374151;margin:0 0 20px;line-height:1.6;">
+          Halo Gilang, ada order baru yang masuk. Berikut detail pembeliannya:
+        </p>
+
+        <!-- Order Details -->
+        <div style="background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:24px;border:1px solid #e2e8f0;">
+          <h3 style="font-size:12px;color:#94a3b8;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Detail Order</h3>
+          <table style="width:100%;font-size:14px;border-collapse:collapse;">
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;width:40%;border-bottom:1px solid #f1f5f9;">Nama</td>
+              <td style="padding:7px 0;font-weight:600;color:#111827;border-bottom:1px solid #f1f5f9;">${data.fullName || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Email</td>
+              <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${data.email || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">WhatsApp</td>
+              <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${data.whatsapp || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Product</td>
+              <td style="padding:7px 0;font-weight:600;color:#0d3369;border-bottom:1px solid #f1f5f9;">${data.productName || '-'}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Harga Asli</td>
+              <td style="padding:7px 0;text-decoration:line-through;color:#dc2626;border-bottom:1px solid #f1f5f9;">${formatRp(data.priceOriginal || 0)}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Harga Diskon</td>
+              <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${formatRp(data.priceDiscounted || 0)}</td>
+            </tr>
+            ${data.voucherCode ? `
+            <tr>
+              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Voucher</td>
+              <td style="padding:7px 0;color:#16a34a;border-bottom:1px solid #f1f5f9;">${data.voucherCode} (-${formatRp(data.voucherDiscount || 0)})</td>
+            </tr>
+            ` : ''}
+            <tr>
+              <td style="padding:10px 0 4px;color:#0d3369;font-weight:700;font-size:15px;">Total Bayar</td>
+              <td style="padding:10px 0 4px;font-weight:800;font-size:18px;color:#0d3369;">${formatRp(data.totalPaid || 0)}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- CTA Button -->
+        <div style="text-align:center;margin-bottom:8px;">
+          <a href="https://marcatching.vercel.app/admin?tab=orders" style="display:inline-block;background:#0d3369;color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
+            Buka Dashboard Admin → Orders
+          </a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background:#f8fafc;padding:16px 24px;text-align:center;border-top:1px solid #e2e8f0;">
+        <p style="font-size:12px;color:#94a3b8;margin:0;">© ${new Date().getFullYear()} Marcatching — Notifikasi Admin Otomatis</p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+
+  MailApp.sendEmail({
+    to: 'marcatching.id@gmail.com',
     subject: subject,
     htmlBody: htmlBody
   });

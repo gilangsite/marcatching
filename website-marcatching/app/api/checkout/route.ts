@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Send checkout data to Google Sheets + Email via Apps Script
-    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbwmirNLCld8dHSy9uULA82-D7nTj2BG109IErbRpdbDlJWLZ4nJVsjCuyVVSru8XCu0/exec'
+    const appScriptUrl = 'https://script.google.com/macros/s/AKfycbxmapzVnHBm44cu8D-eCX_tZe6rxbNhye41vvEMJ6WRW6BtiYFHtLnWNQK00thcJy17/exec'
     
     try {
       await fetch(appScriptUrl, {
@@ -67,6 +67,29 @@ export async function POST(req: NextRequest) {
     } catch (sheetErr) {
       console.error('Apps Script error:', sheetErr)
       // Don't fail the whole request if sheets/email fails
+    }
+
+    // 3. Send admin notification email to marcatching.id@gmail.com
+    try {
+      await fetch(appScriptUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'notifyAdmin',
+          orderId: order.id,
+          productName,
+          fullName,
+          email,
+          whatsapp,
+          voucherCode: voucherCode || '',
+          priceOriginal: priceOriginal || 0,
+          priceDiscounted: priceDiscounted || 0,
+          voucherDiscount: voucherDiscount || 0,
+          totalPaid: totalPaid || 0,
+        }),
+      })
+    } catch (adminNotifyErr) {
+      console.error('Admin notify error:', adminNotifyErr)
+      // Non-critical: don't fail request
     }
 
     // 3. Build WhatsApp redirect URL
