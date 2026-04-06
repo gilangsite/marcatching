@@ -471,6 +471,19 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 640px) {
+  .materialCardHeader {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .materialActions {
+    width: 100%;
+    margin-top: 4px;
+    padding-left: 42px; /* Align with info column (28px bubble + 14px gap) */
+    justify-content: flex-start;
+  }
+}
+
 .openBtn {
   display: inline-flex;
   align-items: center;

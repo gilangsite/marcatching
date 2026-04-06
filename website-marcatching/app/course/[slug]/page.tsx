@@ -402,7 +402,8 @@ export default function CourseDetailPage() {
                                 })()
                               ) : (
                                 (() => {
-                                  const embedUrl = `/api/pdf?url=${encodeURIComponent(mat.content_url)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
+                                  const fileId = getDriveFileId(mat.content_url)
+                                  const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : mat.content_url
 
                                   return (
                                     <div className={styles.pdfWrap}>
