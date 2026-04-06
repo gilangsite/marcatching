@@ -329,17 +329,6 @@ function sendAdminNotificationEmail(data) {
   '</body></html>';
 
   try {
-    GmailApp.sendEmail(
-      'marcatching.id@gmail.com',
-      subject,
-      '',
-      {
-        htmlBody: htmlBody,
-        replyTo: data.email || '',
-        name: 'Sistem Pembelian Marcatching'
-      }
-    );
-  } catch (e) {
     MailApp.sendEmail({
       to: 'marcatching.id@gmail.com',
       replyTo: data.email || '',
@@ -347,6 +336,8 @@ function sendAdminNotificationEmail(data) {
       subject: subject,
       htmlBody: htmlBody
     });
+  } catch (e) {
+    Logger.log('Admin Email error: ' + e.toString());
   }
 }
 
@@ -425,21 +416,10 @@ function sendConfirmationEmail(data) {
 
   var subject = 'Pembayaran Sedang Dikonfirmasi — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
 
-  // Build product rows
-  var productRowsHtml = allProducts.map(function(p, i) {
-    var origPrice = Number(p.priceOriginal || 0);
-    var discPrice = Number(p.priceDiscounted || 0);
-    var strikeHtml = (origPrice > 0 && origPrice !== discPrice)
-      ? '<span style="text-decoration:line-through;color:#dc2626;font-size:12px;margin-right:6px;">' + formatRupiah(origPrice) + '</span>'
-      : '';
-    return '<tr>' +
-      '<td style="padding:6px 0;color:#718096;">' + (i + 1) + '. ' + (p.name || '-') + '</td>' +
-      '<td style="padding:6px 0;text-align:right;">' + strikeHtml + '<strong>' + formatRupiah(discPrice) + '</strong></td>' +
-    '</tr>';
-  }).join('');
+  var productListHtml = allProducts.map(function(p) { return p.name || '-'; }).join('<br>');
 
   var voucherRowConf = data.voucherCode
-    ? '<tr><td style="padding:6px 0;color:#718096;">Voucher</td><td style="padding:6px 0;text-align:right;color:#16a34a;">' + data.voucherCode + ' (-' + formatRupiah(data.voucherDiscount || 0) + ')</td></tr>'
+    ? '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Voucher</td><td style="padding:6px 0;color:#16a34a;">' + data.voucherCode + ' (-' + formatRupiah(data.voucherDiscount || 0) + ')</td></tr>'
     : '';
 
   var fullName = data.fullName || 'Pelanggan';
@@ -457,20 +437,18 @@ function sendConfirmationEmail(data) {
       '<div style="padding:32px 24px;">' +
         '<p style="font-size:16px;color:#1a1a1a;margin:0 0 8px;">Halo <strong>' + fullName + '</strong>,</p>' +
         '<p style="font-size:14px;color:#4a5568;line-height:1.6;margin:0 0 24px;">' +
-          'Terima kasih telah melakukan checkout! Pembayaran kamu sedang dalam proses konfirmasi oleh tim Marcatching.' +
+          'Terima kasih telah melakukan checkout untuk produk <strong>' + (data.productName || '-') + '</strong>. Pembayaran kamu sedang dalam proses konfirmasi oleh tim Marcatching.' +
         '</p>' +
 
         '<div style="background:#f7fafc;border-radius:12px;padding:20px;margin-bottom:24px;">' +
-          '<h3 style="font-size:14px;color:#0d3369;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.05em;">Detail Pembelian</h3>' +
+          '<h3 style="font-size:14px;color:#0d3369;margin:0 0 16px;">Detail Pembelian:</h3>' +
           '<table style="width:100%;font-size:14px;color:#2d3748;border-collapse:collapse;">' +
-            '<tr><td style="padding:6px 0;color:#718096;" colspan="2"><strong style="color:#374151;">Produk yang Dibeli</strong></td></tr>' +
-            productRowsHtml +
-            '<tr style="border-top:1px solid #e2e8f0;"><td colspan="2" style="padding:4px 0;"></td></tr>' +
-            '<tr><td style="padding:6px 0;color:#718096;">Nama</td><td style="padding:6px 0;text-align:right;">' + (data.fullName || '-') + '</td></tr>' +
-            '<tr><td style="padding:6px 0;color:#718096;">Email</td><td style="padding:6px 0;text-align:right;">' + (data.email || '-') + '</td></tr>' +
-            '<tr><td style="padding:6px 0;color:#718096;">WhatsApp</td><td style="padding:6px 0;text-align:right;">' + (data.whatsapp || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;width:35%;">Produk</td><td style="padding:6px 0;font-weight:600;color:#111827;line-height:1.6;">' + productListHtml + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Nama</td><td style="padding:6px 0;color:#111827;">' + (data.fullName || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Email</td><td style="padding:6px 0;color:#111827;">' + (data.email || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">WhatsApp</td><td style="padding:6px 0;color:#111827;">' + (data.whatsapp || '-') + '</td></tr>' +
             voucherRowConf +
-            '<tr style="border-top:1px solid #e2e8f0;"><td style="padding:12px 0 6px;color:#718096;">Total Pembayaran</td><td style="padding:12px 0 6px;text-align:right;font-weight:700;font-size:18px;color:#0d3369;">' + formatRupiah(data.totalPaid || 0) + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Total Pembayaran</td><td style="padding:6px 0;font-weight:700;color:#111827;">' + formatRupiah(data.totalPaid || 0) + '</td></tr>' +
           '</table>' +
         '</div>' +
 
