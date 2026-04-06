@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Send checkout data to Google Sheets + Confirmation Email
     try {
-      await fetch(appScriptUrl, {
+      const gsRes = await fetch(appScriptUrl, {
         method: 'POST',
         body: JSON.stringify({
           action: 'checkout',
@@ -99,8 +99,10 @@ export async function POST(req: NextRequest) {
           status: 'pending',
         }),
       })
+      const gsData = await gsRes.text()
+      console.log('Apps Script Checkout Response:', gsData)
     } catch (sheetErr) {
-      console.error('Apps Script checkout error:', sheetErr)
+      console.error('Apps Script checkout fetch error:', sheetErr)
     }
 
 

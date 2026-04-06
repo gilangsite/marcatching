@@ -368,28 +368,55 @@ function AdminDashboardInner() {
     await supabase.from('orders').update({ status: newStatus }).eq('id', order.id)
 
     // When confirming an order: add to course_access_emails + send course access email
-    if (newStatus === 'confirmed' && order.product_id) {
-      // Add to course_access_emails so user can register
-      await supabase.from('course_access_emails').upsert({
-        email: order.email.toLowerCase().trim(),
-        product_id: order.product_id,
-        order_id: order.id
-      }, { onConflict: 'email,product_id' })
+    if (newStatus === 'confirmed') {
+      // Add main product to course_access_emails
+      if (order.product_id) {
+        await supabase.from('course_access_emails').upsert({
+          email: order.email.toLowerCase().trim(),
+          product_id: order.product_id,
+          order_id: order.id
+        }, { onConflict: 'email,product_id' })
+      }
+
+      // Add addons to course_access_emails
+      const addons = Array.isArray(order.addon_items) ? order.addon_items : []
+      for (const addon of addons) {
+        if (addon.id) {
+          await supabase.from('course_access_emails').upsert({
+            email: order.email.toLowerCase().trim(),
+            product_id: addon.id,
+            order_id: order.id
+          }, { onConflict: 'email,product_id' })
+        }
+      }
+
+      // Build allProducts array for email
+      const allProducts = [
+        { name: order.product_name, priceOriginal: order.price_original || 0, priceDiscounted: order.price_discounted || 0 },
+        ...addons.map(a => ({ name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted }))
+      ]
 
       // Send course access email via Apps Script
       try {
-        await fetch('/api/course-email', {
+        const emailRes = await fetch('/api/course-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: order.email,
             fullName: order.full_name,
             productName: order.product_name,
-            orderId: order.id
+            orderId: order.id,
+            allProducts,
+            addonItems: addons
           })
         })
+        const data = await emailRes.json()
+        if (!data.success) {
+          alert('Warning: Gagal kirim email ke user - ' + (data.error || 'Unknown error'))
+        }
       } catch (err) {
         console.warn('Failed to send course email:', err)
+        alert('Gagal trigger email course. Cek koneksi.')
       }
     }
 

@@ -4,7 +4,7 @@ const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://scri
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, fullName, productName, orderId } = await req.json()
+    const { email, fullName, productName, orderId, allProducts, addonItems } = await req.json()
 
     if (!email || !fullName || !productName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -19,6 +19,8 @@ export async function POST(req: NextRequest) {
         fullName,
         productName,
         orderId,
+        allProducts,
+        addonItems
       }),
     })
 
