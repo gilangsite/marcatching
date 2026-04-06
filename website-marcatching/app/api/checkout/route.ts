@@ -61,27 +61,30 @@ export async function POST(req: NextRequest) {
 
     // 2. Send checkout data to Google Sheets + Confirmation Email + Admin Notification
     try {
+      const payload = JSON.stringify({
+        action: 'checkout',
+        orderId: order.id,
+        productName,
+        fullName,
+        email,
+        whatsapp,
+        background: background || '',
+        referralSource: referralSource || '',
+        voucherCode: voucherCode || '',
+        priceOriginal: priceOriginal || 0,
+        priceDiscounted: priceDiscounted || 0,
+        addonItems: addons,
+        addonTotal: addonTotal || 0,
+        allProducts,
+        voucherDiscount: voucherDiscount || 0,
+        totalPaid: totalPaid || 0,
+        status: 'pending',
+      })
       const gsRes = await fetch(appScriptUrl, {
         method: 'POST',
-        body: JSON.stringify({
-          action: 'checkout',
-          orderId: order.id,
-          productName,
-          fullName,
-          email,
-          whatsapp,
-          background: background || '',
-          referralSource: referralSource || '',
-          voucherCode: voucherCode || '',
-          priceOriginal: priceOriginal || 0,
-          priceDiscounted: priceDiscounted || 0,
-          addonItems: addons,
-          addonTotal: addonTotal || 0,
-          allProducts,
-          voucherDiscount: voucherDiscount || 0,
-          totalPaid: totalPaid || 0,
-          status: 'pending',
-        }),
+        headers: { 'Content-Type': 'text/plain' },
+        body: payload,
+        redirect: 'follow',
       })
       const gsData = await gsRes.text()
       console.log('Apps Script Checkout Response:', gsData)
