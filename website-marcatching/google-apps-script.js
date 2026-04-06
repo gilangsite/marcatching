@@ -165,7 +165,7 @@ function sendCourseAccessEmail(data) {
     '<div style="max-width:600px;margin:32px auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.1);">' +
       
       '<div style="background:#111111;padding:36px 28px;text-align:center;">' +
-        '<img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:30px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />' +
+        '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:30px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />' +
         '<h1 style="color:#ffffff;font-size:22px;margin:0;font-weight:800;">Akses E-Course Sudah Aktif!</h1>' +
         '<p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0 0;">Pembayaranmu telah dikonfirmasi</p>' +
       '</div>' +
@@ -214,7 +214,7 @@ function sendCourseAccessEmail(data) {
         '</div>' +
 
         '<div style="text-align:center;margin-bottom:28px;">' +
-          '<a href="https://marcatching.vercel.app/course/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
+          '<a href="https://www.marcatching.com/course/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
             'Akses E-Course Sekarang' +
           '</a>' +
         '</div>' +
@@ -291,7 +291,7 @@ function sendAdminNotificationEmail(data) {
     '<div style="max-width:580px;margin:32px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.09);">' +
 
       '<div style="background:#0d3369;padding:28px 24px;text-align:center;">' +
-        '<img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:28px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />' +
+        '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:28px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />' +
         '<h1 style="color:#ffffff;font-size:18px;margin:0;font-weight:700;">Ada Pembelian Baru!</h1>' +
         '<p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk dari <strong style="color:#ffffff;">' + (data.fullName || '-') + '</strong></p>' +
       '</div>' +
@@ -318,7 +318,7 @@ function sendAdminNotificationEmail(data) {
         '</div>' +
 
         '<div style="text-align:center;margin-bottom:8px;">' +
-          '<a href="https://marcatching.vercel.app/admin?tab=orders" style="display:inline-block;background:#0d3369;color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">Buka Dashboard Admin - Orders</a>' +
+          '<a href="https://www.marcatching.com/admin?tab=orders" style="display:inline-block;background:#0d3369;color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">Buka Dashboard Admin - Orders</a>' +
         '</div>' +
       '</div>' +
 
@@ -430,7 +430,7 @@ function sendConfirmationEmail(data) {
     '<div style="max-width:600px;margin:24px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">' +
       
       '<div style="background:#0d3369;padding:32px 24px;text-align:center;">' +
-        '<img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:32px;margin-bottom:12px;" />' +
+        '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:32px;margin-bottom:12px;" />' +
         '<h1 style="color:#ffffff;font-size:20px;margin:0;font-weight:700;">Pembayaran Sedang Dikonfirmasi</h1>' +
       '</div>' +
 
