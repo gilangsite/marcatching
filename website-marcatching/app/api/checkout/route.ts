@@ -106,10 +106,11 @@ export async function POST(req: NextRequest) {
 
 
     // 6. Build WhatsApp redirect URL — list all products
-    const allProductNames = [productName, ...addons.map(a => a.name)].join(', ')
+    const productNamesArray = [productName, ...addons.map(a => a.name)]
+    const formattedProducts = productNamesArray.map((name, i) => `${i + 1}. ${name}`).join('\\n')
     const waNumber = '62895412747584'
     const waMessage = encodeURIComponent(
-      `Halo Marcatching, aku "${fullName}" baru aja check out "${allProductNames}", dan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
+      `Halo Marcatching, aku ${fullName} baru aja check out :\n\n${formattedProducts}\n\ndan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
     )
     const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`
 

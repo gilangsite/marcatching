@@ -243,18 +243,17 @@ function sendAdminNotificationEmail(data) {
   var subject = 'Pembelian Baru: ' + allProducts.map(function(p) { return p.name; }).join(' + ') + ' — Marcatching';
 
   // Build product rows HTML for admin
-  var productRowsHtml = allProducts.map(function(p) {
+  var productRowsHtml = allProducts.map(function(p, i) {
     return '<tr>' +
-      '<td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Produk</td>' +
-      '<td style="padding:7px 0;font-weight:600;color:#0d3369;border-bottom:1px solid #f1f5f9;">' + (p.name || '-') + '</td>' +
+      '<td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;" colspan="2">' + (i + 1) + '. <strong style="color:#0d3369;">' + (p.name || '-') + '</strong></td>' +
     '</tr>' +
     '<tr>' +
-      '<td style="padding:4px 0;color:#9ca3af;border-bottom:1px solid #f8fafc;font-size:12px;">Harga Asli</td>' +
-      '<td style="padding:4px 0;font-size:12px;text-decoration:line-through;color:#dc2626;border-bottom:1px solid #f8fafc;">' + formatRp(p.priceOriginal || 0) + '</td>' +
+      '<td style="padding:4px 0;color:#9ca3af;font-size:12px;">Harga Asli</td>' +
+      '<td style="padding:4px 0;font-size:12px;text-align:right;text-decoration:line-through;color:#dc2626;">' + formatRp(p.priceOriginal || 0) + '</td>' +
     '</tr>' +
     '<tr>' +
       '<td style="padding:4px 0 10px;color:#9ca3af;border-bottom:1px solid #e2e8f0;font-size:12px;">Harga Diskon</td>' +
-      '<td style="padding:4px 0 10px;font-size:12px;color:#111827;border-bottom:1px solid #e2e8f0;">' + formatRp(p.priceDiscounted || 0) + '</td>' +
+      '<td style="padding:4px 0 10px;font-size:12px;text-align:right;color:#111827;border-bottom:1px solid #e2e8f0;">' + formatRp(p.priceDiscounted || 0) + '</td>' +
     '</tr>';
   }).join('');
 
@@ -334,6 +333,7 @@ function sendAdminNotificationEmail(data) {
 
   MailApp.sendEmail({
     to: 'marcatching.id@gmail.com',
+    replyTo: data.email,
     subject: subject,
     htmlBody: htmlBody
   });
@@ -413,9 +413,9 @@ function sendConfirmationEmail(data) {
   var subject = 'Pembayaran Sedang Dikonfirmasi — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
 
   // Build product rows for confirmation email
-  var productRowsHtml = allProducts.map(function(p) {
+  var productRowsHtml = allProducts.map(function(p, i) {
     return '<tr>' +
-      '<td style="padding:6px 0;color:#718096;">' + (p.name || '-') + '</td>' +
+      '<td style="padding:6px 0;color:#718096;">' + (i + 1) + '. ' + (p.name || '-') + '</td>' +
       '<td style="padding:6px 0;text-align:right;">' +
         (p.priceOriginal > 0 && p.priceOriginal !== p.priceDiscounted
           ? '<span style="text-decoration:line-through;color:#dc2626;font-size:12px;margin-right:6px;">' + formatRp(p.priceOriginal) + '</span>'
