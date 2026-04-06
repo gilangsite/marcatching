@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     // This prevents users from registering/activating their course account before payment is confirmed.
 
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
-      'https://script.google.com/macros/s/AKfycbxvi_2fCkSg6XYBrpPi2W-J-qLBAEuqoUvuZlsnnazl4AWQ6uvhIY2kKh45o9XgBau3/exec'
+      'https://script.google.com/macros/s/AKfycbyPgS7ktSmOj_-0gFlCtDU4jiV8h8beSCFjULJsfLuEtEeZwRFMOHNb4Ehao1wI_Xji/exec'
 
     // Build combined product list for emails
     const allProducts = [
