@@ -13,7 +13,7 @@ import {
   FileText
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link, Contact, Product, Voucher, Order, CourseMaterial } from '@/lib/supabaseClient'
+import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -418,6 +418,9 @@ function AdminDashboardInner() {
         console.warn('Failed to send course email:', err)
         alert('Gagal trigger email course. Cek koneksi.')
       }
+    } else {
+      // When reverting to pending: remove course_access_emails to revoke access
+      await supabase.from('course_access_emails').delete().eq('order_id', order.id)
     }
 
     fetchOrders()
@@ -655,22 +658,43 @@ function AdminDashboardInner() {
                   <tbody ref={contactMenuRef}>{orders.map(o => {
                     const waNum = formatWaNumber(o.whatsapp || '')
                     const totalFormatted = `Rp ${formatRp(o.total_paid)}`
+                    const addons: AddonItem[] = Array.isArray(o.addon_items) ? o.addon_items : []
+                    const allProductNames = [o.product_name, ...addons.map(a => a.name)]
 
                     function buildWaMsg(type: 'success' | 'pending') {
-                      const greeting = `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${o.product_name} di Marcatching!`
+                      // Build course description based on single vs multiple
+                      let courseDesc: string
+                      if (allProductNames.length === 1) {
+                        courseDesc = allProductNames[0]
+                      } else {
+                        courseDesc = ':\n\n' + allProductNames.map((name, i) => `${i + 1}. ${name}`).join('\n')
+                      }
+
                       if (type === 'success') {
+                        const successGreeting = allProductNames.length === 1
+                          ? `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${allProductNames[0]} di Marcatching!`
+                          : `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${courseDesc}\n\ndi Marcatching!`
                         return encodeURIComponent(
-`${greeting}
+`${successGreeting}
 
 aku udah kirim Email Aktivasi akun untuk kamu daftarkan di Marcatching Course. silahkan check email kamu untuk Daftar akun, Login, dan akses Coursenya, Enjoy!`
                         )
                       } else {
+                        const pendingGreeting = allProductNames.length === 1
+                          ? `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${allProductNames[0]} di Marcatching!`
+                          : `Hi ${o.full_name}, aku Gilang. Thankyou udah order ${courseDesc}\n\ndi Marcatching!`
+
+                        const courseListForPending = allProductNames.length === 1
+                          ? allProductNames[0]
+                          : allProductNames.map((name, i) => `${i + 1}. ${name}`).join('\n')
+
                         return encodeURIComponent(
-`${greeting}
+`${pendingGreeting}
 
 aku liat kamu belum melakukan pembayaran ke Rekening tertera ya? yuk selesaikan dulu pembayaranya biar aku bisa kirim email aktivasi akun untuk akses Marcatching Course
 
-Nama Course : ${o.product_name}
+Nama Course :
+${courseListForPending}
 Total bayar : ${totalFormatted}
 
 Transfer ke Rekening
@@ -686,7 +710,12 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                     <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '10px 8px', whiteSpace: 'nowrap' }}>{new Date(o.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td style={{ padding: '10px 8px' }}><div style={{ fontWeight: 600 }}>{o.full_name}</div><div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{o.email}</div></td>
-                      <td style={{ padding: '10px 8px' }}>{o.product_name}</td>
+                      <td style={{ padding: '10px 8px' }}>
+                        <div>{o.product_name}</div>
+                        {addons.length > 0 && addons.map((a, i) => (
+                          <div key={i} style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>+ {a.name}</div>
+                        ))}
+                      </td>
                       <td style={{ padding: '10px 8px', fontWeight: 600 }}>Rp {formatRp(o.total_paid)}</td>
                       <td style={{ padding: '10px 8px' }}>
                         <button 

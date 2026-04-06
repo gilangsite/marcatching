@@ -46,25 +46,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Gagal menyimpan pesanan: ' + orderError.message }, { status: 500 })
     }
 
-    // 2. Grant course_access_emails for main product
-    if (productId) {
-      await supabase.from('course_access_emails').upsert({
-        email,
-        product_id: productId,
-        order_id: order.id,
-      }, { onConflict: 'email,product_id' })
-    }
-
-    // 3. Grant course_access_emails for each add-on
-    for (const addon of addons) {
-      if (addon.id) {
-        await supabase.from('course_access_emails').upsert({
-          email,
-          product_id: addon.id,
-          order_id: order.id,
-        }, { onConflict: 'email,product_id' })
-      }
-    }
+    // NOTE: course_access_emails is NOT inserted here at checkout.
+    // Access is only granted when admin confirms the order (toggleOrderStatus in admin page).
+    // This prevents users from registering/activating their course account before payment is confirmed.
 
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
       'https://script.google.com/macros/s/AKfycbxvi_2fCkSg6XYBrpPi2W-J-qLBAEuqoUvuZlsnnazl4AWQ6uvhIY2kKh45o9XgBau3/exec'
@@ -75,7 +59,7 @@ export async function POST(req: NextRequest) {
       ...addons.map(a => ({ name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted })),
     ]
 
-    // 4. Send checkout data to Google Sheets + Confirmation Email
+    // 2. Send checkout data to Google Sheets + Confirmation Email + Admin Notification
     try {
       const gsRes = await fetch(appScriptUrl, {
         method: 'POST',
@@ -105,16 +89,21 @@ export async function POST(req: NextRequest) {
       console.error('Apps Script checkout fetch error:', sheetErr)
     }
 
-
-
-    // 6. Build WhatsApp redirect URL — list all products
+    // 3. Build WhatsApp redirect URL
     const productNamesArray = [productName, ...addons.map(a => a.name)]
-    const formattedProducts = productNamesArray.map((name, i) => `${i + 1}. ${name}`).join('\\n')
     const waNumber = '62895412747584'
-    const waMessage = encodeURIComponent(
-      `Halo Marcatching, aku ${fullName} baru aja check out :\n\n${formattedProducts}\n\ndan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
-    )
-    const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`
+    let waText: string
+
+    if (productNamesArray.length === 1) {
+      // Single product — no numbered list
+      waText = `Halo Marcatching, aku ${fullName} baru aja check out ${productNamesArray[0]} dan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
+    } else {
+      // Multiple products — numbered list
+      const numberedList = productNamesArray.map((name, i) => `${i + 1}. ${name}`).join('\n')
+      waText = `Halo Marcatching, aku ${fullName} baru aja check out :\n\n${numberedList}\n\ndan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
+    }
+
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`
 
     return NextResponse.json({
       success: true,
