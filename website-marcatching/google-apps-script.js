@@ -386,8 +386,15 @@ function handleCheckout(data) {
     try {
       sendConfirmationEmail(data);
     } catch (emailErr) {
-      Logger.log('Email error: ' + emailErr.toString());
+      Logger.log('Buyer Email error: ' + emailErr.toString());
     }
+  }
+
+  // 3. Send Notification Email to Admin
+  try {
+    sendAdminNotificationEmail(data);
+  } catch (adminErr) {
+    Logger.log('Admin Email error: ' + adminErr.toString());
   }
   
   return ContentService.createTextOutput(JSON.stringify({

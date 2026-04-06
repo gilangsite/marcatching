@@ -103,30 +103,7 @@ export async function POST(req: NextRequest) {
       console.error('Apps Script checkout error:', sheetErr)
     }
 
-    // 5. Send admin notification email
-    try {
-      await fetch(appScriptUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'notifyAdmin',
-          orderId: order.id,
-          productName,
-          fullName,
-          email,
-          whatsapp,
-          voucherCode: voucherCode || '',
-          priceOriginal: priceOriginal || 0,
-          priceDiscounted: priceDiscounted || 0,
-          addonItems: addons,
-          addonTotal: addonTotal || 0,
-          allProducts,
-          voucherDiscount: voucherDiscount || 0,
-          totalPaid: totalPaid || 0,
-        }),
-      })
-    } catch (adminNotifyErr) {
-      console.error('Admin notify error:', adminNotifyErr)
-    }
+
 
     // 6. Build WhatsApp redirect URL — list all products
     const allProductNames = [productName, ...addons.map(a => a.name)].join(', ')
