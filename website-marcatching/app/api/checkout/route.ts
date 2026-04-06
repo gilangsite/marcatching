@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     }
 
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
-      'https://script.google.com/macros/s/AKfycbxEiTGuWT2NKvLR61qsQpEIfrIasu5T1yowItgodpNWkh8Tt_ouljIVnyM4KPzE0YRb/exec'
+      'https://script.google.com/macros/s/AKfycbyh3SoHYjw74HaKoy5oWvjZpqr0rVAH4_gOepzbWvd70j6buZLT0NnXiUa_jk9xfEJo/exec'
 
     // Build combined product list for emails
     const allProducts = [
