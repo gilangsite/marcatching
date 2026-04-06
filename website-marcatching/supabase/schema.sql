@@ -73,9 +73,13 @@ create table if not exists orders (
   price_discounted integer default 0,
   voucher_discount integer default 0,
   total_paid integer not null default 0,
+  addon_items jsonb default '[]'::jsonb,
   status text not null default 'pending',
   created_at timestamptz not null default now()
 );
+
+-- Migration: Add addon_items to existing orders table (run if table already exists)
+-- ALTER TABLE orders ADD COLUMN IF NOT EXISTS addon_items JSONB DEFAULT '[]'::jsonb;
 
 -- Enable Row Level Security
 alter table links enable row level security;

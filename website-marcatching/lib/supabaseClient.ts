@@ -60,6 +60,13 @@ export type Voucher = {
   created_at: string
 }
 
+export type AddonItem = {
+  id: string
+  name: string
+  priceOriginal: number
+  priceDiscounted: number
+}
+
 export type Order = {
   id: string
   product_id: string | null
@@ -74,6 +81,7 @@ export type Order = {
   price_discounted: number
   voucher_discount: number
   total_paid: number
+  addon_items: AddonItem[] | null
   status: string
   created_at: string
 }

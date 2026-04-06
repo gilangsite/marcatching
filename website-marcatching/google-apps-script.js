@@ -109,8 +109,26 @@ function handleSendCourseEmail(data) {
 
 // ─── COURSE ACCESS EMAIL TEMPLATE ──────────────────────────
 function sendCourseAccessEmail(data) {
-  var subject = 'Akses E-Course Kamu Sudah Aktif — ' + (data.productName || 'Marcatching');
-  
+  // Support multiple products (main + addons)
+  var allProducts = data.allProducts || [{ name: data.productName || '-', priceOriginal: 0, priceDiscounted: 0 }];
+  var productListForSubject = allProducts.map(function(p) { return p.name; }).join(', ');
+  var subject = 'Akses E-Course Kamu Sudah Aktif — ' + productListForSubject;
+
+  // Build product rows HTML
+  var productRowsHtml = allProducts.map(function(p, i) {
+    return '<tr>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:14px;color:#374151;">' +
+        '<strong style="color:#111827;">' + (p.name || '-') + '</strong>' +
+      '</td>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;">' +
+        (p.priceOriginal > 0 && p.priceOriginal !== p.priceDiscounted
+          ? '<span style="text-decoration:line-through;color:#dc2626;margin-right:6px;">Rp ' + Number(p.priceOriginal).toLocaleString('id-ID') + '</span>'
+          : '') +
+        '<strong style="color:#0d3369;">Rp ' + Number(p.priceDiscounted).toLocaleString('id-ID') + '</strong>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
   var htmlBody = `
   <!DOCTYPE html>
   <html>
@@ -132,15 +150,15 @@ function sendCourseAccessEmail(data) {
       <div style="padding:36px 28px;">
         <p style="font-size:16px;color:#111827;margin:0 0 8px;">Halo <strong>${data.fullName || 'Member Marcatching'}</strong>!</p>
         <p style="font-size:14px;color:#4a5568;line-height:1.7;margin:0 0 28px;">
-          Selamat! Pembayaran untuk course <strong>${data.productName || '-'}</strong> sudah dikonfirmasi.
-          Kamu sekarang bisa mengakses semua materi yang tersedia di Marcatching E-Course.
+          Selamat! Pembayaranmu sudah dikonfirmasi. Kamu sekarang bisa mengakses semua materi yang tersedia di Marcatching E-Course.
         </p>
 
-        <!-- Course Info Card -->
+        <!-- Course List Card -->
         <div style="background:#f8fafc;border-radius:14px;padding:20px 24px;margin-bottom:28px;border:1px solid #e2e8f0;">
-          <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Course yang Kamu Dapatkan</div>
-          <div style="font-size:18px;font-weight:800;color:#111827;">${data.productName || '-'}</div>
-          <div style="font-size:13px;color:#64748b;margin-top:4px;">Akses seumur hidup &middot; Belajar sesuai kecepatan kamu</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Course yang Kamu Dapatkan</div>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+            ${productRowsHtml}
+          </table>
         </div>
 
         <!-- How to access -->
@@ -177,7 +195,7 @@ function sendCourseAccessEmail(data) {
         <!-- CTA Button -->
         <div style="text-align:center;margin-bottom:28px;">
           <a href="https://marcatching.vercel.app/course/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
-            Akses E-Course Sekarang →
+            Akses E-Course Sekarang
           </a>
         </div>
 
@@ -221,7 +239,24 @@ function sendAdminNotificationEmail(data) {
     return 'Rp ' + Number(num).toLocaleString('id-ID');
   }
 
-  var subject = '🛒 Pembelian Baru: ' + (data.productName || 'Produk') + ' — Marcatching';
+  var allProducts = data.allProducts || [{ name: data.productName || '-', priceOriginal: 0, priceDiscounted: 0 }];
+  var subject = 'Pembelian Baru: ' + allProducts.map(function(p) { return p.name; }).join(' + ') + ' — Marcatching';
+
+  // Build product rows HTML for admin
+  var productRowsHtml = allProducts.map(function(p) {
+    return '<tr>' +
+      '<td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Produk</td>' +
+      '<td style="padding:7px 0;font-weight:600;color:#0d3369;border-bottom:1px solid #f1f5f9;">' + (p.name || '-') + '</td>' +
+    '</tr>' +
+    '<tr>' +
+      '<td style="padding:4px 0;color:#9ca3af;border-bottom:1px solid #f8fafc;font-size:12px;">Harga Asli</td>' +
+      '<td style="padding:4px 0;font-size:12px;text-decoration:line-through;color:#dc2626;border-bottom:1px solid #f8fafc;">' + formatRp(p.priceOriginal || 0) + '</td>' +
+    '</tr>' +
+    '<tr>' +
+      '<td style="padding:4px 0 10px;color:#9ca3af;border-bottom:1px solid #e2e8f0;font-size:12px;">Harga Diskon</td>' +
+      '<td style="padding:4px 0 10px;font-size:12px;color:#111827;border-bottom:1px solid #e2e8f0;">' + formatRp(p.priceDiscounted || 0) + '</td>' +
+    '</tr>';
+  }).join('');
 
   var htmlBody = `
   <!DOCTYPE html>
@@ -234,7 +269,7 @@ function sendAdminNotificationEmail(data) {
       <div style="background:#0d3369;padding:28px 24px;text-align:center;">
         <img src="https://marcatching.vercel.app/logo-type-white.png" alt="Marcatching" style="height:28px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />
         <h1 style="color:#ffffff;font-size:18px;margin:0;font-weight:700;">Ada Pembelian Baru!</h1>
-        <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk untuk <strong style="color:#ffffff;">${data.productName || '-'}</strong></p>
+        <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk dari <strong style="color:#ffffff;">${data.fullName || '-'}</strong></p>
       </div>
 
       <!-- Body -->
@@ -243,9 +278,9 @@ function sendAdminNotificationEmail(data) {
           Halo Gilang, ada order baru yang masuk. Berikut detail pembeliannya:
         </p>
 
-        <!-- Order Details -->
-        <div style="background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:24px;border:1px solid #e2e8f0;">
-          <h3 style="font-size:12px;color:#94a3b8;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Detail Order</h3>
+        <!-- Buyer Details -->
+        <div style="background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #e2e8f0;">
+          <h3 style="font-size:12px;color:#94a3b8;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Data Pembeli</h3>
           <table style="width:100%;font-size:14px;border-collapse:collapse;">
             <tr>
               <td style="padding:7px 0;color:#6b7280;width:40%;border-bottom:1px solid #f1f5f9;">Nama</td>
@@ -256,21 +291,17 @@ function sendAdminNotificationEmail(data) {
               <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${data.email || '-'}</td>
             </tr>
             <tr>
-              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">WhatsApp</td>
-              <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${data.whatsapp || '-'}</td>
+              <td style="padding:7px 0;color:#6b7280;">WhatsApp</td>
+              <td style="padding:7px 0;color:#111827;">${data.whatsapp || '-'}</td>
             </tr>
-            <tr>
-              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Product</td>
-              <td style="padding:7px 0;font-weight:600;color:#0d3369;border-bottom:1px solid #f1f5f9;">${data.productName || '-'}</td>
-            </tr>
-            <tr>
-              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Harga Asli</td>
-              <td style="padding:7px 0;text-decoration:line-through;color:#dc2626;border-bottom:1px solid #f1f5f9;">${formatRp(data.priceOriginal || 0)}</td>
-            </tr>
-            <tr>
-              <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Harga Diskon</td>
-              <td style="padding:7px 0;color:#111827;border-bottom:1px solid #f1f5f9;">${formatRp(data.priceDiscounted || 0)}</td>
-            </tr>
+          </table>
+        </div>
+
+        <!-- Product Details -->
+        <div style="background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #e2e8f0;">
+          <h3 style="font-size:12px;color:#94a3b8;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Produk yang Dibeli</h3>
+          <table style="width:100%;font-size:14px;border-collapse:collapse;">
+            ${productRowsHtml}
             ${data.voucherCode ? `
             <tr>
               <td style="padding:7px 0;color:#6b7280;border-bottom:1px solid #f1f5f9;">Voucher</td>
@@ -278,8 +309,8 @@ function sendAdminNotificationEmail(data) {
             </tr>
             ` : ''}
             <tr>
-              <td style="padding:10px 0 4px;color:#0d3369;font-weight:700;font-size:15px;">Total Bayar</td>
-              <td style="padding:10px 0 4px;font-weight:800;font-size:18px;color:#0d3369;">${formatRp(data.totalPaid || 0)}</td>
+              <td style="padding:12px 0 4px;color:#0d3369;font-weight:700;font-size:15px;">Total Bayar</td>
+              <td style="padding:12px 0 4px;font-weight:800;font-size:18px;color:#0d3369;">${formatRp(data.totalPaid || 0)}</td>
             </tr>
           </table>
         </div>
@@ -287,7 +318,7 @@ function sendAdminNotificationEmail(data) {
         <!-- CTA Button -->
         <div style="text-align:center;margin-bottom:8px;">
           <a href="https://marcatching.vercel.app/admin?tab=orders" style="display:inline-block;background:#0d3369;color:#ffffff;font-size:14px;font-weight:700;padding:13px 32px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">
-            Buka Dashboard Admin → Orders
+            Buka Dashboard Admin - Orders
           </a>
         </div>
       </div>
@@ -308,7 +339,7 @@ function sendAdminNotificationEmail(data) {
   });
 }
 
-// ─── CHECKOUT: Save to Sheet + Send Email ───────────────────
+// ─── CHECKOUT: Save to Sheet + Send Confirmation Email ─────
 function handleCheckout(data) {
   // 1. Save to Google Sheets
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
@@ -316,41 +347,45 @@ function handleCheckout(data) {
   // Check if header exists, if not create it
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
-      'Timestamp', 'Order ID', 'Product Name', 'Full Name', 'Email',
+      'Timestamp', 'Order ID', 'Produk Utama', 'Add-On Products', 'Full Name', 'Email',
       'WhatsApp', 'Background', 'Referral Source', 'Voucher Code',
-      'Original Price', 'Discounted Price', 'Voucher Discount',
-      'Total Paid', 'Status'
+      'Harga Utama', 'Add-On Total', 'Subtotal', 'Voucher Discount',
+      'Total Bayar', 'Status'
     ]);
   }
   
-  // Format currency for sheets
   function formatRp(num) {
     return 'Rp ' + Number(num).toLocaleString('id-ID');
   }
   
+  var addons = data.addonItems || [];
+  var addonNames = addons.map(function(a) { return a.name; }).join(', ') || '-';
+  var subtotal = (data.priceDiscounted || 0) + (data.addonTotal || 0);
+
   sheet.appendRow([
     new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
     data.orderId || '-',
     data.productName || '-',
+    addonNames,
     data.fullName || '-',
     data.email || '-',
     data.whatsapp || '-',
     data.background || '-',
     data.referralSource || '-',
     data.voucherCode || '-',
-    formatRp(data.priceOriginal || 0),
     formatRp(data.priceDiscounted || 0),
+    formatRp(data.addonTotal || 0),
+    formatRp(subtotal),
     formatRp(data.voucherDiscount || 0),
     formatRp(data.totalPaid || 0),
     data.status || 'pending'
   ]);
   
-  // 2. Send Confirmation Email
+  // 2. Send Confirmation Email to buyer
   if (data.email) {
     try {
       sendConfirmationEmail(data);
     } catch (emailErr) {
-      // Don't fail the whole request if email fails
       Logger.log('Email error: ' + emailErr.toString());
     }
   }
@@ -361,10 +396,28 @@ function handleCheckout(data) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-// ─── CONFIRMATION EMAIL ─────────────────────────────────────
+// ─── CONFIRMATION EMAIL (to buyer) ─────────────────────────
 function sendConfirmationEmail(data) {
-  var subject = 'Pembayaran Sedang Dikonfirmasi — ' + (data.productName || 'Marcatching');
-  
+  function formatRp(num) {
+    return 'Rp ' + Number(num).toLocaleString('id-ID');
+  }
+
+  var allProducts = data.allProducts || [{ name: data.productName || '-', priceOriginal: 0, priceDiscounted: 0 }];
+  var subject = 'Pembayaran Sedang Dikonfirmasi — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
+
+  // Build product rows for confirmation email
+  var productRowsHtml = allProducts.map(function(p) {
+    return '<tr>' +
+      '<td style="padding:6px 0;color:#718096;">' + (p.name || '-') + '</td>' +
+      '<td style="padding:6px 0;text-align:right;">' +
+        (p.priceOriginal > 0 && p.priceOriginal !== p.priceDiscounted
+          ? '<span style="text-decoration:line-through;color:#dc2626;font-size:12px;margin-right:6px;">' + formatRp(p.priceOriginal) + '</span>'
+          : '') +
+        '<strong>' + formatRp(p.priceDiscounted) + '</strong>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
   var htmlBody = `
   <!DOCTYPE html>
   <html>
@@ -385,17 +438,20 @@ function sendConfirmationEmail(data) {
       <div style="padding:32px 24px;">
         <p style="font-size:16px;color:#1a1a1a;margin:0 0 8px;">Halo <strong>${data.fullName || 'Pelanggan'}</strong>,</p>
         <p style="font-size:14px;color:#4a5568;line-height:1.6;margin:0 0 24px;">
-          Terima kasih telah melakukan checkout untuk produk <strong>${data.productName || '-'}</strong>. 
-          Pembayaran kamu sedang dalam proses konfirmasi oleh tim Marcatching.
+          Terima kasih telah melakukan checkout! Pembayaran kamu sedang dalam proses konfirmasi oleh tim Marcatching.
         </p>
 
         <!-- Order Details -->
         <div style="background:#f7fafc;border-radius:12px;padding:20px;margin-bottom:24px;">
           <h3 style="font-size:14px;color:#0d3369;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.05em;">Detail Pembelian</h3>
-          <table style="width:100%;font-size:14px;color:#2d3748;">
+          <table style="width:100%;font-size:14px;color:#2d3748;border-collapse:collapse;">
             <tr>
-              <td style="padding:6px 0;color:#718096;">Produk</td>
-              <td style="padding:6px 0;text-align:right;font-weight:600;">${data.productName || '-'}</td>
+              <td style="padding:6px 0;color:#718096;" colspan="2"><strong style="color:#374151;">Produk yang Dibeli</strong></td>
+            </tr>
+            ${productRowsHtml}
+            <tr style="border-top:1px solid #e2e8f0;">
+              <td style="padding:6px 0;color:#718096;"></td>
+              <td style="padding:6px 0;text-align:right;"></td>
             </tr>
             <tr>
               <td style="padding:6px 0;color:#718096;">Nama</td>
@@ -409,6 +465,12 @@ function sendConfirmationEmail(data) {
               <td style="padding:6px 0;color:#718096;">WhatsApp</td>
               <td style="padding:6px 0;text-align:right;">${data.whatsapp || '-'}</td>
             </tr>
+            ${data.voucherCode ? `
+            <tr>
+              <td style="padding:6px 0;color:#718096;">Voucher</td>
+              <td style="padding:6px 0;text-align:right;color:#16a34a;">${data.voucherCode} (-${formatRp(data.voucherDiscount || 0)})</td>
+            </tr>
+            ` : ''}
             <tr style="border-top:1px solid #e2e8f0;">
               <td style="padding:12px 0 6px;color:#718096;">Total Pembayaran</td>
               <td style="padding:12px 0 6px;text-align:right;font-weight:700;font-size:18px;color:#0d3369;">Rp ${Number(data.totalPaid || 0).toLocaleString('id-ID')}</td>
@@ -446,6 +508,6 @@ function doOptions(e) {
 
 // Test endpoint
 function doGet(e) {
-  return ContentService.createTextOutput('✅ Web App Marcatching (All-in-One) berjalan normal!')
+  return ContentService.createTextOutput('Web App Marcatching (All-in-One) berjalan normal!')
     .setMimeType(ContentService.MimeType.TEXT);
 }

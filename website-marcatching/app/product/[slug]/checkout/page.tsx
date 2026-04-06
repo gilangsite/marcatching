@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Copy, Check, Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Copy, Check, Loader2, ShoppingCart, Plus, X, Search, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Product } from '@/lib/supabaseClient'
+import type { Product, AddonItem } from '@/lib/supabaseClient'
 import styles from './checkout.module.css'
 
 function formatRupiah(num: number): string {
@@ -18,6 +18,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Add-on etalase
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([])
+  const [selectedAddons, setSelectedAddons] = useState<AddonItem[]>([])
+  const [addonSearchQuery, setAddonSearchQuery] = useState('')
+  const [addonDropdownOpen, setAddonDropdownOpen] = useState(false)
+  const addonDropdownRef = useRef<HTMLDivElement>(null)
 
   // Form fields
   const [fullName, setFullName] = useState('')
@@ -42,21 +49,44 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const [formError, setFormError] = useState('')
 
   useEffect(() => {
-    async function fetchProduct() {
-      const { data, error } = await supabase
+    async function fetchData() {
+      // Fetch main product
+      const { data: prodData, error: prodError } = await supabase
         .from('products')
         .select('*')
         .eq('slug', slug)
         .eq('is_active', true)
         .single()
 
-      if (!error && data) {
-        setProduct(data as Product)
+      if (!prodError && prodData) {
+        setProduct(prodData as Product)
+
+        // Fetch all other active products for add-on
+        const { data: allProds } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .neq('slug', slug)
+          .order('name', { ascending: true })
+
+        if (allProds) setAvailableProducts(allProds as Product[])
       }
       setLoading(false)
     }
-    fetchProduct()
+    fetchData()
   }, [slug])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (addonDropdownRef.current && !addonDropdownRef.current.contains(e.target as Node)) {
+        setAddonDropdownOpen(false)
+        setAddonSearchQuery('')
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   if (loading) {
     return (
@@ -82,7 +112,9 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   // Price calculations
   const priceOriginal = product.price_before_discount || 0
   const priceDiscounted = product.price_after_discount || 0
-  const totalPaid = Math.max(0, priceDiscounted - voucherDiscount)
+  const addonTotal = selectedAddons.reduce((sum, a) => sum + a.priceDiscounted, 0)
+  const subtotalBeforeVoucher = priceDiscounted + addonTotal
+  const totalPaid = Math.max(0, subtotalBeforeVoucher - voucherDiscount)
 
   // Build poster URL
   let posterUrl = product.image_url || ''
@@ -93,7 +125,44 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     }
   }
 
-  // Validate voucher
+  // Filtered add-on products (exclude already selected)
+  const selectedIds = selectedAddons.map(a => a.id)
+  const filteredProducts = availableProducts.filter(p => {
+    const notSelected = !selectedIds.includes(p.id)
+    const matchesSearch = addonSearchQuery === '' ||
+      p.name.toLowerCase().includes(addonSearchQuery.toLowerCase())
+    return notSelected && matchesSearch
+  })
+
+  // Add addon
+  function handleAddAddon(p: Product) {
+    setSelectedAddons(prev => [...prev, {
+      id: p.id,
+      name: p.name,
+      priceOriginal: p.price_before_discount,
+      priceDiscounted: p.price_after_discount,
+    }])
+    setAddonDropdownOpen(false)
+    setAddonSearchQuery('')
+    // Reset voucher when cart changes
+    if (voucherValid) {
+      setVoucherValid(false)
+      setVoucherDiscount(0)
+      setVoucherMsg('Harga berubah, silakan terapkan ulang voucher.')
+    }
+  }
+
+  // Remove addon
+  function handleRemoveAddon(id: string) {
+    setSelectedAddons(prev => prev.filter(a => a.id !== id))
+    if (voucherValid) {
+      setVoucherValid(false)
+      setVoucherDiscount(0)
+      setVoucherMsg('Harga berubah, silakan terapkan ulang voucher.')
+    }
+  }
+
+  // Validate voucher — pass total subtotal so percentage discount applies correctly
   async function handleValidateVoucher() {
     if (!voucherCode.trim()) return
     setVoucherChecking(true)
@@ -103,7 +172,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       const res = await fetch('/api/voucher/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim(), productPrice: priceDiscounted }),
+        body: JSON.stringify({ code: voucherCode.trim(), productPrice: subtotalBeforeVoucher }),
       })
       const data = await res.json()
 
@@ -126,7 +195,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   // Validate form & show payment
   function handleCheckout() {
     setFormError('')
-
     if (!fullName.trim()) { setFormError('Nama Lengkap wajib diisi'); return }
     if (!email.trim()) { setFormError('Email Aktif wajib diisi'); return }
     if (!whatsapp.trim()) { setFormError('Nomor WA wajib diisi'); return }
@@ -134,7 +202,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     if (!referralSource) { setFormError('Sumber informasi wajib dipilih'); return }
     if (background === 'Other' && !backgroundOther.trim()) { setFormError('Mohon isi background kamu'); return }
     if (referralSource === 'Referral' && !referralName.trim()) { setFormError('Mohon isi nama referral'); return }
-
     setShowPayment(true)
   }
 
@@ -148,7 +215,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   // Submit payment
   async function handlePaid() {
     setSubmitting(true)
-
     const bgFinal = background === 'Other' ? `Other: ${backgroundOther}` : background
     const refFinal = referralSource === 'Referral' ? `Referral: ${referralName}` : referralSource
 
@@ -167,6 +233,8 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           voucherCode: voucherValid ? voucherCode.trim().toUpperCase() : '',
           priceOriginal,
           priceDiscounted,
+          addonItems: selectedAddons,
+          addonTotal,
           voucherDiscount,
           totalPaid,
         }),
@@ -189,7 +257,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   return (
     <div className={styles.checkoutPage}>
       <div className={styles.splitLayout}>
-        {/* Left: Poster (desktop only, hidden on mobile via CSS) */}
+        {/* Left: Poster (desktop only) */}
         <div className={styles.posterSide}>
           {posterUrl ? (
             <img src={posterUrl} alt={product.name} className={styles.posterImage} />
@@ -212,31 +280,152 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
           {/* Product Summary */}
           <div className={styles.productSummary}>
-            <p className={styles.productSummaryLabel}>Product Name</p>
-            <p className={styles.productSummaryName}>{product.name}</p>
+            <p className={styles.productSummaryLabel}>Ringkasan Pembelian</p>
 
-            {priceOriginal > 0 && priceOriginal !== priceDiscounted && (
-              <div className={styles.priceRow}>
-                <span className={styles.priceLabel}>Harga Normal</span>
-                <span className={styles.priceStrike}>{formatRupiah(priceOriginal)}</span>
+            {/* Main product */}
+            <div className={styles.summaryProductRow}>
+              <span className={styles.summaryProductName}>{product.name}</span>
+              <div className={styles.summaryPrices}>
+                {priceOriginal > 0 && priceOriginal !== priceDiscounted && (
+                  <span className={styles.priceStrike}>{formatRupiah(priceOriginal)}</span>
+                )}
+                <span className={styles.priceValue}>{formatRupiah(priceDiscounted)}</span>
               </div>
-            )}
-            <div className={styles.priceRow}>
-              <span className={styles.priceLabel}>Harga Diskon</span>
-              <span className={styles.priceValue}>{formatRupiah(priceDiscounted)}</span>
             </div>
+
+            {/* Add-on rows */}
+            {selectedAddons.map(addon => (
+              <div key={addon.id} className={styles.summaryProductRow}>
+                <span className={styles.summaryAddonName}>+ {addon.name}</span>
+                <div className={styles.summaryPrices}>
+                  {addon.priceOriginal > 0 && addon.priceOriginal !== addon.priceDiscounted && (
+                    <span className={styles.priceStrike}>{formatRupiah(addon.priceOriginal)}</span>
+                  )}
+                  <span className={styles.priceValue}>{formatRupiah(addon.priceDiscounted)}</span>
+                </div>
+              </div>
+            ))}
+
+            <div className={styles.divider} />
+
             {voucherDiscount > 0 && (
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Potongan Voucher</span>
                 <span style={{ color: '#16a34a', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
               </div>
             )}
-            <div className={styles.divider} />
             <div className={styles.priceRow}>
               <span className={styles.priceLabel} style={{ fontWeight: 700, color: '#0d3369' }}>Total Bayar</span>
               <span className={styles.priceHighlight}>{formatRupiah(totalPaid)}</span>
             </div>
           </div>
+
+          {/* ── ADD-ON ETALASE ─────────────────────────────── */}
+          {availableProducts.length > 0 && (
+            <div className={styles.addonSection}>
+              <div className={styles.addonHeader}>
+                <div className={styles.addonHeaderLeft}>
+                  <div className={styles.addonIconWrap}>
+                    <ShoppingCart size={18} />
+                  </div>
+                  <div>
+                    <p className={styles.addonTitle}>Tambah Course</p>
+                    <p className={styles.addonSubtitle}>Hemat lebih banyak dengan tambah course lain sekarang</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected add-ons */}
+              {selectedAddons.length > 0 && (
+                <div className={styles.addonList}>
+                  {selectedAddons.map(addon => (
+                    <div key={addon.id} className={styles.addonItem}>
+                      <div className={styles.addonItemInfo}>
+                        <span className={styles.addonItemName}>{addon.name}</span>
+                        <div className={styles.addonItemPrices}>
+                          {addon.priceOriginal > 0 && addon.priceOriginal !== addon.priceDiscounted && (
+                            <span className={styles.addonItemStrike}>{formatRupiah(addon.priceOriginal)}</span>
+                          )}
+                          <span className={styles.addonItemPrice}>{formatRupiah(addon.priceDiscounted)}</span>
+                        </div>
+                      </div>
+                      <button
+                        className={styles.addonItemRemove}
+                        onClick={() => handleRemoveAddon(addon.id)}
+                        title="Hapus"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Dropdown trigger */}
+              <div className={styles.addonDropdownWrap} ref={addonDropdownRef}>
+                <button
+                  className={styles.addonDropdownTrigger}
+                  onClick={() => {
+                    setAddonDropdownOpen(prev => !prev)
+                    setAddonSearchQuery('')
+                  }}
+                >
+                  <Plus size={16} />
+                  Pilih Course Tambahan
+                  <ChevronDown
+                    size={15}
+                    className={`${styles.addonChevron} ${addonDropdownOpen ? styles.addonChevronOpen : ''}`}
+                  />
+                </button>
+
+                {addonDropdownOpen && (
+                  <div className={styles.addonDropdownPanel}>
+                    {/* Search */}
+                    <div className={styles.addonSearchWrap}>
+                      <Search size={15} className={styles.addonSearchIcon} />
+                      <input
+                        className={styles.addonSearchInput}
+                        placeholder="Cari course..."
+                        value={addonSearchQuery}
+                        onChange={e => setAddonSearchQuery(e.target.value)}
+                        autoFocus
+                      />
+                    </div>
+
+                    {/* Options */}
+                    <div className={styles.addonDropdownList}>
+                      {filteredProducts.length === 0 ? (
+                        <p className={styles.addonDropdownEmpty}>
+                          {addonSearchQuery ? 'Course tidak ditemukan' : 'Semua course sudah ditambahkan'}
+                        </p>
+                      ) : (
+                        filteredProducts.map(p => (
+                          <button
+                            key={p.id}
+                            className={styles.addonDropdownOption}
+                            onClick={() => handleAddAddon(p)}
+                          >
+                            <div className={styles.addonOptionInfo}>
+                              <span className={styles.addonOptionName}>{p.name}</span>
+                              <div className={styles.addonOptionPrices}>
+                                {p.price_before_discount > 0 && p.price_before_discount !== p.price_after_discount && (
+                                  <span className={styles.addonOptionStrike}>{formatRupiah(p.price_before_discount)}</span>
+                                )}
+                                <span className={styles.addonOptionPrice}>{formatRupiah(p.price_after_discount)}</span>
+                              </div>
+                            </div>
+                            <div className={styles.addonOptionAdd}>
+                              <Plus size={14} />
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Voucher */}
           <div className={styles.voucherSection}>
@@ -341,18 +530,32 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
               </div>
 
               <div className={styles.paymentBreakdown}>
-                <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Jumlah yang harus di Transfer</p>
+                <p className={styles.breakdownSectionTitle}>Rincian Pembelian</p>
 
-                {priceOriginal > 0 && priceOriginal !== priceDiscounted && (
-                  <div className={styles.breakdownRow}>
-                    <span className={styles.breakdownLabel}>Harga Normal</span>
-                    <span style={{ textDecoration: 'line-through', color: '#dc2626' }}>{formatRupiah(priceOriginal)}</span>
-                  </div>
-                )}
+                {/* Main product */}
                 <div className={styles.breakdownRow}>
-                  <span className={styles.breakdownLabel}>Harga Diskon</span>
-                  <span className={styles.breakdownValue}>{formatRupiah(priceDiscounted)}</span>
+                  <span className={styles.breakdownLabel}>{product.name}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                    {priceOriginal > 0 && priceOriginal !== priceDiscounted && (
+                      <span style={{ textDecoration: 'line-through', color: '#dc2626', fontSize: '0.78rem' }}>{formatRupiah(priceOriginal)}</span>
+                    )}
+                    <span className={styles.breakdownValue}>{formatRupiah(priceDiscounted)}</span>
+                  </div>
                 </div>
+
+                {/* Add-ons */}
+                {selectedAddons.map(addon => (
+                  <div key={addon.id} className={styles.breakdownRow}>
+                    <span className={styles.breakdownLabel} style={{ color: '#475569' }}>+ {addon.name}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                      {addon.priceOriginal > 0 && addon.priceOriginal !== addon.priceDiscounted && (
+                        <span style={{ textDecoration: 'line-through', color: '#dc2626', fontSize: '0.78rem' }}>{formatRupiah(addon.priceOriginal)}</span>
+                      )}
+                      <span className={styles.breakdownValue}>{formatRupiah(addon.priceDiscounted)}</span>
+                    </div>
+                  </div>
+                ))}
+
                 {voucherDiscount > 0 && (
                   <div className={styles.breakdownRow}>
                     <span className={styles.breakdownLabel}>Potongan Voucher</span>
