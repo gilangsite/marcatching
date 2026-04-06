@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyh3SoHYjw74HaKoy5oWvjZpqr0rVAH4_gOepzbWvd70j6buZLT0NnXiUa_jk9xfEJo/exec'
+const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxvi_2fCkSg6XYBrpPi2W-J-qLBAEuqoUvuZlsnnazl4AWQ6uvhIY2kKh45o9XgBau3/exec'
 
 export async function POST(req: NextRequest) {
   try {

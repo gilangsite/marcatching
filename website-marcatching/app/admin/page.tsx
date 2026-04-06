@@ -263,7 +263,7 @@ function AdminDashboardInner() {
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files; if (!files || files.length === 0) return
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyh3SoHYjw74HaKoy5oWvjZpqr0rVAH4_gOepzbWvd70j6buZLT0NnXiUa_jk9xfEJo/exec'
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxvi_2fCkSg6XYBrpPi2W-J-qLBAEuqoUvuZlsnnazl4AWQ6uvhIY2kKh45o9XgBau3/exec'
     setUploadingImage(true)
     const newImages = [...(linkForm.image_data || [])]
     for (let i = 0; i < files.length; i++) {
@@ -324,7 +324,7 @@ function AdminDashboardInner() {
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyh3SoHYjw74HaKoy5oWvjZpqr0rVAH4_gOepzbWvd70j6buZLT0NnXiUa_jk9xfEJo/exec'
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxvi_2fCkSg6XYBrpPi2W-J-qLBAEuqoUvuZlsnnazl4AWQ6uvhIY2kKh45o9XgBau3/exec'
     setUploadingPoster(true)
     const reader = new FileReader()
     reader.onload = async (event) => {

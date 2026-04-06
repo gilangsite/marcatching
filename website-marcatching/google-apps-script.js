@@ -239,7 +239,14 @@ function sendAdminNotificationEmail(data) {
     return 'Rp ' + Number(num).toLocaleString('id-ID');
   }
 
-  var allProducts = data.allProducts || [{ name: data.productName || '-', priceOriginal: 0, priceDiscounted: 0 }];
+  // Ensure allProducts is robustly built even if not passed perfectly
+  var allProducts = data.allProducts && data.allProducts.length > 0
+    ? data.allProducts
+    : [{ name: data.productName || '-', priceOriginal: data.priceOriginal, priceDiscounted: data.priceDiscounted }]
+        .concat((data.addonItems || []).map(function(a) {
+          return { name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted };
+        }));
+
   var subject = 'Pembelian Baru: ' + allProducts.map(function(p) { return p.name; }).join(' + ') + ' — Marcatching';
 
   // Build product rows HTML for admin
@@ -331,12 +338,27 @@ function sendAdminNotificationEmail(data) {
   </html>
   `;
 
-  MailApp.sendEmail({
-    to: 'marcatching.id@gmail.com',
-    replyTo: data.email,
-    subject: subject,
-    htmlBody: htmlBody
-  });
+  try {
+    GmailApp.sendEmail(
+      'marcatching.id@gmail.com',
+      subject,
+      '',
+      {
+        htmlBody: htmlBody,
+        replyTo: data.email,
+        name: 'Sistem Pembelian Marcatching'
+      }
+    );
+  } catch (e) {
+    // Fallback to MailApp if GmailApp fails
+    MailApp.sendEmail({
+      to: 'marcatching.id@gmail.com',
+      replyTo: data.email,
+      name: 'Sistem Pembelian Marcatching',
+      subject: subject,
+      htmlBody: htmlBody
+    });
+  }
 }
 
 // ─── CHECKOUT: Save to Sheet + Send Confirmation Email ─────
@@ -409,7 +431,14 @@ function sendConfirmationEmail(data) {
     return 'Rp ' + Number(num).toLocaleString('id-ID');
   }
 
-  var allProducts = data.allProducts || [{ name: data.productName || '-', priceOriginal: 0, priceDiscounted: 0 }];
+  // Ensure allProducts is robustly built even if not passed perfectly
+  var allProducts = data.allProducts && data.allProducts.length > 0
+    ? data.allProducts
+    : [{ name: data.productName || '-', priceOriginal: data.priceOriginal, priceDiscounted: data.priceDiscounted }]
+        .concat((data.addonItems || []).map(function(a) {
+          return { name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted };
+        }));
+
   var subject = 'Pembayaran Sedang Dikonfirmasi — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
 
   // Build product rows for confirmation email
