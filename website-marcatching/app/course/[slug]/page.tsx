@@ -406,7 +406,7 @@ export default function CourseDetailPage() {
                                   const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : mat.content_url
 
                                   return (
-                                    <div className={styles.pdfWrap}>
+                                    <div className={styles.pdfWrap} style={{ position: 'relative' }}>
                                       <iframe
                                         src={embedUrl}
                                         title={mat.title}
@@ -414,6 +414,9 @@ export default function CourseDetailPage() {
                                         allowFullScreen
                                         style={{ width: '100%', height: '100%', border: 'none' }}
                                       />
+                                      {/* Overlay to block Google Drive "Pop-out" button in top-right corner */}
+                                      <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', zIndex: 9, background: 'transparent' }} />
+                                      
                                       <div style={{ position: 'absolute', bottom: '16px', right: '16px', zIndex: 10 }}>
                                         <button 
                                           onClick={() => {
@@ -459,12 +462,14 @@ export default function CourseDetailPage() {
               <span>Kembali</span>
             </button>
           </div>
-          <div className={styles.pdfOverlayBody}>
+          <div className={styles.pdfOverlayBody} style={{ position: 'relative' }}>
             <iframe
               src={fullScreenPdfUrl}
               title={fullScreenTitle}
               className={styles.pdfOverlayIframe}
             />
+            {/* Overlay to block Google Drive "Pop-out" button in top-right corner */}
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', zIndex: 9, background: 'transparent' }} />
           </div>
         </div>
       )}
