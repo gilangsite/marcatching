@@ -346,7 +346,24 @@ function AdminDashboardInner() {
     }
     setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts(); fetchLinks() }
   }
-  async function deleteProduct(id: string) { if (!confirm('Hapus product ini?')) return; await supabase.from('products').delete().eq('id', id); fetchProducts() }
+  async function deleteProduct(p: Product) { 
+    if (!confirm(`Hapus produk "${p.name}"?`)) return; 
+    
+    // Putuskan relasi dari table orders agar tidak error foreign key constraint
+    await supabase.from('orders').update({ product_id: null }).eq('product_id', p.id);
+    
+    // Hapus link button yang otomatis terbuat 
+    await supabase.from('links').delete().eq('url', `/product/${p.slug}`);
+
+    const { error } = await supabase.from('products').delete().eq('id', p.id); 
+    if (error) { 
+      alert('Gagal menghapus produk: ' + error.message); 
+      return; 
+    }
+    
+    fetchProducts();
+    fetchLinks();
+  }
 
   // ── Voucher CRUD ────────────────────────────────────────────
   function openAddVoucher() { setEditingVoucher(null); setVf({ code: '', discount_value: '', discount_type: 'fixed', is_active: true }); setVoucherError(''); setShowVoucherForm(true) }
@@ -591,7 +608,7 @@ function AdminDashboardInner() {
                   </div>
                   <div className={styles.linkActions}>
                     <button className={styles.editBtn} onClick={(e) => { e.stopPropagation(); openEditProduct(p) }}><Pencil size={15} /></button>
-                    <button className={styles.deleteBtn} onClick={(e) => { e.stopPropagation(); deleteProduct(p.id) }}><Trash2 size={15} /></button>
+                    <button className={styles.deleteBtn} onClick={(e) => { e.stopPropagation(); deleteProduct(p) }}><Trash2 size={15} /></button>
                   </div>
                 </div>
               ))}</div>

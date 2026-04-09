@@ -61,7 +61,7 @@ create table if not exists vouchers (
 -- Table: orders
 create table if not exists orders (
   id uuid primary key default gen_random_uuid(),
-  product_id uuid references products(id),
+  product_id uuid references products(id) on delete set null,
   product_name text not null,
   full_name text not null,
   email text not null,
