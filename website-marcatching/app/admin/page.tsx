@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef, Suspense, FormEvent } from 'react'
+import { useState, useEffect, useRef, Suspense, FormEvent, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Reorder, useDragControls } from 'framer-motion'
+import Cropper from 'react-easy-crop'
 import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
   Mail, Link as LinkIcon, Camera, Video,
@@ -83,6 +84,26 @@ function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: 
   )
 }
 
+async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new window.Image()
+    img.addEventListener('load', () => resolve(img))
+    img.addEventListener('error', err => reject(err))
+    img.src = imageSrc
+  })
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return ''
+  canvas.width = pixelCrop.width
+  canvas.height = pixelCrop.height
+  ctx.drawImage(
+    image,
+    pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
+    0, 0, pixelCrop.width, pixelCrop.height
+  )
+  return canvas.toDataURL('image/jpeg', 0.9) // Return base64 directly
+}
+
 // ─── Main component ───────────────────────────────────────────
 function AdminDashboardInner() {
   const router = useRouter()
@@ -107,6 +128,11 @@ function AdminDashboardInner() {
   const [contactSaving, setContactSaving] = useState(false)
   const [contactMsg, setContactMsg] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [cropData, setCropData] = useState<{ src: string; target: 'poster' | 'carousel' | null, file?: File, filename?: string, mimeType?: string }>({ src: '', target: null })
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => { setCroppedAreaPixels(croppedAreaPixels) }, [])
 
   // Products state
   const [products, setProducts] = useState<Product[]>([])
@@ -178,6 +204,11 @@ function AdminDashboardInner() {
 
   async function deleteMaterial(materialId: string, productId: string) {
     if (!confirm('Hapus materi ini?')) return
+    const mat = courseMaterials[productId]?.find(m => m.id === materialId)
+    if (mat && mat.content_url && mat.content_url.includes('drive.google')) {
+      const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+      fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'deleteFile', url: mat.content_url }) }).catch(()=>null)
+    }
     await supabase.from('course_materials').delete().eq('id', materialId)
     fetchCourseMaterials(productId)
   }
@@ -261,22 +292,33 @@ function AdminDashboardInner() {
     if (error) { setLinkError('Terjadi kesalahan: ' + error.message) } else { setShowLinkForm(false); setEditingLink(null); fetchLinks() }
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files; if (!files || files.length === 0) return
+  async function confirmCrop() {
+    if (!croppedAreaPixels || !cropData.src) return
+    const base64 = await getCroppedImg(cropData.src, croppedAreaPixels)
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
-    setUploadingImage(true)
-    const newImages = [...(linkForm.image_data || [])]
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]; const reader = new FileReader()
-      await new Promise<void>((resolve) => {
-        reader.onload = async (event) => {
-          const base64 = event.target?.result as string
-          try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) }); const data = await res.json(); if (data.status === 'success') { newImages.push({ url: data.url, link: '' }) } else { alert("Gagal upload: " + data.message) } } catch { alert("Terjadi kesalahan saat upload gambar.") }
-          resolve()
-        }; reader.readAsDataURL(file)
-      })
+    
+    if (cropData.target === 'poster') {
+      setUploadingPoster(true)
+      setCropData({ src: '', target: null })
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setPf(f => ({ ...f, image_url: data.url })) } else { alert('Gagal upload: ' + data.message) } } catch { alert('Error upload poster') }
+      setUploadingPoster(false)
+    } else if (cropData.target === 'carousel') {
+      setUploadingImage(true)
+      setCropData({ src: '', target: null })
+      const newImages = [...(linkForm.image_data || [])]
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { newImages.push({ url: data.url, link: '' }) } else { alert("Gagal upload: " + data.message) } } catch { alert("Terjadi kesalahan saat upload gambar.") }
+      setLinkForm(f => ({ ...f, image_data: newImages }))
+      setUploadingImage(false)
     }
-    setLinkForm(f => ({ ...f, image_data: newImages })); setUploadingImage(false)
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setCropData({ src: event.target?.result as string, target: 'carousel', file, filename: file.name, mimeType: file.type })
+      setCrop({ x: 0, y: 0 }); setZoom(1); setCroppedAreaPixels(null)
+    }; reader.readAsDataURL(file)
   }
   function handleImageLinkChange(index: number, url: string) { const n = [...(linkForm.image_data || [])]; if (n[index]) { n[index].link = url; setLinkForm(f => ({ ...f, image_data: n })) } }
   function removeImage(index: number) { const n = [...(linkForm.image_data || [])]; n.splice(index, 1); setLinkForm(f => ({ ...f, image_data: n })) }
@@ -324,12 +366,10 @@ function AdminDashboardInner() {
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
-    setUploadingPoster(true)
     const reader = new FileReader()
-    reader.onload = async (event) => {
-      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64: event.target?.result }) }); const data = await res.json(); if (data.status === 'success') { setPf(f => ({ ...f, image_url: data.url })) } else { alert('Gagal upload: ' + data.message) } } catch { alert('Error upload poster') }
-      setUploadingPoster(false)
+    reader.onload = (event) => {
+      setCropData({ src: event.target?.result as string, target: 'poster', file, filename: file.name, mimeType: file.type })
+      setCrop({ x: 0, y: 0 }); setZoom(1); setCroppedAreaPixels(null)
     }; reader.readAsDataURL(file)
   }
 
@@ -348,6 +388,12 @@ function AdminDashboardInner() {
   }
   async function deleteProduct(p: Product) { 
     if (!confirm(`Hapus produk "${p.name}"?`)) return; 
+    
+    // Hapus dari Google Drive jika ada url
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+    if (p.image_url) {
+      fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'deleteFile', url: p.image_url }) }).catch(()=>null)
+    }
     
     // Putuskan relasi dari table orders agar tidak error foreign key constraint
     await supabase.from('orders').update({ product_id: null }).eq('product_id', p.id);
@@ -977,6 +1023,49 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                   <div className={styles.formActions}><button type="submit" className="btn btn-navy" disabled={contactSaving}>{contactSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Email</>}</button></div>
                 </form>
               )}
+            </div>
+          </div>
+        )}
+        {/* ── CROP MODAL ─── */}
+        {cropData.src && (
+          <div className={styles.cropModalOverlay}>
+            <div className={styles.cropModalContent}>
+              <div className={styles.cropModalHeader}>
+                <h3 className={styles.cropModalTitle}>Sesuaikan Gambar</h3>
+                <button className={styles.closeBtn} onClick={() => setCropData({ src: '', target: null })}><X size={18} /></button>
+              </div>
+              <div className={styles.cropContainer}>
+                <Cropper
+                  image={cropData.src}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={4 / 5}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                  classes={{ containerClassName: styles.cropContainer }}
+                />
+              </div>
+              <div className={styles.cropControls}>
+                <div className={styles.zoomControl}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>Zoom</span>
+                  <input
+                    type="range"
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className={styles.zoomSlider}
+                  />
+                </div>
+              </div>
+              <div className={styles.cropModalActions}>
+                <button className="btn btn-ghost" onClick={() => setCropData({ src: '', target: null })}>Batal</button>
+                <button className="btn btn-navy" onClick={confirmCrop} disabled={uploadingPoster || uploadingImage}>
+                  {(uploadingPoster || uploadingImage) ? 'Mengupload...' : <><Check size={16} /> Crop & Upload</>}
+                </button>
+              </div>
             </div>
           </div>
         )}

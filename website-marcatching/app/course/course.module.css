@@ -228,14 +228,14 @@
 
 .courseCardImage {
   width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
+  aspect-ratio: 4/5;
+  object-fit: contain;
   display: block;
   background: #f1f5f9;
 }
 .courseCardImagePlaceholder {
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 4/5;
   background: linear-gradient(135deg, #111111 0%, #374151 100%);
   display: flex;
   align-items: center;
