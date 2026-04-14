@@ -691,7 +691,7 @@ function AdminDashboardInner() {
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
         <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#ffffff" /></button>
-        <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} unoptimized={true} />
+        <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={140} height={34} className={styles.mobileHeaderLogo} unoptimized={true} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
