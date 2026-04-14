@@ -68,14 +68,18 @@ export const metadata: Metadata = {
     images: ['/opengraph-image.png'],
   },
   robots: 'index, follow',
-  // Link ke icon Apple Touch (180x180 untuk semua iPhone modern)
+  // Icons — file dari realfavicongenerator (letakkan di public/icons/)
   icons: {
+    // Apple Touch Icon — WAJIB untuk iPhone home screen
     apple: [
       { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     icon: [
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/favicon.ico', rel: 'shortcut icon' },
+      { url: '/icons/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
       { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
   },
 }
