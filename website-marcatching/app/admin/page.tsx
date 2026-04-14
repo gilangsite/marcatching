@@ -104,6 +104,80 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
   return canvas.toDataURL('image/jpeg', 0.9) // Return base64 directly
 }
 
+// ─── Visitor Line Chart (stock-style SVG) ────────────────────
+function VisitorLineChart({ data }: {
+  data: { date: string; visitors: number; views: number; clicks: number }[]
+}) {
+  const W = 820, H = 210
+  const PAD = { top: 18, bottom: 38, left: 44, right: 16 }
+  const cW = W - PAD.left - PAD.right
+  const cH = H - PAD.top - PAD.bottom
+  if (!data || data.length === 0) return null
+  const maxV = Math.max(...data.map(d => d.visitors), 1)
+  const n = data.length
+  const toX = (i: number) => PAD.left + (n <= 1 ? cW / 2 : (i / (n - 1)) * cW)
+  const toY = (v: number) => PAD.top + cH - (v / maxV) * cH
+  const pts = data.map((d, i) => ({ x: toX(i), y: toY(d.visitors), ...d }))
+  // Smooth cubic bezier
+  let linePath = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`
+  for (let i = 1; i < pts.length; i++) {
+    const p0 = pts[i - 1], p1 = pts[i]
+    const cpx = ((p0.x + p1.x) / 2).toFixed(1)
+    linePath += ` C ${cpx} ${p0.y.toFixed(1)} ${cpx} ${p1.y.toFixed(1)} ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`
+  }
+  const bY = (PAD.top + cH).toFixed(1)
+  const areaPath = `${linePath} L ${pts[n-1].x.toFixed(1)} ${bY} L ${pts[0].x.toFixed(1)} ${bY} Z`
+  // Y-axis ticks
+  const fmt = (v: number) => v >= 1000 ? `${(v/1000).toFixed(v%1000===0?0:1)}k` : `${Math.round(v)}`
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
+    y: (PAD.top + cH - f * cH).toFixed(1),
+    label: fmt(f * maxV)
+  }))
+  // X-axis labels (max ~7)
+  const step = Math.max(1, Math.floor(n / 7))
+  const lblSet = new Set<number>()
+  for (let i = 0; i < n; i += step) lblSet.add(i)
+  lblSet.add(n - 1)
+  const showDots = n <= 30
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="visGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.30" />
+          <stop offset="70%" stopColor="#1d4ed8" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* Grid lines + Y labels */}
+      {yTicks.map((t, i) => (
+        <g key={i}>
+          <line x1={PAD.left} y1={t.y} x2={W - PAD.right} y2={t.y}
+            stroke={i === 0 ? '#cbd5e1' : '#e2e8f0'} strokeWidth="1" />
+          <text x={PAD.left - 8} y={parseFloat(t.y) + 4} textAnchor="end"
+            fontSize="10" fill="#94a3b8">{t.label}</text>
+        </g>
+      ))}
+      {/* Gradient area */}
+      <path d={areaPath} fill="url(#visGrad)" />
+      {/* Line */}
+      <path d={linePath} fill="none" stroke="#1d4ed8" strokeWidth="2.2"
+        strokeLinecap="round" strokeLinejoin="round" />
+      {/* Dots */}
+      {showDots && pts.map((p, i) => (
+        <circle key={i} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3.5"
+          fill="#1d4ed8" stroke="#ffffff" strokeWidth="1.5">
+          <title>{`${p.date}: ${p.visitors} visitors · ${p.views} views · ${p.clicks} clicks`}</title>
+        </circle>
+      ))}
+      {/* X labels */}
+      {pts.map((p, i) => lblSet.has(i) ? (
+        <text key={i} x={p.x.toFixed(1)} y={H - 4} textAnchor="middle"
+          fontSize="10" fill="#94a3b8">{data[i].date.substring(5)}</text>
+      ) : null)}
+    </svg>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────
 function AdminDashboardInner() {
   const router = useRouter()
@@ -177,7 +251,9 @@ function AdminDashboardInner() {
     topPages: { path: string; count: number }[]
     trafficSources: { source: string; count: number }[]
   }
+  type KpiComparison = { visitors: number; pageViews: number; clicks: number; ctr: number }
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
+  const [kpiComparison, setKpiComparison] = useState<KpiComparison | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
   const [analyticsPreset, setAnalyticsPreset] = useState('30')
   const [analyticsStart, setAnalyticsStart] = useState('')
@@ -287,9 +363,28 @@ function AdminDashboardInner() {
       s = range.start; e = range.end
     }
     try {
-      const res = await fetch(`/api/analytics?start=${encodeURIComponent(s!)}&end=${encodeURIComponent(e!)}`)
-      const data = await res.json()
-      if (data.kpi) setAnalyticsData(data)
+      // Compute previous period (same duration, shifted back)
+      const durMs = new Date(e!).getTime() - new Date(s!).getTime()
+      const prevEnd = new Date(new Date(s!).getTime() - 1).toISOString()
+      const prevStart = new Date(new Date(s!).getTime() - durMs - 1).toISOString()
+      const [currRes, prevRes] = await Promise.all([
+        fetch(`/api/analytics?start=${encodeURIComponent(s!)}&end=${encodeURIComponent(e!)}`),
+        fetch(`/api/analytics?start=${encodeURIComponent(prevStart)}&end=${encodeURIComponent(prevEnd)}`)
+      ])
+      const [currData, prevData] = await Promise.all([currRes.json(), prevRes.json()])
+      if (currData.kpi) {
+        setAnalyticsData(currData)
+        if (prevData.kpi) {
+          const pct = (curr: number, prev: number) =>
+            prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100)
+          setKpiComparison({
+            visitors: pct(currData.kpi.uniqueVisitors, prevData.kpi.uniqueVisitors),
+            pageViews: pct(currData.kpi.totalPageViews, prevData.kpi.totalPageViews),
+            clicks: pct(currData.kpi.totalClicks, prevData.kpi.totalClicks),
+            ctr: pct(currData.kpi.ctr, prevData.kpi.ctr),
+          })
+        } else { setKpiComparison(null) }
+      }
     } catch (err) { console.error('Analytics fetch error:', err) }
     setAnalyticsLoading(false)
   }
@@ -1248,55 +1343,76 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
               <>
                 {/* KPI Cards */}
                 <div className={styles.analyticsKpiGrid}>
+                  {/* Unique Visitors */}
                   <div className={styles.analyticsKpiCard}>
                     <div className={styles.analyticsKpiIcon}><Users size={20} /></div>
                     <div className={styles.analyticsKpiValue}>{analyticsData.kpi.uniqueVisitors.toLocaleString()}</div>
                     <div className={styles.analyticsKpiLabel}>Unique Visitors</div>
+                    {kpiComparison !== null && (
+                      <div className={kpiComparison.visitors >= 0 ? styles.kpiUp : styles.kpiDown}>
+                        {kpiComparison.visitors >= 0 ? '▲' : '▼'} {kpiComparison.visitors > 0 ? '+' : ''}{kpiComparison.visitors}%
+                        <span className={styles.kpiVs}>vs. periode sebelumnya</span>
+                      </div>
+                    )}
                   </div>
+                  {/* Page Views */}
                   <div className={styles.analyticsKpiCard}>
                     <div className={styles.analyticsKpiIcon}><Eye size={20} /></div>
                     <div className={styles.analyticsKpiValue}>{analyticsData.kpi.totalPageViews.toLocaleString()}</div>
                     <div className={styles.analyticsKpiLabel}>Page Views</div>
+                    {kpiComparison !== null && (
+                      <div className={kpiComparison.pageViews >= 0 ? styles.kpiUp : styles.kpiDown}>
+                        {kpiComparison.pageViews >= 0 ? '▲' : '▼'} {kpiComparison.pageViews > 0 ? '+' : ''}{kpiComparison.pageViews}%
+                        <span className={styles.kpiVs}>vs. periode sebelumnya</span>
+                      </div>
+                    )}
                   </div>
+                  {/* Total Clicks */}
                   <div className={styles.analyticsKpiCard}>
                     <div className={styles.analyticsKpiIcon}><MousePointer size={20} /></div>
                     <div className={styles.analyticsKpiValue}>{analyticsData.kpi.totalClicks.toLocaleString()}</div>
                     <div className={styles.analyticsKpiLabel}>Total Clicks</div>
+                    {kpiComparison !== null && (
+                      <div className={kpiComparison.clicks >= 0 ? styles.kpiUp : styles.kpiDown}>
+                        {kpiComparison.clicks >= 0 ? '▲' : '▼'} {kpiComparison.clicks > 0 ? '+' : ''}{kpiComparison.clicks}%
+                        <span className={styles.kpiVs}>vs. periode sebelumnya</span>
+                      </div>
+                    )}
                   </div>
+                  {/* CTR */}
                   <div className={styles.analyticsKpiCard}>
                     <div className={styles.analyticsKpiIcon}><TrendingUp size={20} /></div>
                     <div className={styles.analyticsKpiValue}>{analyticsData.kpi.ctr}%</div>
                     <div className={styles.analyticsKpiLabel}>Click-Through Rate</div>
+                    {kpiComparison !== null && (
+                      <div className={kpiComparison.ctr >= 0 ? styles.kpiUp : styles.kpiDown}>
+                        {kpiComparison.ctr >= 0 ? '▲' : '▼'} {kpiComparison.ctr > 0 ? '+' : ''}{kpiComparison.ctr}%
+                        <span className={styles.kpiVs}>vs. periode sebelumnya</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Daily Trend Mini Chart */}
+                {/* Daily Visitors Trend — Stock-style Line Chart */}
                 {analyticsData.dailyTrend.length > 0 && (
                   <div className={styles.analyticsMiniChart}>
-                    <div className={styles.analyticsMiniChartTitle}>Daily Visitors Trend</div>
-                    <div className={styles.analyticsMiniChartBars}>
-                      {(() => {
-                        const maxVal = Math.max(...analyticsData.dailyTrend.map(d => d.visitors), 1)
-                        return analyticsData.dailyTrend.map((day, i) => (
-                          <div
-                            key={i}
-                            className={styles.analyticsMiniChartBar}
-                            style={{ height: `${Math.max((day.visitors / maxVal) * 100, 4)}%` }}
-                            title={`${day.date}: ${day.visitors} visitors, ${day.views} views, ${day.clicks} clicks`}
-                          />
-                        ))
-                      })()}
+                    <div className={styles.analyticsMiniChartHeader}>
+                      <div>
+                        <div className={styles.analyticsMiniChartTitle}>Daily Visitors Trend</div>
+                        <div className={styles.analyticsMiniChartSub}>
+                          {analyticsData.dailyTrend.reduce((s, d) => s + d.visitors, 0).toLocaleString()} total visitors
+                          {' · '}{analyticsData.dailyTrend.length} days
+                        </div>
+                      </div>
+                      {kpiComparison !== null && (
+                        <div className={kpiComparison.visitors >= 0 ? styles.kpiUpLarge : styles.kpiDownLarge}>
+                          {kpiComparison.visitors >= 0 ? '▲' : '▼'}
+                          {' '}{kpiComparison.visitors > 0 ? '+' : ''}{kpiComparison.visitors}%
+                        </div>
+                      )}
                     </div>
-                    <div className={styles.analyticsMiniChartLabels}>
-                      {analyticsData.dailyTrend.map((day, i) => {
-                        // Show label every few bars to avoid crowding
-                        const showLabel = analyticsData.dailyTrend.length <= 14 || i % Math.ceil(analyticsData.dailyTrend.length / 10) === 0
-                        return (
-                          <div key={i} className={styles.analyticsMiniChartLabel}>
-                            {showLabel ? day.date.substring(5) : ''}
-                          </div>
-                        )
-                      })}
+                    <div className={styles.analyticsMiniChartSvgWrap}>
+                      <VisitorLineChart data={analyticsData.dailyTrend} />
                     </div>
                   </div>
                 )}
