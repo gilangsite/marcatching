@@ -120,6 +120,36 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
 
+    // Traffic Sources
+    const visitorsBySource = new Map<string, Set<string>>()
+    for (const ev of pageViews) {
+      if (!ev.session_id) continue
+      
+      let source = 'Direct URL'
+      const ref = (ev.referrer || '').toLowerCase()
+      if (ref.includes('instagram.com')) {
+        source = 'Instagram'
+      } else if (ref.includes('tiktok.com')) {
+        source = 'TikTok'
+      } else if (ref.includes('facebook') || ref.includes('fb.com')) {
+        source = 'Facebook'
+      } else if (ref.includes('google')) {
+        source = 'Google'
+      } else if (ref) {
+        // You could put generic External Sites here, but keeping it simple
+        source = 'Direct URL / Others'
+      }
+
+      if (!visitorsBySource.has(source)) {
+        visitorsBySource.set(source, new Set())
+      }
+      visitorsBySource.get(source)!.add(ev.session_id)
+    }
+    
+    const trafficSources = Array.from(visitorsBySource.entries())
+      .map(([source, set]) => ({ source, count: set.size }))
+      .sort((a, b) => b.count - a.count)
+
     return NextResponse.json({
       kpi: {
         uniqueVisitors,
@@ -130,6 +160,7 @@ export async function GET(req: NextRequest) {
       buttonPerformance,
       dailyTrend,
       topPages,
+      trafficSources,
     })
   } catch (err) {
     console.error('Analytics error:', err)

@@ -175,6 +175,7 @@ function AdminDashboardInner() {
     buttonPerformance: { link_id: string; link_title: string; clicks: number }[]
     dailyTrend: { date: string; views: number; clicks: number; visitors: number }[]
     topPages: { path: string; count: number }[]
+    trafficSources: { source: string; count: number }[]
   }
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
@@ -1317,6 +1318,54 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                       <div
                                         className={styles.analyticsBarFill}
                                         style={{ width: `${(pg.count / maxViews) * 100}%` }}
+                                      />
+                                    </div>
+                                    <span className={styles.analyticsBarPercent}>{percent}%</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Source Visitor */}
+                {analyticsData.trafficSources && analyticsData.trafficSources.length > 0 && (
+                  <div className={styles.analyticsTableCard}>
+                    <div className={styles.analyticsTableHeader}>
+                      <div>
+                        <h3 className={styles.analyticsTableTitle}>Source Visitor</h3>
+                        <p className={styles.analyticsTableSubtitle}>Sumber platform darimana pengunjung datang ke website</p>
+                      </div>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                      <table className={styles.analyticsTable}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: '60%' }}>Source</th>
+                            <th style={{ width: '20%' }}>Visitors</th>
+                            <th style={{ width: '20%' }}>Share</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsData.trafficSources.map((src, i) => {
+                            const maxVisitors = analyticsData.trafficSources[0]?.count || 1
+                            const percent = analyticsData.kpi.uniqueVisitors > 0
+                              ? Math.round((src.count / analyticsData.kpi.uniqueVisitors) * 100)
+                              : 0
+                            return (
+                              <tr key={src.source || i}>
+                                <td style={{ fontWeight: 600, fontSize: '0.82rem' }}>{src.source}</td>
+                                <td className={styles.analyticsClickCount}>{src.count.toLocaleString()}</td>
+                                <td>
+                                  <div className={styles.analyticsBarWrap}>
+                                    <div className={styles.analyticsBar}>
+                                      <div
+                                        className={styles.analyticsBarFill}
+                                        style={{ width: `${(src.count / maxVisitors) * 100}%` }}
                                       />
                                     </div>
                                     <span className={styles.analyticsBarPercent}>{percent}%</span>
