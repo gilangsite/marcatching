@@ -66,7 +66,7 @@ function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: 
         style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none' }}>
         <GripVertical size={16} color="var(--text-secondary)" />
       </div>
-      <div onClick={() => onEdit(link)} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer', gap: '16px' }}>
+      <div onClick={() => onEdit(link)} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer', gap: '16px', minWidth: 0 }}>
         <div className={styles.linkIcon} style={{ margin: 0 }}><IconComp size={18} strokeWidth={1.75} /></div>
         <div className={styles.linkInfo}>
           <span className={styles.linkTypeBadge}>{link.type === 'product' || link.url?.includes('/product/') ? 'Product' : link.type === 'video' ? 'Video' : link.type === 'carousel' ? 'Carousel' : link.type === 'text' ? 'Text Block' : 'Button'}</span>
