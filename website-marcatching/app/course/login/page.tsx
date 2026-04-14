@@ -131,6 +131,7 @@ export default function CourseLoginPage() {
               width={160}
               height={36}
               style={{ objectFit: 'contain' }}
+              unoptimized={true}
             />
           </div>
         </div>

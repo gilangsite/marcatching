@@ -111,6 +111,7 @@ export default function CourseDashboardPage() {
           width={110}
           height={26}
           className={styles.mobileHeaderLogo}
+          unoptimized={true}
         />
       </div>
 
@@ -129,6 +130,7 @@ export default function CourseDashboardPage() {
             width={140}
             height={32}
             style={{ objectFit: 'contain' }}
+            unoptimized={true}
           />
         </div>
         <div className={styles.sidebarLogo}>
@@ -141,6 +143,7 @@ export default function CourseDashboardPage() {
             width={100}
             height={24}
             style={{ objectFit: 'contain' }}
+            unoptimized={true}
           />
         </div>
 
