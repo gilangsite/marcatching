@@ -82,7 +82,7 @@ export default function CourseLoginPage() {
       return
     }
 
-    router.push('/course')
+    router.push('/')
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -108,7 +108,7 @@ export default function CourseLoginPage() {
       return
     }
 
-    router.push('/course')
+    router.push('/')
   }
 
   function switchMode(newMode: 'register' | 'login') {

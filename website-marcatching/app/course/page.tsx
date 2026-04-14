@@ -33,7 +33,7 @@ export default function CourseDashboardPage() {
 
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/course/login'); return }
+    if (!user) { router.replace('/login'); return }
 
     const email = user.email || ''
     setUserEmail(email)
@@ -95,7 +95,7 @@ export default function CourseDashboardPage() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/course/login')
+    router.push('/login')
   }
 
   return (
@@ -161,7 +161,7 @@ export default function CourseDashboardPage() {
 
         <nav className={styles.sidenav}>
           <Link
-            href="/course"
+            href="/"
             className={`${styles.navItem} ${styles.navItemActive}`}
             onClick={() => setIsSidebarOpen(false)}
           >
@@ -222,7 +222,7 @@ export default function CourseDashboardPage() {
               return (
                 <Link
                   key={course.id}
-                  href={`/course/${course.slug}`}
+                  href={`/${course.slug}`}
                   className={styles.courseCard}
                   id={`course-card-${course.slug}`}
                 >

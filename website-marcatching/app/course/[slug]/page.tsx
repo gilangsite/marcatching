@@ -57,7 +57,7 @@ export default function CourseDetailPage() {
     setLoading(true)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/course/login'); return }
+    if (!user) { router.replace('/login'); return }
 
     setUserId(user.id)
     const email = user.email || ''
@@ -151,7 +151,7 @@ export default function CourseDetailPage() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/course/login')
+    router.push('/login')
   }
 
   const total = materials.length
@@ -217,7 +217,7 @@ export default function CourseDetailPage() {
         </div>
 
         <nav className={styles.sidenav}>
-          <Link href="/course" className={styles.navItem} onClick={() => setIsSidebarOpen(false)}>
+          <Link href="/" className={styles.navItem} onClick={() => setIsSidebarOpen(false)}>
             <BookOpen size={17} /> My Courses
           </Link>
         </nav>
@@ -234,7 +234,7 @@ export default function CourseDetailPage() {
       <main className={styles.content}>
         <div className={styles.courseDetailPage}>
           {/* Back */}
-          <Link href="/course" className={styles.backBtn}>
+          <Link href="/" className={styles.backBtn}>
             <ArrowLeft size={15} /> Kembali ke My Courses
           </Link>
 

@@ -47,6 +47,8 @@ function doPost(e) {
       return handleImageUpload(data);
     } else if (data.action === 'uploadPdf') {
       return handlePdfUpload(data);
+    } else if (data.action === 'deleteFile') {
+      return handleDeleteFile(data);
     } else if (data.action === 'sendCourseEmail') {
       return handleSendCourseEmail(data);
     } else if (data.action === 'notifyAdmin') {
@@ -99,6 +101,40 @@ function handlePdfUpload(data) {
     url: previewUrl,
     id: fileId
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── FILE DELETION ──────────────────────────────────────────
+function handleDeleteFile(data) {
+  try {
+    var url = data.url;
+    var fileId = "";
+    var matchId = url.match(/id=([^&]+)/);
+    var matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    
+    if (matchId && matchId[1]) {
+      fileId = matchId[1];
+    } else if (matchD && matchD[1]) {
+      fileId = matchD[1];
+    }
+    
+    if (fileId) {
+      DriveApp.getFileById(fileId).setTrashed(true);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "File deleted"
+      })).setMimeType(ContentService.MimeType.JSON);
+    } else {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "error",
+        message: "Invalid URL provided for deletion"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 // ─── SEND COURSE ACCESS EMAIL (called by /api/course-email) ─
@@ -214,7 +250,7 @@ function sendCourseAccessEmail(data) {
         '</div>' +
 
         '<div style="text-align:center;margin-bottom:28px;">' +
-          '<a href="https://www.marcatching.com/course/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
+          '<a href="https://course.marcatching.com/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
             'Akses E-Course Sekarang' +
           '</a>' +
         '</div>' +

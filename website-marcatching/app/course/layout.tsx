@@ -11,14 +11,14 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     // Don't guard the login page itself
-    if (pathname === '/course/login') {
+    if (pathname === '/login') {
       setChecking(false)
       return
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.replace('/course/login')
+        router.replace('/login')
       } else {
         setChecking(false)
       }
@@ -26,8 +26,8 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
 
     // Listen for auth state changes (e.g. logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && pathname !== '/course/login') {
-        router.replace('/course/login')
+      if (!session && pathname !== '/login') {
+        router.replace('/login')
       }
     })
 
@@ -35,7 +35,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
   }, [pathname, router])
 
   // Show nothing while checking auth (prevents flash)
-  if (checking && pathname !== '/course/login') {
+  if (checking && pathname !== '/login') {
     return (
       <div style={{
         minHeight: '100vh',
