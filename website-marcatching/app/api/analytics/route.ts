@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
       let source = 'Direct URL'
       const ref = (ev.referrer || '').toLowerCase()
       const path = (ev.page_path || '').toLowerCase()
-      
+
       // WhatsApp Detection:
       // 1. By Referrer (web.whatsapp, wa.me, com.whatsapp)
       // 2. By URL parameters (?ref=wa, ?utm_source=whatsapp, ?source=whatsapp)
@@ -148,13 +148,22 @@ export async function GET(req: NextRequest) {
         source = 'Instagram'
       } else if (ref.includes('tiktok.com') || path.includes('utm_source=tiktok')) {
         source = 'TikTok'
-      } else if (ref.includes('facebook') || ref.includes('fb.com')) {
+      } else if (ref.includes('facebook') || ref.includes('fb.com') || path.includes('utm_source=facebook') || path.includes('utm_source=fb')) {
         source = 'Facebook'
+      } else if (ref.includes('t.co') || ref.includes('twitter.com') || ref.includes('x.com') || path.includes('utm_source=twitter') || path.includes('utm_source=x')) {
+        source = 'X (Twitter)'
       } else if (ref.includes('google')) {
         source = 'Google'
       } else if (ref) {
-        // You could put generic External Sites here, but keeping it simple
-        source = 'External Link / Others'
+        // Try to vividly extract the domain name from the referrer
+        try {
+          const url = new URL(ev.referrer)
+          let hostname = url.hostname.replace('www.', '')
+          // Capitalize first letter beautifully mapping (e.g., linkedin.com -> Linkedin.com)
+          source = hostname.charAt(0).toUpperCase() + hostname.slice(1)
+        } catch {
+          source = 'External Link / Others'
+        }
       }
 
       if (!visitorsBySource.has(source)) {
