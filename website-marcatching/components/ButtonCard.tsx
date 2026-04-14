@@ -37,6 +37,13 @@ export default function ButtonCard({ link, index = 0 }: ButtonCardProps) {
   const IconComponent = ICON_MAP[link.icon] ?? LinkIcon
   const isComingSoon = link.status === 'coming_soon'
 
+  function handleClick() {
+    // Track click event via global analytics tracker
+    if (typeof window !== 'undefined' && window.__trackClick) {
+      window.__trackClick(link.id, link.title)
+    }
+  }
+
   const content = (
     <div 
       className={`${styles.card} ${isComingSoon ? styles.disabled : ''}`}
@@ -75,6 +82,7 @@ export default function ButtonCard({ link, index = 0 }: ButtonCardProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={styles.wrapper}
+          onClick={handleClick}
         >
           {content}
         </a>

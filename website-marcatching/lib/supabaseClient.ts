@@ -120,3 +120,15 @@ export type CourseAccessEmail = {
   order_id: string
   created_at: string
 }
+
+export type AnalyticsEvent = {
+  id: string
+  event_type: 'page_view' | 'click'
+  page_path: string | null
+  link_id: string | null
+  link_title: string | null
+  session_id: string | null
+  referrer: string | null
+  user_agent: string | null
+  created_at: string
+}

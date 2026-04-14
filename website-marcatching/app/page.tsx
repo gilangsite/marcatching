@@ -9,6 +9,7 @@ import ImageCarousel from '@/components/ImageCarousel'
 import VideoEmbed from '@/components/VideoEmbed'
 import FloatingLogo from '@/components/FloatingLogo'
 import Footer from '@/components/Footer'
+import ProductCardTracker from '@/components/ProductCardTracker'
 import { Mail, ArrowRight } from 'lucide-react'
 import styles from './page.module.css'
 
@@ -81,24 +82,26 @@ export default async function HomePage() {
                       }
                       return (
                         <div key={link.id} className={styles.productGrid} style={{marginTop: 0, marginBottom: 8}}>
-                          <Link href={`/product/${product.slug}`} className={styles.productCard}>
-                            <div className={styles.productPoster}>
-                              {posterUrl ? (
-                                <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
-                              ) : (
-                                <div className={styles.productPosterPlaceholder}>No Image</div>
-                              )}
-                              {product.discount_percentage > 0 && (
-                                <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
-                              )}
-                            </div>
-                            <div className={styles.productCardInfo}>
-                              <h3 className={styles.productCardName}>{product.name}</h3>
-                              {product.sub_headline && (
-                                <p className={styles.productCardSub}>{product.sub_headline}</p>
-                              )}
-                            </div>
-                          </Link>
+                          <ProductCardTracker linkId={link.id} linkTitle={link.title}>
+                            <Link href={`/product/${product.slug}`} className={styles.productCard}>
+                              <div className={styles.productPoster}>
+                                {posterUrl ? (
+                                  <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
+                                ) : (
+                                  <div className={styles.productPosterPlaceholder}>No Image</div>
+                                )}
+                                {product.discount_percentage > 0 && (
+                                  <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
+                                )}
+                              </div>
+                              <div className={styles.productCardInfo}>
+                                <h3 className={styles.productCardName}>{product.name}</h3>
+                                {product.sub_headline && (
+                                  <p className={styles.productCardSub}>{product.sub_headline}</p>
+                                )}
+                              </div>
+                            </Link>
+                          </ProductCardTracker>
                         </div>
                       )
                     }

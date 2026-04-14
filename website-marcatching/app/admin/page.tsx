@@ -11,7 +11,7 @@ import {
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
   Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical, Menu,
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
-  FileText
+  FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem } from '@/lib/supabaseClient'
@@ -108,7 +108,7 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -168,6 +168,19 @@ function AdminDashboardInner() {
   const [materialSaving, setMaterialSaving] = useState(false)
   const [materialError, setMaterialError] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
+
+  // ── Analytics state ────────────────────────────────────────
+  type AnalyticsData = {
+    kpi: { uniqueVisitors: number; totalPageViews: number; totalClicks: number; ctr: number }
+    buttonPerformance: { link_id: string; link_title: string; clicks: number }[]
+    dailyTrend: { date: string; views: number; clicks: number; visitors: number }[]
+    topPages: { path: string; count: number }[]
+  }
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
+  const [analyticsLoading, setAnalyticsLoading] = useState(false)
+  const [analyticsPreset, setAnalyticsPreset] = useState('30')
+  const [analyticsStart, setAnalyticsStart] = useState('')
+  const [analyticsEnd, setAnalyticsEnd] = useState('')
 
   // ── Fetch all ─────────────────────────────────────────────
   async function fetchLinks() { setLinksLoading(true); const { data } = await supabase.from('links').select('*').order('order_index'); setLinks(data ?? []); setLinksLoading(false) }
@@ -250,12 +263,84 @@ function AdminDashboardInner() {
     fetchCourseMaterials(productId)
   }
 
+  // ── Analytics fetch ─────────────────────────────────────────
+  function getDateRange(preset: string): { start: string; end: string } {
+    const now = new Date()
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+    let start: Date
+    switch (preset) {
+      case '0': start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); break
+      case '7': start = new Date(end.getTime() - 7 * 86400000); break
+      case '60': start = new Date(end.getTime() - 60 * 86400000); break
+      case '90': start = new Date(end.getTime() - 90 * 86400000); break
+      default: start = new Date(end.getTime() - 30 * 86400000)
+    }
+    return { start: start.toISOString(), end: end.toISOString() }
+  }
+
+  async function fetchAnalytics(startISO?: string, endISO?: string) {
+    setAnalyticsLoading(true)
+    let s = startISO, e = endISO
+    if (!s || !e) {
+      const range = getDateRange(analyticsPreset)
+      s = range.start; e = range.end
+    }
+    try {
+      const res = await fetch(`/api/analytics?start=${encodeURIComponent(s!)}&end=${encodeURIComponent(e!)}`)
+      const data = await res.json()
+      if (data.kpi) setAnalyticsData(data)
+    } catch (err) { console.error('Analytics fetch error:', err) }
+    setAnalyticsLoading(false)
+  }
+
+  function handlePresetChange(preset: string) {
+    setAnalyticsPreset(preset)
+    const range = getDateRange(preset)
+    setAnalyticsStart(range.start.substring(0, 10))
+    setAnalyticsEnd(range.end.substring(0, 10))
+    fetchAnalytics(range.start, range.end)
+  }
+
+  function handleCustomDateApply() {
+    if (analyticsStart && analyticsEnd) {
+      const s = new Date(analyticsStart + 'T00:00:00').toISOString()
+      const e = new Date(analyticsEnd + 'T23:59:59.999').toISOString()
+      setAnalyticsPreset('custom')
+      fetchAnalytics(s, e)
+    }
+  }
+
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
+
+  // Initialize analytics when tab switches to analytics
+  useEffect(() => {
+    if (tab === 'analytics' && !analyticsData && !analyticsLoading) {
+      const range = getDateRange('30')
+      setAnalyticsStart(range.start.substring(0, 10))
+      setAnalyticsEnd(range.end.substring(0, 10))
+      fetchAnalytics(range.start, range.end)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
+  // Supabase Realtime subscription for analytics
+  useEffect(() => {
+    if (tab !== 'analytics') return
+    const channel = supabase
+      .channel('analytics_realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'analytics_events' }, () => {
+        // Debounced refetch on new events
+        fetchAnalytics()
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, analyticsPreset, analyticsStart, analyticsEnd])
 
   // Read ?tab param from URL (e.g. email button "Buka Dashboard Admin → Orders")
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -510,6 +595,7 @@ function AdminDashboardInner() {
           <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(!isSidebarOpen)}><Menu size={24} color="rgba(255,255,255,0.85)" /></button>
         </div>
         <nav className={styles.sidenav}>
+          <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
           <button className={`${styles.navItem} ${tab === 'ecourse' ? styles.navActive : ''}`} onClick={() => { setTab('ecourse'); setIsSidebarOpen(false) }}><BookMarked size={18} /> E-Course</button>
@@ -1026,6 +1112,231 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
             </div>
           </div>
         )}
+
+        {/* ── ANALYTICS TAB ─── */}
+        {tab === 'analytics' && (
+          <div className={styles.tabContent} style={{ maxWidth: 1100 }}>
+            <div className={styles.contentHeader}>
+              <div>
+                <h1 className={styles.contentTitle}>Analytics</h1>
+                <p className={styles.contentDesc}>
+                  <span className={styles.analyticsLiveDot} />
+                  <span className={styles.analyticsLiveLabel}>Realtime</span>
+                  {' · '}Pantau performa website dan klik button
+                </p>
+              </div>
+            </div>
+
+            {/* Date Range Bar */}
+            <div className={styles.analyticsDateBar}>
+              <select
+                className={styles.analyticsPresetSelect}
+                value={analyticsPreset}
+                onChange={(e) => handlePresetChange(e.target.value)}
+              >
+                <option value="0">Today</option>
+                <option value="7">7 Hari Terakhir</option>
+                <option value="30">30 Hari Terakhir</option>
+                <option value="60">60 Hari Terakhir</option>
+                <option value="90">90 Hari Terakhir</option>
+                {analyticsPreset === 'custom' && <option value="custom">Custom Range</option>}
+              </select>
+
+              <div className={styles.analyticsDateInputs}>
+                <input
+                  type="date"
+                  className={styles.analyticsDateInput}
+                  value={analyticsStart}
+                  onChange={(e) => setAnalyticsStart(e.target.value)}
+                />
+                <span className={styles.analyticsDateSep}>to</span>
+                <input
+                  type="date"
+                  className={styles.analyticsDateInput}
+                  value={analyticsEnd}
+                  onChange={(e) => setAnalyticsEnd(e.target.value)}
+                />
+              </div>
+
+              <button className={styles.analyticsRefreshBtn} onClick={handleCustomDateApply} title="Apply date range">
+                <Calendar size={14} /> Apply
+              </button>
+              <button
+                className={styles.analyticsRefreshBtn}
+                onClick={() => fetchAnalytics()}
+                disabled={analyticsLoading}
+                title="Refresh data"
+              >
+                <RefreshCw size={14} className={analyticsLoading ? 'spin' : ''} />
+                {analyticsLoading ? 'Loading...' : 'Refresh'}
+              </button>
+            </div>
+
+            {analyticsLoading && !analyticsData ? (
+              <div className={styles.loading}>Memuat data analytics...</div>
+            ) : analyticsData ? (
+              <>
+                {/* KPI Cards */}
+                <div className={styles.analyticsKpiGrid}>
+                  <div className={styles.analyticsKpiCard}>
+                    <div className={styles.analyticsKpiIcon}><Users size={20} /></div>
+                    <div className={styles.analyticsKpiValue}>{analyticsData.kpi.uniqueVisitors.toLocaleString()}</div>
+                    <div className={styles.analyticsKpiLabel}>Unique Visitors</div>
+                  </div>
+                  <div className={styles.analyticsKpiCard}>
+                    <div className={styles.analyticsKpiIcon}><Eye size={20} /></div>
+                    <div className={styles.analyticsKpiValue}>{analyticsData.kpi.totalPageViews.toLocaleString()}</div>
+                    <div className={styles.analyticsKpiLabel}>Page Views</div>
+                  </div>
+                  <div className={styles.analyticsKpiCard}>
+                    <div className={styles.analyticsKpiIcon}><MousePointer size={20} /></div>
+                    <div className={styles.analyticsKpiValue}>{analyticsData.kpi.totalClicks.toLocaleString()}</div>
+                    <div className={styles.analyticsKpiLabel}>Total Clicks</div>
+                  </div>
+                  <div className={styles.analyticsKpiCard}>
+                    <div className={styles.analyticsKpiIcon}><TrendingUp size={20} /></div>
+                    <div className={styles.analyticsKpiValue}>{analyticsData.kpi.ctr}%</div>
+                    <div className={styles.analyticsKpiLabel}>Click-Through Rate</div>
+                  </div>
+                </div>
+
+                {/* Daily Trend Mini Chart */}
+                {analyticsData.dailyTrend.length > 0 && (
+                  <div className={styles.analyticsMiniChart}>
+                    <div className={styles.analyticsMiniChartTitle}>Daily Visitors Trend</div>
+                    <div className={styles.analyticsMiniChartBars}>
+                      {(() => {
+                        const maxVal = Math.max(...analyticsData.dailyTrend.map(d => d.visitors), 1)
+                        return analyticsData.dailyTrend.map((day, i) => (
+                          <div
+                            key={i}
+                            className={styles.analyticsMiniChartBar}
+                            style={{ height: `${Math.max((day.visitors / maxVal) * 100, 4)}%` }}
+                            title={`${day.date}: ${day.visitors} visitors, ${day.views} views, ${day.clicks} clicks`}
+                          />
+                        ))
+                      })()}
+                    </div>
+                    <div className={styles.analyticsMiniChartLabels}>
+                      {analyticsData.dailyTrend.map((day, i) => {
+                        // Show label every few bars to avoid crowding
+                        const showLabel = analyticsData.dailyTrend.length <= 14 || i % Math.ceil(analyticsData.dailyTrend.length / 10) === 0
+                        return (
+                          <div key={i} className={styles.analyticsMiniChartLabel}>
+                            {showLabel ? day.date.substring(5) : ''}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Button Performance Table */}
+                <div className={styles.analyticsTableCard}>
+                  <div className={styles.analyticsTableHeader}>
+                    <div>
+                      <h3 className={styles.analyticsTableTitle}>Button Performance</h3>
+                      <p className={styles.analyticsTableSubtitle}>Klik per button link di website</p>
+                    </div>
+                  </div>
+                  {analyticsData.buttonPerformance.length === 0 ? (
+                    <div className={styles.analyticsEmptyTable}>Belum ada data klik button.</div>
+                  ) : (
+                    <div style={{ overflowX: 'auto' }}>
+                      <table className={styles.analyticsTable}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: '40%' }}>Button</th>
+                            <th style={{ width: '15%' }}>Clicks</th>
+                            <th style={{ width: '45%' }}>Share</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsData.buttonPerformance.map((btn, i) => {
+                            const maxClicks = analyticsData.buttonPerformance[0]?.clicks || 1
+                            const percent = analyticsData.kpi.totalClicks > 0
+                              ? Math.round((btn.clicks / analyticsData.kpi.totalClicks) * 100)
+                              : 0
+                            return (
+                              <tr key={btn.link_id || i}>
+                                <td>
+                                  <div style={{ fontWeight: 600, color: '#0f172a' }}>{btn.link_title}</div>
+                                </td>
+                                <td className={styles.analyticsClickCount}>{btn.clicks.toLocaleString()}</td>
+                                <td>
+                                  <div className={styles.analyticsBarWrap}>
+                                    <div className={styles.analyticsBar}>
+                                      <div
+                                        className={styles.analyticsBarFill}
+                                        style={{ width: `${(btn.clicks / maxClicks) * 100}%` }}
+                                      />
+                                    </div>
+                                    <span className={styles.analyticsBarPercent}>{percent}%</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+
+                {/* Top Pages */}
+                {analyticsData.topPages.length > 0 && (
+                  <div className={styles.analyticsTableCard}>
+                    <div className={styles.analyticsTableHeader}>
+                      <div>
+                        <h3 className={styles.analyticsTableTitle}>Top Pages</h3>
+                        <p className={styles.analyticsTableSubtitle}>Halaman paling banyak dikunjungi</p>
+                      </div>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                      <table className={styles.analyticsTable}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: '60%' }}>Page</th>
+                            <th style={{ width: '20%' }}>Views</th>
+                            <th style={{ width: '20%' }}>Share</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsData.topPages.map((pg, i) => {
+                            const maxViews = analyticsData.topPages[0]?.count || 1
+                            const percent = analyticsData.kpi.totalPageViews > 0
+                              ? Math.round((pg.count / analyticsData.kpi.totalPageViews) * 100)
+                              : 0
+                            return (
+                              <tr key={pg.path || i}>
+                                <td style={{ fontWeight: 600, fontFamily: 'monospace', fontSize: '0.82rem' }}>{pg.path}</td>
+                                <td className={styles.analyticsClickCount}>{pg.count.toLocaleString()}</td>
+                                <td>
+                                  <div className={styles.analyticsBarWrap}>
+                                    <div className={styles.analyticsBar}>
+                                      <div
+                                        className={styles.analyticsBarFill}
+                                        style={{ width: `${(pg.count / maxViews) * 100}%` }}
+                                      />
+                                    </div>
+                                    <span className={styles.analyticsBarPercent}>{percent}%</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={styles.emptyState}>Klik tab Analytics untuk melihat data.</div>
+            )}
+          </div>
+        )}
+
         {/* ── CROP MODAL ─── */}
         {cropData.src && (
           <div className={styles.cropModalOverlay}>
