@@ -1,0 +1,572 @@
+/* ============================================================
+   ARTICLE DETAIL PAGE — Black & White, matches marcatching.com
+   ============================================================ */
+
+/* ── Reading Progress Bar ── */
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  z-index: 200;
+}
+
+.progressFill {
+  height: 100%;
+  background: #ffffff;
+  transition: width 0.08s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Main ── */
+.main {
+  min-height: 100vh;
+  background: #000000;
+  color: #ffffff;
+  padding: 60px 24px 80px;
+}
+
+/* ── Article container ── */
+.article {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+/* ── Back link ── */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  margin-bottom: 28px;
+  transition: color 0.18s;
+  font-weight: 500;
+}
+.backLink:hover { color: #ffffff; }
+
+/* ── Category ── */
+.articleCat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 16px;
+}
+
+/* ── Title ── */
+.articleTitle {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #ffffff;
+  margin: 0 0 24px;
+}
+
+/* ── Meta (author + date + views) ── */
+.articleMeta {
+  margin-bottom: 24px;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.authorAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+.authorAvatarPlaceholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+
+.authorName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+
+.authorMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
+}
+
+.articleMetaSimple {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.metaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: inline-block;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 24px 0 40px;
+}
+
+/* ── Content Area ── */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Block: Headline ── */
+.blockHeadline {
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+/* ── Block: Text ── */
+.blockText {
+  line-height: 1.8;
+}
+
+/* ── Block: Image ── */
+.blockImage {
+  width: 100%;
+}
+
+.blockImageCaption {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── Block: Video ── */
+.blockVideo {
+  width: 100%;
+}
+
+.blockVideoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+}
+
+.blockVideoFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ── Block: Product Card ── */
+.blockProduct {
+  cursor: pointer;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #111111;
+  transition: all 0.22s ease;
+}
+.blockProduct:hover {
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.blockProductInner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 100px;
+}
+
+.blockProductThumb {
+  position: relative;
+  width: 80px;
+  min-width: 80px;
+  align-self: stretch;
+  overflow: hidden;
+  background: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.blockProductImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.blockProductBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.8);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.blockProductInfo {
+  flex: 1;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.blockProductLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 4px;
+}
+
+.blockProductName {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.blockProductSub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blockProductPrice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.blockProductPriceBefore {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: line-through;
+}
+
+.blockProductPriceAfter {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.blockProductCta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 16px;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  height: 100%;
+  min-height: 80px;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.18s;
+}
+.blockProduct:hover .blockProductCta { color: #ffffff; }
+
+/* ── Product Popup ── */
+.popupOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+}
+
+@media (min-width: 480px) {
+  .popupOverlay { align-items: center; }
+}
+
+.popup {
+  position: relative;
+  background: #111111;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 360px;
+  overflow: hidden;
+  animation: popupIn 0.25s ease;
+}
+
+@keyframes popupIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popupClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.18s;
+}
+.popupClose:hover { background: rgba(255,255,255,0.2); color: #ffffff; }
+
+.popupImgWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.popupImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.popupDiscount {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.8);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.popupBody {
+  padding: 20px;
+}
+
+.popupTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.popupSub {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.popupPricing {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.popupPriceBefore {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: line-through;
+}
+
+.popupPriceAfter {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.popupBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.18s;
+  border: none;
+  font-family: inherit;
+}
+.popupBtn:hover { background: #e5e5e5; }
+
+/* ── Author footer ── */
+.authorFooter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 60px;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.authorFooterAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+.authorAvatarLgPlaceholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+
+.authorFooterLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 4px;
+}
+
+.authorFooterName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ── Back button at end ── */
+.articleEnd {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: center;
+}
+
+.backBtnLg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.18s;
+}
+.backBtnLg:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+}
+
+/* ── Loading ── */
+.loadingWrap {
+  max-width: 680px;
+  margin: 80px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Not Found ── */
+.notFound {
+  max-width: 500px;
+  margin: 120px auto;
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+}
+.notFound p { font-size: 1.1rem; margin-bottom: 20px; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .main { padding: 40px 16px 60px; }
+  .articleTitle { font-size: 1.6rem; }
+  .blockProductInner { flex-wrap: nowrap; }
+}

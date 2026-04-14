@@ -133,3 +133,78 @@ export type AnalyticsEvent = {
   user_agent: string | null
   created_at: string
 }
+
+// ── Article System ──────────────────────────────────────────
+
+export type ArticleCategory = {
+  id: string
+  name: string
+  slug: string
+  created_at: string
+}
+
+export type ArticleAuthor = {
+  id: string
+  name: string
+  photo_url: string | null
+  created_at: string
+}
+
+export type ArticleBlock =
+  | {
+      type: 'headline'
+      id: string
+      text: string
+      size: 'hero' | 'h1' | 'h2' | 'h3' | 'sub'
+      color: string
+      font_family: string
+      align: 'left' | 'center' | 'right'
+    }
+  | {
+      type: 'text'
+      id: string
+      text: string
+      size: '2rem' | '1.5rem' | '1.25rem' | '1rem' | '0.875rem' | '0.75rem'
+      weight: 'normal' | 'bold' | 'semibold'
+      italic: boolean
+      color: string
+      font_family: string
+      align: 'left' | 'center' | 'right' | 'justify'
+    }
+  | {
+      type: 'image'
+      id: string
+      url: string
+      aspect_ratio: '1:3' | '3:5' | '4:5' | '5:3' | '5:4' | '9:16' | '16:9'
+      caption?: string
+    }
+  | {
+      type: 'product'
+      id: string
+      product_id: string
+    }
+  | {
+      type: 'video'
+      id: string
+      url: string
+      caption?: string
+    }
+
+export type Article = {
+  id: string
+  title: string
+  slug: string
+  status: 'draft' | 'published' | 'unpublished'
+  category_id: string | null
+  author_id: string | null
+  view_count: number
+  content: ArticleBlock[]
+  image_urls: string[]
+  excerpt: string | null
+  created_at: string
+  updated_at: string
+  published_at: string | null
+  // Joined
+  article_categories?: ArticleCategory | null
+  article_authors?: ArticleAuthor | null
+}

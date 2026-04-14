@@ -11,10 +11,12 @@ import {
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
   Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical, Menu,
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
-  FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar
+  FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
+  Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem } from '@/lib/supabaseClient'
+import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -182,7 +184,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -243,6 +245,46 @@ function AdminDashboardInner() {
   const [materialError, setMaterialError] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
 
+  // ── Article state ─────────────────────────────────────────
+  const [articles, setArticles] = useState<Article[]>([])
+  const [articlesLoading, setArticlesLoading] = useState(false)
+  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([])
+  const [articleAuthors, setArticleAuthors] = useState<ArticleAuthor[]>([])
+  const [showArticleEditor, setShowArticleEditor] = useState(false)
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null)
+  const [articleSaving, setArticleSaving] = useState(false)
+  const [articleError, setArticleError] = useState('')
+  // Article form
+  const [articleTitle, setArticleTitle] = useState('')
+  const [articleExcerpt, setArticleExcerpt] = useState('')
+  const [articleStatus, setArticleStatus] = useState<'draft'|'published'|'unpublished'>('draft')
+  const [articleCategoryId, setArticleCategoryId] = useState<string>('')
+  const [articleAuthorId, setArticleAuthorId] = useState<string>('')
+  const [articleBlocks, setArticleBlocks] = useState<ArticleBlock[]>([])
+  const [articleImageUrls, setArticleImageUrls] = useState<string[]>([])
+  // Block being added
+  const [addingBlockType, setAddingBlockType] = useState<string|null>(null)
+  const [showBlockMenu, setShowBlockMenu] = useState(false)
+  // Category management
+  const [showCatForm, setShowCatForm] = useState(false)
+  const [catFormName, setCatFormName] = useState('')
+  const [editingCat, setEditingCat] = useState<ArticleCategory|null>(null)
+  const [catSaving, setCatSaving] = useState(false)
+  // Author management
+  const [showAuthorForm, setShowAuthorForm] = useState(false)
+  const [authorFormName, setAuthorFormName] = useState('')
+  const [authorFormPhoto, setAuthorFormPhoto] = useState('')
+  const [editingAuthor, setEditingAuthor] = useState<ArticleAuthor|null>(null)
+  const [authorSaving, setAuthorSaving] = useState(false)
+  const [uploadingAuthorPhoto, setUploadingAuthorPhoto] = useState(false)
+  // Article image upload (for article blocks)
+  const [articleCropData, setArticleCropData] = useState<{src:string; aspectRatio:string; blockId:string; file?:File; filename?:string; mimeType?:string}>({src:'', aspectRatio:'16:9', blockId:''})
+  const [articleCrop, setArticleCrop] = useState({x:0,y:0})
+  const [articleZoom, setArticleZoom] = useState(1)
+  const [articleCroppedAreaPixels, setArticleCroppedAreaPixels] = useState<any>(null)
+  const onArticleCropComplete = useCallback((_: any, pixels: any) => { setArticleCroppedAreaPixels(pixels) }, [])
+  const [uploadingArticleImage, setUploadingArticleImage] = useState(false)
+
   // ── Analytics state ────────────────────────────────────────
   type AnalyticsData = {
     kpi: { uniqueVisitors: number; totalPageViews: number; totalClicks: number; ctr: number }
@@ -265,6 +307,25 @@ function AdminDashboardInner() {
   async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+
+  // ── Article fetchers ───────────────────────────────────────
+  async function fetchArticles() {
+    setArticlesLoading(true)
+    const res = await fetch('/api/articles?admin=1')
+    const data = await res.json()
+    setArticles(Array.isArray(data) ? data : [])
+    setArticlesLoading(false)
+  }
+  async function fetchArticleCategories() {
+    const res = await fetch('/api/article-categories')
+    const data = await res.json()
+    setArticleCategories(Array.isArray(data) ? data : [])
+  }
+  async function fetchArticleAuthors() {
+    const res = await fetch('/api/article-authors')
+    const data = await res.json()
+    setArticleAuthors(Array.isArray(data) ? data : [])
+  }
 
   async function fetchCourseMaterials(productId: string) {
     setCourseLoading(prev => ({ ...prev, [productId]: true }))
@@ -408,6 +469,13 @@ function AdminDashboardInner() {
 
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
 
+  useEffect(() => {
+    if (tab === 'articles' && articles.length === 0 && !articlesLoading) {
+      fetchArticles(); fetchArticleCategories(); fetchArticleAuthors()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
   // Initialize analytics when tab switches to analytics
   useEffect(() => {
     if (tab === 'analytics' && !analyticsData && !analyticsLoading) {
@@ -433,13 +501,206 @@ function AdminDashboardInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, analyticsPreset, analyticsStart, analyticsEnd])
 
-  // Read ?tab param from URL (e.g. email button "Buka Dashboard Admin → Orders")
+  // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
+
+  // ── Article helpers ───────────────────────────────────────
+  function slugifyArticle(text: string) {
+    return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-')
+  }
+
+  function genBlockId() { return Math.random().toString(36).slice(2, 9) }
+
+  function openNewArticle() {
+    setEditingArticle(null)
+    setArticleTitle('')
+    setArticleExcerpt('')
+    setArticleStatus('draft')
+    setArticleCategoryId('')
+    setArticleAuthorId('')
+    setArticleBlocks([])
+    setArticleImageUrls([])
+    setArticleError('')
+    setShowArticleEditor(true)
+  }
+
+  function openEditArticle(a: Article) {
+    setEditingArticle(a)
+    setArticleTitle(a.title)
+    setArticleExcerpt(a.excerpt || '')
+    setArticleStatus(a.status)
+    setArticleCategoryId(a.category_id || '')
+    setArticleAuthorId(a.author_id || '')
+    setArticleBlocks(Array.isArray(a.content) ? a.content : [])
+    setArticleImageUrls(a.image_urls || [])
+    setArticleError('')
+    setShowArticleEditor(true)
+  }
+
+  function addBlock(type: ArticleBlock['type']) {
+    const id = genBlockId()
+    let block: ArticleBlock
+    if (type === 'headline') block = { type, id, text: '', size: 'h2', color: '#0f172a', font_family: 'DM Sans', align: 'left' }
+    else if (type === 'text') block = { type, id, text: '', size: '1rem', weight: 'normal', italic: false, color: '#0f172a', font_family: 'DM Sans', align: 'left' }
+    else if (type === 'image') block = { type, id, url: '', aspect_ratio: '16:9', caption: '' }
+    else if (type === 'product') block = { type, id, product_id: '' }
+    else block = { type: 'video', id, url: '', caption: '' }
+    setArticleBlocks(prev => [...prev, block])
+    setShowBlockMenu(false)
+  }
+
+  function updateBlock(blockId: string, updates: Partial<ArticleBlock>) {
+    setArticleBlocks(prev => prev.map(b => b.id === blockId ? { ...b, ...updates } as ArticleBlock : b))
+  }
+
+  function removeBlock(blockId: string) {
+    // Also remove the image url from tracking if it's an image block
+    const block = articleBlocks.find(b => b.id === blockId)
+    if (block?.type === 'image' && block.url) {
+      setArticleImageUrls(prev => prev.filter(u => u !== block.url))
+    }
+    setArticleBlocks(prev => prev.filter(b => b.id !== blockId))
+  }
+
+  function moveBlock(blockId: string, dir: 'up' | 'down') {
+    const idx = articleBlocks.findIndex(b => b.id === blockId)
+    if (dir === 'up' && idx === 0) return
+    if (dir === 'down' && idx === articleBlocks.length - 1) return
+    const next = [...articleBlocks]
+    const swapIdx = dir === 'up' ? idx - 1 : idx + 1
+    ;[next[idx], next[swapIdx]] = [next[swapIdx], next[idx]]
+    setArticleBlocks(next)
+  }
+
+  async function saveArticle() {
+    if (!articleTitle.trim()) { setArticleError('Judul artikel wajib diisi'); return }
+    setArticleSaving(true); setArticleError('')
+    const slug = slugifyArticle(articleTitle)
+    const payload = {
+      title: articleTitle.trim(),
+      slug,
+      status: articleStatus,
+      category_id: articleCategoryId || null,
+      author_id: articleAuthorId || null,
+      content: articleBlocks,
+      image_urls: articleImageUrls,
+      excerpt: articleExcerpt || null,
+    }
+    try {
+      let res
+      if (editingArticle) {
+        res = await fetch(`/api/articles/${editingArticle.slug}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+      } else {
+        res = await fetch('/api/articles', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+      }
+      const data = await res.json()
+      if (!res.ok) { setArticleError(data.error || 'Gagal menyimpan artikel'); setArticleSaving(false); return }
+      setShowArticleEditor(false); setEditingArticle(null); fetchArticles()
+    } catch { setArticleError('Terjadi kesalahan') }
+    setArticleSaving(false)
+  }
+
+  async function toggleArticleStatus(a: Article) {
+    const newStatus = a.status === 'published' ? 'unpublished' : 'published'
+    await fetch(`/api/articles/${a.slug}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ status: newStatus }) })
+    fetchArticles()
+  }
+
+  async function deleteArticle(a: Article) {
+    if (!confirm(`Hapus artikel "${a.title}"? Semua gambar di Google Drive juga akan dihapus.`)) return
+    await fetch(`/api/articles/${a.slug}`, { method: 'DELETE' })
+    fetchArticles()
+  }
+
+  // ── Category CRUD ─────────────────────────────────────────
+  async function saveCat() {
+    if (!catFormName.trim()) return
+    setCatSaving(true)
+    if (editingCat) {
+      await fetch('/api/article-categories', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: editingCat.id, name: catFormName.trim() }) })
+    } else {
+      await fetch('/api/article-categories', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name: catFormName.trim() }) })
+    }
+    setCatSaving(false); setShowCatForm(false); setCatFormName(''); setEditingCat(null)
+    fetchArticleCategories()
+  }
+
+  async function deleteCat(cat: ArticleCategory) {
+    if (!confirm(`Hapus kategori "${cat.name}"?`)) return
+    await fetch('/api/article-categories', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: cat.id }) })
+    fetchArticleCategories()
+  }
+
+  // ── Author CRUD ───────────────────────────────────────────
+  async function saveAuthor() {
+    if (!authorFormName.trim()) return
+    setAuthorSaving(true)
+    if (editingAuthor) {
+      await fetch('/api/article-authors', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: editingAuthor.id, name: authorFormName.trim(), photo_url: authorFormPhoto || null }) })
+    } else {
+      await fetch('/api/article-authors', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name: authorFormName.trim(), photo_url: authorFormPhoto || null }) })
+    }
+    setAuthorSaving(false); setShowAuthorForm(false); setAuthorFormName(''); setAuthorFormPhoto(''); setEditingAuthor(null)
+    fetchArticleAuthors()
+  }
+
+  async function deleteAuthor(author: ArticleAuthor) {
+    if (!confirm(`Hapus author "${author.name}"?`)) return
+    await fetch('/api/article-authors', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: author.id }) })
+    fetchArticleAuthors()
+  }
+
+  async function handleAuthorPhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; if (!file) return
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
+    const reader = new FileReader()
+    reader.onload = async (ev) => {
+      setUploadingAuthorPhoto(true)
+      const base64 = ev.target?.result as string
+      try {
+        const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) })
+        const data = await res.json()
+        if (data.status === 'success') setAuthorFormPhoto(data.url)
+        else alert('Gagal upload foto: ' + data.message)
+      } catch { alert('Error upload foto') }
+      setUploadingAuthorPhoto(false)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // ── Article image upload (with crop) ──────────────────────
+  function handleArticleImagePick(e: React.ChangeEvent<HTMLInputElement>, blockId: string, aspectRatio: string) {
+    const file = e.target.files?.[0]; if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      setArticleCropData({ src: ev.target?.result as string, aspectRatio, blockId, file, filename: file.name, mimeType: file.type })
+      setArticleCrop({x:0,y:0}); setArticleZoom(1); setArticleCroppedAreaPixels(null)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  async function confirmArticleCrop() {
+    if (!articleCroppedAreaPixels || !articleCropData.src) return
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
+    setUploadingArticleImage(true)
+    const base64 = await getCroppedImg(articleCropData.src, articleCroppedAreaPixels)
+    setArticleCropData({src:'', aspectRatio:'16:9', blockId:''})
+    try {
+      const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: articleCropData.filename, mimeType: articleCropData.mimeType, base64 }) })
+      const data = await res.json()
+      if (data.status === 'success') {
+        const url = data.url
+        updateBlock(articleCropData.blockId, { url } as any)
+        setArticleImageUrls(prev => [...prev, url])
+      } else { alert('Gagal upload gambar: ' + data.message) }
+    } catch { alert('Error upload gambar') }
+    setUploadingArticleImage(false)
+  }
 
   // Close contact dropdown when clicking outside
   useEffect(() => {
@@ -708,6 +969,7 @@ function AdminDashboardInner() {
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
+          <button className={`${styles.navItem} ${tab === 'articles' ? styles.navActive : ''}`} onClick={() => { setTab('articles'); setIsSidebarOpen(false) }}><Newspaper size={18} /> Articles</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
           <button className={`${styles.navItem} ${tab === 'ecourse' ? styles.navActive : ''}`} onClick={() => { setTab('ecourse'); setIsSidebarOpen(false) }}><BookMarked size={18} /> E-Course</button>
           <button className={`${styles.navItem} ${tab === 'vouchers' ? styles.navActive : ''}`} onClick={() => { setTab('vouchers'); setIsSidebarOpen(false) }}><Tag size={18} /> Vouchers</button>
@@ -1615,6 +1877,480 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
             </div>
           </div>
         )}
+
+        {/* ── ARTICLES TAB ─── */}
+        {tab === 'articles' && (
+          <div className={styles.tabContent} style={{ maxWidth: 900 }}>
+            {!showArticleEditor ? (
+              <>
+                {/* Header */}
+                <div className={styles.contentHeader}>
+                  <div>
+                    <h1 className={styles.contentTitle}>Articles</h1>
+                    <p className={styles.contentDesc}>Kelola artikel yang tampil di marcatching.com/article</p>
+                  </div>
+                  <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                    <button className="btn btn-ghost" style={{ fontSize:'0.82rem' }} onClick={() => { setShowCatForm(true); setEditingCat(null); setCatFormName('') }}>
+                      <FolderOpen size={15} /> Kategori
+                    </button>
+                    <button className="btn btn-ghost" style={{ fontSize:'0.82rem' }} onClick={() => { setShowAuthorForm(true); setEditingAuthor(null); setAuthorFormName(''); setAuthorFormPhoto('') }}>
+                      <UserCircle size={15} /> Author
+                    </button>
+                    <button className="btn btn-navy" onClick={openNewArticle}><Plus size={16} /> Tulis Artikel</button>
+                  </div>
+                </div>
+
+                {/* Category Manager Inline Panel */}
+                {showCatForm && (
+                  <div className={styles.formCard} style={{ marginBottom:20 }}>
+                    <div className={styles.formCardHeader}>
+                      <h2 className={styles.formTitle}>Kelola Kategori</h2>
+                      <button className={styles.closeBtn} onClick={() => { setShowCatForm(false); setEditingCat(null); setCatFormName('') }}><X size={18}/></button>
+                    </div>
+                    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                      {/* Existing categories */}
+                      <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                        {articleCategories.length === 0 && <div style={{ color:'#94a3b8', fontSize:'0.85rem' }}>Belum ada kategori.</div>}
+                        {articleCategories.map(cat => (
+                          <div key={cat.id} className={styles.linkRow} style={{ padding:'10px 16px' }}>
+                            {editingCat?.id === cat.id ? (
+                              <input className="input" style={{ flex:1, padding:'6px 10px' }} value={catFormName} autoFocus
+                                onChange={e => setCatFormName(e.target.value)}
+                                onKeyDown={e => { if(e.key==='Enter') saveCat() }}
+                              />
+                            ) : (
+                              <span style={{ flex:1, fontWeight:600, fontSize:'0.9rem', color:'#0f172a' }}>{cat.name}</span>
+                            )}
+                            <div style={{ display:'flex', gap:6 }}>
+                              {editingCat?.id === cat.id ? (
+                                <>
+                                  <button className={styles.editBtn} onClick={saveCat} disabled={catSaving}><Check size={14}/></button>
+                                  <button className={styles.deleteBtn} onClick={() => { setEditingCat(null); setCatFormName('') }}><X size={14}/></button>
+                                </>
+                              ) : (
+                                <>
+                                  <button className={styles.editBtn} onClick={() => { setEditingCat(cat); setCatFormName(cat.name) }}><Pencil size={14}/></button>
+                                  <button className={styles.deleteBtn} onClick={() => deleteCat(cat)}><Trash2 size={14}/></button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Add new */}
+                      {!editingCat && (
+                        <div style={{ display:'flex', gap:8 }}>
+                          <input className="input" placeholder="Nama kategori baru" value={catFormName} onChange={e => setCatFormName(e.target.value)}
+                            onKeyDown={e => { if(e.key==='Enter') saveCat() }}
+                          />
+                          <button className="btn btn-navy" onClick={saveCat} disabled={catSaving || !catFormName.trim()}>{catSaving ? '...' : <><Plus size={14}/> Tambah</>}</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Author Manager Inline Panel */}
+                {showAuthorForm && (
+                  <div className={styles.formCard} style={{ marginBottom:20 }}>
+                    <div className={styles.formCardHeader}>
+                      <h2 className={styles.formTitle}>Kelola Author</h2>
+                      <button className={styles.closeBtn} onClick={() => { setShowAuthorForm(false); setEditingAuthor(null); setAuthorFormName(''); setAuthorFormPhoto('') }}><X size={18}/></button>
+                    </div>
+                    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                      {articleAuthors.map(author => (
+                        <div key={author.id} className={styles.linkRow} style={{ padding:'10px 16px' }}>
+                          {author.photo_url && (
+                            <img src={author.photo_url.includes('drive.google.com/uc') ? author.photo_url.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w100-h100' : author.photo_url}
+                              alt={author.name} style={{ width:36, height:36, borderRadius:'50%', objectFit:'cover', flexShrink:0, border:'2px solid #e2e8f0' }} />
+                          )}
+                          {!author.photo_url && <div style={{ width:36, height:36, borderRadius:'50%', background:'#dbeafe', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><UserCircle size={20} color="#0d3369"/></div>}
+                          {editingAuthor?.id === author.id ? (
+                            <div style={{ flex:1, display:'flex', flexDirection:'column', gap:8 }}>
+                              <input className="input" style={{ padding:'6px 10px' }} value={authorFormName} onChange={e => setAuthorFormName(e.target.value)} placeholder="Nama"/>
+                              <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                                <div className={styles.uploadArea} style={{ flex:1, minHeight:40 }}>
+                                  <input type="file" accept="image/*" className={styles.fileInput} onChange={handleAuthorPhotoUpload} disabled={uploadingAuthorPhoto}/>
+                                  <div className={styles.uploadLabel} style={{ fontSize:'0.78rem' }}>{uploadingAuthorPhoto ? 'Uploading...' : 'Ganti Foto'}</div>
+                                </div>
+                                {authorFormPhoto && <img src={authorFormPhoto.includes('drive.google.com/uc') ? authorFormPhoto.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w100-h100' : authorFormPhoto} style={{ width:36, height:36, borderRadius:'50%', objectFit:'cover', border:'2px solid #0d3369' }} alt=""/>}
+                              </div>
+                            </div>
+                          ) : (
+                            <span style={{ flex:1, fontWeight:600, fontSize:'0.9rem', color:'#0f172a' }}>{author.name}</span>
+                          )}
+                          <div style={{ display:'flex', gap:6 }}>
+                            {editingAuthor?.id === author.id ? (
+                              <>
+                                <button className={styles.editBtn} onClick={saveAuthor} disabled={authorSaving}><Check size={14}/></button>
+                                <button className={styles.deleteBtn} onClick={() => { setEditingAuthor(null); setAuthorFormName(''); setAuthorFormPhoto('') }}><X size={14}/></button>
+                              </>
+                            ) : (
+                              <>
+                                <button className={styles.editBtn} onClick={() => { setEditingAuthor(author); setAuthorFormName(author.name); setAuthorFormPhoto(author.photo_url || '') }}><Pencil size={14}/></button>
+                                <button className={styles.deleteBtn} onClick={() => deleteAuthor(author)}><Trash2 size={14}/></button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {/* Add new author */}
+                      {!editingAuthor && (
+                        <div style={{ display:'flex', flexDirection:'column', gap:8, paddingTop:8, borderTop:'1px solid #f1f5f9' }}>
+                          <div className="form-group">
+                            <label className="label">Nama Author Baru</label>
+                            <input className="input" placeholder="cth: Gilang Fauzi" value={authorFormName} onChange={e => setAuthorFormName(e.target.value)}/>
+                          </div>
+                          <div className="form-group">
+                            <label className="label">Foto Profile</label>
+                            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                              <div className={styles.uploadArea} style={{ flex:1, minHeight:48 }}>
+                                <input type="file" accept="image/*" className={styles.fileInput} onChange={handleAuthorPhotoUpload} disabled={uploadingAuthorPhoto}/>
+                                <div className={styles.uploadLabel}><Upload size={16}/>{uploadingAuthorPhoto ? 'Uploading...' : 'Upload Foto'}</div>
+                              </div>
+                              {authorFormPhoto && <img src={authorFormPhoto.includes('drive.google.com/uc') ? authorFormPhoto.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w200-h200' : authorFormPhoto} style={{ width:48, height:48, borderRadius:'50%', objectFit:'cover', border:'2px solid #0d3369' }} alt=""/>}
+                            </div>
+                          </div>
+                          <button className="btn btn-navy" style={{ alignSelf:'flex-start' }} onClick={saveAuthor} disabled={authorSaving || !authorFormName.trim()}>{authorSaving ? 'Menyimpan...' : <><Plus size={14}/> Tambah Author</>}</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Article list */}
+                {articlesLoading ? (
+                  <div className={styles.loading}>Memuat artikel...</div>
+                ) : articles.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <Newspaper size={40} color="#cbd5e1" style={{ margin:'0 auto 12px' }}/>
+                    <p>Belum ada artikel. Klik <strong>Tulis Artikel</strong> untuk memulai.</p>
+                  </div>
+                ) : (
+                  <div className={styles.linksList}>
+                    {articles.map(a => (
+                      <div key={a.id} className={styles.linkRow}>
+                        <div className={styles.linkIcon} style={{ background: a.status==='published' ? '#dcfce7' : a.status==='unpublished' ? '#fef3c7' : '#f1f5f9' }}>
+                          <Newspaper size={18} color={a.status==='published' ? '#16a34a' : a.status==='unpublished' ? '#b45309' : '#64748b'}/>
+                        </div>
+                        <div className={styles.linkInfo} style={{ flex:1, minWidth:0 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+                            <span className={styles.linkTitle}>{a.title}</span>
+                            <span style={{ fontSize:'0.68rem', fontWeight:700, borderRadius:999, padding:'2px 8px',
+                              background: a.status==='published' ? '#dcfce7' : a.status==='unpublished' ? '#fef3c7' : '#f1f5f9',
+                              color: a.status==='published' ? '#16a34a' : a.status==='unpublished' ? '#b45309' : '#64748b'
+                            }}>{a.status.toUpperCase()}</span>
+                          </div>
+                          <span className={styles.linkUrl}>
+                            /article/{a.slug} · <Eye size={11} style={{ display:'inline', verticalAlign:'middle' }}/> {a.view_count} views
+                            {(a as any).article_categories?.name && ` · ${(a as any).article_categories.name}`}
+                          </span>
+                        </div>
+                        <div className={styles.linkActions}>
+                          <button className={styles.editBtn} title={a.status==='published'?'Unpublish':'Publish'} onClick={() => toggleArticleStatus(a)}>
+                            {a.status==='published' ? <EyeOff size={14}/> : <Eye size={14}/>}
+                          </button>
+                          <button className={styles.editBtn} onClick={() => openEditArticle(a)}><Pencil size={15}/></button>
+                          <button className={styles.deleteBtn} onClick={() => deleteArticle(a)}><Trash2 size={15}/></button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              /* ── ARTICLE EDITOR ── */
+              <div>
+                <div className={styles.contentHeader} style={{ marginBottom:20 }}>
+                  <div>
+                    <h1 className={styles.contentTitle}>{editingArticle ? 'Edit Artikel' : 'Tulis Artikel Baru'}</h1>
+                    <p className={styles.contentDesc}>{articleTitle ? `/${slugifyArticle(articleTitle)}` : 'Judul artikel akan menjadi slug URL'}</p>
+                  </div>
+                  <button className="btn btn-ghost" onClick={() => setShowArticleEditor(false)}><X size={16}/> Batal</button>
+                </div>
+
+                {/* Meta fields */}
+                <div className={styles.formCard}>
+                  <h3 className={styles.formTitle} style={{ marginBottom:16 }}>Informasi Artikel</h3>
+                  <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                    <div className="form-group">
+                      <label className="label">Judul Artikel *</label>
+                      <input className="input" placeholder="cth: Strategi Marketing 2025" value={articleTitle} onChange={e => setArticleTitle(e.target.value)}/>
+                    </div>
+                    <div className="form-group">
+                      <label className="label">Excerpt / Ringkasan</label>
+                      <textarea className="input" rows={2} placeholder="Ringkasan singkat artikel (untuk SEO & preview)" value={articleExcerpt} onChange={e => setArticleExcerpt(e.target.value)}/>
+                    </div>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      <div className="form-group">
+                        <label className="label">Kategori</label>
+                        <select className="select" value={articleCategoryId} onChange={e => setArticleCategoryId(e.target.value)}>
+                          <option value="">-- Pilih Kategori --</option>
+                          {articleCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="label">Author</label>
+                        <select className="select" value={articleAuthorId} onChange={e => setArticleAuthorId(e.target.value)}>
+                          <option value="">-- Pilih Author --</option>
+                          {articleAuthors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="label">Status</label>
+                        <select className="select" value={articleStatus} onChange={e => setArticleStatus(e.target.value as any)}>
+                          <option value="draft">Draft</option>
+                          <option value="published">Published</option>
+                          <option value="unpublished">Unpublished</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content Blocks */}
+                <div className={styles.formCard} style={{ marginTop:16 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+                    <h3 className={styles.formTitle}>Konten Artikel</h3>
+                    <div style={{ position:'relative' }}>
+                      <button className="btn btn-navy" style={{ fontSize:'0.85rem' }} onClick={() => setShowBlockMenu(b => !b)}><Plus size={15}/> Tambah Block</button>
+                      {showBlockMenu && (
+                        <div className={styles.addMenuDropdown} style={{ right:0, left:'auto', width:200 }}>
+                          <button onClick={() => addBlock('headline')}><Type size={14}/> Headline / Judul</button>
+                          <button onClick={() => addBlock('text')}><AlignLeft size={14}/> Text / Paragraf</button>
+                          <button onClick={() => addBlock('image')}><ImageIcon size={14}/> Gambar</button>
+                          <button onClick={() => addBlock('video')}><Video size={14}/> Video YouTube</button>
+                          <button onClick={() => addBlock('product')}><Package size={14}/> Product Card</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {articleBlocks.length === 0 && (
+                    <div className={styles.emptyState} style={{ padding:'32px 24px', marginBottom:0 }}>
+                      <p style={{ color:'#94a3b8' }}>Klik <strong>+ Tambah Block</strong> untuk mulai menulis konten artikel.</p>
+                    </div>
+                  )}
+
+                  <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                    {articleBlocks.map((block, idx) => (
+                      <div key={block.id} className={styles.articleBlockWrap}>
+                        {/* Block controls (move up/down + delete) */}
+                        <div className={styles.articleBlockControls}>
+                          <button onClick={() => moveBlock(block.id, 'up')} disabled={idx===0} className={styles.articleBlockCtrlBtn} title="Move up"><ChevronUp size={13}/></button>
+                          <button onClick={() => moveBlock(block.id, 'down')} disabled={idx===articleBlocks.length-1} className={styles.articleBlockCtrlBtn} title="Move down"><ChevronDown size={13}/></button>
+                          <button onClick={() => removeBlock(block.id)} className={styles.articleBlockDelBtn} title="Remove block"><Trash2 size={13}/></button>
+                        </div>
+
+                        {/* ── HEADLINE block ── */}
+                        {block.type === 'headline' && (
+                          <div className={styles.articleBlockInner}>
+                            <div className={styles.articleBlockLabel}><Type size={12}/> Headline</div>
+                            <textarea className="input" rows={2} placeholder="Tulis headline..." value={block.text} onChange={e => updateBlock(block.id, { text: e.target.value } as any)} style={{ fontSize:'1rem', fontWeight:700 }}/>
+                            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
+                                <option value="hero">Hero (2.5rem)</option>
+                                <option value="h1">H1 (2rem)</option>
+                                <option value="h2">H2 (1.5rem)</option>
+                                <option value="h3">H3 (1.25rem)</option>
+                                <option value="sub">Sub (1rem)</option>
+                              </select>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
+                                <option value="left">Kiri</option>
+                                <option value="center">Tengah</option>
+                                <option value="right">Kanan</option>
+                              </select>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="serif">Serif</option>
+                                <option value="monospace">Monospace</option>
+                              </select>
+                              <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>
+                                <input type="color" className={styles.colorPicker} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ── TEXT block ── */}
+                        {block.type === 'text' && (
+                          <div className={styles.articleBlockInner}>
+                            <div className={styles.articleBlockLabel}><AlignLeft size={12}/> Text</div>
+                            <textarea className="input" rows={4} placeholder="Tulis paragraf..." value={block.text} onChange={e => updateBlock(block.id, { text: e.target.value } as any)}/>
+                            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
+                                <option value="2rem">Hero (2rem)</option>
+                                <option value="1.5rem">Large (1.5rem)</option>
+                                <option value="1.25rem">Semi Bold (1.25rem)</option>
+                                <option value="1rem">Regular (1rem)</option>
+                                <option value="0.875rem">Kecil (0.875rem)</option>
+                                <option value="0.75rem">Sangat Kecil (0.75rem)</option>
+                              </select>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
+                                <option value="normal">Normal</option>
+                                <option value="semibold">Semi Bold</option>
+                                <option value="bold">Bold</option>
+                              </select>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
+                                <option value="left">Kiri</option>
+                                <option value="center">Tengah</option>
+                                <option value="right">Kanan</option>
+                                <option value="justify">Justify</option>
+                              </select>
+                              <label className={styles.checkboxLabel} style={{ alignSelf:'center' }}>
+                                <input type="checkbox" checked={block.italic} onChange={e => updateBlock(block.id, { italic: e.target.checked } as any)}/> Italic
+                              </label>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="serif">Serif</option>
+                                <option value="monospace">Monospace</option>
+                              </select>
+                              <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>
+                                <input type="color" className={styles.colorPicker} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ── IMAGE block ── */}
+                        {block.type === 'image' && (
+                          <div className={styles.articleBlockInner}>
+                            <div className={styles.articleBlockLabel}><ImageIcon size={12}/> Gambar</div>
+                            <div style={{ display:'flex', gap:10, marginBottom:10, flexWrap:'wrap' }}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }}
+                                value={block.aspect_ratio}
+                                onChange={e => updateBlock(block.id, { aspect_ratio: e.target.value } as any)}>
+                                <option value="16:9">16:9 Landscape</option>
+                                <option value="9:16">9:16 Portrait</option>
+                                <option value="4:5">4:5 Instagram</option>
+                                <option value="5:4">5:4</option>
+                                <option value="1:3">1:3 Tall</option>
+                                <option value="3:5">3:5</option>
+                                <option value="5:3">5:3</option>
+                              </select>
+                              <input className="input" placeholder="Caption (opsional)" style={{ flex:2, padding:'8px 12px', fontSize:'0.82rem' }}
+                                value={block.caption || ''} onChange={e => updateBlock(block.id, { caption: e.target.value } as any)}/>
+                            </div>
+                            {block.url ? (
+                              <div style={{ position:'relative', marginBottom:8 }}>
+                                <img
+                                  src={block.url.includes('drive.google.com/uc') ? block.url.replace(/uc\?export=view&id=/, 'thumbnail?id=')+'&sz=w1200-h1200' : block.url}
+                                  alt=""
+                                  style={{ width:'100%', aspectRatio: block.aspect_ratio.replace(':','/'), objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0' }}
+                                />
+                                <button
+                                  onClick={() => updateBlock(block.id, { url: '' } as any)}
+                                  style={{ position:'absolute', top:8, right:8, background:'rgba(220,38,38,0.9)', border:'none', borderRadius:6, padding:'4px 8px', color:'#fff', cursor:'pointer', fontSize:'0.78rem', display:'flex', alignItems:'center', gap:4 }}
+                                ><Trash2 size={12}/> Ganti
+                                </button>
+                              </div>
+                            ) : (
+                              <div className={styles.uploadArea}>
+                                <input type="file" accept="image/*" className={styles.fileInput}
+                                  onChange={e => handleArticleImagePick(e, block.id, block.aspect_ratio)}
+                                />
+                                <div className={styles.uploadLabel}><Upload size={18}/> Upload Gambar (akan di-crop)</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* ── VIDEO block ── */}
+                        {block.type === 'video' && (
+                          <div className={styles.articleBlockInner}>
+                            <div className={styles.articleBlockLabel}><Video size={12}/> YouTube Video</div>
+                            <input className="input" placeholder="https://youtube.com/watch?v=..." value={block.url}
+                              onChange={e => updateBlock(block.id, { url: e.target.value } as any)}/>
+                            <input className="input" style={{ marginTop:8, fontSize:'0.85rem' }} placeholder="Caption (opsional)" value={block.caption||''}
+                              onChange={e => updateBlock(block.id, { caption: e.target.value } as any)}/>
+                          </div>
+                        )}
+
+                        {/* ── PRODUCT block ── */}
+                        {block.type === 'product' && (
+                          <div className={styles.articleBlockInner}>
+                            <div className={styles.articleBlockLabel}><Package size={12}/> Product Card (Popup)</div>
+                            <select className="select" value={block.product_id} onChange={e => updateBlock(block.id, { product_id: e.target.value } as any)}>
+                              <option value="">-- Pilih Product --</option>
+                              {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            </select>
+                            {block.product_id && (() => {
+                              const p = products.find(pr => pr.id === block.product_id)
+                              if (!p) return null
+                              return (
+                                <div style={{ marginTop:8, padding:'10px 14px', background:'#f8fafc', borderRadius:8, border:'1px solid #e2e8f0', display:'flex', alignItems:'center', gap:12 }}>
+                                  {p.image_url && <img src={p.image_url.includes('drive.google.com/uc')?p.image_url.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w200-h250':p.image_url} style={{ width:44, height:55, objectFit:'cover', borderRadius:6, border:'1px solid #e2e8f0' }} alt=""/>}
+                                  <div>
+                                    <div style={{ fontWeight:700, fontSize:'0.88rem', color:'#0f172a' }}>{p.name}</div>
+                                    <div style={{ fontSize:'0.78rem', color:'#64748b' }}>Rp {p.price_after_discount.toLocaleString('id-ID')} · akan tampil sebagai popup</div>
+                                  </div>
+                                </div>
+                              )
+                            })()}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {articleError && <p className={styles.formError} style={{ marginTop:8 }}>{articleError}</p>}
+
+                {/* Save actions */}
+                <div className={styles.formActions}>
+                  <button className="btn btn-ghost" onClick={() => setShowArticleEditor(false)}>Batal</button>
+                  <button className="btn btn-navy" onClick={saveArticle} disabled={articleSaving}>
+                    {articleSaving ? 'Menyimpan...' : <><Check size={16}/> Simpan Artikel</>}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Article image crop modal ── */}
+        {articleCropData.src && (
+          <div className={styles.cropModalOverlay}>
+            <div className={styles.cropModalContent}>
+              <div className={styles.cropModalHeader}>
+                <h3 className={styles.cropModalTitle}>Sesuaikan Gambar ({articleCropData.aspectRatio})</h3>
+                <button className={styles.closeBtn} onClick={() => setArticleCropData({src:'', aspectRatio:'16:9', blockId:''})}><X size={18}/></button>
+              </div>
+              <div className={styles.cropContainer}>
+                <Cropper
+                  image={articleCropData.src}
+                  crop={articleCrop}
+                  zoom={articleZoom}
+                  aspect={(() => {
+                    const [w,h] = articleCropData.aspectRatio.split(':').map(Number)
+                    return w/h
+                  })()}
+                  onCropChange={setArticleCrop}
+                  onCropComplete={onArticleCropComplete}
+                  onZoomChange={setArticleZoom}
+                  classes={{ containerClassName: styles.cropContainer }}
+                />
+              </div>
+              <div className={styles.cropControls}>
+                <div className={styles.zoomControl}>
+                  <span style={{ fontSize:'0.8rem', fontWeight:600, color:'#64748b' }}>Zoom</span>
+                  <input type="range" value={articleZoom} min={1} max={3} step={0.1} onChange={e => setArticleZoom(Number(e.target.value))} className={styles.zoomSlider}/>
+                </div>
+              </div>
+              <div className={styles.cropModalActions}>
+                <button className="btn btn-ghost" onClick={() => setArticleCropData({src:'', aspectRatio:'16:9', blockId:''})}>Batal</button>
+                <button className="btn btn-navy" onClick={confirmArticleCrop} disabled={uploadingArticleImage}>
+                  {uploadingArticleImage ? 'Mengupload...' : <><Check size={16}/> Crop & Upload</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   )

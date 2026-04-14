@@ -1236,3 +1236,87 @@
   align-items: center;
 }
 
+/* ── Article Block Editor ────────────────────────────────── */
+.articleBlockWrap {
+  position: relative;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: visible;
+}
+
+.articleBlockWrap:hover {
+  border-color: #0d3369;
+  box-shadow: 0 2px 8px rgba(13,51,105,0.08);
+}
+
+.articleBlockControls {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  display: flex;
+  gap: 2px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0 12px 0 10px;
+  padding: 4px 6px;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.articleBlockCtrlBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.articleBlockCtrlBtn:hover:not(:disabled) {
+  background: #0d3369;
+  color: #ffffff;
+}
+.articleBlockCtrlBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.articleBlockDelBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.articleBlockDelBtn:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.articleBlockInner {
+  padding: 16px 20px 16px;
+  padding-top: 44px;
+}
+
+.articleBlockLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 10px;
+}
