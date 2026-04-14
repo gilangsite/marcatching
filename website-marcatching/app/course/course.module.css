@@ -73,6 +73,7 @@
   .sidebar {
     transform: translateX(-100%);
     width: 260px;
+    padding-top: calc(env(safe-area-inset-top, 24px) + 4px);
   }
   .sidebar.sidebarOpen {
     transform: translateX(0);
