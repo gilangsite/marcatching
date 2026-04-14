@@ -49,6 +49,7 @@
   left: 0;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   border-right: none;
   z-index: 50;
   box-shadow: 4px 0 24px rgba(13, 51, 105, 0.25);
