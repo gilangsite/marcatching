@@ -172,7 +172,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       const res = await fetch('/api/voucher/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim(), productPrice: subtotalBeforeVoucher }),
+        body: JSON.stringify({ code: voucherCode.trim(), productPrice: subtotalBeforeVoucher, productId: product!.id }),
       })
       const data = await res.json()
 

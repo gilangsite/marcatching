@@ -44,22 +44,27 @@ export default function ButtonCard({ link, index = 0 }: ButtonCardProps) {
     }
   }
 
+  const textStyle = link.text_color ? { color: link.text_color } : undefined
+
   const content = (
     <div 
       className={`${styles.card} ${isComingSoon ? styles.disabled : ''}`}
-      style={link.btn_color ? { backgroundColor: link.btn_color } : undefined}
+      style={{
+        ...(link.btn_color ? { backgroundColor: link.btn_color } : {}),
+        ...(link.text_color ? { color: link.text_color } : {}),
+      }}
     >
-      <div className={styles.iconWrap}>
+      <div className={styles.iconWrap} style={textStyle}>
         <IconComponent size={20} strokeWidth={1.75} />
       </div>
       <div className={styles.textWrap}>
-        <span className={styles.title}>{link.title}</span>
+        <span className={styles.title} style={textStyle}>{link.title}</span>
         {isComingSoon && (
           <span className={styles.badge}>Coming Soon</span>
         )}
       </div>
       {!isComingSoon && (
-        <div className={styles.arrow}>
+        <div className={styles.arrow} style={textStyle}>
           <ChevronRight size={18} strokeWidth={2} />
         </div>
       )}

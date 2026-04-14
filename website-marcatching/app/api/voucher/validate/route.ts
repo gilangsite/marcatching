@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { code, productPrice } = body
+    const { code, productPrice, productId } = body
 
     if (!code) {
       return NextResponse.json({ valid: false, message: 'Kode voucher tidak boleh kosong' }, { status: 400 })
@@ -19,6 +19,13 @@ export async function POST(req: NextRequest) {
 
     if (error || !voucher) {
       return NextResponse.json({ valid: false, message: 'Kode voucher tidak valid atau sudah tidak aktif' })
+    }
+
+    // Check product restriction: applicable_products = null means all products
+    if (voucher.applicable_products && Array.isArray(voucher.applicable_products) && voucher.applicable_products.length > 0) {
+      if (!productId || !voucher.applicable_products.includes(productId)) {
+        return NextResponse.json({ valid: false, message: 'Voucher ini tidak berlaku untuk produk yang dipilih' })
+      }
     }
 
     // Calculate discount

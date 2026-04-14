@@ -150,7 +150,7 @@ function AdminDashboardInner() {
   const [vouchersLoading, setVouchersLoading] = useState(true)
   const [showVoucherForm, setShowVoucherForm] = useState(false)
   const [editingVoucher, setEditingVoucher] = useState<Voucher | null>(null)
-  const [vf, setVf] = useState({ code: '', discount_value: '', discount_type: 'fixed' as 'fixed' | 'percentage', is_active: true })
+  const [vf, setVf] = useState({ code: '', discount_value: '', discount_type: 'fixed' as 'fixed' | 'percentage', is_active: true, applicable_products: null as string[] | null })
   const [voucherSaving, setVoucherSaving] = useState(false)
   const [voucherError, setVoucherError] = useState('')
 
@@ -498,13 +498,28 @@ function AdminDashboardInner() {
   }
 
   // ── Voucher CRUD ────────────────────────────────────────────
-  function openAddVoucher() { setEditingVoucher(null); setVf({ code: '', discount_value: '', discount_type: 'fixed', is_active: true }); setVoucherError(''); setShowVoucherForm(true) }
-  function openEditVoucher(v: Voucher) { setEditingVoucher(v); setVf({ code: v.code, discount_value: v.discount_value.toString(), discount_type: v.discount_type, is_active: v.is_active }); setVoucherError(''); setShowVoucherForm(true) }
+  function openAddVoucher() { setEditingVoucher(null); setVf({ code: '', discount_value: '', discount_type: 'fixed', is_active: true, applicable_products: null }); setVoucherError(''); setShowVoucherForm(true) }
+  function openEditVoucher(v: Voucher) { setEditingVoucher(v); setVf({ code: v.code, discount_value: v.discount_value.toString(), discount_type: v.discount_type, is_active: v.is_active, applicable_products: v.applicable_products ?? null }); setVoucherError(''); setShowVoucherForm(true) }
+
+  // Toggle a product in the voucher applicable_products list
+  function toggleVoucherProduct(productId: string) {
+    setVf(f => {
+      const cur = f.applicable_products ?? []
+      const next = cur.includes(productId) ? cur.filter(id => id !== productId) : [...cur, productId]
+      return { ...f, applicable_products: next.length === 0 ? null : next }
+    })
+  }
 
   async function saveVoucher(e: FormEvent) {
     e.preventDefault(); if (!vf.code) { setVoucherError('Kode voucher wajib diisi'); return }
     setVoucherSaving(true); setVoucherError('')
-    const payload = { code: vf.code.toUpperCase().trim(), discount_value: parseInt(vf.discount_value) || 0, discount_type: vf.discount_type, is_active: vf.is_active }
+    const payload = {
+      code: vf.code.toUpperCase().trim(),
+      discount_value: parseInt(vf.discount_value) || 0,
+      discount_type: vf.discount_type,
+      is_active: vf.is_active,
+      applicable_products: vf.applicable_products && vf.applicable_products.length > 0 ? vf.applicable_products : null
+    }
     let error
     if (editingVoucher) { ({ error } = await supabase.from('vouchers').update(payload).eq('id', editingVoucher.id)) } else { ({ error } = await supabase.from('vouchers').insert(payload)) }
     setVoucherSaving(false); if (error) { setVoucherError('Error: ' + error.message) } else { setShowVoucherForm(false); fetchVouchers() }
@@ -647,7 +662,8 @@ function AdminDashboardInner() {
                     {linkForm.type === 'button' && (<>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Judul Tombol *</label><input className="input" placeholder="cth: Instagram Marcatching" value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} /></div>
                       <div className="form-group"><label className="label">URL</label><input className="input" placeholder="https://..." value={linkForm.url ?? ''} disabled={linkForm.status === 'coming_soon'} onChange={e => setLinkForm(f => ({ ...f, url: e.target.value }))} /></div>
-                      <div className="form-group"><label className="label">Warna Tombol</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.btn_color || '#ffffff'} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#0d3369" value={linkForm.btn_color || ''} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Warna Tombol (Background)</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.btn_color || '#ffffff'} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#0d3369" value={linkForm.btn_color || ''} onChange={e => setLinkForm(f => ({ ...f, btn_color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Warna Text Tombol</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.text_color || '#000000'} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#000000" value={linkForm.text_color || ''} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /></div></div>
                       <div className="form-group"><label className="label">Icon</label><select className="select" value={linkForm.icon ?? 'Globe'} onChange={e => setLinkForm(f => ({ ...f, icon: e.target.value }))}>{ICON_OPTIONS.map(opt => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}</select></div>
                       <div className="form-group"><label className="label">Status</label><select className="select" value={linkForm.status ?? 'active'} onChange={e => setLinkForm(f => ({ ...f, status: e.target.value as 'active' | 'coming_soon' }))}><option value="active">Active</option><option value="coming_soon">Coming Soon</option></select></div>
                     </>)}
@@ -671,14 +687,17 @@ function AdminDashboardInner() {
                           ))}
                         </select>
                       </div>
+                      <div className="form-group"><label className="label">Warna Judul Product Card</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.text_color || '#000000'} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#000000" value={linkForm.text_color || ''} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /></div></div>
                     </>)}
                     {linkForm.type === 'video' && (<>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Judul Video *</label><input className="input" placeholder="cth: Video TikTok Promo" value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} /></div>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL Video *</label><input className="input" placeholder="https://..." value={linkForm.url ?? ''} onChange={e => setLinkForm(f => ({ ...f, url: e.target.value }))} /></div>
+                      <div className="form-group"><label className="label">Warna Text Judul Video</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.text_color || '#000000'} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#000000" value={linkForm.text_color || ''} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /></div></div>
                     </>)}
                     {linkForm.type === 'carousel' && (<>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Judul Internal *</label><input className="input" placeholder="cth: Poster Event" value={linkForm.title ?? ''} onChange={e => setLinkForm(f => ({ ...f, title: e.target.value }))} /></div>
                       <div className="form-group"><label className="label">Aspect Ratio</label><select className="select" value={linkForm.carousel_aspect_ratio || '16:9'} onChange={e => setLinkForm(f => ({ ...f, carousel_aspect_ratio: e.target.value }))}><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="4:5">4:5</option></select></div>
+                      <div className="form-group"><label className="label">Warna Text Caption Carousel</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={linkForm.text_color || '#000000'} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /><input type="text" className="input" style={{flex: 1}} placeholder="#000000" value={linkForm.text_color || ''} onChange={e => setLinkForm(f => ({ ...f, text_color: e.target.value }))} /></div></div>
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Upload Gambar</label>
                         <div className={styles.uploadArea}><input type="file" multiple accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} /><div className={styles.uploadLabel}><Upload size={20} />{uploadingImage ? 'Mengupload...' : 'Klik atau Drag & Drop'}</div></div>
                         <div className={styles.imageList}>{(linkForm.image_data || []).map((img: any, idx: number) => { let previewUrl = img.url; if (previewUrl?.includes('drive.google.com/uc')) { const m = previewUrl.match(/id=([^&]+)/); if (m?.[1]) previewUrl = `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1000-h1000` } return (<div key={idx} className={styles.imageItem}><div className={styles.imagePreviewWrap} style={{aspectRatio: linkForm.carousel_aspect_ratio?.replace(':', '/') || '16/9'}}><img src={previewUrl} alt={`Preview ${idx}`} className={styles.imagePreview} /></div><div className={styles.imageItemDetails}><input type="text" className="input" style={{fontSize: '0.8rem', padding: '0.4rem 0.6rem'}} placeholder="Link tujuan (opsional)" value={img.link || ''} onChange={(e) => handleImageLinkChange(idx, e.target.value)} /><button type="button" className="btn btn-ghost" style={{padding: '0.4rem', color: '#ff4444'}} onClick={() => removeImage(idx)}><Trash2 size={16}/></button></div></div>) })}</div>
@@ -766,26 +785,76 @@ function AdminDashboardInner() {
                     <div className="form-group"><label className="label">Nilai Diskon</label><input className="input" placeholder={vf.discount_type === 'fixed' ? '50000' : '10'} value={vf.discount_value} onChange={e => setVf(f => ({...f, discount_value: e.target.value.replace(/\D/g, '')}))} /></div>
                     <div className="form-group"><label className="label">Status</label><select className="select" value={vf.is_active ? 'active' : 'inactive'} onChange={e => setVf(f => ({...f, is_active: e.target.value === 'active'}))}><option value="active">Aktif</option><option value="inactive">Nonaktif</option></select></div>
                   </div>
+
+                  {/* ── Applicable Products ── */}
+                  <div className="form-group" style={{ gridColumn: '1 / -1', marginTop: 4 }}>
+                    <label className="label" style={{ marginBottom: 8, display: 'block' }}>Berlaku untuk Product</label>
+                    <div className={styles.voucherProductList}>
+                      {/* All Products checkbox */}
+                      <label className={styles.voucherProductItem} style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: 10, marginBottom: 6 }}>
+                        <input
+                          type="checkbox"
+                          checked={vf.applicable_products === null || vf.applicable_products.length === 0}
+                          onChange={e => {
+                            if (e.target.checked) setVf(f => ({ ...f, applicable_products: null }))
+                            else setVf(f => ({ ...f, applicable_products: [] }))
+                          }}
+                          className={styles.voucherProductCheckbox}
+                        />
+                        <span style={{ fontWeight: 700, color: '#0d3369' }}>✦ Semua Product (All Products)</span>
+                      </label>
+                      {/* Per product checkboxes — dynamically from products state */}
+                      {products.map(p => (
+                        <label key={p.id} className={styles.voucherProductItem}>
+                          <input
+                            type="checkbox"
+                            checked={Array.isArray(vf.applicable_products) && vf.applicable_products.includes(p.id)}
+                            disabled={vf.applicable_products === null}
+                            onChange={() => toggleVoucherProduct(p.id)}
+                            className={styles.voucherProductCheckbox}
+                          />
+                          <span style={{ color: vf.applicable_products === null ? '#94a3b8' : '#1e293b' }}>
+                            {p.name}
+                            {!p.is_active && <span style={{ fontSize: '0.72rem', color: '#94a3b8', marginLeft: 6 }}>(inactive)</span>}
+                          </span>
+                        </label>
+                      ))}
+                      {products.length === 0 && (
+                        <div style={{ fontSize: '0.82rem', color: '#94a3b8', padding: '4px 0' }}>Belum ada produk. Tambahkan produk di tab Products terlebih dahulu.</div>
+                      )}
+                    </div>
+                  </div>
+
                   {voucherError && <p className={styles.formError}>{voucherError}</p>}
                   <div className={styles.formActions}><button type="button" className="btn btn-ghost" onClick={() => setShowVoucherForm(false)}>Batal</button><button type="submit" className="btn btn-navy" disabled={voucherSaving}>{voucherSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}</button></div>
                 </form>
               </div>
             )}
             {vouchersLoading ? <div className={styles.loading}>Memuat...</div> : vouchers.length === 0 ? <div className={styles.emptyState}>Belum ada voucher.</div> : (
-              <div className={styles.linksList}>{vouchers.map(v => (
-                <div key={v.id} className={styles.linkRow}>
-                  <div className={styles.linkIcon}><Tag size={18} /></div>
-                  <div className={styles.linkInfo}>
-                    <span className={styles.linkTitle} style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>{v.code}</span>
-                    <span className={styles.linkUrl}>{v.discount_type === 'fixed' ? `Rp ${formatRp(v.discount_value)}` : `${v.discount_value}%`} · {v.is_active ? <span className={styles.statusActive}>Aktif</span> : <span className={styles.statusSoon}>Nonaktif</span>}</span>
+              <div className={styles.linksList}>{vouchers.map(v => {
+                // Resolve product names for display
+                const appProductNames = v.applicable_products && v.applicable_products.length > 0
+                  ? v.applicable_products.map(id => products.find(p => p.id === id)?.name ?? id).join(', ')
+                  : null
+                return (
+                  <div key={v.id} className={styles.linkRow}>
+                    <div className={styles.linkIcon}><Tag size={18} /></div>
+                    <div className={styles.linkInfo}>
+                      <span className={styles.linkTitle} style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>{v.code}</span>
+                      <span className={styles.linkUrl}>
+                        {v.discount_type === 'fixed' ? `Rp ${formatRp(v.discount_value)}` : `${v.discount_value}%`}
+                        {' · '}{v.is_active ? <span className={styles.statusActive}>Aktif</span> : <span className={styles.statusSoon}>Nonaktif</span>}
+                        {' · '}<span style={{ color: '#64748b' }}>{appProductNames ? `🏷 ${appProductNames}` : '🌐 Semua Product'}</span>
+                      </span>
+                    </div>
+                    <div className={styles.linkActions}>
+                      <button className={styles.editBtn} onClick={() => toggleVoucher(v)} title={v.is_active ? 'Nonaktifkan' : 'Aktifkan'}>{v.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>
+                      <button className={styles.editBtn} onClick={() => openEditVoucher(v)}><Pencil size={15} /></button>
+                      <button className={styles.deleteBtn} onClick={() => deleteVoucher(v.id)}><Trash2 size={15} /></button>
+                    </div>
                   </div>
-                  <div className={styles.linkActions}>
-                    <button className={styles.editBtn} onClick={() => toggleVoucher(v)} title={v.is_active ? 'Nonaktifkan' : 'Aktifkan'}>{v.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>
-                    <button className={styles.editBtn} onClick={() => openEditVoucher(v)}><Pencil size={15} /></button>
-                    <button className={styles.deleteBtn} onClick={() => deleteVoucher(v.id)}><Trash2 size={15} /></button>
-                  </div>
-                </div>
-              ))}</div>
+                )
+              })}</div>
             )}
           </div>
         )}

@@ -57,6 +57,7 @@ export type Voucher = {
   discount_value: number
   discount_type: 'fixed' | 'percentage'
   is_active: boolean
+  applicable_products: string[] | null // null = all products; array of product IDs = restricted
   created_at: string
 }
 
