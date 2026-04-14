@@ -126,7 +126,7 @@ export default function CourseLoginPage() {
         <div className={styles.authLogo}>
           <div className={styles.authLogoInner} style={{ background: 'transparent', padding: 0 }}>
             <Image
-              src="/logo-type-black.png"
+              src="https://marcatching.com/logo-type-black.png"
               alt="Marcatching"
               width={160}
               height={36}

@@ -106,7 +106,7 @@ export default function CourseDashboardPage() {
           <Menu size={22} color="#ffffff" />
         </button>
         <Image
-          src="/logo-type-white.png"
+          src="https://marcatching.com/logo-type-white.png"
           alt="Marcatching"
           width={110}
           height={26}
@@ -125,7 +125,7 @@ export default function CourseDashboardPage() {
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogoDesktop}>
           <Image
-            src="/logo-type-white.png"
+            src="https://marcatching.com/logo-type-white.png"
             alt="Marcatching"
             width={140}
             height={32}
@@ -138,7 +138,7 @@ export default function CourseDashboardPage() {
             <Menu size={22} color="rgba(255,255,255,0.8)" />
           </button>
           <Image
-            src="/logo-type-white.png"
+            src="https://marcatching.com/logo-type-white.png"
             alt="Marcatching"
             width={100}
             height={24}
