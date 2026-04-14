@@ -728,7 +728,8 @@ function AdminDashboardInner() {
           </div>
         </nav>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24, marginTop: 'auto' }}>
-          <a href="/" target="_blank" rel="noopener noreferrer" className={styles.navItem}><Globe size={18} /> Lihat Website</a>
+          <a href="https://course.marcatching.com" target="_blank" rel="noopener noreferrer" className={styles.navItem}><ExternalLink size={18} /> Login Course</a>
+          <a href="https://marcatching.com" target="_blank" rel="noopener noreferrer" className={styles.navItem}><Globe size={18} /> Lihat Website</a>
           <button onClick={handleLogout} className={styles.navItem} style={{ color: '#dc2626' }}><LogOut size={18} /> Keluar</button>
         </div>
       </aside>
