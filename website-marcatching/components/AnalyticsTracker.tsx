@@ -56,7 +56,7 @@ export default function AnalyticsTracker() {
       tracked.current = true
       sendEvent({
         event_type: 'page_view',
-        page_path: window.location.pathname,
+        page_path: window.location.pathname + window.location.search,
       })
     }
 
@@ -64,7 +64,7 @@ export default function AnalyticsTracker() {
     window.__trackClick = (linkId: string, linkTitle: string) => {
       sendEvent({
         event_type: 'click',
-        page_path: window.location.pathname,
+        page_path: window.location.pathname + window.location.search,
         link_id: linkId,
         link_title: linkTitle,
       })

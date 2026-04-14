@@ -127,9 +127,26 @@ export async function GET(req: NextRequest) {
       
       let source = 'Direct URL'
       const ref = (ev.referrer || '').toLowerCase()
-      if (ref.includes('instagram.com')) {
+      const path = (ev.page_path || '').toLowerCase()
+      
+      // WhatsApp Detection:
+      // 1. By Referrer (web.whatsapp, wa.me, com.whatsapp)
+      // 2. By URL parameters (?ref=wa, ?utm_source=whatsapp, ?source=whatsapp)
+      const isWhatsApp = 
+        ref.includes('whatsapp') || 
+        ref.includes('wa.me') ||
+        path.includes('utm_source=whatsapp') || 
+        path.includes('utm_source=wa') ||
+        path.includes('source=whatsapp') ||
+        path.includes('ref=whatsapp') ||
+        path.includes('ref=wa') ||
+        path.includes('source=wa')
+
+      if (isWhatsApp) {
+        source = 'WhatsApp'
+      } else if (ref.includes('instagram.com') || path.includes('utm_source=ig') || path.includes('utm_source=instagram')) {
         source = 'Instagram'
-      } else if (ref.includes('tiktok.com')) {
+      } else if (ref.includes('tiktok.com') || path.includes('utm_source=tiktok')) {
         source = 'TikTok'
       } else if (ref.includes('facebook') || ref.includes('fb.com')) {
         source = 'Facebook'
@@ -137,7 +154,7 @@ export async function GET(req: NextRequest) {
         source = 'Google'
       } else if (ref) {
         // You could put generic External Sites here, but keeping it simple
-        source = 'Direct URL / Others'
+        source = 'External Link / Others'
       }
 
       if (!visitorsBySource.has(source)) {
