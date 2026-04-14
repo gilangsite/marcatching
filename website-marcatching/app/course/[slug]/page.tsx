@@ -167,11 +167,12 @@ export default function CourseDetailPage() {
           <Menu size={22} color="#ffffff" />
         </button>
         <Image
-          src="/logo-type-white.png"
+          src="https://marcatching.com/logo-type-white.png"
           alt="Marcatching"
           width={110}
           height={26}
           className={styles.mobileHeaderLogo}
+          unoptimized={true}
         />
       </div>
 
@@ -185,11 +186,12 @@ export default function CourseDetailPage() {
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogoDesktop}>
           <Image
-            src="/logo-type-white.png"
+            src="https://marcatching.com/logo-type-white.png"
             alt="Marcatching"
             width={140}
             height={32}
             style={{ objectFit: 'contain' }}
+            unoptimized={true}
           />
         </div>
         <div className={styles.sidebarLogo}>
@@ -197,11 +199,12 @@ export default function CourseDetailPage() {
             <Menu size={22} color="rgba(255,255,255,0.8)" />
           </button>
           <Image
-            src="/logo-type-white.png"
+            src="https://marcatching.com/logo-type-white.png"
             alt="Marcatching"
             width={100}
             height={24}
             style={{ objectFit: 'contain' }}
+            unoptimized={true}
           />
         </div>
 
