@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       const data = await res.json()
 
       if (data.success) {
-        router.push('/admin')
+        router.push('/')
         router.refresh()
       } else {
         setError('Username atau password salah.')
@@ -44,11 +44,12 @@ export default function AdminLoginPage() {
       <div className={styles.card}>
         <div className={styles.logoWrap}>
           <Image
-            src="/logo-type-white.png"
+            src="https://marcatching.com/logo-type-white.png"
             alt="Marcatching"
             width={160}
             height={40}
             style={{ objectFit: 'contain', height: '32px', width: 'auto' }}
+            unoptimized={true}
           />
         </div>
         <div className={styles.header}>

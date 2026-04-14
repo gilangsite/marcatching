@@ -452,7 +452,7 @@ function AdminDashboardInner() {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [])
 
-  async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/admin/login') }
+  async function handleLogout() { await fetch('/api/auth', { method: 'DELETE' }); router.push('/login') }
 
   // ── Link CRUD (kept from original) ─────────────────────────
   function handleAddSpecific(type: 'button'|'text'|'carousel'|'video'|'product') { setShowAddMenu(false); setTab('links'); setEditingLink(null); setLinkForm({ ...emptyLink, type, order_index: links.length + 1 }); setLinkError(''); setShowLinkForm(true) }
@@ -691,7 +691,7 @@ function AdminDashboardInner() {
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
         <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#ffffff" /></button>
-        <Image src="/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} />
+        <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={110} height={26} className={styles.mobileHeaderLogo} unoptimized={true} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
@@ -699,7 +699,7 @@ function AdminDashboardInner() {
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         {/* Desktop: Navy logotype at the very top */}
         <div className={styles.sidebarLogoDesktop}>
-          <Image src="/logo-type-white.png" alt="Marcatching" width={160} height={38} style={{ objectFit: 'contain' }} />
+          <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={160} height={38} style={{ objectFit: 'contain' }} unoptimized={true} />
         </div>
         {/* Mobile: Hamburger row */}
         <div className={styles.sidebarLogo}>
