@@ -2319,11 +2319,10 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
             
             {/* Fixed ADD BLOCK bar at the bottom */}
             {showArticleEditor && (
-              <div style={{ position: 'sticky', bottom: 0, left: 0, right: 0, background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '16px 24px', display: 'flex', justifyContent: 'center', zIndex: 100, boxShadow: '0 -4px 12px rgba(0,0,0,0.05)', marginTop: 'auto' }}>
+              <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                 <div style={{ position:'relative' }}>
-                  <button className="btn btn-navy" style={{ fontSize:'0.9rem', padding: '12px 24px', borderRadius: '100px', boxShadow: '0 4px 12px rgba(13,51,105,0.2)' }} onClick={() => setShowBlockMenu(b => !b)}><Plus size={16}/> Tambah Block</button>
                   {showBlockMenu && (
-                    <div className={styles.addMenuDropdown} style={{ bottom: '120%', top: 'auto', left: '50%', transform: 'translateX(-50%)', width:200, marginBottom: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+                    <div className={styles.addMenuDropdown} style={{ bottom: '120%', top: 'auto', right: 0, left: 'auto', width:200, marginBottom: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', borderRadius: 12 }}>
                       <button onClick={() => addBlock('headline')}><Type size={14}/> Headline / Judul</button>
                       <button onClick={() => addBlock('text')}><AlignLeft size={14}/> Text / Paragraf</button>
                       <button onClick={() => addBlock('image')}><ImageIcon size={14}/> Gambar</button>
@@ -2331,6 +2330,9 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                       <button onClick={() => addBlock('product')}><Package size={14}/> Product Card</button>
                     </div>
                   )}
+                  <button className="btn btn-navy" style={{ fontSize:'0.95rem', fontWeight: 600, padding: '14px 28px', borderRadius: '100px', boxShadow: '0 8px 24px rgba(13,51,105,0.4)' }} onClick={() => setShowBlockMenu(b => !b)}>
+                    <Plus size={18} style={{ marginRight: 6 }}/> Tambah Block
+                  </button>
                 </div>
               </div>
             )}
