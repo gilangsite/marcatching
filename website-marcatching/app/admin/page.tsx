@@ -640,19 +640,41 @@ function AdminDashboardInner() {
   async function saveAuthor() {
     if (!authorFormName.trim()) return
     setAuthorSaving(true)
-    if (editingAuthor) {
-      await fetch('/api/article-authors', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: editingAuthor.id, name: authorFormName.trim(), photo_url: authorFormPhoto || null }) })
-    } else {
-      await fetch('/api/article-authors', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name: authorFormName.trim(), photo_url: authorFormPhoto || null }) })
+    try {
+      const payload = { id: editingAuthor?.id, name: authorFormName.trim(), photo_url: authorFormPhoto || null }
+      const res = await fetch('/api/article-authors', {
+        method: editingAuthor ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to save author')
+      }
+      setAuthorSaving(false); setShowAuthorForm(false); setAuthorFormName(''); setAuthorFormPhoto(''); setEditingAuthor(null)
+      fetchArticleAuthors()
+    } catch (err: any) {
+      alert(`Error: ${err.message}`)
+      setAuthorSaving(false)
     }
-    setAuthorSaving(false); setShowAuthorForm(false); setAuthorFormName(''); setAuthorFormPhoto(''); setEditingAuthor(null)
-    fetchArticleAuthors()
   }
 
   async function deleteAuthor(author: ArticleAuthor) {
     if (!confirm(`Hapus author "${author.name}"?`)) return
-    await fetch('/api/article-authors', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: author.id }) })
-    fetchArticleAuthors()
+    try {
+      const res = await fetch('/api/article-authors', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: author.id })
+      })
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to delete author')
+      }
+      fetchArticleAuthors()
+    } catch (err: any) {
+      alert(`Error: ${err.message}`)
+    }
   }
 
   async function handleAuthorPhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
