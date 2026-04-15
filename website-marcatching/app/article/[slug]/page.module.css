@@ -32,7 +32,7 @@
 .article {
   max-width: 680px;
   margin: 0 auto;
-  padding-top: 20px;
+  padding-top: 40px;
 }
 
 /* ── Back link ── */
@@ -222,9 +222,9 @@
 
 .blockProductThumb {
   position: relative;
-  width: 80px;
-  min-width: 80px;
-  align-self: stretch;
+  width: 90px;
+  min-width: 90px;
+  aspect-ratio: 3 / 5;
   overflow: hidden;
   background: #1a1a1a;
   flex-shrink: 0;

@@ -139,7 +139,7 @@ function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: Artic
   if (block.type === 'product') {
     const product = products.find(p => p.id === block.product_id)
     if (!product) return null
-    const thumb = getDriveThumb(product.image_url, 'w600-h750')
+    const thumb = getDriveThumb(product.image_url, 'w600-h1000')
     return (
       <div className={styles.blockProduct} onClick={() => onOpenProduct(product)}>
         <div className={styles.blockProductInner}>

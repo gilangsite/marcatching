@@ -545,8 +545,8 @@ function AdminDashboardInner() {
   function addBlock(type: ArticleBlock['type']) {
     const id = genBlockId()
     let block: ArticleBlock
-    if (type === 'headline') block = { type, id, text: '', size: 'h2', color: '#0f172a', font_family: 'DM Sans', align: 'left' }
-    else if (type === 'text') block = { type, id, text: '', size: '1rem', weight: 'normal', italic: false, color: '#0f172a', font_family: 'DM Sans', align: 'left' }
+    if (type === 'headline') block = { type, id, text: '', size: 'h2', color: '#ffffff', font_family: 'DM Sans', align: 'left' }
+    else if (type === 'text') block = { type, id, text: '', size: '1rem', weight: 'normal', italic: false, color: '#ffffff', font_family: 'DM Sans', align: 'left' }
     else if (type === 'image') block = { type, id, url: '', aspect_ratio: '16:9', caption: '' }
     else if (type === 'product') block = { type, id, product_id: '' }
     else block = { type: 'video', id, url: '', caption: '' }
@@ -2131,18 +2131,6 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                 <div className={styles.formCard} style={{ marginTop:16 }}>
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
                     <h3 className={styles.formTitle}>Konten Artikel</h3>
-                    <div style={{ position:'relative' }}>
-                      <button className="btn btn-navy" style={{ fontSize:'0.85rem' }} onClick={() => setShowBlockMenu(b => !b)}><Plus size={15}/> Tambah Block</button>
-                      {showBlockMenu && (
-                        <div className={styles.addMenuDropdown} style={{ right:0, left:'auto', width:200 }}>
-                          <button onClick={() => addBlock('headline')}><Type size={14}/> Headline / Judul</button>
-                          <button onClick={() => addBlock('text')}><AlignLeft size={14}/> Text / Paragraf</button>
-                          <button onClick={() => addBlock('image')}><ImageIcon size={14}/> Gambar</button>
-                          <button onClick={() => addBlock('video')}><Video size={14}/> Video YouTube</button>
-                          <button onClick={() => addBlock('product')}><Package size={14}/> Product Card</button>
-                        </div>
-                      )}
-                    </div>
                   </div>
 
                   {articleBlocks.length === 0 && (
@@ -2320,11 +2308,29 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                 {articleError && <p className={styles.formError} style={{ marginTop:8 }}>{articleError}</p>}
 
                 {/* Save actions */}
-                <div className={styles.formActions}>
+                <div className={styles.formActions} style={{ paddingBottom: '90px' }}>
                   <button className="btn btn-ghost" onClick={() => setShowArticleEditor(false)}>Batal</button>
                   <button className="btn btn-navy" onClick={saveArticle} disabled={articleSaving}>
                     {articleSaving ? 'Menyimpan...' : <><Check size={16}/> Simpan Artikel</>}
                   </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Fixed ADD BLOCK bar at the bottom */}
+            {showArticleEditor && (
+              <div style={{ position: 'sticky', bottom: 0, left: 0, right: 0, background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '16px 24px', display: 'flex', justifyContent: 'center', zIndex: 100, boxShadow: '0 -4px 12px rgba(0,0,0,0.05)', marginTop: 'auto' }}>
+                <div style={{ position:'relative' }}>
+                  <button className="btn btn-navy" style={{ fontSize:'0.9rem', padding: '12px 24px', borderRadius: '100px', boxShadow: '0 4px 12px rgba(13,51,105,0.2)' }} onClick={() => setShowBlockMenu(b => !b)}><Plus size={16}/> Tambah Block</button>
+                  {showBlockMenu && (
+                    <div className={styles.addMenuDropdown} style={{ bottom: '120%', top: 'auto', left: '50%', transform: 'translateX(-50%)', width:200, marginBottom: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+                      <button onClick={() => addBlock('headline')}><Type size={14}/> Headline / Judul</button>
+                      <button onClick={() => addBlock('text')}><AlignLeft size={14}/> Text / Paragraf</button>
+                      <button onClick={() => addBlock('image')}><ImageIcon size={14}/> Gambar</button>
+                      <button onClick={() => addBlock('video')}><Video size={14}/> Video YouTube</button>
+                      <button onClick={() => addBlock('product')}><Package size={14}/> Product Card</button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

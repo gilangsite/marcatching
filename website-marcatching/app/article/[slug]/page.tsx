@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabaseClient'
 import ArticleClient from './ArticleClient'
 import type { Article, Product, Link as LinkType } from '@/lib/supabaseClient'
 
+export const dynamic = 'force-dynamic'
+
 type Props = {
   params: Promise<{ slug: string }>
 }

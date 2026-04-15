@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
 import ArticleListClient from './ArticleListClient'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Blog & Articles | Marcatching',
   description: 'Dapatkan insight terbaru, strategi marketing, dan tips produktivitas dari tim Marcatching untuk mengakselerasi bisnismu.',
