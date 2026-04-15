@@ -204,7 +204,7 @@ function AdminDashboardInner() {
   const [contactSaving, setContactSaving] = useState(false)
   const [contactMsg, setContactMsg] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [cropData, setCropData] = useState<{ src: string; target: 'poster' | 'carousel' | null, file?: File, filename?: string, mimeType?: string }>({ src: '', target: null })
+  const [cropData, setCropData] = useState<{ src: string; target: 'poster' | 'carousel' | 'author' | null, file?: File, filename?: string, mimeType?: string }>({ src: '', target: null })
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
@@ -657,18 +657,10 @@ function AdminDashboardInner() {
 
   async function handleAuthorPhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
     const reader = new FileReader()
-    reader.onload = async (ev) => {
-      setUploadingAuthorPhoto(true)
-      const base64 = ev.target?.result as string
-      try {
-        const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) })
-        const data = await res.json()
-        if (data.status === 'success') setAuthorFormPhoto(data.url)
-        else alert('Gagal upload foto: ' + data.message)
-      } catch { alert('Error upload foto') }
-      setUploadingAuthorPhoto(false)
+    reader.onload = (ev) => {
+      setCropData({ src: ev.target?.result as string, target: 'author', file, filename: file.name, mimeType: file.type })
+      setCrop({ x: 0, y: 0 }); setZoom(1); setCroppedAreaPixels(null)
     }
     reader.readAsDataURL(file)
   }
@@ -751,6 +743,11 @@ function AdminDashboardInner() {
       try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { newImages.push({ url: data.url, link: '' }) } else { alert("Gagal upload: " + data.message) } } catch { alert("Terjadi kesalahan saat upload gambar.") }
       setLinkForm(f => ({ ...f, image_data: newImages }))
       setUploadingImage(false)
+    } else if (cropData.target === 'author') {
+      setUploadingAuthorPhoto(true)
+      setCropData({ src: '', target: null })
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setAuthorFormPhoto(data.url) } else { alert('Gagal upload: ' + data.message) } } catch { alert('Error upload author photo') }
+      setUploadingAuthorPhoto(false)
     }
   }
 
@@ -1847,7 +1844,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                   image={cropData.src}
                   crop={crop}
                   zoom={zoom}
-                  aspect={4 / 5}
+                  aspect={cropData.target === 'author' ? 1 : 4 / 5}
                   onCropChange={setCrop}
                   onCropComplete={onCropComplete}
                   onZoomChange={setZoom}
