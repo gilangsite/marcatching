@@ -60,7 +60,57 @@ export type Product = {
   discount_percentage: number
   features: string[]
   is_active: boolean
+  category_id: string | null
+  checkout_clicks: number
   created_at: string
+}
+
+export type ProductCategory = {
+  id: string
+  name: string
+  slug: string
+  order_index: number
+  created_at: string
+}
+
+export type StorePageBlock = {
+  id: string
+  type: 'headline' | 'text' | 'image' | 'video' | 'button'
+  content: {
+    // headline
+    text?: string
+    size?: string
+    color?: string
+    align?: string
+    // text
+    weight?: string
+    italic?: boolean
+    font_size?: string
+    // image
+    url?: string
+    aspect_ratio?: string
+    caption?: string
+    // video
+    video_url?: string
+    // button
+    btn_text?: string
+    btn_url?: string
+    btn_color?: string
+    btn_text_color?: string
+  }
+  order_index: number
+  is_active: boolean
+  created_at: string
+}
+
+export type StoreProduct = {
+  id: string
+  product_id: string
+  order_index: number
+  store_status: 'active' | 'coming_soon' | 'hidden'
+  created_at: string
+  // Joined
+  products?: Product
 }
 
 export type Voucher = {

@@ -13,10 +13,10 @@ import {
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation
+  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink } from '@/lib/supabaseClient'
+import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -184,7 +184,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -215,7 +215,7 @@ function AdminDashboardInner() {
   const [productsLoading, setProductsLoading] = useState(true)
   const [showProductForm, setShowProductForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [pf, setPf] = useState({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [] as string[], is_active: true })
+  const [pf, setPf] = useState({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [] as string[], is_active: true, category_id: '' })
   const [newFeature, setNewFeature] = useState('')
   const [productSaving, setProductSaving] = useState(false)
   const [productError, setProductError] = useState('')
@@ -234,6 +234,30 @@ function AdminDashboardInner() {
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [contactMenuOrder, setContactMenuOrder] = useState<string | null>(null)
+
+  // ── Product Categories state ─────────────────────────────
+  const [productCategories, setProductCategories] = useState<ProductCategory[]>([])
+  const [productCatLoading, setProductCatLoading] = useState(false)
+  const [showProdCatForm, setShowProdCatForm] = useState(false)
+  const [editingProdCat, setEditingProdCat] = useState<ProductCategory | null>(null)
+  const [prodCatName, setProdCatName] = useState('')
+  const [prodCatSaving, setProdCatSaving] = useState(false)
+
+  // ── E-Commerce state ──────────────────────────────────────
+  const [storeBlocks, setStoreBlocks] = useState<StorePageBlock[]>([])
+  const [storeBlocksLoading, setStoreBlocksLoading] = useState(false)
+  const [showStoreBlockForm, setShowStoreBlockForm] = useState(false)
+  const [editingStoreBlock, setEditingStoreBlock] = useState<StorePageBlock | null>(null)
+  const [storeBlockType, setStoreBlockType] = useState<StorePageBlock['type']>('headline')
+  const [storeBlockContent, setStoreBlockContent] = useState<StorePageBlock['content']>({})
+  const [storeBlockSaving, setStoreBlockSaving] = useState(false)
+
+  const [storePlacements, setStorePlacements] = useState<StoreProduct[]>([])
+  const [storePlacementsLoading, setStorePlacementsLoading] = useState(false)
+  const [showStorePlacementForm, setShowStorePlacementForm] = useState(false)
+  const [spProductId, setSpProductId] = useState('')
+  const [spStatus, setSpStatus] = useState<'active'|'coming_soon'>('active')
+  const [spSaving, setSpSaving] = useState(false)
 
   // ── E-Course state ────────────────────────────────────────
   const [courseMaterials, setCourseMaterials] = useState<Record<string, CourseMaterial[]>>({})
@@ -316,6 +340,48 @@ function AdminDashboardInner() {
   async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+
+  // ── Product Categories CRUD ───────────────────────────────
+  async function fetchProductCategories() { setProductCatLoading(true); const { data } = await supabase.from('product_categories').select('*').order('order_index'); setProductCategories(data ?? []); setProductCatLoading(false) }
+  async function saveProdCat(e: FormEvent) {
+    e.preventDefault(); if (!prodCatName.trim()) return
+    setProdCatSaving(true)
+    const slug = prodCatName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    if (editingProdCat) { await supabase.from('product_categories').update({ name: prodCatName.trim(), slug }).eq('id', editingProdCat.id) }
+    else { await supabase.from('product_categories').insert({ name: prodCatName.trim(), slug, order_index: productCategories.length + 1 }) }
+    setProdCatSaving(false); setShowProdCatForm(false); setProdCatName(''); setEditingProdCat(null); fetchProductCategories()
+  }
+  async function deleteProdCat(cat: ProductCategory) {
+    if (!confirm(`Hapus kategori "${cat.name}"?`)) return
+    await supabase.from('product_categories').delete().eq('id', cat.id); fetchProductCategories()
+  }
+
+  // ── Store Blocks CRUD ─────────────────────────────────────
+  async function fetchStoreBlocks() { setStoreBlocksLoading(true); const { data } = await supabase.from('store_page_blocks').select('*').order('order_index'); setStoreBlocks(data ?? []); setStoreBlocksLoading(false) }
+  function openAddStoreBlock() { setEditingStoreBlock(null); setStoreBlockType('headline'); setStoreBlockContent({ text: '', size: 'h2', color: '#ffffff', align: 'left' }); setShowStoreBlockForm(true) }
+  function openEditStoreBlock(b: StorePageBlock) { setEditingStoreBlock(b); setStoreBlockType(b.type); setStoreBlockContent(b.content); setShowStoreBlockForm(true) }
+  async function saveStoreBlock(e: FormEvent) {
+    e.preventDefault(); setStoreBlockSaving(true)
+    const payload = { type: storeBlockType, content: storeBlockContent, is_active: true, order_index: editingStoreBlock ? editingStoreBlock.order_index : storeBlocks.length + 1 }
+    if (editingStoreBlock) { await supabase.from('store_page_blocks').update(payload).eq('id', editingStoreBlock.id) }
+    else { await supabase.from('store_page_blocks').insert(payload) }
+    setStoreBlockSaving(false); setShowStoreBlockForm(false); setEditingStoreBlock(null); fetchStoreBlocks()
+  }
+  async function deleteStoreBlock(id: string) { if (!confirm('Hapus block ini?')) return; await supabase.from('store_page_blocks').delete().eq('id', id); fetchStoreBlocks() }
+  async function handleStoreBlockReorder(newOrder: StorePageBlock[]) { setStoreBlocks(newOrder); await Promise.all(newOrder.map((b, i) => supabase.from('store_page_blocks').update({ order_index: i + 1 }).eq('id', b.id))) }
+  async function toggleStoreBlockActive(b: StorePageBlock) { await supabase.from('store_page_blocks').update({ is_active: !b.is_active }).eq('id', b.id); fetchStoreBlocks() }
+
+  // ── Store Placements CRUD ─────────────────────────────────
+  async function fetchStorePlacements() { setStorePlacementsLoading(true); const { data } = await supabase.from('store_products').select('*, products(*)').order('order_index'); setStorePlacements(data ?? []); setStorePlacementsLoading(false) }
+  async function addStorePlacement(e: FormEvent) {
+    e.preventDefault(); if (!spProductId) return
+    setSpSaving(true)
+    await supabase.from('store_products').upsert({ product_id: spProductId, store_status: spStatus, order_index: storePlacements.length + 1 }, { onConflict: 'product_id' })
+    setSpSaving(false); setShowStorePlacementForm(false); setSpProductId(''); setSpStatus('active'); fetchStorePlacements()
+  }
+  async function deleteStorePlacement(id: string) { if (!confirm('Hapus produk dari store?')) return; await supabase.from('store_products').delete().eq('id', id); fetchStorePlacements() }
+  async function updateStorePlacementStatus(sp: StoreProduct, status: 'active'|'coming_soon'|'hidden') { await supabase.from('store_products').update({ store_status: status }).eq('id', sp.id); fetchStorePlacements() }
+  async function handleStorePlacementReorder(newOrder: StoreProduct[]) { setStorePlacements(newOrder); await Promise.all(newOrder.map((sp, i) => supabase.from('store_products').update({ order_index: i + 1 }).eq('id', sp.id))) }
 
   // ── Navigation CRUD ────────────────────────────────────────
   async function fetchNavLinks() {
@@ -545,7 +611,15 @@ function AdminDashboardInner() {
     }
   }
 
-  useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
+  useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders(); fetchProductCategories() }, [])
+
+  // Fetch ecommerce data when tab is active
+  useEffect(() => {
+    if (tab === 'ecommerce' && storeBlocks.length === 0 && !storeBlocksLoading) {
+      fetchStoreBlocks(); fetchStorePlacements()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
 
   // Fetch nav links when navigation tab is active
   useEffect(() => {
@@ -590,7 +664,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -882,10 +956,10 @@ function AdminDashboardInner() {
 
   // ── Product CRUD ─────────────────────────────────────────────
   function openAddProduct() {
-    setEditingProduct(null); setPf({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [], is_active: true }); setProductError(''); setShowProductForm(true)
+    setEditingProduct(null); setPf({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [], is_active: true, category_id: '' }); setProductError(''); setShowProductForm(true)
   }
   function openEditProduct(p: Product) {
-    setEditingProduct(p); setPf({ name: p.name, sub_headline: p.sub_headline || '', description: p.description || '', image_url: p.image_url || '', price_before: p.price_before_discount?.toString() || '', price_after: p.price_after_discount?.toString() || '', discount: p.discount_percentage?.toString() || '', features: Array.isArray(p.features) ? p.features : [], is_active: p.is_active }); setProductError(''); setShowProductForm(true)
+    setEditingProduct(p); setPf({ name: p.name, sub_headline: p.sub_headline || '', description: p.description || '', image_url: p.image_url || '', price_before: p.price_before_discount?.toString() || '', price_after: p.price_after_discount?.toString() || '', discount: p.discount_percentage?.toString() || '', features: Array.isArray(p.features) ? p.features : [], is_active: p.is_active, category_id: p.category_id || '' }); setProductError(''); setShowProductForm(true)
   }
 
   // Price interlinked calculator
@@ -923,7 +997,7 @@ function AdminDashboardInner() {
   async function saveProduct(e: FormEvent) {
     e.preventDefault(); if (!pf.name) { setProductError('Nama product wajib diisi'); return }
     setProductSaving(true); setProductError('')
-    const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active }
+    const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active, category_id: pf.category_id || null }
     let error
     if (editingProduct) { 
       ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) 
@@ -1075,6 +1149,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
+          <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
           <button className={`${styles.navItem} ${tab === 'articles' ? styles.navActive : ''}`} onClick={() => { setTab('articles'); setIsSidebarOpen(false) }}><Newspaper size={18} /> Articles</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
           <button className={`${styles.navItem} ${tab === 'ecourse' ? styles.navActive : ''}`} onClick={() => { setTab('ecourse'); setIsSidebarOpen(false) }}><BookMarked size={18} /> E-Course</button>
@@ -1203,6 +1278,7 @@ function AdminDashboardInner() {
                     <div className="form-group"><label className="label">Harga Setelah Diskon</label><div style={{display:'flex',alignItems:'center',gap:4}}><span style={{fontWeight:600,color:'#64748b'}}>Rp</span><input className="input" placeholder="750000" value={pf.price_after ? formatRp(parseRp(pf.price_after)) : ''} onChange={e => handlePriceAfter(e.target.value)} /></div></div>
                     <div className="form-group"><label className="label">Discount</label><div style={{display:'flex',alignItems:'center',gap:4}}><input className="input" placeholder="50" value={pf.discount} onChange={e => handleDiscount(e.target.value)} /><span style={{fontWeight:600,color:'#64748b'}}>%</span></div></div>
                     <div className="form-group"><label className="label">Status</label><select className="select" value={pf.is_active ? 'active' : 'inactive'} onChange={e => setPf(f => ({...f, is_active: e.target.value === 'active'}))}><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+                    <div className="form-group"><label className="label">Kategori</label><select className="select" value={pf.category_id} onChange={e => setPf(f => ({...f, category_id: e.target.value}))}><option value="">— Tanpa Kategori —</option>{productCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                   </div>
                   <div className="form-group"><label className="label">Features</label>
                     <div style={{display:'flex',gap:8}}><input className="input" placeholder="cth: Akses modul gratis seumur hidup" value={newFeature} onChange={e => setNewFeature(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addFeature() } }} /><button type="button" className="btn btn-navy" onClick={addFeature} style={{whiteSpace:'nowrap'}}><Plus size={14} /></button></div>
@@ -1214,13 +1290,41 @@ function AdminDashboardInner() {
                 </form>
               </div>
             )}
+            {/* Categories Section */}
+            <div style={{ marginBottom: 24, padding: '20px', background: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Kategori Produk</h3>
+                <button className="btn btn-ghost" style={{ fontSize: '0.8rem', padding: '4px 12px' }} onClick={() => { setEditingProdCat(null); setProdCatName(''); setShowProdCatForm(true) }}><Plus size={14} /> Tambah</button>
+              </div>
+              {showProdCatForm && (
+                <form onSubmit={saveProdCat} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                  <input className="input" style={{ flex: 1 }} placeholder="Nama kategori" value={prodCatName} onChange={e => setProdCatName(e.target.value)} autoFocus />
+                  <button type="submit" className="btn btn-navy" disabled={prodCatSaving} style={{ whiteSpace: 'nowrap' }}>{prodCatSaving ? '...' : <><Check size={14} /> Simpan</>}</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => { setShowProdCatForm(false); setEditingProdCat(null); setProdCatName('') }}><X size={14} /></button>
+                </form>
+              )}
+              {productCatLoading ? <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Memuat...</div> : productCategories.length === 0 ? (
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Belum ada kategori.</div>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {productCategories.map(cat => (
+                    <div key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'rgba(13,51,105,0.08)', border: '1px solid rgba(13,51,105,0.15)' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0d3369' }}>{cat.name}</span>
+                      <button onClick={() => { setEditingProdCat(cat); setProdCatName(cat.name); setShowProdCatForm(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#64748b', display: 'flex' }}><Pencil size={12} /></button>
+                      <button onClick={() => deleteProdCat(cat)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#dc2626', display: 'flex' }}><X size={12} /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {productsLoading ? <div className={styles.loading}>Memuat...</div> : products.length === 0 ? <div className={styles.emptyState}>Belum ada product.</div> : (
               <div className={styles.linksList}>{products.map(p => (
                 <div key={p.id} className={styles.linkRow} style={{cursor:'pointer'}} onClick={() => openEditProduct(p)}>
                   <div className={styles.linkIcon}><Package size={18} /></div>
                   <div className={styles.linkInfo}>
                     <span className={styles.linkTitle}>{p.name}</span>
-                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? <span className={styles.statusActive}>Active</span> : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)}</span>
+                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? <span className={styles.statusActive}>Active</span> : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)} · <span style={{color:'rgba(0,0,0,0.4)'}}>{productCategories.find(c=>c.id===p.category_id)?.name || 'No Category'}</span></span>
                   </div>
                   <div className={styles.linkActions}>
                     <button className={styles.editBtn} onClick={(e) => { e.stopPropagation(); openEditProduct(p) }}><Pencil size={15} /></button>
@@ -1229,6 +1333,148 @@ function AdminDashboardInner() {
                 </div>
               ))}</div>
             )}
+          </div>
+        )}
+
+        {/* ── E-COMMERCE TAB ─── */}
+        {tab === 'ecommerce' && (
+          <div className={styles.tabContent}>
+            <div className={styles.contentHeader}>
+              <div><h1 className={styles.contentTitle}>E-Commerce</h1><p className={styles.contentDesc}>Kelola halaman toko di <strong>marcatching.com/store</strong></p></div>
+              <a href="https://marcatching.com/store" target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ fontSize: '0.85rem' }}><ExternalLink size={14} /> Lihat Toko</a>
+            </div>
+
+            {/* ── Page Blocks ── */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h2 className={styles.formTitle} style={{ margin: 0 }}>Konten Halaman</h2>
+                <button className="btn btn-navy" onClick={openAddStoreBlock}><Plus size={14} /> Tambah Block</button>
+              </div>
+              {showStoreBlockForm && (
+                <div className={styles.formCard}>
+                  <div className={styles.formCardHeader}>
+                    <h3 className={styles.formTitle}>{editingStoreBlock ? 'Edit Block' : 'Tambah Block Baru'}</h3>
+                    <button onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }} className={styles.closeBtn}><X size={18} /></button>
+                  </div>
+                  <form onSubmit={saveStoreBlock} className={styles.form}>
+                    <div className="form-group">
+                      <label className="label">Tipe Block</label>
+                      <select className="select" value={storeBlockType} onChange={e => { const t = e.target.value as StorePageBlock['type']; setStoreBlockType(t); setStoreBlockContent(t === 'headline' ? {text:'',size:'h2',color:'#ffffff',align:'left'} : t === 'text' ? {text:'',color:'rgba(255,255,255,0.85)',font_size:'1rem',align:'left'} : t === 'image' ? {url:'',aspect_ratio:'16:9',caption:''} : t === 'video' ? {video_url:'',caption:''} : {btn_text:'',btn_url:'',btn_color:'#ffffff',btn_text_color:'#000000',align:'center'}) }}>
+                        <option value="headline">🔤 Headline</option>
+                        <option value="text">📝 Text</option>
+                        <option value="image">🖼 Image</option>
+                        <option value="video">🎬 Video (YouTube)</option>
+                        <option value="button">🔘 Button</option>
+                      </select>
+                    </div>
+                    {(storeBlockType === 'headline' || storeBlockType === 'text') && (
+                      <div className={styles.formGrid}>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Teks</label><textarea className="input" rows={3} value={storeBlockContent.text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, text: e.target.value }))} /></div>
+                        {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
+                        {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
+                        <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
+                        <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                      </div>
+                    )}
+                    {storeBlockType === 'image' && (
+                      <div className={styles.formGrid}>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL Gambar</label><input className="input" placeholder="https://..." value={storeBlockContent.url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, url: e.target.value }))} /></div>
+                        <div className="form-group"><label className="label">Aspect Ratio</label><select className="select" value={storeBlockContent.aspect_ratio || '16:9'} onChange={e => setStoreBlockContent(c => ({ ...c, aspect_ratio: e.target.value }))}><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="4:5">4:5</option></select></div>
+                        <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
+                      </div>
+                    )}
+                    {storeBlockType === 'video' && (
+                      <div className={styles.formGrid}>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL YouTube</label><input className="input" placeholder="https://youtube.com/watch?v=..." value={storeBlockContent.video_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, video_url: e.target.value }))} /></div>
+                        <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
+                      </div>
+                    )}
+                    {storeBlockType === 'button' && (
+                      <div className={styles.formGrid}>
+                        <div className="form-group"><label className="label">Teks Button</label><input className="input" placeholder="Mulai Sekarang" value={storeBlockContent.btn_text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text: e.target.value }))} /></div>
+                        <div className="form-group"><label className="label">URL</label><input className="input" placeholder="https://..." value={storeBlockContent.btn_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_url: e.target.value }))} /></div>
+                        <div className="form-group"><label className="label">Warna Button</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /></div></div>
+                        <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_text_color || '#000000'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_text_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /></div></div>
+                        <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'center'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                      </div>
+                    )}
+                    <div className={styles.formActions}>
+                      <button type="button" className="btn btn-ghost" onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
+                      <button type="submit" className="btn btn-navy" disabled={storeBlockSaving}>{storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
+                    </div>
+                  </form>
+                </div>
+              )}
+              {storeBlocksLoading ? <div className={styles.loading}>Memuat...</div> : storeBlocks.length === 0 ? (
+                <div className={styles.emptyState} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Belum ada konten. Tambah block untuk mengisi halaman toko.</div>
+              ) : (
+                <Reorder.Group axis="y" values={storeBlocks} onReorder={handleStoreBlockReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {storeBlocks.map(b => (
+                    <Reorder.Item key={b.id} value={b} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+                      <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="var(--text-secondary)" /></div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <span className={styles.linkTitle}>{b.type.toUpperCase()} — {b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '(block)'}</span>
+                        <span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Active' : 'Hidden'}</span></span>
+                      </div>
+                      <div className={styles.linkActions}>
+                        <button className={styles.editBtn} onClick={() => toggleStoreBlockActive(b)}>{b.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>
+                        <button className={styles.editBtn} onClick={() => openEditStoreBlock(b)}><Pencil size={15} /></button>
+                        <button className={styles.deleteBtn} onClick={() => deleteStoreBlock(b.id)}><Trash2 size={15} /></button>
+                      </div>
+                    </Reorder.Item>
+                  ))}
+                </Reorder.Group>
+              )}
+            </div>
+
+            {/* ── Product Placements ── */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h2 className={styles.formTitle} style={{ margin: 0 }}>Produk di Toko</h2>
+                <button className="btn btn-navy" onClick={() => setShowStorePlacementForm(true)}><Plus size={14} /> Tambah Produk</button>
+              </div>
+              {showStorePlacementForm && (
+                <form onSubmit={addStorePlacement} style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                  <select className="select" style={{ flex: 1, minWidth: 200 }} value={spProductId} onChange={e => setSpProductId(e.target.value)}>
+                    <option value="">— Pilih Produk —</option>
+                    {products.filter(p => !storePlacements.some(sp => sp.product_id === p.id)).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                  <select className="select" value={spStatus} onChange={e => setSpStatus(e.target.value as 'active'|'coming_soon')}>
+                    <option value="active">Active</option>
+                    <option value="coming_soon">Coming Soon</option>
+                  </select>
+                  <button type="submit" className="btn btn-navy" disabled={spSaving}>{spSaving ? '...' : <><Check size={14} /> Tambah</>}</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => { setShowStorePlacementForm(false); setSpProductId(''); setSpStatus('active') }}><X size={14} /></button>
+                </form>
+              )}
+              {storePlacementsLoading ? <div className={styles.loading}>Memuat...</div> : storePlacements.length === 0 ? (
+                <div className={styles.emptyState} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Belum ada produk di toko.</div>
+              ) : (
+                <Reorder.Group axis="y" values={storePlacements} onReorder={handleStorePlacementReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {storePlacements.map(sp => {
+                    const p = sp.products
+                    if (!p) return null
+                    const thumb = p.image_url?.includes('drive.google.com/uc') ? p.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w80-h100' : p.image_url
+                    return (
+                      <Reorder.Item key={sp.id} value={sp} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+                        <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="var(--text-secondary)" /></div>
+                        {thumb && <img src={thumb} alt={p.name} style={{ width: 36, height: 45, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />}
+                        <div className={styles.linkInfo}>
+                          <span className={styles.linkTitle}>{p.name}</span>
+                          <span className={styles.linkUrl}>Rp {formatRp(p.price_after_discount)} · <ShoppingCart size={11} style={{ display: 'inline', verticalAlign: 'middle' }} /> {p.checkout_clicks}</span>
+                        </div>
+                        <select className="select" style={{ fontSize: '0.78rem', padding: '4px 8px', minWidth: 110 }} value={sp.store_status} onChange={e => updateStorePlacementStatus(sp, e.target.value as any)}>
+                          <option value="active">Active</option>
+                          <option value="coming_soon">Coming Soon</option>
+                          <option value="hidden">Hidden</option>
+                        </select>
+                        <button className={styles.deleteBtn} onClick={() => deleteStorePlacement(sp.id)}><Trash2 size={15} /></button>
+                      </Reorder.Item>
+                    )
+                  })}
+                </Reorder.Group>
+              )}
+            </div>
           </div>
         )}
 

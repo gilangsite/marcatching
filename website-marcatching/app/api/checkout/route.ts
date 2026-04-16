@@ -46,6 +46,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Gagal menyimpan pesanan: ' + orderError.message }, { status: 500 })
     }
 
+    // Increment checkout_clicks for the product (fire-and-forget, non-blocking)
+    if (productId) {
+      Promise.resolve(supabase.rpc('increment_checkout_clicks', { product_id_arg: productId })).catch(() => null)
+    }
+
     // NOTE: course_access_emails is NOT inserted here at checkout.
     // Access is only granted when admin confirms the order (toggleOrderStatus in admin page).
     // This prevents users from registering/activating their course account before payment is confirmed.
