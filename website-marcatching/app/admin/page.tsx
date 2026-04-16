@@ -13,10 +13,10 @@ import {
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical
+  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor } from '@/lib/supabaseClient'
+import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -184,7 +184,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -294,6 +294,15 @@ function AdminDashboardInner() {
     trafficSources: { source: string; count: number }[]
   }
   type KpiComparison = { visitors: number; pageViews: number; clicks: number; ctr: number }
+  // ── Navigation state ────────────────────────────────────────
+  const [navLinks, setNavLinks] = useState<NavLink[]>([])
+  const [navLinksLoading, setNavLinksLoading] = useState(false)
+  const [showNavForm, setShowNavForm] = useState(false)
+  const [editingNavLink, setEditingNavLink] = useState<NavLink | null>(null)
+  const [navForm, setNavForm] = useState({ title: '', url: '', icon: 'Globe', text_color: '#ffffff', btn_color: '', is_active: true })
+  const [navSaving, setNavSaving] = useState(false)
+  const [navError, setNavError] = useState('')
+
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [kpiComparison, setKpiComparison] = useState<KpiComparison | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
@@ -307,6 +316,75 @@ function AdminDashboardInner() {
   async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+
+  // ── Navigation CRUD ────────────────────────────────────────
+  async function fetchNavLinks() {
+    setNavLinksLoading(true)
+    const { data } = await supabase.from('nav_links').select('*').order('order_index')
+    setNavLinks(data ?? [])
+    setNavLinksLoading(false)
+  }
+
+  function openAddNavLink() {
+    setEditingNavLink(null)
+    setNavForm({ title: '', url: '', icon: 'Globe', text_color: '#ffffff', btn_color: '', is_active: true })
+    setNavError('')
+    setShowNavForm(true)
+  }
+
+  function openEditNavLink(nl: NavLink) {
+    setEditingNavLink(nl)
+    setNavForm({
+      title: nl.title,
+      url: nl.url || '',
+      icon: nl.icon || 'Globe',
+      text_color: nl.text_color || '#ffffff',
+      btn_color: nl.btn_color || '',
+      is_active: nl.is_active,
+    })
+    setNavError('')
+    setShowNavForm(true)
+  }
+
+  async function saveNavLink(e: FormEvent) {
+    e.preventDefault()
+    if (!navForm.title.trim()) { setNavError('Judul wajib diisi.'); return }
+    setNavSaving(true); setNavError('')
+    const payload = {
+      title: navForm.title.trim(),
+      url: navForm.url || null,
+      icon: navForm.icon,
+      text_color: navForm.text_color || '#ffffff',
+      btn_color: navForm.btn_color || null,
+      is_active: navForm.is_active,
+      order_index: editingNavLink ? editingNavLink.order_index : navLinks.length + 1,
+    }
+    let error
+    if (editingNavLink) {
+      ({ error } = await supabase.from('nav_links').update(payload).eq('id', editingNavLink.id))
+    } else {
+      ({ error } = await supabase.from('nav_links').insert(payload))
+    }
+    setNavSaving(false)
+    if (error) { setNavError('Terjadi kesalahan: ' + error.message) }
+    else { setShowNavForm(false); setEditingNavLink(null); fetchNavLinks() }
+  }
+
+  async function deleteNavLink(id: string) {
+    if (!confirm('Hapus navigation link ini?')) return
+    await supabase.from('nav_links').delete().eq('id', id)
+    fetchNavLinks()
+  }
+
+  async function handleNavReorder(newOrder: NavLink[]) {
+    setNavLinks(newOrder)
+    await Promise.all(newOrder.map((nl, idx) => supabase.from('nav_links').update({ order_index: idx + 1 }).eq('id', nl.id)))
+  }
+
+  async function toggleNavLinkActive(nl: NavLink) {
+    await supabase.from('nav_links').update({ is_active: !nl.is_active }).eq('id', nl.id)
+    fetchNavLinks()
+  }
 
   // ── Article fetchers ───────────────────────────────────────
   async function fetchArticles() {
@@ -469,6 +547,14 @@ function AdminDashboardInner() {
 
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders() }, [])
 
+  // Fetch nav links when navigation tab is active
+  useEffect(() => {
+    if (tab === 'navigation' && navLinks.length === 0 && !navLinksLoading) {
+      fetchNavLinks()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
   useEffect(() => {
     if (tab === 'articles' && articles.length === 0 && !articlesLoading) {
       fetchArticles(); fetchArticleCategories(); fetchArticleAuthors()
@@ -504,7 +590,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -988,6 +1074,7 @@ function AdminDashboardInner() {
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
+          <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'articles' ? styles.navActive : ''}`} onClick={() => { setTab('articles'); setIsSidebarOpen(false) }}><Newspaper size={18} /> Articles</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
           <button className={`${styles.navItem} ${tab === 'ecourse' ? styles.navActive : ''}`} onClick={() => { setTab('ecourse'); setIsSidebarOpen(false) }}><BookMarked size={18} /> E-Course</button>
@@ -1539,6 +1626,128 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                   )
                 })}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* ── NAVIGATION TAB ─── */}
+        {tab === 'navigation' && (
+          <div className={styles.tabContent}>
+            <div className={styles.contentHeader}>
+              <div>
+                <h1 className={styles.contentTitle}>Navigation</h1>
+                <p className={styles.contentDesc}>Kelola dropdown menu navigasi di pojok kanan atas landing page</p>
+              </div>
+              <button className="btn btn-navy" onClick={openAddNavLink}><Plus size={16} /> Tambah Nav Link</button>
+            </div>
+
+            {showNavForm && (
+              <div className={styles.formCard}>
+                <div className={styles.formCardHeader}>
+                  <h2 className={styles.formTitle}>{editingNavLink ? 'Edit Nav Link' : 'Tambah Nav Link Baru'}</h2>
+                  <button onClick={() => { setShowNavForm(false); setEditingNavLink(null) }} className={styles.closeBtn}><X size={18} /></button>
+                </div>
+                <form onSubmit={saveNavLink} className={styles.form}>
+                  <div className={styles.formGrid}>
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label className="label">Judul / Label *</label>
+                      <input className="input" placeholder="cth: Instagram" value={navForm.title} onChange={e => setNavForm(f => ({ ...f, title: e.target.value }))} />
+                    </div>
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label className="label">URL Link</label>
+                      <input className="input" placeholder="https://..." value={navForm.url} onChange={e => setNavForm(f => ({ ...f, url: e.target.value }))} />
+                    </div>
+                    <div className="form-group">
+                      <label className="label">Icon</label>
+                      <select className="select" value={navForm.icon} onChange={e => setNavForm(f => ({ ...f, icon: e.target.value }))}>
+                        {ICON_OPTIONS.map(opt => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label className="label">Status</label>
+                      <select className="select" value={navForm.is_active ? 'active' : 'inactive'} onChange={e => setNavForm(f => ({ ...f, is_active: e.target.value === 'active' }))}>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label className="label">Warna Text</label>
+                      <div className={styles.colorInputWrap}>
+                        <input type="color" className={styles.colorPicker} value={navForm.text_color || '#ffffff'} onChange={e => setNavForm(f => ({ ...f, text_color: e.target.value }))} />
+                        <input type="text" className="input" style={{ flex: 1 }} placeholder="#ffffff" value={navForm.text_color} onChange={e => setNavForm(f => ({ ...f, text_color: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="label">Warna Background (kosongkan = transparan)</label>
+                      <div className={styles.colorInputWrap}>
+                        <input type="color" className={styles.colorPicker} value={navForm.btn_color || '#0d3369'} onChange={e => setNavForm(f => ({ ...f, btn_color: e.target.value }))} />
+                        <input type="text" className="input" style={{ flex: 1 }} placeholder="Kosongkan = transparan" value={navForm.btn_color} onChange={e => setNavForm(f => ({ ...f, btn_color: e.target.value }))} />
+                        {navForm.btn_color && (
+                          <button type="button" className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={() => setNavForm(f => ({ ...f, btn_color: '' }))}>
+                            <X size={14} /> Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview */}
+                  <div style={{ marginTop: 16, padding: '16px', background: '#000', borderRadius: 12, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
+                      color: navForm.text_color || '#ffffff',
+                      background: navForm.btn_color || 'transparent',
+                      borderRadius: 8, fontSize: '0.9rem', fontWeight: navForm.btn_color ? 600 : 500,
+                    }}>
+                      {(() => { const IC = ICON_MAP[navForm.icon] ?? Globe; return <IC size={20} /> })()}
+                      <span>{navForm.title || 'Preview'}</span>
+                    </div>
+                  </div>
+
+                  {navError && <p className={styles.formError}>{navError}</p>}
+                  <div className={styles.formActions}>
+                    <button type="button" className="btn btn-ghost" onClick={() => { setShowNavForm(false); setEditingNavLink(null) }}>Batal</button>
+                    <button type="submit" className="btn btn-navy" disabled={navSaving}>{navSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {navLinksLoading ? <div className={styles.loading}>Memuat data...</div> : navLinks.length === 0 ? (
+              <div className={styles.emptyState}><p>Belum ada navigation link. Klik "Tambah Nav Link" untuk menambahkan.</p></div>
+            ) : (
+              <Reorder.Group axis="y" values={navLinks} onReorder={handleNavReorder} className={styles.linksList} style={{ listStyleType: 'none', padding: 0, margin: 0, gap: '12px', display: 'flex', flexDirection: 'column' }}>
+                {navLinks.map(nl => {
+                  const IconComp = ICON_MAP[nl.icon] ?? Globe
+                  return (
+                    <Reorder.Item key={nl.id} value={nl} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+                      <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none' }}>
+                        <GripVertical size={16} color="var(--text-secondary)" />
+                      </div>
+                      <div onClick={() => openEditNavLink(nl)} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer', gap: '16px', minWidth: 0 }}>
+                        <div className={styles.linkIcon} style={{ margin: 0 }}><IconComp size={18} strokeWidth={1.75} /></div>
+                        <div className={styles.linkInfo}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span className={styles.linkTitle}>{nl.title}</span>
+                            {nl.btn_color && (
+                              <span style={{ width: 14, height: 14, borderRadius: 4, background: nl.btn_color, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }} />
+                            )}
+                            <span style={{ width: 14, height: 14, borderRadius: 4, background: nl.text_color || '#ffffff', display: 'inline-block', border: '1px solid rgba(0,0,0,0.15)' }} title="Text color" />
+                          </div>
+                          <span className={styles.linkUrl}>
+                            {nl.url || '—'} · <span className={nl.is_active ? styles.statusActive : styles.statusSoon}>{nl.is_active ? 'Active' : 'Inactive'}</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.linkActions}>
+                        <button className={styles.editBtn} onClick={() => toggleNavLinkActive(nl)} title={nl.is_active ? 'Nonaktifkan' : 'Aktifkan'}>{nl.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>
+                        <button className={styles.editBtn} onClick={() => openEditNavLink(nl)} title="Edit"><Pencil size={15} /></button>
+                        <button className={styles.deleteBtn} onClick={() => deleteNavLink(nl.id)} title="Hapus"><Trash2 size={15} /></button>
+                      </div>
+                    </Reorder.Item>
+                  )
+                })}
+              </Reorder.Group>
             )}
           </div>
         )}

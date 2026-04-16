@@ -73,9 +73,36 @@
   font-weight: 500;
   border-radius: var(--radius-sm);
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .dropdownItem:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+}
+
+/* Button-style nav item with custom background */
+.dropdownItemBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.dropdownItemBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.dropdownEmpty {
+  padding: 10px 14px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  text-align: center;
 }

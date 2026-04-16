@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link as LinkType, Contact, Product } from '@/lib/supabaseClient'
+import type { Link as LinkType, Contact, Product, NavLink } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import ButtonCard from '@/components/ButtonCard'
 import TextBlock from '@/components/TextBlock'
@@ -31,6 +31,12 @@ async function getProducts(): Promise<Product[]> {
   return data ?? []
 }
 
+async function getNavLinks(): Promise<NavLink[]> {
+  const { data, error } = await supabase.from('nav_links').select('*').eq('is_active', true).order('order_index', { ascending: true })
+  if (error) { console.error('Error fetching nav_links:', error); return [] }
+  return data ?? []
+}
+
 export const revalidate = 0
 
 function formatRupiah(num: number): string {
@@ -38,16 +44,16 @@ function formatRupiah(num: number): string {
 }
 
 export default async function HomePage() {
-  const [links, contact, products] = await Promise.all([getLinks(), getContact(), getProducts()])
+  const [links, contact, products, navLinks] = await Promise.all([getLinks(), getContact(), getProducts(), getNavLinks()])
 
   return (
     <>
-      <Navbar links={links} />
+      <Navbar navLinks={navLinks} />
 
       <main className={styles.main}>
         {/* ── Main Content ────────────────────────────────── */}
+        <div className={styles.heroDecor} />
         <section className={styles.hero}>
-          <div className={styles.heroDecor} />
           <div className={styles.heroContent}>
             
             <div className={styles.homeLogoWrap}>

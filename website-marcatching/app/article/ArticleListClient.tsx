@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Search, Clock, Eye, X, SlidersHorizontal } from 'lucide-react'
-import type { Article, ArticleCategory, Link as LinkType } from '@/lib/supabaseClient'
+import type { Article, ArticleCategory, NavLink } from '@/lib/supabaseClient'
 import styles from './page.module.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -35,7 +35,7 @@ export default function ArticleListClient({
 }: { 
   initialArticles: Article[], 
   categories: ArticleCategory[], 
-  navbarLinks: LinkType[] 
+  navbarLinks: NavLink[] 
 }) {
   const [articles, setArticles] = useState<Article[]>(initialArticles)
   const [loading, setLoading] = useState(false)
@@ -80,7 +80,7 @@ export default function ArticleListClient({
 
   return (
     <>
-      <Navbar links={navbarLinks} />
+      <Navbar navLinks={navbarLinks} />
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroInner}>

@@ -16,14 +16,15 @@
   min-height: 80vh;
 }
 
-/* animated subtle mesh/gradient for elegance */
+/* animated subtle mesh/gradient for elegance — fixed to viewport */
 .heroDecor {
-  position: absolute;
-  bottom: -200px;
+  position: fixed;
+  bottom: -100px;
   left: 0;
   right: 0;
   height: 400px;
   z-index: 0;
+  pointer-events: none;
   background:
     radial-gradient(ellipse at 30% 100%, rgba(13, 51, 105, 0.4) 0%, transparent 60%),
     radial-gradient(ellipse at 70% 100%, rgba(59, 130, 246, 0.3) 0%, transparent 60%);

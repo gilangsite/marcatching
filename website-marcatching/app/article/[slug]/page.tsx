@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import ArticleClient from './ArticleClient'
-import type { Article, Product, Link as LinkType } from '@/lib/supabaseClient'
+import type { Article, Product } from '@/lib/supabaseClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,10 +68,11 @@ export default async function ArticleDetailPage({ params }: Props) {
 
   if (!article) notFound()
 
-  // 2. Fetch Navbar Links
+  // 2. Fetch Navbar Nav Links
   const { data: links } = await supabase
-    .from('links')
+    .from('nav_links')
     .select('*')
+    .eq('is_active', true)
     .order('order_index')
 
   // 3. Fetch Products

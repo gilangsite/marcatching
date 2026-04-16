@@ -30,6 +30,18 @@ export type Link = {
   image_data?: any // jsonb array of { url: string, link: string }
 }
 
+export type NavLink = {
+  id: string
+  title: string
+  url: string | null
+  icon: string
+  text_color: string | null
+  btn_color: string | null
+  order_index: number
+  is_active: boolean
+  created_at: string
+}
+
 export type Contact = {
   id: string
   email: string

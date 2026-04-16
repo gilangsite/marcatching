@@ -2,15 +2,23 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Menu, X, Camera as Instagram, Music2 } from 'lucide-react'
-import type { Link } from '@/lib/supabaseClient'
+import {
+  Menu, X, Camera as Instagram, Music2, Globe, Video,
+  Mail, Link as LinkIcon, ShoppingBag, ExternalLink
+} from 'lucide-react'
+import type { NavLink } from '@/lib/supabaseClient'
 import styles from './Navbar.module.css'
 
-export default function Navbar({ links = [] }: { links?: Link[] }) {
+const ICON_MAP: Record<string, React.ElementType> = {
+  Globe, Instagram, Video, Music2, Mail, Link: LinkIcon,
+  ShoppingBag, ExternalLink,
+}
+
+export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const igLink = links.find(l => l.title.toLowerCase().includes('instagram'))?.url || 'https://www.instagram.com/marcatching.id/'
-  const tiktokLink = links.find(l => l.title.toLowerCase().includes('tiktok'))?.url || 'https://www.tiktok.com/@marcatching'
+  // Filter to only active items
+  const activeLinks = navLinks.filter(l => l.is_active)
 
   return (
     <nav className={styles.navbar}>
@@ -37,14 +45,30 @@ export default function Navbar({ links = [] }: { links?: Link[] }) {
           
           {isOpen && (
             <div className={styles.dropdownMenu}>
-              <a href={igLink} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
-                <Instagram size={20} />
-                <span>Instagram</span>
-              </a>
-              <a href={tiktokLink} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
-                <Music2 size={20} />
-                <span>TikTok</span>
-              </a>
+              {activeLinks.length > 0 ? (
+                activeLinks.map(link => {
+                  const IconComp = ICON_MAP[link.icon] ?? Globe
+                  const hasBtn = !!link.btn_color
+                  return (
+                    <a
+                      key={link.id}
+                      href={link.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={hasBtn ? styles.dropdownItemBtn : styles.dropdownItem}
+                      style={{
+                        color: link.text_color || '#ffffff',
+                        ...(hasBtn ? { background: link.btn_color! } : {}),
+                      }}
+                    >
+                      <IconComp size={20} />
+                      <span>{link.title}</span>
+                    </a>
+                  )
+                })
+              ) : (
+                <span className={styles.dropdownEmpty}>No links available</span>
+              )}
             </div>
           )}
         </div>

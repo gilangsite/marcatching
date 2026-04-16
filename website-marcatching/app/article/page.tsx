@@ -30,10 +30,11 @@ export default async function ArticleListPage() {
     .select('*')
     .order('name')
 
-  // 3. Fetch Navbar Links
+  // 3. Fetch Navbar Nav Links
   const { data: links } = await supabase
-    .from('links')
+    .from('nav_links')
     .select('*')
+    .eq('is_active', true)
     .order('order_index')
 
   return (

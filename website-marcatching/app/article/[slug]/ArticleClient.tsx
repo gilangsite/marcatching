@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Eye, Calendar, Tag, X, ShoppingCart, ArrowLeft, ExternalLink } from 'lucide-react'
-import type { Article, ArticleBlock, Product, Link as LinkType } from '@/lib/supabaseClient'
+import type { Article, ArticleBlock, Product, NavLink } from '@/lib/supabaseClient'
 import styles from './page.module.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -168,7 +168,7 @@ function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: Artic
   return null
 }
 
-export default function ArticleClient({ article, products, navbarLinks }: { article: Article; products: Product[]; navbarLinks: LinkType[] }) {
+export default function ArticleClient({ article, products, navbarLinks }: { article: Article; products: Product[]; navbarLinks: NavLink[] }) {
   const [activeProduct, setActiveProduct] = useState<Product | null>(null)
 
   // Increment view count on mount
@@ -181,7 +181,7 @@ export default function ArticleClient({ article, products, navbarLinks }: { arti
 
   return (
     <>
-      <Navbar links={navbarLinks} />
+      <Navbar navLinks={navbarLinks} />
       <ReadingProgress />
 
       <main className={styles.main}>
