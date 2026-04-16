@@ -1147,7 +1147,7 @@ function AdminDashboardInner() {
         </div>
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
-          <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links & Buttons</button>
+          <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
           <button className={`${styles.navItem} ${tab === 'articles' ? styles.navActive : ''}`} onClick={() => { setTab('articles'); setIsSidebarOpen(false) }}><Newspaper size={18} /> Articles</button>
@@ -1170,7 +1170,7 @@ function AdminDashboardInner() {
             )}
           </div>
         </nav>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 24, marginTop: 'auto' }}>
+        <div className={styles.sidebarBottom}>
           <a href="https://course.marcatching.com" target="_blank" rel="noopener noreferrer" className={styles.navItem}><ExternalLink size={18} /> Login Course</a>
           <a href="https://marcatching.com" target="_blank" rel="noopener noreferrer" className={styles.navItem}><Globe size={18} /> Lihat Website</a>
           <button onClick={handleLogout} className={styles.navItem} style={{ color: '#dc2626' }}><LogOut size={18} /> Keluar</button>
@@ -1291,9 +1291,9 @@ function AdminDashboardInner() {
               </div>
             )}
             {/* Categories Section */}
-            <div style={{ marginBottom: 24, padding: '20px', background: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+            <div style={{ marginBottom: 24, padding: '20px', background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Kategori Produk</h3>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0d3369' }}>Kategori Produk</h3>
                 <button className="btn btn-ghost" style={{ fontSize: '0.8rem', padding: '4px 12px' }} onClick={() => { setEditingProdCat(null); setProdCatName(''); setShowProdCatForm(true) }}><Plus size={14} /> Tambah</button>
               </div>
               {showProdCatForm && (
@@ -1303,8 +1303,8 @@ function AdminDashboardInner() {
                   <button type="button" className="btn btn-ghost" onClick={() => { setShowProdCatForm(false); setEditingProdCat(null); setProdCatName('') }}><X size={14} /></button>
                 </form>
               )}
-              {productCatLoading ? <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Memuat...</div> : productCategories.length === 0 ? (
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Belum ada kategori.</div>
+              {productCatLoading ? <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Memuat...</div> : productCategories.length === 0 ? (
+                <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Belum ada kategori.</div>
               ) : (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {productCategories.map(cat => (
@@ -1318,17 +1318,18 @@ function AdminDashboardInner() {
               )}
             </div>
 
+            {/* Products list */}
             {productsLoading ? <div className={styles.loading}>Memuat...</div> : products.length === 0 ? <div className={styles.emptyState}>Belum ada product.</div> : (
               <div className={styles.linksList}>{products.map(p => (
-                <div key={p.id} className={styles.linkRow} style={{cursor:'pointer'}} onClick={() => openEditProduct(p)}>
+                <div key={p.id} className={styles.linkRow} style={{ cursor: 'pointer' }} onClick={() => openEditProduct(p)}>
                   <div className={styles.linkIcon}><Package size={18} /></div>
                   <div className={styles.linkInfo}>
                     <span className={styles.linkTitle}>{p.name}</span>
-                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? <span className={styles.statusActive}>Active</span> : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)} · <span style={{color:'rgba(0,0,0,0.4)'}}>{productCategories.find(c=>c.id===p.category_id)?.name || 'No Category'}</span></span>
+                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? <span className={styles.statusActive}>Active</span> : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)} · <span style={{ color: '#94a3b8' }}>{productCategories.find(c => c.id === p.category_id)?.name || 'No Category'}</span></span>
                   </div>
                   <div className={styles.linkActions}>
-                    <button className={styles.editBtn} onClick={(e) => { e.stopPropagation(); openEditProduct(p) }}><Pencil size={15} /></button>
-                    <button className={styles.deleteBtn} onClick={(e) => { e.stopPropagation(); deleteProduct(p) }}><Trash2 size={15} /></button>
+                    <button className={styles.editBtn} onClick={e => { e.stopPropagation(); openEditProduct(p) }}><Pencil size={15} /></button>
+                    <button className={styles.deleteBtn} onClick={e => { e.stopPropagation(); deleteProduct(p) }}><Trash2 size={15} /></button>
                   </div>
                 </div>
               ))}</div>
@@ -1344,137 +1345,148 @@ function AdminDashboardInner() {
               <a href="https://marcatching.com/store" target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ fontSize: '0.85rem' }}><ExternalLink size={14} /> Lihat Toko</a>
             </div>
 
-            {/* ── Page Blocks ── */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h2 className={styles.formTitle} style={{ margin: 0 }}>Konten Halaman</h2>
-                <button className="btn btn-navy" onClick={openAddStoreBlock}><Plus size={14} /> Tambah Block</button>
-              </div>
-              {showStoreBlockForm && (
-                <div className={styles.formCard}>
-                  <div className={styles.formCardHeader}>
-                    <h3 className={styles.formTitle}>{editingStoreBlock ? 'Edit Block' : 'Tambah Block Baru'}</h3>
-                    <button onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }} className={styles.closeBtn}><X size={18} /></button>
-                  </div>
-                  <form onSubmit={saveStoreBlock} className={styles.form}>
-                    <div className="form-group">
-                      <label className="label">Tipe Block</label>
-                      <select className="select" value={storeBlockType} onChange={e => { const t = e.target.value as StorePageBlock['type']; setStoreBlockType(t); setStoreBlockContent(t === 'headline' ? {text:'',size:'h2',color:'#ffffff',align:'left'} : t === 'text' ? {text:'',color:'rgba(255,255,255,0.85)',font_size:'1rem',align:'left'} : t === 'image' ? {url:'',aspect_ratio:'16:9',caption:''} : t === 'video' ? {video_url:'',caption:''} : {btn_text:'',btn_url:'',btn_color:'#ffffff',btn_text_color:'#000000',align:'center'}) }}>
-                        <option value="headline">🔤 Headline</option>
-                        <option value="text">📝 Text</option>
-                        <option value="image">🖼 Image</option>
-                        <option value="video">🎬 Video (YouTube)</option>
-                        <option value="button">🔘 Button</option>
-                      </select>
-                    </div>
-                    {(storeBlockType === 'headline' || storeBlockType === 'text') && (
-                      <div className={styles.formGrid}>
-                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Teks</label><textarea className="input" rows={3} value={storeBlockContent.text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, text: e.target.value }))} /></div>
-                        {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
-                        {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
-                        <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
-                        <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
-                      </div>
-                    )}
-                    {storeBlockType === 'image' && (
-                      <div className={styles.formGrid}>
-                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL Gambar</label><input className="input" placeholder="https://..." value={storeBlockContent.url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, url: e.target.value }))} /></div>
-                        <div className="form-group"><label className="label">Aspect Ratio</label><select className="select" value={storeBlockContent.aspect_ratio || '16:9'} onChange={e => setStoreBlockContent(c => ({ ...c, aspect_ratio: e.target.value }))}><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="4:5">4:5</option></select></div>
-                        <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
-                      </div>
-                    )}
-                    {storeBlockType === 'video' && (
-                      <div className={styles.formGrid}>
-                        <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL YouTube</label><input className="input" placeholder="https://youtube.com/watch?v=..." value={storeBlockContent.video_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, video_url: e.target.value }))} /></div>
-                        <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
-                      </div>
-                    )}
-                    {storeBlockType === 'button' && (
-                      <div className={styles.formGrid}>
-                        <div className="form-group"><label className="label">Teks Button</label><input className="input" placeholder="Mulai Sekarang" value={storeBlockContent.btn_text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text: e.target.value }))} /></div>
-                        <div className="form-group"><label className="label">URL</label><input className="input" placeholder="https://..." value={storeBlockContent.btn_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_url: e.target.value }))} /></div>
-                        <div className="form-group"><label className="label">Warna Button</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /></div></div>
-                        <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_text_color || '#000000'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_text_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /></div></div>
-                        <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'center'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
-                      </div>
-                    )}
-                    <div className={styles.formActions}>
-                      <button type="button" className="btn btn-ghost" onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
-                      <button type="submit" className="btn btn-navy" disabled={storeBlockSaving}>{storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
-                    </div>
-                  </form>
+            {/* Block form */}
+            {showStoreBlockForm && (
+              <div className={styles.formCard}>
+                <div className={styles.formCardHeader}>
+                  <h3 className={styles.formTitle}>{editingStoreBlock ? 'Edit Block' : 'Tambah Block Baru'}</h3>
+                  <button onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }} className={styles.closeBtn}><X size={18} /></button>
                 </div>
-              )}
-              {storeBlocksLoading ? <div className={styles.loading}>Memuat...</div> : storeBlocks.length === 0 ? (
-                <div className={styles.emptyState} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Belum ada konten. Tambah block untuk mengisi halaman toko.</div>
-              ) : (
-                <Reorder.Group axis="y" values={storeBlocks} onReorder={handleStoreBlockReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {storeBlocks.map(b => (
-                    <Reorder.Item key={b.id} value={b} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
-                      <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="var(--text-secondary)" /></div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <span className={styles.linkTitle}>{b.type.toUpperCase()} — {b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '(block)'}</span>
-                        <span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Active' : 'Hidden'}</span></span>
+                <form onSubmit={saveStoreBlock} className={styles.form}>
+                  <div className="form-group">
+                    <label className="label">Tipe Block</label>
+                    <select className="select" value={storeBlockType} onChange={e => {
+                      const t = e.target.value as StorePageBlock['type']
+                      setStoreBlockType(t)
+                      setStoreBlockContent(
+                        t === 'headline' ? { text: '', size: 'h2', color: '#ffffff', align: 'left' } :
+                        t === 'text' ? { text: '', color: 'rgba(255,255,255,0.85)', font_size: '1rem', align: 'left' } :
+                        t === 'image' ? { url: '', aspect_ratio: '16:9', caption: '' } :
+                        t === 'video' ? { video_url: '', caption: '' } :
+                        t === 'product' ? { product_id: '', store_status: 'active' } :
+                        { btn_text: '', btn_url: '', btn_color: '#ffffff', btn_text_color: '#000000', align: 'center' }
+                      )
+                    }}>
+                      <option value="headline">Headline</option>
+                      <option value="text">Text</option>
+                      <option value="image">Image</option>
+                      <option value="video">Video (YouTube)</option>
+                      <option value="button">Button</option>
+                      <option value="product">Produk</option>
+                    </select>
+                  </div>
+                  {(storeBlockType === 'headline' || storeBlockType === 'text') && (
+                    <div className={styles.formGrid}>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Teks</label><textarea className="input" rows={3} value={storeBlockContent.text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, text: e.target.value }))} /></div>
+                      {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
+                      {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
+                      <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                    </div>
+                  )}
+                  {storeBlockType === 'image' && (
+                    <div className={styles.formGrid}>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL Gambar</label><input className="input" placeholder="https://..." value={storeBlockContent.url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, url: e.target.value }))} /></div>
+                      <div className="form-group"><label className="label">Aspect Ratio</label><select className="select" value={storeBlockContent.aspect_ratio || '16:9'} onChange={e => setStoreBlockContent(c => ({ ...c, aspect_ratio: e.target.value }))}><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="4:5">4:5</option></select></div>
+                      <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
+                    </div>
+                  )}
+                  {storeBlockType === 'video' && (
+                    <div className={styles.formGrid}>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL YouTube</label><input className="input" placeholder="https://youtube.com/watch?v=..." value={storeBlockContent.video_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, video_url: e.target.value }))} /></div>
+                      <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
+                    </div>
+                  )}
+                  {storeBlockType === 'button' && (
+                    <div className={styles.formGrid}>
+                      <div className="form-group"><label className="label">Teks Button</label><input className="input" placeholder="Mulai Sekarang" value={storeBlockContent.btn_text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text: e.target.value }))} /></div>
+                      <div className="form-group"><label className="label">URL</label><input className="input" placeholder="https://..." value={storeBlockContent.btn_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_url: e.target.value }))} /></div>
+                      <div className="form-group"><label className="label">Warna Button</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.btn_text_color || '#000000'} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.btn_text_color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, btn_text_color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'center'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                    </div>
+                  )}
+                  {storeBlockType === 'product' && (
+                    <div className={styles.formGrid}>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                        <label className="label">Pilih Produk</label>
+                        <select className="select" value={storeBlockContent.product_id || ''} onChange={e => setStoreBlockContent(c => ({ ...c, product_id: e.target.value }))}>
+                          <option value="">— Pilih Produk —</option>
+                          {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
                       </div>
-                      <div className={styles.linkActions}>
-                        <button className={styles.editBtn} onClick={() => toggleStoreBlockActive(b)}>{b.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>
-                        <button className={styles.editBtn} onClick={() => openEditStoreBlock(b)}><Pencil size={15} /></button>
-                        <button className={styles.deleteBtn} onClick={() => deleteStoreBlock(b.id)}><Trash2 size={15} /></button>
-                      </div>
-                    </Reorder.Item>
-                  ))}
-                </Reorder.Group>
-              )}
-            </div>
-
-            {/* ── Product Placements ── */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h2 className={styles.formTitle} style={{ margin: 0 }}>Produk di Toko</h2>
-                <button className="btn btn-navy" onClick={() => setShowStorePlacementForm(true)}><Plus size={14} /> Tambah Produk</button>
-              </div>
-              {showStorePlacementForm && (
-                <form onSubmit={addStorePlacement} style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                  <select className="select" style={{ flex: 1, minWidth: 200 }} value={spProductId} onChange={e => setSpProductId(e.target.value)}>
-                    <option value="">— Pilih Produk —</option>
-                    {products.filter(p => !storePlacements.some(sp => sp.product_id === p.id)).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
-                  <select className="select" value={spStatus} onChange={e => setSpStatus(e.target.value as 'active'|'coming_soon')}>
-                    <option value="active">Active</option>
-                    <option value="coming_soon">Coming Soon</option>
-                  </select>
-                  <button type="submit" className="btn btn-navy" disabled={spSaving}>{spSaving ? '...' : <><Check size={14} /> Tambah</>}</button>
-                  <button type="button" className="btn btn-ghost" onClick={() => { setShowStorePlacementForm(false); setSpProductId(''); setSpStatus('active') }}><X size={14} /></button>
-                </form>
-              )}
-              {storePlacementsLoading ? <div className={styles.loading}>Memuat...</div> : storePlacements.length === 0 ? (
-                <div className={styles.emptyState} style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>Belum ada produk di toko.</div>
-              ) : (
-                <Reorder.Group axis="y" values={storePlacements} onReorder={handleStorePlacementReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {storePlacements.map(sp => {
-                    const p = sp.products
-                    if (!p) return null
-                    const thumb = p.image_url?.includes('drive.google.com/uc') ? p.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w80-h100' : p.image_url
-                    return (
-                      <Reorder.Item key={sp.id} value={sp} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
-                        <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="var(--text-secondary)" /></div>
-                        {thumb && <img src={thumb} alt={p.name} style={{ width: 36, height: 45, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />}
-                        <div className={styles.linkInfo}>
-                          <span className={styles.linkTitle}>{p.name}</span>
-                          <span className={styles.linkUrl}>Rp {formatRp(p.price_after_discount)} · <ShoppingCart size={11} style={{ display: 'inline', verticalAlign: 'middle' }} /> {p.checkout_clicks}</span>
-                        </div>
-                        <select className="select" style={{ fontSize: '0.78rem', padding: '4px 8px', minWidth: 110 }} value={sp.store_status} onChange={e => updateStorePlacementStatus(sp, e.target.value as any)}>
+                      <div className="form-group">
+                        <label className="label">Status di Toko</label>
+                        <select className="select" value={storeBlockContent.store_status || 'active'} onChange={e => setStoreBlockContent(c => ({ ...c, store_status: e.target.value as any }))}>
                           <option value="active">Active</option>
                           <option value="coming_soon">Coming Soon</option>
                           <option value="hidden">Hidden</option>
                         </select>
-                        <button className={styles.deleteBtn} onClick={() => deleteStorePlacement(sp.id)}><Trash2 size={15} /></button>
-                      </Reorder.Item>
-                    )
-                  })}
-                </Reorder.Group>
-              )}
-            </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className={styles.formActions}>
+                    <button type="button" className="btn btn-ghost" onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
+                    <button type="submit" className="btn btn-navy" disabled={storeBlockSaving}>{storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Unified block list */}
+            {storeBlocksLoading ? <div className={styles.loading}>Memuat...</div> : storeBlocks.length === 0 ? (
+              <div className={styles.emptyState}>Belum ada konten. Tekan &ldquo;+ Tambah Block&rdquo; di bawah untuk mulai.</div>
+            ) : (
+              <Reorder.Group axis="y" values={storeBlocks} onReorder={handleStoreBlockReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {storeBlocks.map(b => {
+                  const linkedProduct = b.type === 'product' ? products.find(p => p.id === b.content.product_id) : null
+                  const thumb = linkedProduct?.image_url?.includes('drive.google.com/uc')
+                    ? linkedProduct.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w80-h100'
+                    : linkedProduct?.image_url
+                  return (
+                    <Reorder.Item key={b.id} value={b} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+                      <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="#94a3b8" /></div>
+                      {b.type === 'product' && thumb && <img src={thumb} alt={linkedProduct?.name} style={{ width: 32, height: 40, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />}
+                      {b.type !== 'product' && (
+                        <div style={{ width: 32, height: 32, minWidth: 32, background: '#f1f5f9', fontSize: '0.68rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, flexShrink: 0 }}>
+                          {b.type === 'headline' ? 'H' : b.type === 'text' ? 'T' : b.type === 'image' ? 'IMG' : b.type === 'video' ? 'VID' : 'BTN'}
+                        </div>
+                      )}
+                      <div className={styles.linkInfo}>
+                        {b.type === 'product'
+                          ? <><span className={styles.linkTitle}>{linkedProduct?.name || '(produk dihapus)'}</span><span className={styles.linkUrl}>Rp {formatRp(linkedProduct?.price_after_discount ?? 0)} · <ShoppingCart size={11} style={{ display: 'inline', verticalAlign: 'middle' }} /> {linkedProduct?.checkout_clicks ?? 0}</span></>
+                          : <><span className={styles.linkTitle}>{b.type.toUpperCase()} — {b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—'}</span><span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Aktif' : 'Tersembunyi'}</span></span></>
+                        }
+                      </div>
+                      <div className={styles.linkActions}>
+                        {b.type === 'product' && (
+                          <select className="select" style={{ fontSize: '0.75rem', padding: '3px 6px', minWidth: 100, marginRight: 4 }}
+                            value={b.content.store_status || 'active'}
+                            onChange={async e => {
+                              await supabase.from('store_page_blocks').update({ content: { ...b.content, store_status: e.target.value } }).eq('id', b.id)
+                              fetchStoreBlocks()
+                            }}>
+                            <option value="active">Active</option>
+                            <option value="coming_soon">Coming Soon</option>
+                            <option value="hidden">Hidden</option>
+                          </select>
+                        )}
+                        {b.type !== 'product' && <button className={styles.editBtn} onClick={() => toggleStoreBlockActive(b)} title={b.is_active ? 'Sembunyikan' : 'Tampilkan'}>{b.is_active ? <EyeOff size={15} /> : <Eye size={15} />}</button>}
+                        <button className={styles.editBtn} onClick={() => openEditStoreBlock(b)}><Pencil size={15} /></button>
+                        <button className={styles.deleteBtn} onClick={() => deleteStoreBlock(b.id)}><Trash2 size={15} /></button>
+                      </div>
+                    </Reorder.Item>
+                  )
+                })}
+              </Reorder.Group>
+            )}
+          </div>
+        )}
+        {tab === 'ecommerce' && (
+          <div className={styles.ecommerceAddFixed}>
+            <button className="btn btn-navy" onClick={openAddStoreBlock} style={{ padding: '10px 28px', fontWeight: 700, fontSize: '0.92rem', borderRadius: 999 }}>
+              <Plus size={16} /> Tambah Block
+            </button>
           </div>
         )}
 

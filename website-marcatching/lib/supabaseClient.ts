@@ -75,7 +75,7 @@ export type ProductCategory = {
 
 export type StorePageBlock = {
   id: string
-  type: 'headline' | 'text' | 'image' | 'video' | 'button'
+  type: 'headline' | 'text' | 'image' | 'video' | 'button' | 'product'
   content: {
     // headline
     text?: string
@@ -97,6 +97,9 @@ export type StorePageBlock = {
     btn_url?: string
     btn_color?: string
     btn_text_color?: string
+    // product
+    product_id?: string
+    store_status?: 'active' | 'coming_soon' | 'hidden'
   }
   order_index: number
   is_active: boolean

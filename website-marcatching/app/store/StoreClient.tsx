@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import { Search, X, ShoppingCart } from 'lucide-react'
-import type { NavLink, StorePageBlock, StoreProduct, ProductCategory } from '@/lib/supabaseClient'
+import type { NavLink, StorePageBlock, Product, ProductCategory } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './store.module.css'
@@ -28,8 +28,8 @@ function getYouTubeId(url: string): string | null {
   return null
 }
 
-// ── Block renderer ────────────────────────────────────────────
-function PageBlockRenderer({ block }: { block: StorePageBlock }) {
+// ── Block renderer: content types ────────────────────────────
+function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
   const c = block.content
   if (block.type === 'headline') {
     const sizeMap: Record<string, string> = { hero: '2.5rem', h1: '2rem', h2: '1.5rem', h3: '1.25rem', sub: '1rem' }
@@ -100,13 +100,60 @@ function PageBlockRenderer({ block }: { block: StorePageBlock }) {
   return null
 }
 
+// ── Product card renderer ─────────────────────────────────────
+function ProductCard({ product, categories, isComingSoon }: { product: Product; categories: ProductCategory[]; isComingSoon: boolean }) {
+  const thumb = getDriveThumb(product.image_url, 'w800-h1000')
+  const cat = categories.find(c => c.id === product.category_id)
+  return (
+    <Link
+      href={isComingSoon ? '#' : `/product/${product.slug}`}
+      className={styles.card}
+      onClick={isComingSoon ? (e) => e.preventDefault() : undefined}
+    >
+      <div className={styles.cardThumb}>
+        {thumb
+          ? <img src={thumb} alt={product.name} className={styles.cardThumbImg} />
+          : <div className={styles.cardThumbPlaceholder}><span>M</span></div>
+        }
+        {product.discount_percentage > 0 && (
+          <span className={styles.cardDiscountBadge}>-{product.discount_percentage}%</span>
+        )}
+        {cat && <span className={styles.cardCatBadge}>{cat.name}</span>}
+        {isComingSoon && (
+          <div className={styles.comingSoonOverlay}>
+            <span className={styles.comingSoonBadge}>Coming Soon</span>
+          </div>
+        )}
+      </div>
+      <div className={styles.cardBody}>
+        <h2 className={styles.cardName}>{product.name}</h2>
+        {product.sub_headline && <p className={styles.cardSub}>{product.sub_headline}</p>}
+        <div className={styles.cardFooter}>
+          <div className={styles.cardPrice}>
+            <span className={styles.cardPriceActual}>{formatRp(product.price_after_discount)}</span>
+            {product.price_before_discount > product.price_after_discount && (
+              <span className={styles.cardPriceOld}>{formatRp(product.price_before_discount)}</span>
+            )}
+          </div>
+          {(product.checkout_clicks ?? 0) > 0 && (
+            <div className={styles.cardCheckouts}>
+              <ShoppingCart size={12} />
+              <span>{product.checkout_clicks}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 // ── Main Client Component ─────────────────────────────────────
 export default function StoreClient({
-  navLinks, blocks, storeProducts, categories,
+  navLinks, blocks, products, categories,
 }: {
   navLinks: NavLink[]
   blocks: StorePageBlock[]
-  storeProducts: StoreProduct[]
+  products: Product[]
   categories: ProductCategory[]
 }) {
   const [activeCategory, setActiveCategory] = useState('all')
@@ -114,16 +161,29 @@ export default function StoreClient({
   const [searchInput, setSearchInput] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
 
-  // Filter products
-  const filtered = storeProducts.filter(sp => {
-    const p = sp.products
+  // Index products by id for O(1) lookup
+  const productsById = useMemo(() => {
+    const map: Record<string, Product> = {}
+    for (const p of products) map[p.id] = p
+    return map
+  }, [products])
+
+  // Collect product blocks for category filter pills (only unique categories from visible products)
+  const productBlocks = useMemo(() =>
+    blocks.filter(b => b.type === 'product' && b.is_active && b.content.store_status !== 'hidden'),
+    [blocks]
+  )
+
+  // Check if a product block passes current filter
+  function passesFilter(block: StorePageBlock): boolean {
+    const p = productsById[block.content.product_id || '']
     if (!p) return false
     const matchCat = activeCategory === 'all' || p.category_id === activeCategory
     const matchSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.sub_headline || '').toLowerCase().includes(search.toLowerCase())
     return matchCat && matchSearch
-  })
+  }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -135,103 +195,97 @@ export default function StoreClient({
     searchRef.current?.focus()
   }
 
+  const isFiltering = search || activeCategory !== 'all'
+
   return (
     <>
       <Navbar navLinks={navLinks} />
 
       <main className={styles.main}>
-        {/* Hero */}
-        <section className={styles.hero}>
-          <div className={styles.heroInner}>
-            <p className={styles.heroTag}>Marcatching</p>
-            <h1 className={styles.heroTitle}>Store</h1>
-            <p className={styles.heroDesc}>Temukan semua produk & course Marcatching untuk tingkatkan skill marketing kamu.</p>
-          </div>
-        </section>
-
-        {/* Page Blocks */}
-        {blocks.length > 0 && (
-          <div className={styles.pageBlocks}>
-            {blocks.map(block => <PageBlockRenderer key={block.id} block={block} />)}
+        {/* Category Filter Bar (only show if there are product blocks) */}
+        {productBlocks.length > 0 && (
+          <div className={styles.filterBar}>
+            <div className={styles.filterBarInner}>
+              <div className={styles.catPills}>
+                <button className={`${styles.catPill} ${activeCategory === 'all' ? styles.catPillActive : ''}`} onClick={() => setActiveCategory('all')}>All</button>
+                {categories.map(cat => (
+                  <button key={cat.id} className={`${styles.catPill} ${activeCategory === cat.id ? styles.catPillActive : ''}`} onClick={() => setActiveCategory(cat.id)}>
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className={styles.filterBar}>
-          <div className={styles.filterBarInner}>
-            <div className={styles.catPills}>
-              <button className={`${styles.catPill} ${activeCategory === 'all' ? styles.catPillActive : ''}`} onClick={() => setActiveCategory('all')}>All</button>
-              {categories.map(cat => (
-                <button key={cat.id} className={`${styles.catPill} ${activeCategory === cat.id ? styles.catPillActive : ''}`} onClick={() => setActiveCategory(cat.id)}>
-                  {cat.name}
-                </button>
-              ))}
+        {/* Unified block + product rendering */}
+        <div className={styles.pageBlocks}>
+          {blocks.length === 0 && (
+            <div className={styles.emptyState}>
+              <p>Belum ada konten.</p>
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* Product Grid */}
-        <section className={styles.gridSection}>
-          <div className={styles.gridWrap}>
-            {filtered.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>Belum ada produk{search ? ` untuk "${search}"` : ''} tersedia.</p>
-                {search && <button className={styles.clearSearch} onClick={clearSearch}>Hapus pencarian</button>}
-              </div>
-            ) : (
+          {/* When filtering (search or category), show only matching product cards in a grid */}
+          {isFiltering ? (
+            <>
+              {/* Always show content blocks even when filtering */}
+              {blocks.filter(b => b.type !== 'product' && b.is_active).map(block => (
+                <ContentBlockRenderer key={block.id} block={block} />
+              ))}
+              {/* Filtered product grid */}
               <div className={styles.grid}>
-                {filtered.map(sp => {
-                  const p = sp.products!
-                  const thumb = getDriveThumb(p.image_url, 'w800-h1000')
-                  const cat = categories.find(c => c.id === p.category_id)
-                  const isComingSoon = sp.store_status === 'coming_soon'
-                  return (
-                    <Link
-                      key={sp.id}
-                      href={isComingSoon ? '#' : `/product/${p.slug}`}
-                      className={styles.card}
-                      onClick={isComingSoon ? (e) => e.preventDefault() : undefined}
-                    >
-                      <div className={styles.cardThumb}>
-                        {thumb
-                          ? <img src={thumb} alt={p.name} className={styles.cardThumbImg} />
-                          : <div className={styles.cardThumbPlaceholder}><span>M</span></div>
-                        }
-                        {p.discount_percentage > 0 && (
-                          <span className={styles.cardDiscountBadge}>-{p.discount_percentage}%</span>
-                        )}
-                        {cat && <span className={styles.cardCatBadge}>{cat.name}</span>}
-                        {isComingSoon && (
-                          <div className={styles.comingSoonOverlay}>
-                            <span className={styles.comingSoonBadge}>Coming Soon</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className={styles.cardBody}>
-                        <h2 className={styles.cardName}>{p.name}</h2>
-                        {p.sub_headline && <p className={styles.cardSub}>{p.sub_headline}</p>}
-                        <div className={styles.cardFooter}>
-                          <div className={styles.cardPrice}>
-                            <span className={styles.cardPriceActual}>{formatRp(p.price_after_discount)}</span>
-                            {p.price_before_discount > p.price_after_discount && (
-                              <span className={styles.cardPriceOld}>{formatRp(p.price_before_discount)}</span>
-                            )}
-                          </div>
-                          {p.checkout_clicks > 0 && (
-                            <div className={styles.cardCheckouts}>
-                              <ShoppingCart size={12} />
-                              <span>{p.checkout_clicks}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
+                {productBlocks
+                  .filter(b => passesFilter(b))
+                  .map(b => {
+                    const p = productsById[b.content.product_id || '']
+                    if (!p) return null
+                    return <ProductCard key={b.id} product={p} categories={categories} isComingSoon={b.content.store_status === 'coming_soon'} />
+                  })}
               </div>
-            )}
-          </div>
-        </section>
+              {productBlocks.filter(b => passesFilter(b)).length === 0 && (
+                <div className={styles.emptyState}>
+                  <p>Belum ada produk{search ? ` untuk "${search}"` : ''} tersedia.</p>
+                  {search && <button className={styles.clearSearch} onClick={clearSearch}>Hapus pencarian</button>}
+                </div>
+              )}
+            </>
+          ) : (
+            /* Normal mode: blocks render in order, each product block renders as its own card inline */
+            <>
+              {/* Group consecutive product blocks into grids, content blocks render normally */}
+              {(() => {
+                const rendered: React.ReactNode[] = []
+                let i = 0
+                while (i < blocks.length) {
+                  const b = blocks[i]
+                  if (!b.is_active || b.content.store_status === 'hidden') { i++; continue }
+
+                  if (b.type === 'product') {
+                    // Collect consecutive product blocks for grid
+                    const group: StorePageBlock[] = []
+                    while (i < blocks.length && blocks[i].type === 'product' && blocks[i].is_active && blocks[i].content.store_status !== 'hidden') {
+                      group.push(blocks[i]); i++
+                    }
+                    rendered.push(
+                      <div key={`grid-${group[0].id}`} className={styles.grid}>
+                        {group.map(pb => {
+                          const p = productsById[pb.content.product_id || '']
+                          if (!p) return null
+                          return <ProductCard key={pb.id} product={p} categories={categories} isComingSoon={pb.content.store_status === 'coming_soon'} />
+                        })}
+                      </div>
+                    )
+                  } else {
+                    rendered.push(<ContentBlockRenderer key={b.id} block={b} />)
+                    i++
+                  }
+                }
+                return rendered
+              })()}
+            </>
+          )}
+        </div>
       </main>
 
       {/* Bottom Search */}

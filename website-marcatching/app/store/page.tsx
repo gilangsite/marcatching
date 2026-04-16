@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
-import type { NavLink, StorePageBlock, StoreProduct, ProductCategory, Product } from '@/lib/supabaseClient'
+import type { NavLink, StorePageBlock, ProductCategory, Product } from '@/lib/supabaseClient'
 import StoreClient from './StoreClient'
 
 export const dynamic = 'force-dynamic'
@@ -17,27 +17,23 @@ export const metadata: Metadata = {
 }
 
 export default async function StorePage() {
-  const [navLinksRes, blocksRes, storeProductsRes, categoriesRes] = await Promise.all([
+  const [navLinksRes, blocksRes, productsRes, categoriesRes] = await Promise.all([
     supabase.from('nav_links').select('*').eq('is_active', true).order('order_index'),
-    supabase.from('store_page_blocks').select('*').eq('is_active', true).order('order_index'),
-    supabase
-      .from('store_products')
-      .select('*, products(*)')
-      .neq('store_status', 'hidden')
-      .order('order_index'),
+    supabase.from('store_page_blocks').select('*').order('order_index'),
+    supabase.from('products').select('*').eq('is_active', true),
     supabase.from('product_categories').select('*').order('order_index'),
   ])
 
   const navLinks: NavLink[] = navLinksRes.data ?? []
   const blocks: StorePageBlock[] = blocksRes.data ?? []
-  const storeProducts: StoreProduct[] = storeProductsRes.data ?? []
+  const products: Product[] = productsRes.data ?? []
   const categories: ProductCategory[] = categoriesRes.data ?? []
 
   return (
     <StoreClient
       navLinks={navLinks}
       blocks={blocks}
-      storeProducts={storeProducts}
+      products={products}
       categories={categories}
     />
   )
