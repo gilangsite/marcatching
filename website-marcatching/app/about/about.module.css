@@ -1,0 +1,260 @@
+.main {
+  min-height: 100vh;
+  background: #000000;
+  color: #ffffff;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: 180px 24px 100px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.heroTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 24px;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: #ffffff;
+  margin-bottom: 28px;
+}
+
+.heroSubtitle {
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+/* ── Generic Section ── */
+.section {
+  padding: 100px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sectionLight {
+  background: rgba(255,255,255,0.02);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 28px;
+  color: #ffffff;
+}
+
+.sectionTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.textBlock {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+.textBlock:last-child {
+  margin-bottom: 0;
+}
+
+.punchline {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.4;
+  margin: 48px 0;
+  padding-left: 28px;
+  border-left: 4px solid rgba(255,255,255,0.8);
+  font-style: italic;
+}
+
+/* ── Misi Grid ── */
+.missionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+  margin-top: 60px;
+}
+
+.missionCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 40px 32px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.missionCard:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-4px);
+}
+
+.missionIcon {
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.missionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.missionDesc {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.6;
+}
+
+/* ── Founder Profile ── */
+.founderBox {
+  background: #111111;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 60px;
+  margin-top: 60px;
+}
+
+.founderLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+
+.founderName {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.founderQuote {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.8);
+  font-style: italic;
+  margin-top: 32px;
+  padding-left: 20px;
+  border-left: 3px solid rgba(255,255,255,0.2);
+}
+
+/* ── CTA ── */
+.ctaSection {
+  padding: 120px 24px;
+  text-align: center;
+}
+
+.ctaBox {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 32px;
+  backdrop-filter: blur(20px);
+}
+
+.ctaTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.ctaDesc {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 40px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 40px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  background: #e2e8f0;
+  box-shadow: 0 12px 30px rgba(255,255,255,0.15);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 140px 20px 60px;
+  }
+  .grid2 {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .section {
+    padding: 60px 20px;
+  }
+  .founderBox {
+    padding: 32px 24px;
+  }
+  .ctaBox {
+    padding: 60px 24px;
+  }
+}
