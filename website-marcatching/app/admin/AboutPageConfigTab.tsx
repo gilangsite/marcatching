@@ -1,6 +1,27 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Plus, X, Check, Camera, Upload } from 'lucide-react'
+import Cropper from 'react-easy-crop'
 import styles from './admin.module.css'
+
+async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new window.Image()
+    img.addEventListener('load', () => resolve(img))
+    img.addEventListener('error', err => reject(err))
+    img.src = imageSrc
+  })
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return ''
+  canvas.width = pixelCrop.width
+  canvas.height = pixelCrop.height
+  ctx.drawImage(
+    image,
+    pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
+    0, 0, pixelCrop.width, pixelCrop.height
+  )
+  return canvas.toDataURL('image/jpeg', 0.9)
+}
 
 export default function AboutPageConfigTab() {
   const [loading, setLoading] = useState(true)
@@ -8,6 +29,12 @@ export default function AboutPageConfigTab() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
+
+  const [cropData, setCropData] = useState<{ src: string, file?: File }>({ src: '' })
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => { setCroppedAreaPixels(croppedAreaPixels) }, [])
 
   const [form, setForm] = useState({
     contact_email: '',
@@ -64,29 +91,8 @@ export default function AboutPageConfigTab() {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return
-    setUploadingImage(true)
     const reader = new FileReader()
-    reader.onload = async (event) => {
-      const base64 = event.target?.result as string
-      // Base64 upload to server via existing app script or generic route?
-      // Since App Script expects {action: 'upload', filename, mimeType, base64}
-      const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
-      try {
-        const res = await fetch(appScriptUrl, { 
-          method: 'POST', 
-          body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) 
-        })
-        const data = await res.json()
-        if (data.status === 'success') {
-          setForm(f => ({ ...f, founder_photo_url: data.url }))
-        } else {
-          alert('Gagal upload gambar: ' + data.message)
-        }
-      } catch (err) {
-        alert('Gagal mengupload gambar.')
-      }
-      setUploadingImage(false)
-    }
+    reader.onload = (event) => setCropData({ src: event.target?.result as string, file })
     reader.readAsDataURL(file)
   }
 
@@ -170,6 +176,48 @@ export default function AboutPageConfigTab() {
           </button>
         </div>
       </form>
+
+      {cropData.src && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ width: 400 }}>
+            <div className={styles.modalHeader}>
+              <h3>Potong Foto Founder</h3>
+              <button onClick={() => setCropData({ src: '' })} className={styles.closeBtn}><X size={20} /></button>
+            </div>
+            <div style={{ position: 'relative', height: 400, background: '#333' }}>
+              <Cropper
+                image={cropData.src}
+                crop={crop}
+                zoom={zoom}
+                aspect={1} /* 1:1 Aspect */
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+            <div style={{ padding: '20px', display: 'flex', gap: 10, justifyContent: 'flex-end', background: '#fff' }}>
+              <button disabled={uploadingImage} onClick={async () => {
+                if (!croppedAreaPixels) return
+                setUploadingImage(true)
+                try {
+                  const base64 = await getCroppedImg(cropData.src, croppedAreaPixels)
+                  const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+                  const res = await fetch(appScriptUrl, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'upload', filename: cropData.file?.name || 'founder.jpg', mimeType: 'image/jpeg', base64 }) 
+                  })
+                  const data = await res.json()
+                  if (data.status === 'success') {
+                    setForm(f => ({ ...f, founder_photo_url: data.url }))
+                    setCropData({ src: '' })
+                  } else alert('Gagal: ' + data.message)
+                } catch (err) { alert('Gagal mengupload gambar.') }
+                setUploadingImage(false)
+              }} className="btn btn-navy">{uploadingImage ? 'Mengupload...' : 'Crop & Upload'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
