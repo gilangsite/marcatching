@@ -24,7 +24,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 60, damping: 20 } }
+    visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 60, damping: 20 } }
   }
 
   return (
