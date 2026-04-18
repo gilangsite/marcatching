@@ -250,7 +250,7 @@ function sendCourseAccessEmail(data) {
         '</div>' +
 
         '<div style="text-align:center;margin-bottom:28px;">' +
-          '<a href="https://inside.marcatching.com/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
+          '<a href="https://course.marcatching.com/login" style="display:inline-block;background:#111111;color:#ffffff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.02em;">' +
             'Akses E-Course Sekarang' +
           '</a>' +
         '</div>' +
