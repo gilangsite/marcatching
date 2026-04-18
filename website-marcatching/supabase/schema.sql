@@ -212,3 +212,36 @@ create policy "Public insert enrollments" on course_enrollments
 -- learning_progress: users can read/insert/update their own
 create policy "User manage own progress" on learning_progress
   for all using (auth.uid() = user_id);
+
+-- ============================================================
+-- About Page Configuration Table
+-- ============================================================
+create table if not exists about_config (
+  id uuid primary key default gen_random_uuid(),
+  contact_email text not null default 'gilang@marcatching.com',
+  cta_text text not null default 'Marcatching Store',
+  cta_url text not null default '/store',
+  founder_name text not null default 'Gilang Ramadhan',
+  founder_photo_url text,
+  founder_quote text,
+  comparison_pros jsonb default '[]'::jsonb,
+  comparison_cons jsonb default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+-- Ensure there is always exactly one row for configuration
+insert into about_config (id, contact_email, cta_text, cta_url, founder_name, founder_quote, comparison_pros, comparison_cons)
+values (
+  '11111111-1111-1111-1111-111111111111', 
+  'gilang@marcatching.com', 
+  'Marcatching Store', 
+  '/store', 
+  'Gilang Ramadhan', 
+  'Kesuksesan di era AI milik mereka yang mampu mensintesis raw data buatan mesin menjadi arah kreatif yang memiliki nyawa. Marketing bukan sekadar tentang barang apa yang kamu kemas, tapi sistem apa yang kamu desain untuk mengunci perhatian audiens secara elegan.',
+  '["Mencari hasil bisnis jangka panjang", "Menginginkan sistem berbasis AI", "Ingin memposisikan brand dengan estetika premium", "Percaya pada data, bukan sekadar opini"]'::jsonb,
+  '["Menginginkan jalan pintas atau hasil instan semalam", "Mencari trik kontroversi untuk viral", "Hanya peduli pada likes tanpa melihat impact ke revenue", "Malas beradaptasi dengan teknologi baru"]'::jsonb
+) on conflict do nothing;
+
+alter table about_config enable row level security;
+create policy "Public read about_config" on about_config for select using (true);
+create policy "Public update about_config" on about_config for update using (true);
