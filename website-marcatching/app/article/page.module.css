@@ -48,7 +48,7 @@
 /* ── Filter Bar ── */
 .filterBar {
   position: sticky;
-  top: 0;
+  top: calc(68px + env(safe-area-inset-top, 24px));
   z-index: 40;
   background: rgba(0,0,0,0.92);
   backdrop-filter: blur(16px);
