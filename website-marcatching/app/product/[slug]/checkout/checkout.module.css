@@ -777,13 +777,4 @@
     width: 100%;
     padding: 14px 20px;
   }
-
-  .addonDropdownPanel {
-    position: fixed;
-    left: 16px;
-    right: 16px;
-    top: auto;
-    bottom: 100px;
-    max-height: 50vh;
-  }
 }

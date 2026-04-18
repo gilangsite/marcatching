@@ -388,7 +388,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                         placeholder="Cari course..."
                         value={addonSearchQuery}
                         onChange={e => setAddonSearchQuery(e.target.value)}
-                        autoFocus
                       />
                     </div>
 
