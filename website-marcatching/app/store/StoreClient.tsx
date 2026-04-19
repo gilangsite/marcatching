@@ -36,7 +36,11 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
     return (
       <div className={styles.blockHeadline} style={{
         fontSize: sizeMap[c.size || 'h2'] || '1.5rem',
-        color: (c.color && c.color !== '#ffffff') ? c.color : '#0d3369',
+        ...(c.color && c.color !== '#ffffff' && c.color !== '#0d3369' ? { 
+          color: c.color, 
+          WebkitTextFillColor: c.color,
+          background: 'none' 
+        } : {}),
         textAlign: (c.align as any) || 'left',
       }}>
         {c.text}
@@ -243,7 +247,7 @@ export default function StoreClient({
                   .map(b => {
                     const p = productsById[b.content.product_id || '']
                     if (!p) return null
-                    return <ProductCard key={b.id} product={p} categories={categories} isComingSoon={b.content.store_status === 'coming_soon'} />
+                    return <ProductCard key={b.id} product={p} categories={categories} isComingSoon={b.content.store_status === 'coming_soon' || !!p.is_coming_soon} />
                   })}
               </div>
               {productBlocks.filter(b => passesFilter(b)).length === 0 && (
@@ -275,7 +279,7 @@ export default function StoreClient({
                         {group.map(pb => {
                           const p = productsById[pb.content.product_id || '']
                           if (!p) return null
-                          return <ProductCard key={pb.id} product={p} categories={categories} isComingSoon={pb.content.store_status === 'coming_soon'} />
+                          return <ProductCard key={pb.id} product={p} categories={categories} isComingSoon={pb.content.store_status === 'coming_soon' || !!p.is_coming_soon} />
                         })}
                       </div>
                     )

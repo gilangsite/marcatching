@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   description: 'Marcatching is a platform that connects businesses with the right audience. Discover tools, insights, and strategies to grow your brand.',
   keywords: ['Marcatching', 'marketing', 'brand', 'digital marketing', 'Indonesia'],
   authors: [{ name: 'Marcatching' }],
+  manifest: '/manifest.webmanifest',
   // iOS Safari PWA meta tags
   appleWebApp: {
     capable: true,                  // apple-mobile-web-app-capable

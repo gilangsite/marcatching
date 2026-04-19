@@ -152,9 +152,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       <div className={styles.fixedCTA}>
         <button
           className={styles.ctaButton}
-          onClick={() => router.push(`/product/${slug}/checkout`)}
+          disabled={product.is_coming_soon}
+          style={{ opacity: product.is_coming_soon ? 0.7 : 1, cursor: product.is_coming_soon ? 'not-allowed' : 'pointer' }}
+          onClick={() => !product.is_coming_soon && router.push(`/product/${slug}/checkout`)}
         >
-          Get Offer
+          {product.is_coming_soon ? 'Coming Soon' : 'Get Offer'}
           <ArrowRight size={18} strokeWidth={2.5} />
         </button>
       </div>

@@ -59,6 +59,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
         .single()
 
       if (!prodError && prodData) {
+        if (prodData.is_coming_soon) {
+          router.replace(`/product/${slug}`)
+          return
+        }
         setProduct(prodData as Product)
 
         // Fetch all other active products for add-on

@@ -77,7 +77,52 @@ export default function PWARegister() {
       window.location.reload()
     })
 
+    // --------------------------------------------------------
+    // Global Click Interceptor untuk PWA cross-subdomain
+    // --------------------------------------------------------
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Jika Next.js sudah handle klik ini (misalnya navigasi SPA via <Link>), kita biarkan saja.
+      if (e.defaultPrevented) return
+
+      const target = e.target as HTMLElement
+      const anchor = target.closest('a')
+
+      if (!anchor) return
+
+      const href = anchor.href
+      if (!href) return
+
+      // Jangan cegat link yang memiliki target="_blank"
+      if (anchor.target === '_blank') return
+
+      try {
+        const url = new URL(href)
+        const isMarcatchingURL =
+          url.hostname === 'marcatching.com' ||
+          url.hostname.endsWith('.marcatching.com') ||
+          url.hostname === 'localhost' ||
+          url.hostname.includes('192.168.') // untuk testing lokal
+
+        const isSameOrigin = url.origin === window.location.origin
+
+        if (isMarcatchingURL && !isSameOrigin) {
+          // Paksa buka link menggunakan assign agar iOS standalone PWA tidak 
+          // membuka Safari open in external browser jika pindah antar subdomain.
+          e.preventDefault()
+          window.location.assign(url.href)
+        }
+      } catch (err) {
+        // Abaikan jika URL tidak valid
+      }
+    }
+
+    document.addEventListener('click', handleGlobalClick)
+
     registerSW()
+
+    return () => {
+      document.removeEventListener('click', handleGlobalClick)
+    }
   }, [])
 
   // Komponen ini tidak merender UI apapun
