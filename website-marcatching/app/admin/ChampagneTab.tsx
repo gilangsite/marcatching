@@ -3,6 +3,7 @@
 import React, { useState, useEffect, FormEvent } from 'react'
 import { Plus, Pencil, Trash2, Check, X, GripVertical, Settings, Eye, EyeOff, LayoutTemplate, Upload } from 'lucide-react'
 import { Reorder } from 'framer-motion'
+import Cropper from 'react-easy-crop'
 import { supabase } from '@/lib/supabaseClient'
 import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
@@ -28,25 +29,64 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
   const [blockContent, setBlockContent] = useState<any>({})
   const [uploadingImage, setUploadingImage] = useState(false)
 
+  // Cropper State
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+  const [cropData, setCropData] = useState<{ src: string; filename: string; mimeType: string } | null>(null)
+
+  async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new window.Image()
+      img.addEventListener('load', () => resolve(img))
+      img.addEventListener('error', err => reject(err))
+      img.src = imageSrc
+    })
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return ''
+    canvas.width = pixelCrop.width
+    canvas.height = pixelCrop.height
+    ctx.drawImage(
+      image,
+      pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
+      0, 0, pixelCrop.width, pixelCrop.height
+    )
+    return canvas.toDataURL('image/jpeg', 0.9)
+  }
+
+  async function confirmCrop() {
+    if (!croppedAreaPixels || !cropData) return
+    setUploadingImage(true)
+    const base64 = await getCroppedImg(cropData.src, croppedAreaPixels)
+    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+    try {
+      const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) })
+      const data = await res.json()
+      if (data.status === 'success') {
+        setBlockContent((prev: any) => ({ ...prev, url: data.url }))
+        setCropData(null)
+      } else {
+        alert('Gagal upload gambar: ' + data.message)
+      }
+    } catch {
+      alert('Error upload gambar')
+    }
+    setUploadingImage(false)
+  }
+
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
-    setUploadingImage(true)
     const reader = new FileReader()
-    reader.onload = async (ev) => {
-      const base64 = ev.target?.result as string
-      const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
-      try {
-        const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) })
-        const data = await res.json()
-        if (data.status === 'success') {
-          setBlockContent((prev: any) => ({ ...prev, url: data.url }))
-        } else {
-          alert('Gagal upload gambar: ' + data.message)
-        }
-      } catch {
-        alert('Error upload gambar')
-      }
-      setUploadingImage(false)
+    reader.onload = (ev) => {
+      setCropData({
+        src: ev.target?.result as string,
+        filename: file.name,
+        mimeType: file.type
+      })
+      setCrop({ x: 0, y: 0 })
+      setZoom(1)
+      setCroppedAreaPixels(null)
     }
     reader.readAsDataURL(file)
   }
@@ -384,6 +424,33 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                 {metaError && <p className={styles.formError}>{metaError}</p>}
                 <div className={styles.formActions}><button type="submit" className="btn btn-navy" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button></div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* --- Cropper Modal --- */}
+        {cropData && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <Cropper
+                image={cropData.src}
+                crop={crop}
+                zoom={zoom}
+                aspect={
+                  blockContent.aspect_ratio === '1:1' ? 1 :
+                  blockContent.aspect_ratio === '4:5' ? 4 / 5 :
+                  blockContent.aspect_ratio === '9:16' ? 9 / 16 : 16 / 9
+                }
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels)}
+              />
+            </div>
+            <div style={{ padding: 24, background: '#1e293b', display: 'flex', justifyContent: 'center', gap: 12 }}>
+              <button className="btn btn-ghost" style={{ color: '#fff' }} onClick={() => setCropData(null)}>Batal</button>
+              <button className="btn btn-navy" onClick={confirmCrop} disabled={uploadingImage}>
+                {uploadingImage ? 'Mengupload...' : <><Check size={16} /> Crop & Upload</>}
+              </button>
             </div>
           </div>
         )}
