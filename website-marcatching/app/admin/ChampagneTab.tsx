@@ -400,6 +400,10 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                       Border (Garis Tepi)
                     </label>
                   </div>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Link Redirect (Opsional)</label>
+                    <input className="input" placeholder="https://... (Kosongkan bila tidak ingin bisa diklik)" value={blockContent.redirect_url || ''} onChange={e => setBlockContent({ ...blockContent, redirect_url: e.target.value })} />
+                  </div>
                 </div>
               )}
 

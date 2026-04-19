@@ -178,12 +178,24 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
     const aspect = (c.aspect_ratio && String(c.aspect_ratio) !== 'original') ? String(c.aspect_ratio) : '16:9'
     const [w, h] = aspect.split(':').map(Number)
     
+    const anyC = c as any
     // Default conditions if properties missing
-    const hasShadow = c.has_shadow ?? true;
-    const hasBorder = c.has_border ?? false;
+    const hasShadow = anyC.has_shadow ?? true;
+    const hasBorder = anyC.has_border ?? false;
+    const redirectUrl = anyC.redirect_url;
+
+    const ImageWrapper = redirectUrl ? 'a' : 'div';
+    const wrapperProps = redirectUrl ? { 
+      href: redirectUrl, 
+      target: '_blank', 
+      rel: 'noopener noreferrer',
+      style: { display: 'block', marginBottom: '1.5rem', width: '100%', textDecoration: 'none' } 
+    } : {
+      style: { marginBottom: '1.5rem', width: '100%' }
+    };
 
     return (
-      <div style={{ marginBottom: '1.5rem', width: '100%' }}>
+      <ImageWrapper {...wrapperProps}>
         <div style={{
           ...(isOriginal ? { width: '100%' } : { aspectRatio: `${w}/${h}` }),
           overflow: 'hidden',
@@ -203,7 +215,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
           />
         </div>
         {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
-      </div>
+      </ImageWrapper>
     )
   }
 
