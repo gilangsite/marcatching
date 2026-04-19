@@ -36,7 +36,7 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
     return (
       <div className={styles.blockHeadline} style={{
         fontSize: sizeMap[c.size || 'h2'] || '1.5rem',
-        color: c.color || '#ffffff',
+        color: (c.color && c.color !== '#ffffff') ? c.color : '#0d3369',
         textAlign: (c.align as any) || 'left',
       }}>
         {c.text}
@@ -49,7 +49,7 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
         fontSize: c.font_size || '1rem',
         fontWeight: c.weight === 'bold' ? 700 : c.weight === 'semibold' ? 600 : 400,
         fontStyle: c.italic ? 'italic' : 'normal',
-        color: c.color || 'rgba(255,255,255,0.85)',
+        color: (c.color && c.color !== '#ffffff' && c.color !== 'rgba(255,255,255,0.85)') ? c.color : '#475569',
         textAlign: (c.align as any) || 'left',
       }}>
         {(c.text || '').split('\n').map((line, i, arr) => (
@@ -90,7 +90,10 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
           target="_blank"
           rel="noopener noreferrer"
           className={styles.blockBtn}
-          style={{ background: c.btn_color || '#ffffff', color: c.btn_text_color || '#000000' }}
+          style={{
+            background: (c.btn_color && c.btn_color !== '#ffffff') ? c.btn_color : '#0d3369',
+            color: (c.btn_text_color && c.btn_text_color !== '#000000') ? c.btn_text_color : '#ffffff'
+          }}
         >
           {c.btn_text}
         </a>
