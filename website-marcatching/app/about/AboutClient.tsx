@@ -56,9 +56,9 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <span className={styles.heroTag}>What is Marcatching</span>
-            <h1 className={styles.heroTitle}>Marketing ain&apos;t just selling.<br />It&apos;s system design.</h1>
+            <h1 className={styles.heroTitle}>Where Innovation<br/>Meets Marketing.</h1>
             <p className={styles.heroSubtitle}>
-              Kami membongkar cara kerja sistem di balik kebisingan pasar, menggabungkan AI, teknologi, dan psikologi untuk merancang bisnis yang layak diikuti.
+              We decode the system behind the noise, integrating AI, technology, and psychology to architect a follow-worthy business.
             </p>
           </motion.section>
         </div>
@@ -66,6 +66,16 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
         {/* Philosophy Section */}
         <section className={styles.section}>
           <div className={`${styles.container} ${styles.grid2}`}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={itemVariants}
+              className={styles.philosophyImageWrapper}
+            >
+               <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=1000" alt="Visionary Leader" className={styles.philosophyImage} />
+            </motion.div>
+            
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -81,16 +91,6 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
                 Different is better than better. Marcatching hadir menjamin pengusaha tidak sekadar paham tentang tren, tetapi mampu merajutnya menjadi ekosistem tertutup otomatis yang elegan.
               </p>
             </motion.div>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={itemVariants}
-            >
-              <blockquote className={styles.punchline}>
-                "We don't just teach marketing; we design systems that command attention."
-              </blockquote>
-            </motion.div>
           </div>
         </section>
 
@@ -104,7 +104,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
               transition={{ duration: 0.5 }}
             >
               <span className={styles.sectionTag}>Our Pillars</span>
-              <h2 className={styles.sectionTitle}>Anatomi Platform Marcatching</h2>
+              <h2 className={styles.sectionTitle}>Marcatching Pillars</h2>
             </motion.div>
             
             <motion.div 
@@ -197,7 +197,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
               style={{ textAlign: 'center', marginBottom: '60px' }}
             >
               <span className={styles.sectionTag}>Audience Filtering</span>
-              <h2 className={styles.sectionTitle}>Siapa Kami Sebenarnya?</h2>
+              <h2 className={styles.sectionTitle}>Who is Marcatching for?</h2>
             </motion.div>
 
             <div className={styles.comparisonGrid}>
@@ -256,7 +256,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
                 </div>
               )}
               <div className={styles.founderContent}>
-                <div className={styles.founderLabel}>The Architect</div>
+                <div className={styles.founderLabel}>Meet the Founder</div>
                 <h2 className={styles.founderName}>{config.founder_name}</h2>
                 <div className={styles.founderQuote}>
                   "{config.founder_quote}"
@@ -275,7 +275,10 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h2 className={styles.ctaTitle}>Upgrade Insting Bisnismu.</h2>
+            <h2 className={styles.ctaTitle}>
+              Upgrade Your Business Instinct with <br/>
+              <img src="/logo-type-white.png" alt="Marcatching" className={styles.ctaLogoTitle} />
+            </h2>
             <p className={styles.ctaDesc}>
               Bergabung bersama sekumpulan perancang ekosistem bisnis modern. Buat sistem penopang konversi kamu hari ini.
             </p>
