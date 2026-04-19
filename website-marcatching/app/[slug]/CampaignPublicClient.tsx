@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 import type { Campaign, CampaignBlock, Product, NavLink } from '@/lib/supabaseClient'
@@ -26,67 +26,115 @@ function getYouTubeId(url: string): string | null {
   return null
 }
 
-// ── Gradient animations CSS injected once ──────────────────
-const GRADIENT_STYLE = `
+// ── Global styles injected once ──────────────────────────────
+const PAGE_STYLES = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap');
 
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Sparkle orbs - very low opacity decorative movement */
+@keyframes orbDrift1 {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  33%  { transform: translate(60px, -40px) scale(1.1); }
+  66%  { transform: translate(-40px, 30px) scale(0.95); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
-@keyframes gradientShiftDark {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes orbDrift2 {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  40%  { transform: translate(-70px, 50px) scale(1.15); }
+  80%  { transform: translate(50px, -30px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
-@keyframes btnPulse {
-  0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-  50% { box-shadow: 0 6px 32px rgba(0,0,0,0.25); }
+@keyframes orbDrift3 {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  50%  { transform: translate(40px, 60px) scale(1.05); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
-.campaign-btn {
-  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, opacity 0.2s ease !important;
-  animation: btnPulse 3s ease-in-out infinite;
+
+/* Button hover */
+.camp-btn {
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease !important;
 }
-.campaign-btn:hover {
-  transform: translateY(-3px) scale(1.02) !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.22) !important;
-  animation: none;
+.camp-btn:hover {
+  transform: translateY(-3px) scale(1.015) !important;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.18) !important;
 }
-.campaign-headline-grad {
-  background: linear-gradient(135deg, #0d3369 0%, #3b82f6 50%, #0d3369 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 6s ease infinite;
-}
-.campaign-headline-grad-light {
-  background: linear-gradient(135deg, #f97316 0%, #fbbf24 40%, #ef4444 70%, #f97316 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 6s ease infinite;
-}
-.campaign-product-card {
+
+/* Product card hover */
+.camp-card {
   transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease !important;
 }
-.campaign-product-card:hover {
-  transform: translateY(-6px) scale(1.01) !important;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+.camp-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 56px rgba(0,0,0,0.1) !important;
 }
 `
 
-// ── Block renderer ──────────────────────────────────────────
+// ── Subtle sparkle background ─────────────────────────────────
+function SparkleBackground({ theme }: { theme: 'black' | 'white' }) {
+  if (theme === 'black') {
+    // Dark: subtle blue/indigo orbs, very low opacity
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#050911' }}>
+        <div style={{
+          position: 'absolute', width: 600, height: 600,
+          borderRadius: '50%', top: '-10%', left: '-15%',
+          background: 'radial-gradient(circle, rgba(13,51,105,0.35) 0%, transparent 70%)',
+          filter: 'blur(60px)', animation: 'orbDrift1 18s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', width: 500, height: 500,
+          borderRadius: '50%', bottom: '5%', right: '-10%',
+          background: 'radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)',
+          filter: 'blur(80px)', animation: 'orbDrift2 22s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', width: 350, height: 350,
+          borderRadius: '50%', top: '40%', left: '50%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)', animation: 'orbDrift3 15s ease-in-out infinite',
+        }} />
+      </div>
+    )
+  }
+  // Light: pure white bg with barely-visible soft color orbs drifting
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#ffffff' }}>
+      <div style={{
+        position: 'absolute', width: 700, height: 700,
+        borderRadius: '50%', top: '-20%', left: '-20%',
+        background: 'radial-gradient(circle, rgba(219,234,254,0.55) 0%, transparent 65%)',
+        filter: 'blur(80px)', animation: 'orbDrift1 20s ease-in-out infinite',
+      }} />
+      <div style={{
+        position: 'absolute', width: 500, height: 500,
+        borderRadius: '50%', bottom: '0%', right: '-15%',
+        background: 'radial-gradient(circle, rgba(254,243,199,0.45) 0%, transparent 65%)',
+        filter: 'blur(90px)', animation: 'orbDrift2 25s ease-in-out infinite',
+      }} />
+      <div style={{
+        position: 'absolute', width: 400, height: 400,
+        borderRadius: '50%', top: '50%', left: '55%',
+        background: 'radial-gradient(circle, rgba(237,233,254,0.35) 0%, transparent 65%)',
+        filter: 'blur(70px)', animation: 'orbDrift3 17s ease-in-out infinite',
+      }} />
+    </div>
+  )
+}
+
+// ── Block renderer ───────────────────────────────────────────
 function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 'black' | 'white' }) {
   const c = block.content
+
   if (block.type === 'headline') {
     const sizeMap: Record<string, string> = {
-      h1: 'clamp(2.2rem, 8vw, 3.5rem)',
-      h2: 'clamp(1.7rem, 6vw, 2.5rem)',
-      h3: 'clamp(1.3rem, 4vw, 1.8rem)',
+      h1: 'clamp(2.1rem, 7vw, 3.2rem)',
+      h2: 'clamp(1.6rem, 5.5vw, 2.4rem)',
+      h3: 'clamp(1.2rem, 4vw, 1.7rem)',
       sub: '1.1rem'
     }
-    const hasCustomColor = c.color && c.color !== '#ffffff' && c.color !== '#000000' && c.color !== '#0d3369'
+    // Use the user-set color, fall back to theme default
+    const textColor = c.color || (theme === 'black' ? '#ffffff' : '#0f172a')
+    // Elegant text-shadow under/below — subtle, not colored
+    const shadowColor = theme === 'black' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)'
     return (
       <div style={{
         fontSize: sizeMap[c.size || 'h2'] || sizeMap.h2,
@@ -96,17 +144,16 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         letterSpacing: '-0.03em',
         lineHeight: 1.15,
         textAlign: (c.align as any) || 'left',
-        color: hasCustomColor ? c.color : undefined,
-        textShadow: hasCustomColor ? '0 2px 8px rgba(0,0,0,0.12)' : undefined,
-      }}
-        className={!hasCustomColor ? (theme === 'black' ? 'campaign-headline-grad' : 'campaign-headline-grad-light') : undefined}
-      >
+        color: textColor,
+        textShadow: `0 2px 12px ${shadowColor}, 0 1px 2px ${shadowColor}`,
+      }}>
         {c.text}
       </div>
     )
   }
 
   if (block.type === 'text') {
+    const textColor = c.color || (theme === 'black' ? '#d1d5db' : '#374151')
     return (
       <div style={{
         fontSize: c.font_size || '1.05rem',
@@ -114,7 +161,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         fontStyle: c.italic ? 'italic' : 'normal',
         marginBottom: '1.2rem',
         lineHeight: 1.75,
-        color: c.color || (theme === 'black' ? '#d1d5db' : '#374151'),
+        color: textColor,
         textAlign: (c.align as any) || 'left',
         fontFamily: "'DM Sans', sans-serif",
       }}>
@@ -127,8 +174,8 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
 
   if (block.type === 'image' && c.url) {
     const thumb = getDriveThumb(c.url, 'w1400-h1400')
-    const isOriginal = c.aspect_ratio === 'original'
-    const aspect = (c.aspect_ratio && c.aspect_ratio !== 'original') ? c.aspect_ratio : '16:9'
+    const isOriginal = c.aspect_ratio === 'original' || !c.aspect_ratio
+    const aspect = (!isOriginal) ? c.aspect_ratio : '16:9'
     const [w, h] = aspect.split(':').map(Number)
     return (
       <div style={{ marginBottom: '1.5rem', width: '100%' }}>
@@ -137,7 +184,9 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
           overflow: 'hidden',
           borderRadius: 16,
           backgroundColor: theme === 'black' ? '#1e293b' : '#f1f5f9',
-          boxShadow: theme === 'black' ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.07)',
+          boxShadow: theme === 'black'
+            ? '0 8px 32px rgba(0,0,0,0.45)'
+            : '0 6px 24px rgba(0,0,0,0.07)',
         }}>
           <img
             src={thumb || c.url}
@@ -145,7 +194,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             style={{ width: '100%', height: isOriginal ? 'auto' : '100%', objectFit: isOriginal ? 'contain' : 'cover', display: 'block' }}
           />
         </div>
-        {c.caption && <p style={{ fontSize: '0.82rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
+        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
       </div>
     )
   }
@@ -158,7 +207,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         <div style={{
           position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden',
           borderRadius: 16, backgroundColor: '#000',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
         }}>
           <iframe
             src={`https://www.youtube.com/embed/${ytId}?rel=0`}
@@ -168,7 +217,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
           />
         </div>
-        {c.caption && <p style={{ fontSize: '0.82rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
+        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
       </div>
     )
   }
@@ -185,7 +234,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
           href={c.btn_url || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="campaign-btn"
+          className="camp-btn"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -201,6 +250,9 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             background: bg,
             color: textCol,
             fontFamily: "'DM Sans', sans-serif",
+            boxShadow: theme === 'black'
+              ? '0 4px 20px rgba(0,0,0,0.4)'
+              : '0 4px 20px rgba(13,51,105,0.18)',
           }}
         >
           {c.btn_text}
@@ -211,59 +263,61 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
   return null
 }
 
-// ── Product card renderer ─────────────────────────────────────
+// ── Product card ─────────────────────────────────────────────
 function CampaignProductCard({ product, isComingSoon, theme }: { product: Product; isComingSoon: boolean, theme: 'black' | 'white' }) {
   const thumb = getDriveThumb(product.image_url, 'w800-h1000')
   return (
     <Link
       href={isComingSoon ? '#' : `/product/${product.slug}`}
       onClick={isComingSoon ? (e) => e.preventDefault() : undefined}
-      className="campaign-product-card"
+      className="camp-card"
       style={{
         display: 'flex',
         flexDirection: 'column',
         borderRadius: 20,
         overflow: 'hidden',
         background: theme === 'black'
-          ? 'linear-gradient(145deg, #111827, #1f2937)'
-          : 'linear-gradient(145deg, #ffffff, #f8fafc)',
-        border: theme === 'black' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+          ? 'linear-gradient(145deg, #111827, #1a2336)'
+          : '#ffffff',
+        border: theme === 'black'
+          ? '1px solid rgba(255,255,255,0.06)'
+          : '1px solid rgba(0,0,0,0.06)',
         textDecoration: 'none',
         color: 'inherit',
         marginBottom: '1.5rem',
         boxShadow: theme === 'black'
-          ? '0 4px 20px rgba(0,0,0,0.5)'
-          : '0 4px 24px rgba(0,0,0,0.06)',
-        width: '100%',
+          ? '0 4px 24px rgba(0,0,0,0.45)'
+          : '0 4px 20px rgba(0,0,0,0.05)',
         fontFamily: "'DM Sans', sans-serif",
+        width: '100%',
       }}
     >
-      <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: theme === 'black' ? '#1f2937' : '#f1f5f9' }}>
+      <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: theme === 'black' ? '#1f2937' : '#f8fafc' }}>
         {thumb
-          ? <img src={thumb} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} />
+          ? <img src={thumb} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', fontWeight: 800, color: theme === 'black' ? '#374151' : '#d1d5db' }}>M</div>
         }
         {product.discount_percentage > 0 && (
-          <span style={{ position: 'absolute', top: 12, left: 12, background: '#ef4444', color: '#fff', padding: '4px 10px', borderRadius: 8, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>-{product.discount_percentage}%</span>
+          <span style={{ position: 'absolute', top: 12, left: 12, background: '#ef4444', color: '#fff', padding: '4px 10px', borderRadius: 8, fontSize: '0.72rem', fontWeight: 800 }}>-{product.discount_percentage}%</span>
         )}
         {isComingSoon && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.35)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ background: '#000', color: '#fff', padding: '8px 16px', borderRadius: 24, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Coming Soon</span>
+            <span style={{ background: '#0f172a', color: '#fff', padding: '8px 16px', borderRadius: 24, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Coming Soon</span>
           </div>
         )}
       </div>
       <div style={{ padding: '18px' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: theme === 'black' ? '#f9fafb' : '#111827', margin: '0 0 4px 0', lineHeight: 1.3, letterSpacing: '-0.01em' }}>{product.name}</h2>
+        <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: theme === 'black' ? '#f9fafb' : '#0f172a', margin: '0 0 4px 0', lineHeight: 1.3, letterSpacing: '-0.01em' }}>{product.name}</h2>
         {product.sub_headline && <p style={{ fontSize: '0.82rem', color: theme === 'black' ? '#9ca3af' : '#6b7280', margin: '0 0 14px 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>{product.sub_headline}</p>}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 12, borderTop: theme === 'black' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {product.price_before_discount > product.price_after_discount && (
-              <span style={{ fontSize: '0.72rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textDecoration: 'line-through' }}>{formatRp(product.price_before_discount)}</span>
+              <span style={{ fontSize: '0.72rem', color: theme === 'black' ? '#6b7280' : '#94a3b8', textDecoration: 'line-through' }}>{formatRp(product.price_before_discount)}</span>
             )}
             <span style={{ fontSize: '1.1rem', fontWeight: 800, color: theme === 'black' ? '#38bdf8' : '#0d3369' }}>{formatRp(product.price_after_discount)}</span>
           </div>
           {(product.checkout_clicks ?? 0) > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: theme === 'black' ? 'rgba(56,189,248,0.1)' : '#eff6ff', color: theme === 'black' ? '#38bdf8' : '#0d3369', padding: '4px 10px', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: theme === 'black' ? 'rgba(56,189,248,0.1)' : '#eff6ff', color: theme === 'black' ? '#38bdf8' : '#0d3369', padding: '5px 10px', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700 }}>
               <ShoppingCart size={11} />
               <span>{product.checkout_clicks}</span>
             </div>
@@ -274,39 +328,7 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
   )
 }
 
-// ── Animated mesh gradient background ────────────────────────
-function CampaignBackground({ theme }: { theme: 'black' | 'white' }) {
-  if (theme === 'black') {
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
-        background: 'linear-gradient(135deg, #030712 0%, #0a1628 40%, #0d2348 70%, #030712 100%)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientShiftDark 15s ease infinite',
-      }} />
-    )
-  }
-  return (
-    <>
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
-        background: 'linear-gradient(135deg, #fff7ed 0%, #fffbeb 25%, #fef3c7 50%, #fff7ed 75%, #ffedd5 100%)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientShift 12s ease infinite',
-      }} />
-      <div style={{
-        position: 'fixed',
-        bottom: -100, left: '5%', right: '5%', height: 500,
-        zIndex: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 30% 100%, rgba(251,191,36,0.3) 0%, transparent 60%), radial-gradient(ellipse at 70% 100%, rgba(249,115,22,0.25) 0%, transparent 60%)',
-        filter: 'blur(60px)',
-        animation: 'gradientShift 10s ease-in-out infinite alternate',
-      }} />
-    </>
-  )
-}
-
-// ── Main Client Component ─────────────────────────────────────
+// ── Main ─────────────────────────────────────────────────────
 export default function CampaignPublicClient({ campaign, products, navLinks }: { campaign: Campaign, products: Product[], navLinks: NavLink[] }) {
   const productsById = useMemo(() => {
     const map: Record<string, Product> = {}
@@ -318,17 +340,20 @@ export default function CampaignPublicClient({ campaign, products, navLinks }: {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: GRADIENT_STYLE }} />
-      <CampaignBackground theme={theme} />
+      <style dangerouslySetInnerHTML={{ __html: PAGE_STYLES }} />
+      {/* Fixed sparkle background behind everything */}
+      <SparkleBackground theme={theme} />
+
+      {/* Page content above background */}
       <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', fontFamily: "'DM Sans', sans-serif" }}>
         <Navbar navLinks={navLinks} />
         <div style={{
-          color: theme === 'black' ? '#f9fafb' : '#111827',
-          padding: 'calc(80px + env(safe-area-inset-top, 16px)) 24px 100px',
+          color: theme === 'black' ? '#f9fafb' : '#0f172a',
+          padding: 'calc(76px + env(safe-area-inset-top, 12px)) 24px 100px',
         }}>
-          <div style={{ maxWidth: 520, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ maxWidth: 520, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {(!blocks || blocks.length === 0) && (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: theme === 'black' ? '#6b7280' : '#9ca3af', fontFamily: "'DM Sans', sans-serif" }}>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: theme === 'black' ? '#6b7280' : '#94a3b8', fontFamily: "'DM Sans', sans-serif" }}>
                 Campaign ini belum memiliki konten.
               </div>
             )}
