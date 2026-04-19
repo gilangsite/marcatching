@@ -5,11 +5,12 @@ import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
   const { data: campaign } = await supabaseAdmin
     .from('campaigns')
     .select('title, slug')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single()
 
   if (!campaign) {
@@ -34,13 +35,14 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function CampaignPage({ params }: { params: { slug: string } }) {
+export default async function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
   // Try to load the campaign. Since Next.js router checks static routes first, this will only hit
   // if no static folder (like /admin, /store) matches the slug.
   const { data: campaign, error } = await supabaseAdmin
     .from('campaigns')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single()
 
   // If no campaign matches the slug, return native 404
@@ -48,15 +50,9 @@ export default async function CampaignPage({ params }: { params: { slug: string 
     notFound()
   }
 
-  // If draft, ideally check if admin is logged in.
-  // For now, simple approach: just throw 404 unless it's handled in the client, but SSR can't easily check client session without cookies.
-  // We'll let the client handle auth checking if it's draft, or just render it but maybe with a warning.
-  // For security, if it's draft, maybe only render if accessed with a special token, but in this setup,
-  // we'll just allow it if they know the slug since it's just a campaign page.
-
   // Fetch products if there are any product blocks to resolve product data
   const hasProducts = campaign.blocks?.some((b: any) => b.type === 'product')
-  let products = []
+  let products: any[] = []
   if (hasProducts) {
     const { data: prods } = await supabaseAdmin.from('products').select('*')
     products = prods || []

@@ -3,12 +3,13 @@ import { supabaseAdmin } from '@/lib/supabaseClient'
 
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const resolvedParams = await params
   const { data, error } = await supabaseAdmin
     .from('campaigns')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single()
 
   if (error) {
@@ -19,9 +20,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const body = await req.json()
     
     // Convert undefined to null or omit the key, but Supabase handles it if we just pass the object
@@ -35,7 +37,7 @@ export async function PATCH(
     const { data, error } = await supabaseAdmin
       .from('campaigns')
       .update(updatePayload)
-      .eq('slug', params.slug)
+      .eq('slug', resolvedParams.slug)
       .select('*')
       .single()
 
@@ -49,12 +51,13 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const resolvedParams = await params
   const { error } = await supabaseAdmin
     .from('campaigns')
     .delete()
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
