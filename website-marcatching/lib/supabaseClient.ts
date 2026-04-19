@@ -60,6 +60,7 @@ export type Product = {
   discount_percentage: number
   features: string[]
   is_active: boolean
+  is_coming_soon: boolean
   category_id: string | null
   checkout_clicks: number
   created_at: string

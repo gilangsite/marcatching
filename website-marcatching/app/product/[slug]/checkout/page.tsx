@@ -125,9 +125,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     }
   }
 
-  // Filtered add-on products (exclude already selected)
+  // Filtered add-on products (exclude already selected and coming soon)
   const selectedIds = selectedAddons.map(a => a.id)
   const filteredProducts = availableProducts.filter(p => {
+    if (p.is_coming_soon) return false;
     const notSelected = !selectedIds.includes(p.id)
     const matchesSearch = addonSearchQuery === '' ||
       p.name.toLowerCase().includes(addonSearchQuery.toLowerCase())

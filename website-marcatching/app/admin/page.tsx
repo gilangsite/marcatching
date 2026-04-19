@@ -225,7 +225,7 @@ function AdminDashboardInner() {
   const [productsLoading, setProductsLoading] = useState(true)
   const [showProductForm, setShowProductForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [pf, setPf] = useState({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [] as string[], is_active: true, category_id: '' })
+  const [pf, setPf] = useState({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [] as string[], is_active: true, is_coming_soon: false, category_id: '' })
   const [newFeature, setNewFeature] = useState('')
   const [productSaving, setProductSaving] = useState(false)
   const [productError, setProductError] = useState('')
@@ -971,10 +971,10 @@ function AdminDashboardInner() {
 
   // ── Product CRUD ─────────────────────────────────────────────
   function openAddProduct() {
-    setEditingProduct(null); setPf({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [], is_active: true, category_id: '' }); setProductError(''); setShowProductForm(true)
+    setEditingProduct(null); setPf({ name: '', sub_headline: '', description: '', image_url: '', price_before: '', price_after: '', discount: '', features: [], is_active: true, is_coming_soon: false, category_id: '' }); setProductError(''); setShowProductForm(true)
   }
   function openEditProduct(p: Product) {
-    setEditingProduct(p); setPf({ name: p.name, sub_headline: p.sub_headline || '', description: p.description || '', image_url: p.image_url || '', price_before: p.price_before_discount?.toString() || '', price_after: p.price_after_discount?.toString() || '', discount: p.discount_percentage?.toString() || '', features: Array.isArray(p.features) ? p.features : [], is_active: p.is_active, category_id: p.category_id || '' }); setProductError(''); setShowProductForm(true)
+    setEditingProduct(p); setPf({ name: p.name, sub_headline: p.sub_headline || '', description: p.description || '', image_url: p.image_url || '', price_before: p.price_before_discount?.toString() || '', price_after: p.price_after_discount?.toString() || '', discount: p.discount_percentage?.toString() || '', features: Array.isArray(p.features) ? p.features : [], is_active: p.is_active, is_coming_soon: p.is_coming_soon, category_id: p.category_id || '' }); setProductError(''); setShowProductForm(true)
   }
 
   // Price interlinked calculator
@@ -1012,7 +1012,7 @@ function AdminDashboardInner() {
   async function saveProduct(e: FormEvent) {
     e.preventDefault(); if (!pf.name) { setProductError('Nama product wajib diisi'); return }
     setProductSaving(true); setProductError('')
-    const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active, category_id: pf.category_id || null }
+    const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active, is_coming_soon: pf.is_coming_soon, category_id: pf.category_id || null }
     let error
     if (editingProduct) { 
       ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) 
@@ -1293,7 +1293,12 @@ function AdminDashboardInner() {
                     <div className="form-group"><label className="label">Harga Sebelum Diskon</label><div style={{display:'flex',alignItems:'center',gap:4}}><span style={{fontWeight:600,color:'#64748b'}}>Rp</span><input className="input" placeholder="1500000" value={pf.price_before ? formatRp(parseRp(pf.price_before)) : ''} onChange={e => handlePriceBefore(e.target.value)} /></div></div>
                     <div className="form-group"><label className="label">Harga Setelah Diskon</label><div style={{display:'flex',alignItems:'center',gap:4}}><span style={{fontWeight:600,color:'#64748b'}}>Rp</span><input className="input" placeholder="750000" value={pf.price_after ? formatRp(parseRp(pf.price_after)) : ''} onChange={e => handlePriceAfter(e.target.value)} /></div></div>
                     <div className="form-group"><label className="label">Discount</label><div style={{display:'flex',alignItems:'center',gap:4}}><input className="input" placeholder="50" value={pf.discount} onChange={e => handleDiscount(e.target.value)} /><span style={{fontWeight:600,color:'#64748b'}}>%</span></div></div>
-                    <div className="form-group"><label className="label">Status</label><select className="select" value={pf.is_active ? 'active' : 'inactive'} onChange={e => setPf(f => ({...f, is_active: e.target.value === 'active'}))}><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+                    <div className="form-group"><label className="label">Status</label><select className="select" value={pf.is_active ? (pf.is_coming_soon ? 'coming_soon' : 'active') : 'inactive'} onChange={e => {
+                      const v = e.target.value;
+                      if(v === 'active') setPf(f => ({...f, is_active: true, is_coming_soon: false}))
+                      else if(v === 'coming_soon') setPf(f => ({...f, is_active: true, is_coming_soon: true}))
+                      else setPf(f => ({...f, is_active: false, is_coming_soon: false}))
+                    }}><option value="active">Active</option><option value="coming_soon">Coming Soon</option><option value="inactive">Inactive</option></select></div>
                     <div className="form-group"><label className="label">Kategori</label><select className="select" value={pf.category_id} onChange={e => setPf(f => ({...f, category_id: e.target.value}))}><option value="">— Tanpa Kategori —</option>{productCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                   </div>
                   <div className="form-group"><label className="label">Features</label>
@@ -1341,7 +1346,7 @@ function AdminDashboardInner() {
                   <div className={styles.linkIcon}><Package size={18} /></div>
                   <div className={styles.linkInfo}>
                     <span className={styles.linkTitle}>{p.name}</span>
-                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? <span className={styles.statusActive}>Active</span> : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)} · <span style={{ color: '#94a3b8' }}>{productCategories.find(c => c.id === p.category_id)?.name || 'No Category'}</span></span>
+                    <span className={styles.linkUrl}>/product/{p.slug} · {p.is_active ? (p.is_coming_soon ? <span className={styles.statusSoon}>Coming Soon</span> : <span className={styles.statusActive}>Active</span>) : <span className={styles.statusSoon}>Inactive</span>} · Rp {formatRp(p.price_after_discount)} · <span style={{ color: '#94a3b8' }}>{productCategories.find(c => c.id === p.category_id)?.name || 'No Category'}</span></span>
                   </div>
                   <div className={styles.linkActions}>
                     <button className={styles.editBtn} onClick={e => { e.stopPropagation(); openEditProduct(p) }}><Pencil size={15} /></button>
