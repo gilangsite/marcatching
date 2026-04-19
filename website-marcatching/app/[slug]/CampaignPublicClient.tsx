@@ -175,7 +175,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
   if (block.type === 'image' && c.url) {
     const thumb = getDriveThumb(c.url, 'w1400-h1400')
     const isOriginal = c.aspect_ratio === 'original' || !c.aspect_ratio
-    const aspect = (!isOriginal) ? c.aspect_ratio : '16:9'
+    const aspect = (c.aspect_ratio && String(c.aspect_ratio) !== 'original') ? String(c.aspect_ratio) : '16:9'
     const [w, h] = aspect.split(':').map(Number)
     return (
       <div style={{ marginBottom: '1.5rem', width: '100%' }}>
