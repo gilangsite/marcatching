@@ -13,12 +13,13 @@ import {
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store
+  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 import AboutPageConfigTab from './AboutPageConfigTab'
+import ChampagneTab from './ChampagneTab'
 
 // ─── Icon map ────────────────────────────────────────────────
 const ICON_OPTIONS = [
@@ -194,7 +195,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne'
   const [tab, setTab] = useState<TabType>('links')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -678,7 +679,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -1165,6 +1166,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
+          <button className={`${styles.navItem} ${tab === 'champagne' ? styles.navActive : ''}`} onClick={() => { setTab('champagne'); setIsSidebarOpen(false) }}><PartyPopper size={18} /> Champagne</button>
           <button className={`${styles.navItem} ${tab === 'articles' ? styles.navActive : ''}`} onClick={() => { setTab('articles'); setIsSidebarOpen(false) }}><Newspaper size={18} /> Articles</button>
           <button className={`${styles.navItem} ${tab === 'aboutpage' ? styles.navActive : ''}`} onClick={() => { setTab('aboutpage'); setIsSidebarOpen(false) }}><FileText size={18} /> About Page</button>
           <button className={`${styles.navItem} ${tab === 'products' ? styles.navActive : ''}`} onClick={() => { setTab('products'); setIsSidebarOpen(false) }}><Package size={18} /> Products</button>
@@ -1360,6 +1362,7 @@ function AdminDashboardInner() {
 
         {/* ── ABOUT PAGE CONFIG TAB ─── */}
         {tab === 'aboutpage' && <AboutPageConfigTab />}
+        {tab === 'champagne' && <ChampagneTab products={products} />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (

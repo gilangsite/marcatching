@@ -274,3 +274,47 @@ export type Article = {
   article_categories?: ArticleCategory | null
   article_authors?: ArticleAuthor | null
 }
+
+// ── Champagne (Campaigns) System ──────────────────────────────
+
+export type CampaignBlock = {
+  id: string
+  type: 'headline' | 'text' | 'image' | 'video' | 'button' | 'product'
+  content: {
+    // headline
+    text?: string
+    size?: string
+    color?: string
+    align?: string
+    font_family?: string
+    // text
+    weight?: string
+    italic?: boolean
+    font_size?: string
+    // image
+    url?: string
+    aspect_ratio?: string
+    caption?: string
+    // video
+    video_url?: string
+    // button
+    btn_text?: string
+    btn_url?: string
+    btn_color?: string
+    btn_text_color?: string
+    // product
+    product_id?: string
+    store_status?: 'active' | 'coming_soon' | 'hidden'
+  }
+}
+
+export type Campaign = {
+  id: string
+  title: string
+  slug: string
+  theme: 'black' | 'white'
+  status: 'draft' | 'published'
+  blocks: CampaignBlock[]
+  created_at: string
+  updated_at: string
+}

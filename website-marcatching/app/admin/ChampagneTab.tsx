@@ -1,0 +1,415 @@
+'use client'
+
+import React, { useState, useEffect, FormEvent } from 'react'
+import { Plus, Pencil, Trash2, Check, X, GripVertical, Settings, Eye, EyeOff, LayoutTemplate } from 'lucide-react'
+import { Reorder } from 'framer-motion'
+import { supabase } from '@/lib/supabaseClient'
+import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
+import styles from './admin.module.css'
+
+export default function ChampagneTab({ products }: { products: Product[] }) {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  
+  // Create / Edit Campaign Meta
+  const [showMetaForm, setShowMetaForm] = useState(false)
+  const [editingMeta, setEditingMeta] = useState<Campaign | null>(null)
+  const [metaForm, setMetaForm] = useState({ title: '', slug: '', theme: 'black', status: 'draft' })
+  const [metaError, setMetaError] = useState('')
+
+  // Selected campaign for block editing
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
+  
+  // Block Editing State
+  const [showBlockForm, setShowBlockForm] = useState(false)
+  const [editingBlockId, setEditingBlockId] = useState<string | null>(null)
+  const [blockType, setBlockType] = useState<CampaignBlock['type']>('headline')
+  const [blockContent, setBlockContent] = useState<any>({})
+
+  useEffect(() => {
+    fetchCampaigns()
+  }, [])
+
+  async function fetchCampaigns() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/campaigns')
+      const data = await res.json()
+      setCampaigns(data || [])
+      // Update selected campaign if it exists
+      if (selectedCampaign) {
+        const updated = data?.find((c: Campaign) => c.id === selectedCampaign.id)
+        if (updated) setSelectedCampaign(updated)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
+  }
+
+  function slugify(text: string) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  }
+
+  function openCreateMeta() {
+    setEditingMeta(null)
+    setMetaForm({ title: '', slug: '', theme: 'black', status: 'draft' })
+    setMetaError('')
+    setShowMetaForm(true)
+  }
+
+  function openEditMeta(c: Campaign) {
+    setEditingMeta(c)
+    setMetaForm({ title: c.title, slug: c.slug, theme: c.theme, status: c.status })
+    setMetaError('')
+    setShowMetaForm(true)
+  }
+
+  async function saveMeta(e: FormEvent) {
+    e.preventDefault()
+    if (!metaForm.title.trim()) { setMetaError('Judul wajib diisi'); return }
+    const slug = slugify(metaForm.slug || metaForm.title)
+    if (!slug) { setMetaError('Slug tidak valid'); return }
+    
+    setSaving(true)
+    setMetaError('')
+    try {
+      if (editingMeta) {
+        const res = await fetch(`/api/campaigns/${editingMeta.slug}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: metaForm.title, slug, theme: metaForm.theme, status: metaForm.status })
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error)
+      } else {
+        const res = await fetch('/api/campaigns', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: metaForm.title, slug, theme: metaForm.theme, status: metaForm.status, blocks: [] })
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error)
+      }
+      setShowMetaForm(false)
+      fetchCampaigns()
+    } catch (err: any) {
+      setMetaError(err.message || 'Gagal menyimpan campaign')
+    }
+    setSaving(false)
+  }
+
+  async function deleteCampaign(c: Campaign) {
+    if (!confirm(`Hapus campaign "${c.title}"?`)) return
+    try {
+      await fetch(`/api/campaigns/${c.slug}`, { method: 'DELETE' })
+      if (selectedCampaign?.id === c.id) setSelectedCampaign(null)
+      fetchCampaigns()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  // --- Block Management ---
+  function openAddBlock() {
+    setEditingBlockId(null)
+    setBlockType('headline')
+    setBlockContent({ text: '', size: 'h2', color: selectedCampaign?.theme === 'white' ? '#000000' : '#ffffff', align: 'left' })
+    setShowBlockForm(true)
+  }
+
+  function openEditBlock(b: CampaignBlock) {
+    setEditingBlockId(b.id)
+    setBlockType(b.type)
+    setBlockContent(b.content)
+    setShowBlockForm(true)
+  }
+
+  async function saveBlocks(newBlocks: CampaignBlock[]) {
+    if (!selectedCampaign) return
+    setSaving(true)
+    try {
+      await fetch(`/api/campaigns/${selectedCampaign.slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blocks: newBlocks })
+      })
+      fetchCampaigns()
+    } catch (err) {
+      console.error(err)
+    }
+    setSaving(false)
+  }
+
+  async function saveBlockForm(e: FormEvent) {
+    e.preventDefault()
+    if (!selectedCampaign) return
+    const id = editingBlockId || Math.random().toString(36).slice(2, 9)
+    const newBlock: CampaignBlock = { id, type: blockType, content: { ...blockContent } }
+    
+    let updatedBlocks = [...(selectedCampaign.blocks || [])]
+    if (editingBlockId) {
+      updatedBlocks = updatedBlocks.map(b => b.id === editingBlockId ? newBlock : b)
+    } else {
+      updatedBlocks.push(newBlock)
+    }
+    await saveBlocks(updatedBlocks)
+    setShowBlockForm(false)
+  }
+
+  async function deleteBlock(id: string) {
+    if (!selectedCampaign || !confirm('Hapus block ini?')) return
+    const updatedBlocks = (selectedCampaign.blocks || []).filter(b => b.id !== id)
+    await saveBlocks(updatedBlocks)
+  }
+
+  async function handleBlockReorder(reordered: CampaignBlock[]) {
+    if (!selectedCampaign) return
+    // Optimistic update for UI smoothness
+    setSelectedCampaign({ ...selectedCampaign, blocks: reordered })
+    await saveBlocks(reordered)
+  }
+
+  // Render main list vs block editor
+  if (selectedCampaign) {
+    return (
+      <div className={styles.tabContent} style={{ maxWidth: 840 }}>
+        <div className={styles.contentHeader} style={{ flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <button className="btn btn-ghost" style={{ padding: '6px 12px' }} onClick={() => setSelectedCampaign(null)}>← Kembali</button>
+              <h1 className={styles.contentTitle}>{selectedCampaign.title}</h1>
+            </div>
+            <p className={styles.contentDesc} style={{ marginTop: 6 }}>
+              marcatching.com/{selectedCampaign.slug} · Tema: <strong>{selectedCampaign.theme}</strong>
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button className="btn btn-navy" onClick={() => openEditMeta(selectedCampaign)}><Settings size={15}/> Konfigurasi</button>
+          </div>
+        </div>
+
+        {/* --- Block Editor UI (Similar to E-commerce) --- */}
+        {showBlockForm && (
+          <div className={styles.formCard}>
+            <div className={styles.formCardHeader}>
+              <h2 className={styles.formTitle}>{editingBlockId ? 'Edit Block' : 'Tambah Block'}</h2>
+              <button onClick={() => setShowBlockForm(false)} className={styles.closeBtn}><X size={18} /></button>
+            </div>
+            <form onSubmit={saveBlockForm} className={styles.form}>
+              <div className="form-group">
+                <label className="label">Tipe Block</label>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {(['headline', 'text', 'button', 'image', 'video', 'product'] as const).map(t => (
+                    <button type="button" key={t} onClick={() => { setBlockType(t); setBlockContent({}) }}
+                      style={{ padding: '8px 14px', borderRadius: 8, border: blockType === t ? '2px solid #0d3369' : '1px solid #e2e8f0', background: blockType === t ? '#eff6ff' : '#fff', color: blockType === t ? '#0d3369' : '#64748b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
+                      {t.charAt(0).toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {blockType === 'headline' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Teks Headline</label>
+                    <input className="input" autoFocus value={blockContent.text || ''} onChange={e => setBlockContent({ ...blockContent, text: e.target.value })} required /></div>
+                  <div className="form-group"><label className="label">Ukuran (Class)</label>
+                    <select className="select" value={blockContent.size || 'h2'} onChange={e => setBlockContent({ ...blockContent, size: e.target.value })}>
+                      <option value="h1">H1 (Besar)</option><option value="h2">H2 (Sedang)</option><option value="h3">H3 (Kecil)</option>
+                    </select></div>
+                  <div className="form-group"><label className="label">Warna Teks</label>
+                    <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.color || (selectedCampaign.theme === 'white' ? '#000000' : '#ffffff')} onChange={e => setBlockContent({ ...blockContent, color: e.target.value })} /></div>
+                  <div className="form-group"><label className="label">Align</label>
+                    <select className="select" value={blockContent.align || 'left'} onChange={e => setBlockContent({ ...blockContent, align: e.target.value })}>
+                      <option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option>
+                    </select></div>
+                </div>
+              )}
+
+              {blockType === 'text' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Isi Teks</label>
+                    <textarea className="input" rows={4} value={blockContent.text || ''} onChange={e => setBlockContent({ ...blockContent, text: e.target.value })} required /></div>
+                  <div className="form-group"><label className="label">Ukuran (rem)</label>
+                    <select className="select" value={blockContent.font_size || '1rem'} onChange={e => setBlockContent({ ...blockContent, font_size: e.target.value })}>
+                      <option value="1.25rem">Besar (1.25rem)</option><option value="1rem">Normal (1rem)</option><option value="0.9rem">Kecil (0.9rem)</option>
+                    </select></div>
+                  <div className="form-group"><label className="label">Warna Teks</label>
+                    <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.color || (selectedCampaign.theme === 'white' ? '#475569' : '#94a3b8')} onChange={e => setBlockContent({ ...blockContent, color: e.target.value })} /></div>
+                </div>
+              )}
+
+              {blockType === 'button' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group"><label className="label">Teks Button</label>
+                    <input className="input" value={blockContent.btn_text || ''} onChange={e => setBlockContent({ ...blockContent, btn_text: e.target.value })} required /></div>
+                  <div className="form-group"><label className="label">URL Tujuan</label>
+                    <input className="input" placeholder="https://" value={blockContent.btn_url || ''} onChange={e => setBlockContent({ ...blockContent, btn_url: e.target.value })} required /></div>
+                  <div className="form-group"><label className="label">Warna Background</label>
+                    <input type="text" className="input" placeholder="#ffffff atau gradient" value={blockContent.btn_color || ''} onChange={e => setBlockContent({ ...blockContent, btn_color: e.target.value })} /></div>
+                  <div className="form-group"><label className="label">Warna Teks</label>
+                    <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.btn_text_color || '#000000'} onChange={e => setBlockContent({ ...blockContent, btn_text_color: e.target.value })} /></div>
+                </div>
+              )}
+
+              {blockType === 'image' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">URL Gambar Asli</label>
+                    <input className="input" placeholder="https://..." value={blockContent.url || ''} onChange={e => setBlockContent({ ...blockContent, url: e.target.value })} required /></div>
+                  <div className="form-group"><label className="label">Aspect Ratio</label>
+                    <select className="select" value={blockContent.aspect_ratio || '16:9'} onChange={e => setBlockContent({ ...blockContent, aspect_ratio: e.target.value })}>
+                      <option value="16:9">16:9 (Landscape)</option><option value="1:1">1:1 (Square)</option><option value="4:5">4:5 (Portrait)</option><option value="9:16">9:16 (Story)</option>
+                    </select></div>
+                </div>
+              )}
+
+              {blockType === 'video' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">YouTube/TikTok URL / ID</label>
+                    <input className="input" placeholder="contoh: dQw4w9WgXcQ" value={blockContent.video_url || ''} onChange={e => setBlockContent({ ...blockContent, video_url: e.target.value })} required /></div>
+                </div>
+              )}
+
+              {blockType === 'product' && (
+                <div className={styles.formGrid}>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Pilih Produk</label>
+                    <select className="select" value={blockContent.product_id || ''} onChange={e => setBlockContent({ ...blockContent, product_id: e.target.value })} required>
+                      <option value="">-- Pilih --</option>
+                      {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select></div>
+                </div>
+              )}
+
+              <div className={styles.formActions}>
+                <button type="button" className="btn btn-ghost" onClick={() => setShowBlockForm(false)}>Batal</button>
+                <button type="submit" className="btn btn-navy" disabled={saving}>{saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Existing Blocks List */}
+        {!selectedCampaign.blocks || selectedCampaign.blocks.length === 0 ? (
+          <div className={styles.emptyState}>Belum ada block. Tekan "+ Tambah Block" untuk mengisi halaman ini.</div>
+        ) : (
+          <Reorder.Group axis="y" values={selectedCampaign.blocks} onReorder={handleBlockReorder} style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {selectedCampaign.blocks.map(b => {
+              const pDetails = b.type === 'product' ? products.find(p => p.id === b.content.product_id) : null
+              return (
+                <Reorder.Item key={b.id} value={b} className={styles.linkRow} initial={false} style={{ cursor: 'default' }}>
+                  <div style={{ padding: '0 12px 0 4px', cursor: 'grab', display: 'flex', alignItems: 'center', touchAction: 'none' }}><GripVertical size={16} color="#94a3b8" /></div>
+                  <div style={{ width: 32, height: 32, minWidth: 32, background: '#f1f5f9', fontSize: '0.68rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, flexShrink: 0 }}>
+                    {b.type.substring(0, 3).toUpperCase()}
+                  </div>
+                  <div className={styles.linkInfo} style={{ marginLeft: 12 }}>
+                    <span className={styles.linkTitle}>
+                      {b.type === 'product' ? (pDetails?.name || 'Produk tidak ditemukan') : (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—')}
+                    </span>
+                    <span className={styles.linkUrl}>{b.type.toUpperCase()}</span>
+                  </div>
+                  <div className={styles.linkActions}>
+                    <button className={styles.editBtn} onClick={() => openEditBlock(b)}><Pencil size={15} /></button>
+                    <button className={styles.deleteBtn} onClick={() => deleteBlock(b.id)}><Trash2 size={15} /></button>
+                  </div>
+                </Reorder.Item>
+              )
+            })}
+          </Reorder.Group>
+        )}
+
+        <div className={styles.ecommerceAddFixed}>
+          <button className="btn btn-navy" onClick={openAddBlock} style={{ padding: '10px 28px', fontWeight: 700, fontSize: '0.92rem', borderRadius: 999 }}>
+            <Plus size={16} /> Tambah Block
+          </button>
+        </div>
+
+        {/* Shared meta form */}
+        {showMetaForm && (
+          <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100 }}>
+            <div className={styles.formCard} style={{ margin: 0, width: '100%', maxWidth: 500 }}>
+              <div className={styles.formCardHeader}><h2 className={styles.formTitle}>Pengaturan Campaign</h2><button onClick={() => setShowMetaForm(false)} className={styles.closeBtn}><X size={18} /></button></div>
+              <form onSubmit={saveMeta} className={styles.form}>
+                <div className="form-group"><label className="label">Nama Campaign</label><input className="input" value={metaForm.title} onChange={e => setMetaForm({...metaForm, title: e.target.value})} /></div>
+                <div className="form-group"><label className="label">URL Slug</label><input className="input" value={metaForm.slug} onChange={e => setMetaForm({...metaForm, slug: e.target.value})} placeholder="kosongkan untuk generate otomatis dari nama" /></div>
+                <div className="form-group"><label className="label">Tema (Black/White)</label>
+                  <select className="select" value={metaForm.theme} onChange={e => setMetaForm({...metaForm, theme: e.target.value as any})}>
+                    <option value="black">Dark Mode (Hitam)</option><option value="white">Light Mode (Putih)</option>
+                  </select>
+                </div>
+                <div className="form-group"><label className="label">Status</label>
+                  <select className="select" value={metaForm.status} onChange={e => setMetaForm({...metaForm, status: e.target.value as any})}>
+                    <option value="published">Published</option><option value="draft">Draft</option>
+                  </select>
+                </div>
+                {metaError && <p className={styles.formError}>{metaError}</p>}
+                <div className={styles.formActions}><button type="submit" className="btn btn-navy" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button></div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.tabContent} style={{ maxWidth: 1000 }}>
+      {showMetaForm && (
+        <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100 }}>
+          <div className={styles.formCard} style={{ margin: 0, width: '100%', maxWidth: 500 }}>
+            <div className={styles.formCardHeader}><h2 className={styles.formTitle}>{editingMeta ? 'Edit Campaign' : 'Buat Campaign Baru'}</h2><button onClick={() => setShowMetaForm(false)} className={styles.closeBtn}><X size={18} /></button></div>
+            <form onSubmit={saveMeta} className={styles.form}>
+              <div className="form-group"><label className="label">Nama Campaign</label><input className="input" value={metaForm.title} onChange={e => setMetaForm({...metaForm, title: e.target.value})} /></div>
+              <div className="form-group"><label className="label">URL Slug</label><input className="input" value={metaForm.slug} onChange={e => setMetaForm({...metaForm, slug: e.target.value})} placeholder="kosongkan untuk generate otomatis dari nama" /></div>
+              <div className="form-group"><label className="label">Tema (Black/White)</label>
+                <select className="select" value={metaForm.theme} onChange={e => setMetaForm({...metaForm, theme: e.target.value as any})}>
+                  <option value="black">Dark Mode (Hitam)</option><option value="white">Light Mode (Putih)</option>
+                </select>
+              </div>
+              <div className="form-group"><label className="label">Status</label>
+                <select className="select" value={metaForm.status} onChange={e => setMetaForm({...metaForm, status: e.target.value as any})}>
+                  <option value="published">Published</option><option value="draft">Draft</option>
+                </select>
+              </div>
+              {metaError && <p className={styles.formError}>{metaError}</p>}
+              <div className={styles.formActions}><button type="submit" className="btn btn-navy" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button></div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.contentHeader}>
+        <div>
+          <h1 className={styles.contentTitle}>Champagne (Campaigns)</h1>
+          <p className={styles.contentDesc}>Kelola halaman sub-landing page</p>
+        </div>
+        <button className="btn btn-navy" onClick={openCreateMeta}><Plus size={16} /> Buat Campaign</button>
+      </div>
+
+      {loading ? <div className={styles.loading}>Memuat...</div> : campaigns.length === 0 ? (
+        <div className={styles.emptyState}>Belum ada campaign.</div>
+      ) : (
+        <div className={styles.linksList}>
+          {campaigns.map(c => (
+            <div key={c.id} className={styles.linkRow}>
+              <div className={styles.linkIcon}><LayoutTemplate size={18} /></div>
+              <div className={styles.linkInfo} style={{ cursor: 'pointer' }} onClick={() => setSelectedCampaign(c)}>
+                <span className={styles.linkTitle}>{c.title}</span>
+                <span className={styles.linkUrl}>
+                  {c.status === 'published' ? <span className={styles.statusActive}>Published</span> : <span className={styles.statusSoon}>Draft</span>}
+                  {' · '}marcatching.com/{c.slug}
+                  {' · '}{c.theme === 'white' ? '☀️ Light' : '🌙 Dark'}
+                </span>
+              </div>
+              <div className={styles.linkActions}>
+                <a href={`/${c.slug}`} target="_blank" rel="noreferrer" className={styles.editBtn} title="Lihat Halaman"><Eye size={15}/></a>
+                <button className={styles.editBtn} onClick={() => setSelectedCampaign(c)} title="Edit Konten"><Pencil size={15} /></button>
+                <button className={styles.deleteBtn} onClick={() => deleteCampaign(c)} title="Hapus"><Trash2 size={15} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
