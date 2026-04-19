@@ -60,8 +60,10 @@
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.05;
-  color: #ffffff;
   margin-bottom: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -103,7 +105,9 @@
   letter-spacing: -0.03em;
   line-height: 1.1;
   margin-bottom: 28px;
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .sectionTag {
@@ -151,9 +155,9 @@
   height: 100%;
   object-fit: cover;
   border-radius: 24px;
-  -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
-  mask-image: linear-gradient(to right, black 60%, transparent 100%);
-  opacity: 0.85;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 75%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 75%);
+  opacity: 0.9;
 }
 
 /* ── Data Boxes ── */
@@ -384,13 +388,15 @@
   font-weight: 800;
   margin-bottom: 20px;
   letter-spacing: -0.03em;
-  color: #ffffff;
   line-height: 1.2;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .ctaLogoTitle {
   vertical-align: middle;
-  height: 0.9em;
+  height: 1.2em;
   margin-top: -0.1em;
   display: inline-block;
 }

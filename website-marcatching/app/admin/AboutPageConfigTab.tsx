@@ -189,7 +189,7 @@ export default function AboutPageConfigTab() {
                 image={cropData.src}
                 crop={crop}
                 zoom={zoom}
-                aspect={1} /* 1:1 Aspect */
+                aspect={9 / 16} /* 9:16 Portrait Aspect */
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}

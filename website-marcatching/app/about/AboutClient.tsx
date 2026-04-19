@@ -73,7 +73,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
               variants={itemVariants}
               className={styles.philosophyImageWrapper}
             >
-               <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=1000" alt="Visionary Leader" className={styles.philosophyImage} />
+               <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1000" alt="Business Strategy System" className={styles.philosophyImage} />
             </motion.div>
             
             <motion.div
@@ -276,8 +276,8 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <h2 className={styles.ctaTitle}>
-              Upgrade Your Business Instinct with <br/>
-              <img src="/logo-type-white.png" alt="Marcatching" className={styles.ctaLogoTitle} />
+              Upgrade Your Business<br/>
+              Instinct with <img src="/logo-type-white.png" alt="Marcatching" className={styles.ctaLogoTitle} />
             </h2>
             <p className={styles.ctaDesc}>
               Bergabung bersama sekumpulan perancang ekosistem bisnis modern. Buat sistem penopang konversi kamu hari ini.
