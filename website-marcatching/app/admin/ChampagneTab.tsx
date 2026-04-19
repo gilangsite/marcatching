@@ -390,6 +390,16 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                       <option value="9:16">9:16 (Story)</option>
                     </select>
                   </div>
+                  <div className="form-group" style={{ gridColumn: '1/-1', display: 'flex', gap: 16 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.9rem', cursor: 'pointer', color: 'var(--text-primary)' }}>
+                      <input type="checkbox" checked={blockContent.has_shadow ?? true} onChange={e => setBlockContent({...blockContent, has_shadow: e.target.checked})} />
+                      Shadow (Bayangan)
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.9rem', cursor: 'pointer', color: 'var(--text-primary)' }}>
+                      <input type="checkbox" checked={blockContent.has_border ?? false} onChange={e => setBlockContent({...blockContent, has_border: e.target.checked})} />
+                      Border (Garis Tepi)
+                    </label>
+                  </div>
                 </div>
               )}
 

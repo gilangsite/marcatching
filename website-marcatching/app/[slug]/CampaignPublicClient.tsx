@@ -177,6 +177,11 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
     const isOriginal = c.aspect_ratio === 'original' || !c.aspect_ratio
     const aspect = (c.aspect_ratio && String(c.aspect_ratio) !== 'original') ? String(c.aspect_ratio) : '16:9'
     const [w, h] = aspect.split(':').map(Number)
+    
+    // Default conditions if properties missing
+    const hasShadow = c.has_shadow ?? true;
+    const hasBorder = c.has_border ?? false;
+
     return (
       <div style={{ marginBottom: '1.5rem', width: '100%' }}>
         <div style={{
@@ -184,9 +189,12 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
           overflow: 'hidden',
           borderRadius: 16,
           backgroundColor: theme === 'black' ? '#1e293b' : '#f1f5f9',
-          boxShadow: theme === 'black'
-            ? '0 8px 32px rgba(0,0,0,0.45)'
-            : '0 6px 24px rgba(0,0,0,0.07)',
+          boxShadow: hasShadow 
+            ? (theme === 'black' ? '0 8px 32px rgba(0,0,0,0.45)' : '0 6px 24px rgba(0,0,0,0.07)')
+            : 'none',
+          border: hasBorder
+            ? (theme === 'black' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)')
+            : 'none',
         }}>
           <img
             src={thumb || c.url}
