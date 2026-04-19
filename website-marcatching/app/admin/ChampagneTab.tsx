@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, FormEvent } from 'react'
+import React, { useState, useEffect, FormEvent, useRef } from 'react'
 import { Plus, Pencil, Trash2, Check, X, GripVertical, Settings, Eye, EyeOff, LayoutTemplate, Upload } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import Cropper from 'react-easy-crop'
@@ -33,7 +33,8 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
-  const [cropData, setCropData] = useState<{ src: string; filename: string; mimeType: string } | null>(null)
+  const [cropData, setCropData] = useState<{ src: string; filename: string; mimeType: string; naturalWidth?: number; naturalHeight?: number } | null>(null)
+  const imgInputRef = useRef<HTMLInputElement>(null)
 
   async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -55,10 +56,17 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
     return canvas.toDataURL('image/jpeg', 0.9)
   }
 
-  async function confirmCrop() {
-    if (!croppedAreaPixels || !cropData) return
+  async function confirmCropOrDirect() {
+    if (!cropData) return
     setUploadingImage(true)
-    const base64 = await getCroppedImg(cropData.src, croppedAreaPixels)
+    let base64: string
+    if (blockContent.aspect_ratio === 'original') {
+      // Skip crop — upload full original
+      base64 = cropData.src
+    } else {
+      if (!croppedAreaPixels) { setUploadingImage(false); return }
+      base64 = await getCroppedImg(cropData.src, croppedAreaPixels)
+    }
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
     try {
       const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) })
@@ -66,6 +74,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
       if (data.status === 'success') {
         setBlockContent((prev: any) => ({ ...prev, url: data.url }))
         setCropData(null)
+        if (imgInputRef.current) imgInputRef.current.value = ''
       } else {
         alert('Gagal upload gambar: ' + data.message)
       }
@@ -73,6 +82,11 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
       alert('Error upload gambar')
     }
     setUploadingImage(false)
+  }
+
+  function cancelCrop() {
+    setCropData(null)
+    if (imgInputRef.current) imgInputRef.current.value = ''
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -286,7 +300,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                     <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.color || (selectedCampaign.theme === 'white' ? '#000000' : '#ffffff')} onChange={e => setBlockContent({ ...blockContent, color: e.target.value })} /></div>
                   <div className="form-group"><label className="label">Align</label>
                     <select className="select" value={blockContent.align || 'left'} onChange={e => setBlockContent({ ...blockContent, align: e.target.value })}>
-                      <option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option>
+                      <option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option><option value="justify">Rata Kanan-Kiri</option>
                     </select></div>
                 </div>
               )}
@@ -310,19 +324,51 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                     <input className="input" value={blockContent.btn_text || ''} onChange={e => setBlockContent({ ...blockContent, btn_text: e.target.value })} required /></div>
                   <div className="form-group"><label className="label">URL Tujuan</label>
                     <input className="input" placeholder="https://" value={blockContent.btn_url || ''} onChange={e => setBlockContent({ ...blockContent, btn_url: e.target.value })} required /></div>
-                  <div className="form-group"><label className="label">Warna Background</label>
-                    <input type="text" className="input" placeholder="#ffffff atau gradient" value={blockContent.btn_color || ''} onChange={e => setBlockContent({ ...blockContent, btn_color: e.target.value })} /></div>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Warna Background Button</label>
+                    {/* Color palette quick picks */}
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                      {[
+                        { label: 'Navy', value: '#0d3369' },
+                        { label: 'Blue', value: '#2563eb' },
+                        { label: 'Sky', value: '#0ea5e9' },
+                        { label: 'Indigo', value: '#4f46e5' },
+                        { label: 'Emerald', value: '#059669' },
+                        { label: 'Orange', value: '#f97316' },
+                        { label: 'Rose', value: '#e11d48' },
+                        { label: 'Black', value: '#0f172a' },
+                        { label: 'White', value: '#ffffff' },
+                        { label: 'Grad Navy', value: 'linear-gradient(135deg, #0d3369, #3b82f6)' },
+                        { label: 'Grad Gold', value: 'linear-gradient(135deg, #f97316, #fbbf24)' },
+                        { label: 'Grad Purple', value: 'linear-gradient(135deg, #7c3aed, #e11d48)' },
+                      ].map(p => (
+                        <button
+                          key={p.value}
+                          type="button"
+                          title={p.label}
+                          onClick={() => setBlockContent({ ...blockContent, btn_color: p.value })}
+                          style={{
+                            width: 32, height: 32, borderRadius: 8, cursor: 'pointer',
+                            background: p.value,
+                            border: blockContent.btn_color === p.value ? '3px solid #0d3369' : '2px solid #e2e8f0',
+                            transition: 'transform 0.15s',
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <input type="text" className="input" placeholder="atau masukkan kode warna / gradient" value={blockContent.btn_color || ''} onChange={e => setBlockContent({ ...blockContent, btn_color: e.target.value })} />
+                  </div>
                   <div className="form-group"><label className="label">Warna Teks</label>
-                    <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.btn_text_color || '#000000'} onChange={e => setBlockContent({ ...blockContent, btn_text_color: e.target.value })} /></div>
+                    <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.btn_text_color || '#ffffff'} onChange={e => setBlockContent({ ...blockContent, btn_text_color: e.target.value })} /></div>
                 </div>
               )}
 
               {blockType === 'image' && (
                 <div className={styles.formGrid}>
                   <div className="form-group" style={{ gridColumn: '1/-1' }}>
-                    <label className="label">Upload Gambar Asli</label>
+                    <label className="label">Upload Gambar</label>
                     <div className={styles.uploadArea}>
-                      <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} />
+                      <input ref={imgInputRef} type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} />
                       <div className={styles.uploadLabel}>
                         <Upload size={20} />{uploadingImage ? 'Mengupload...' : 'Klik atau Drag & Drop Image'}
                       </div>
@@ -336,8 +382,12 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                   )}
                   <div className="form-group" style={{ gridColumn: '1/-1' }}>
                     <label className="label">Aspect Ratio</label>
-                    <select className="select" value={blockContent.aspect_ratio || '16:9'} onChange={e => setBlockContent({ ...blockContent, aspect_ratio: e.target.value })}>
-                      <option value="16:9">16:9 (Landscape)</option><option value="1:1">1:1 (Square)</option><option value="4:5">4:5 (Portrait)</option><option value="9:16">9:16 (Story)</option>
+                    <select className="select" value={blockContent.aspect_ratio || 'original'} onChange={e => setBlockContent({ ...blockContent, aspect_ratio: e.target.value })}>
+                      <option value="original">Original (ukuran asli)</option>
+                      <option value="16:9">16:9 (Landscape)</option>
+                      <option value="1:1">1:1 (Square)</option>
+                      <option value="4:5">4:5 (Portrait)</option>
+                      <option value="9:16">9:16 (Story)</option>
                     </select>
                   </div>
                 </div>
@@ -430,26 +480,32 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
 
         {/* --- Cropper Modal --- */}
         {cropData && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <Cropper
-                image={cropData.src}
-                crop={crop}
-                zoom={zoom}
-                aspect={
-                  blockContent.aspect_ratio === '1:1' ? 1 :
-                  blockContent.aspect_ratio === '4:5' ? 4 / 5 :
-                  blockContent.aspect_ratio === '9:16' ? 9 / 16 : 16 / 9
-                }
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={(_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels)}
-              />
-            </div>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', flexDirection: 'column' }}>
+            {blockContent.aspect_ratio === 'original' ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+                <img src={cropData.src} alt="preview" style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 12, objectFit: 'contain' }} />
+              </div>
+            ) : (
+              <div style={{ position: 'relative', flex: 1 }}>
+                <Cropper
+                  image={cropData.src}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={
+                    blockContent.aspect_ratio === '1:1' ? 1 :
+                    blockContent.aspect_ratio === '4:5' ? 4 / 5 :
+                    blockContent.aspect_ratio === '9:16' ? 9 / 16 : 16 / 9
+                  }
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels)}
+                />
+              </div>
+            )}
             <div style={{ padding: 24, background: '#1e293b', display: 'flex', justifyContent: 'center', gap: 12 }}>
-              <button className="btn btn-ghost" style={{ color: '#fff' }} onClick={() => setCropData(null)}>Batal</button>
-              <button className="btn btn-navy" onClick={confirmCrop} disabled={uploadingImage}>
-                {uploadingImage ? 'Mengupload...' : <><Check size={16} /> Crop & Upload</>}
+              <button className="btn btn-ghost" style={{ color: '#fff' }} onClick={cancelCrop}>Batal</button>
+              <button className="btn btn-navy" onClick={confirmCropOrDirect} disabled={uploadingImage}>
+                {uploadingImage ? 'Mengupload...' : <><Check size={16} /> {blockContent.aspect_ratio === 'original' ? 'Upload' : 'Crop & Upload'}</>}
               </button>
             </div>
           </div>
