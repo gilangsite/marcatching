@@ -178,10 +178,10 @@ export default function AboutPageConfigTab() {
       </form>
 
       {cropData.src && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent} style={{ width: 400 }}>
-            <div className={styles.modalHeader}>
-              <h3>Potong Foto Founder</h3>
+        <div className={styles.cropModalOverlay}>
+          <div className={styles.cropModalContent} style={{ width: 400, margin: '0 auto' }}>
+            <div className={styles.cropModalHeader}>
+              <h3 className={styles.cropModalTitle}>Potong Foto Founder</h3>
               <button onClick={() => setCropData({ src: '' })} className={styles.closeBtn}><X size={20} /></button>
             </div>
             <div style={{ position: 'relative', height: 400, background: '#333' }}>

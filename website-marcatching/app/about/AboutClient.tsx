@@ -7,6 +7,15 @@ import { Filter, BrainCircuit, ScanEye, Database, ArrowRight, Check, X, Mail } f
 import type { NavLink } from '@/lib/supabaseClient'
 import styles from './about.module.css'
 
+function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
+  if (!url) return null
+  if (url.includes('drive.google.com/uc')) {
+    const m = url.match(/id=([^&]+)/)
+    if (m?.[1]) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=${size}`
+  }
+  return url
+}
+
 export default function AboutClient({ navLinks, config }: { navLinks: NavLink[], config: any }) {
   const { scrollYProgress } = useScroll()
   const opacityFade = useTransform(scrollYProgress, [0, 0.2], [1, 0])
@@ -47,7 +56,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <span className={styles.heroTag}>What is Marcatching</span>
-            <h1 className={styles.heroTitle}>Marketing isn&apos;t selling.<br />It&apos;s system design.</h1>
+            <h1 className={styles.heroTitle}>Marketing ain&apos;t just selling.<br />It&apos;s system design.</h1>
             <p className={styles.heroSubtitle}>
               Kami membongkar cara kerja sistem di balik kebisingan pasar, menggabungkan AI, teknologi, dan psikologi untuk merancang bisnis yang layak diikuti.
             </p>
@@ -69,7 +78,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
                 Di era ekonomi atensi saat ini, keberhasilan bisnis tidak lagi ditentukan oleh siapa yang berteriak paling kencang, melainkan oleh siapa yang merancang sistem terbaik. Setiap keputusan pembelian dapat dirancang secara metodis.
               </p>
               <p className={styles.textBlock}>
-                Different is better than better. Marcatching hadir menjamin pengusaha tidak sekadar \'paham\' tentang tren, tetapi mampu merajutnya menjadi ekosistem tertutup otomatis yang elegan.
+                Different is better than better. Marcatching hadir menjamin pengusaha tidak sekadar paham tentang tren, tetapi mampu merajutnya menjadi ekosistem tertutup otomatis yang elegan.
               </p>
             </motion.div>
             <motion.div
@@ -125,6 +134,54 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
                 <h3 className={styles.missionTitle}>Data Authority</h3>
                 <p className={styles.missionDesc}>Strategi difabrikasi berbasis kalkulasi empiris, referensi riset eksklusif, dan keahlian behavioral economics.</p>
               </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Macro Data Section */}
+        <section className={styles.section}>
+          <div className={`${styles.container} ${styles.grid2}`}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={itemVariants}
+            >
+              <span className={styles.sectionTag}>The Reality</span>
+              <h2 className={styles.sectionTitle}>Confidence-Capability Paradox</h2>
+              <p className={styles.textBlock}>
+                Ekonomi digital Indonesia diproyeksikan melampaui USD 146 miliar pada 2025. Namun, analisis terhadap 65 juta UMKM mengungkapkan fakta yang keras: meskipun 93% bisnis yakin mampu menerapkan AI, nyatanya hanya 26% yang benar-benar telah mengintegrasikannya ke dalam operasional secara nyata.
+              </p>
+              <p className={styles.textBlock}>
+                Ketimpangan ini disebabkan oleh kesenjangan talenta digital. Marcatching hadir untuk memecah kebuntuan ini. Kami tidak memberi tips motivasi dangkal, melainkan menjembatani ruang antara wacana integrasi AI dengan implementasi sistem cerdas pada marketing intelligence.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={itemVariants}
+              className={styles.dataBoxWrap}
+            >
+              <div className={styles.dataBox}>
+                <div className={styles.dataItem}>
+                  <h3>USD 146M</h3>
+                  <p>Proyeksi Ekonomi Digital 2025</p>
+                </div>
+                <div className={styles.dataItem}>
+                  <h3>26%</h3>
+                  <p>Adopsi AI UMKM</p>
+                </div>
+                <div className={styles.dataItem}>
+                  <h3>212 Juta</h3>
+                  <p>Pengguna Internet Indonesia</p>
+                </div>
+                <div className={styles.dataItem}>
+                  <h3>+50%</h3>
+                  <p>Kenaikan Efisiensi AI Workflow</p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
@@ -195,7 +252,7 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             >
               {config.founder_photo_url && (
                 <div className={styles.founderPhotoWrapper}>
-                  <img src={config.founder_photo_url} alt={config.founder_name} className={styles.founderPhoto} />
+                  <img src={getDriveThumb(config.founder_photo_url) || config.founder_photo_url} alt={config.founder_name} className={styles.founderPhoto} />
                 </div>
               )}
               <div className={styles.founderContent}>
@@ -218,9 +275,9 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h2 className={styles.ctaTitle}>Upgrade Insting Anda.</h2>
+            <h2 className={styles.ctaTitle}>Upgrade Insting Bisnismu.</h2>
             <p className={styles.ctaDesc}>
-              Bergabung bersama kumpulan perancang ekosistem bisnis modern. Buat sistem penopang keuntungan Anda hari ini.
+              Bergabung bersama sekumpulan perancang ekosistem bisnis modern. Buat sistem penopang konversi kamu hari ini.
             </p>
             <div className={styles.ctaButtons}>
               <a href={config.cta_url || '/store'} className={styles.btnPrimary}>
