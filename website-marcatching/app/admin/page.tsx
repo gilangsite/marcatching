@@ -58,6 +58,15 @@ function formatWaNumber(wa: string): string {
   if (clean.startsWith('0')) return '62' + clean.slice(1)
   return '62' + clean
 }
+function cleanUrl(url: string | null | undefined): string {
+  if (!url) return ''
+  let finalUrl = url.trim()
+  finalUrl = finalUrl.replace(/^(https?:\/\/)?(www\.)?marcatching\.com\/?/i, '/')
+  if (finalUrl && !finalUrl.startsWith('http') && !finalUrl.startsWith('/') && !finalUrl.startsWith('#') && !finalUrl.startsWith('mailto:') && !finalUrl.startsWith('tel:')) {
+    finalUrl = 'https://' + finalUrl
+  }
+  return finalUrl
+}
 
 // ─── Sortable Item ─────────────────────────────────────────
 function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: Link) => void, onDelete: (id: string) => void }) {
@@ -363,7 +372,11 @@ function AdminDashboardInner() {
   function openEditStoreBlock(b: StorePageBlock) { setEditingStoreBlock(b); setStoreBlockType(b.type); setStoreBlockContent(b.content); setShowStoreBlockForm(true) }
   async function saveStoreBlock(e: FormEvent) {
     e.preventDefault(); setStoreBlockSaving(true)
-    const payload = { type: storeBlockType, content: storeBlockContent, is_active: true, order_index: editingStoreBlock ? editingStoreBlock.order_index : storeBlocks.length + 1 }
+    let finalContent = { ...storeBlockContent }
+    if (storeBlockType === 'button' && finalContent.btn_url) {
+      finalContent.btn_url = cleanUrl(finalContent.btn_url)
+    }
+    const payload = { type: storeBlockType, content: finalContent, is_active: true, order_index: editingStoreBlock ? editingStoreBlock.order_index : storeBlocks.length + 1 }
     if (editingStoreBlock) { await supabase.from('store_page_blocks').update(payload).eq('id', editingStoreBlock.id) }
     else { await supabase.from('store_page_blocks').insert(payload) }
     setStoreBlockSaving(false); setShowStoreBlockForm(false); setEditingStoreBlock(null); fetchStoreBlocks()
@@ -419,7 +432,7 @@ function AdminDashboardInner() {
     setNavSaving(true); setNavError('')
     const payload = {
       title: navForm.title.trim(),
-      url: navForm.url || null,
+      url: cleanUrl(navForm.url) || null,
       icon: navForm.icon,
       text_color: navForm.text_color || '#ffffff',
       btn_color: navForm.btn_color || null,
@@ -902,7 +915,8 @@ function AdminDashboardInner() {
     if (linkForm.type === 'video' && !linkForm.url) { setLinkError('URL Video wajib diisi.'); return }
     if (linkForm.type === 'product' && !linkForm.url) { setLinkError('Pilih produk wajib diisi.'); return }
     setLinkSaving(true); setLinkError('')
-    const payload = { title: linkForm.title, url: linkForm.status === 'coming_soon' ? null : (linkForm.url || null), icon: linkForm.icon ?? 'Globe', status: linkForm.status ?? 'active', order_index: linkForm.order_index ?? links.length + 1, type: linkForm.type ?? 'button', btn_color: linkForm.btn_color || null, text_color: linkForm.text_color || null, text_size: linkForm.text_size || null, text_align: linkForm.text_align || null, text_bold: linkForm.text_bold ?? false, text_italic: linkForm.text_italic ?? false, carousel_aspect_ratio: linkForm.carousel_aspect_ratio || null, image_data: linkForm.image_data || [] }
+    const finalUrl = linkForm.status === 'coming_soon' ? null : (cleanUrl(linkForm.url) || null)
+    const payload = { title: linkForm.title, url: finalUrl, icon: linkForm.icon ?? 'Globe', status: linkForm.status ?? 'active', order_index: linkForm.order_index ?? links.length + 1, type: linkForm.type ?? 'button', btn_color: linkForm.btn_color || null, text_color: linkForm.text_color || null, text_size: linkForm.text_size || null, text_align: linkForm.text_align || null, text_bold: linkForm.text_bold ?? false, text_italic: linkForm.text_italic ?? false, carousel_aspect_ratio: linkForm.carousel_aspect_ratio || null, image_data: linkForm.image_data || [] }
     let error
     if (editingLink) { ({ error } = await supabase.from('links').update(payload).eq('id', editingLink.id)) } else { ({ error } = await supabase.from('links').insert(payload)) }
     setLinkSaving(false)
