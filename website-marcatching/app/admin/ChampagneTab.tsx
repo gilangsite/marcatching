@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, FormEvent } from 'react'
-import { Plus, Pencil, Trash2, Check, X, GripVertical, Settings, Eye, EyeOff, LayoutTemplate } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check, X, GripVertical, Settings, Eye, EyeOff, LayoutTemplate, Upload } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import { supabase } from '@/lib/supabaseClient'
 import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
@@ -26,6 +26,30 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null)
   const [blockType, setBlockType] = useState<CampaignBlock['type']>('headline')
   const [blockContent, setBlockContent] = useState<any>({})
+  const [uploadingImage, setUploadingImage] = useState(false)
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; if (!file) return
+    setUploadingImage(true)
+    const reader = new FileReader()
+    reader.onload = async (ev) => {
+      const base64 = ev.target?.result as string
+      const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+      try {
+        const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: file.name, mimeType: file.type, base64 }) })
+        const data = await res.json()
+        if (data.status === 'success') {
+          setBlockContent((prev: any) => ({ ...prev, url: data.url }))
+        } else {
+          alert('Gagal upload gambar: ' + data.message)
+        }
+      } catch {
+        alert('Error upload gambar')
+      }
+      setUploadingImage(false)
+    }
+    reader.readAsDataURL(file)
+  }
 
   useEffect(() => {
     fetchCampaigns()
@@ -255,12 +279,27 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
 
               {blockType === 'image' && (
                 <div className={styles.formGrid}>
-                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">URL Gambar Asli</label>
-                    <input className="input" placeholder="https://..." value={blockContent.url || ''} onChange={e => setBlockContent({ ...blockContent, url: e.target.value })} required /></div>
-                  <div className="form-group"><label className="label">Aspect Ratio</label>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Upload Gambar Asli</label>
+                    <div className={styles.uploadArea}>
+                      <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className={styles.fileInput} />
+                      <div className={styles.uploadLabel}>
+                        <Upload size={20} />{uploadingImage ? 'Mengupload...' : 'Klik atau Drag & Drop Image'}
+                      </div>
+                    </div>
+                  </div>
+                  {blockContent.url && (
+                    <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                      <label className="label">Preview</label>
+                      <img src={blockContent.url} alt="preview" style={{width:100, borderRadius:8}} />
+                    </div>
+                  )}
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Aspect Ratio</label>
                     <select className="select" value={blockContent.aspect_ratio || '16:9'} onChange={e => setBlockContent({ ...blockContent, aspect_ratio: e.target.value })}>
                       <option value="16:9">16:9 (Landscape)</option><option value="1:1">1:1 (Square)</option><option value="4:5">4:5 (Portrait)</option><option value="9:16">9:16 (Story)</option>
-                    </select></div>
+                    </select>
+                  </div>
                 </div>
               )}
 

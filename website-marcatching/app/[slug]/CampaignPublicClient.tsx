@@ -3,7 +3,8 @@
 import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
-import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
+import type { Campaign, CampaignBlock, Product, NavLink } from '@/lib/supabaseClient'
+import Navbar from '@/components/Navbar'
 
 // ── Helpers ──────────────────────────────────────────────────
 function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
@@ -35,8 +36,10 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         fontSize: sizeMap[c.size || 'h2'] || '1.8rem',
         fontWeight: 800,
         marginBottom: '1rem',
-        color: c.color || (theme === 'black' ? '#ffffff' : '#000000'),
+        color: c.color || (theme === 'black' ? '#ffffff' : '#0d3369'),
         textAlign: (c.align as any) || 'left',
+        textShadow: c.color ? 'none' : '0 1px 2px rgba(0,0,0,0.06)',
+        lineHeight: 1.25,
       }}>
         {c.text}
       </div>
@@ -51,7 +54,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         fontStyle: c.italic ? 'italic' : 'normal',
         marginBottom: '1rem',
         lineHeight: 1.6,
-        color: c.color || (theme === 'black' ? '#e2e8f0' : '#334155'),
+        color: c.color || (theme === 'black' ? '#e2e8f0' : '#1a1a1a'),
         textAlign: (c.align as any) || 'left',
       }}>
         {(c.text || '').split('\\n').map((line: string, i: number, arr: string[]) => (
@@ -102,20 +105,23 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            display: 'inline-block',
-            padding: '14px 32px',
-            borderRadius: 999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            padding: '16px 24px',
+            borderRadius: 12,
             fontWeight: 700,
-            fontSize: '1rem',
+            fontSize: '1.05rem',
             textAlign: 'center',
             textDecoration: 'none',
-            background: (c.btn_color && c.btn_color !== '#ffffff') ? c.btn_color : '#0d3369',
+            background: (c.btn_color && c.btn_color !== '#ffffff') ? c.btn_color : (theme === 'black' ? '#38bdf8' : '#0d3369'),
             color: (c.btn_text_color && c.btn_text_color !== '#000000') ? c.btn_text_color : '#ffffff',
             boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s, boxShadow 0.2s'
+            transition: 'transform 0.2s, opacity 0.2s'
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.1)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.opacity = '0.9' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.opacity = '1' }}
         >
           {c.btn_text}
         </a>
@@ -188,7 +194,7 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
 }
 
 // ── Main Client Component ─────────────────────────────────────
-export default function CampaignPublicClient({ campaign, products }: { campaign: Campaign, products: Product[] }) {
+export default function CampaignPublicClient({ campaign, products, navLinks }: { campaign: Campaign, products: Product[], navLinks: NavLink[] }) {
   // Index products by id for O(1) lookup
   const productsById = useMemo(() => {
     const map: Record<string, Product> = {}
@@ -199,32 +205,35 @@ export default function CampaignPublicClient({ campaign, products }: { campaign:
   const { theme, blocks } = campaign
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: theme === 'black' ? '#000000' : '#f8fafc',
-      color: theme === 'black' ? '#ffffff' : '#0f172a',
-      fontFamily: 'var(--font-dmsans), sans-serif',
-      padding: '40px 20px',
-      transition: 'background-color 0.3s'
-    }}>
-      <div style={{ maxWidth: 640, margin: '0 auto' }}>
-        {(!blocks || blocks.length === 0) && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: theme === 'black' ? '#475569' : '#94a3b8' }}>
-            Campaign ini belum memiliki konten.
-          </div>
-        )}
+    <>
+      <Navbar navLinks={navLinks} />
+      <div style={{ 
+        minHeight: '100vh', 
+        backgroundColor: theme === 'black' ? '#0a0a0a' : '#ffffff',
+        color: theme === 'black' ? '#ffffff' : '#1a1a1a',
+        fontFamily: 'var(--font-dmsans), sans-serif',
+        padding: '60px 24px 100px',
+        transition: 'background-color 0.3s'
+      }}>
+        <div style={{ maxWidth: 540, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {(!blocks || blocks.length === 0) && (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: theme === 'black' ? '#475569' : '#94a3b8' }}>
+              Campaign ini belum memiliki konten.
+            </div>
+          )}
 
-        {/* Render Blocks in Order */}
-        {blocks?.map(b => {
-          if (b.type === 'product') {
-            const p = productsById[b.content.product_id || '']
-            if (!p) return null
-            const isComingSoon = b.content.store_status === 'coming_soon' || !!p.is_coming_soon
-            return <CampaignProductCard key={b.id} product={p} isComingSoon={isComingSoon} theme={theme} />
-          }
-          return <CampaignBlockRenderer key={b.id} block={b} theme={theme} />
-        })}
+          {/* Render Blocks in Order */}
+          {blocks?.map(b => {
+            if (b.type === 'product') {
+              const p = productsById[b.content.product_id || '']
+              if (!p) return null
+              const isComingSoon = b.content.store_status === 'coming_soon' || !!p.is_coming_soon
+              return <CampaignProductCard key={b.id} product={p} isComingSoon={isComingSoon} theme={theme} />
+            }
+            return <CampaignBlockRenderer key={b.id} block={b} theme={theme} />
+          })}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

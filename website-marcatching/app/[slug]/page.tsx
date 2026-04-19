@@ -58,5 +58,13 @@ export default async function CampaignPage({ params }: { params: Promise<{ slug:
     products = prods || []
   }
 
-  return <CampaignPublicClient campaign={campaign} products={products} />
+  // Fetch navLinks for the Navbar
+  const { data: navLinksRes } = await supabaseAdmin
+    .from('nav_links')
+    .select('*')
+    .eq('is_active', true)
+    .order('order_index')
+  const navLinks = navLinksRes || []
+
+  return <CampaignPublicClient campaign={campaign} products={products} navLinks={navLinks} />
 }
