@@ -1414,7 +1414,7 @@ function AdminDashboardInner() {
                           minHeight={storeBlockType === 'text' ? 100 : 60}
                           style={{ fontSize: storeBlockContent.font_size || (storeBlockType === 'headline' ? '1.5rem' : '1rem'), color: storeBlockContent.color || '#ffffff', textAlign: storeBlockContent.align as any || 'left' }}
                         />
-                        <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Select teks untuk bold, italic, warna, ukuran per kata</p>
+                        <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>Select teks untuk bold, italic, warna, ukuran per kata</p>
                       </div>
                       {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
                       {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size Default</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
@@ -1604,7 +1604,7 @@ function AdminDashboardInner() {
                       <span className={styles.linkUrl}>
                         {v.discount_type === 'fixed' ? `Rp ${formatRp(v.discount_value)}` : `${v.discount_value}%`}
                         {' · '}{v.is_active ? <span className={styles.statusActive}>Aktif</span> : <span className={styles.statusSoon}>Nonaktif</span>}
-                        {' · '}<span style={{ color: '#64748b' }}>{appProductNames ? `🏷 ${appProductNames}` : '🌐 Semua Product'}</span>
+                        {' · '}<span style={{ color: '#64748b' }}>{appProductNames ? `${appProductNames}` : 'Semua Product'}</span>
                       </span>
                     </div>
                     <div className={styles.linkActions}>
@@ -2659,13 +2659,15 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><Type size={12}/> Headline</div>
                             {/* Rich text editor - select text to see formatting toolbar */}
-                            <RichTextEditor
-                              value={block.text}
-                              onChange={html => updateBlock(block.id, { text: html } as any)}
-                              placeholder="Tulis headline... (pilih teks untuk format)"
-                              minHeight={60}
-                              style={{ fontSize:'1.25rem', fontWeight:700, color: block.color || '#ffffff', textAlign: (block.align as any) || 'left' }}
-                            />
+                            <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
+                              <RichTextEditor
+                                value={block.text}
+                                onChange={html => updateBlock(block.id, { text: html } as any)}
+                                placeholder="Tulis headline... (pilih teks untuk format)"
+                                minHeight={60}
+                                style={{ fontSize:'1.25rem', fontWeight:700, color: block.color || '#ffffff', textAlign: (block.align as any) || 'left' }}
+                              />
+                            </div>
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="hero">Hero (2.5rem)</option>
@@ -2691,7 +2693,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
                               </div>
                             </div>
-                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>💡 Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
+                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
                           </div>
                         )}
 
@@ -2700,13 +2702,15 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><AlignLeft size={12}/> Text</div>
                             {/* Rich text editor - select text to see formatting toolbar */}
-                            <RichTextEditor
-                              value={block.text}
-                              onChange={html => updateBlock(block.id, { text: html } as any)}
-                              placeholder="Tulis paragraf... (pilih teks untuk format)"
-                              minHeight={100}
-                              style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans' }}
-                            />
+                            <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
+                              <RichTextEditor
+                                value={block.text}
+                                onChange={html => updateBlock(block.id, { text: html } as any)}
+                                placeholder="Tulis paragraf... (pilih teks untuk format)"
+                                minHeight={100}
+                                style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans' }}
+                              />
+                            </div>
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size || '1rem'} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="2rem">Hero (2rem)</option>
@@ -2741,7 +2745,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
                               </div>
                             </div>
-                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>💡 Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
+                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
                           </div>
                         )}
 

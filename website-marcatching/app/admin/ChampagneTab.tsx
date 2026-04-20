@@ -300,7 +300,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                       minHeight={60}
                       style={{ fontSize: '1.25rem', fontWeight: 700, color: blockContent.color || (selectedCampaign.theme === 'white' ? '#000000' : '#ffffff'), textAlign: blockContent.align as any || 'left' }}
                     />
-                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Pilih/select teks untuk bold, italic, warna, ukuran per bagian</p>
+                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>Pilih/select teks untuk bold, italic, warna, ukuran per bagian</p>
                   </div>
                   <div className="form-group"><label className="label">Ukuran (Class)</label>
                     <select className="select" value={blockContent.size || 'h2'} onChange={e => setBlockContent({ ...blockContent, size: e.target.value })}>
@@ -326,7 +326,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                       minHeight={120}
                       style={{ fontSize: blockContent.font_size || '1rem', color: blockContent.color || (selectedCampaign.theme === 'white' ? '#475569' : '#94a3b8'), textAlign: blockContent.align as any || 'left' }}
                     />
-                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Pilih/select teks untuk bold, italic, warna, ukuran, highlight per kata</p>
+                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>Pilih/select teks untuk bold, italic, warna, ukuran, highlight per kata</p>
                   </div>
                   <div className="form-group"><label className="label">Ukuran Default (rem)</label>
                     <select className="select" value={blockContent.font_size || '1rem'} onChange={e => setBlockContent({ ...blockContent, font_size: e.target.value })}>
@@ -597,7 +597,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                 <span className={styles.linkUrl}>
                   {c.status === 'published' ? <span className={styles.statusActive}>Published</span> : <span className={styles.statusSoon}>Draft</span>}
                   {' · '}marcatching.com/{c.slug}
-                  {' · '}{c.theme === 'white' ? '☀️ Light' : '🌙 Dark'}
+                  {' · '}{c.theme === 'white' ? 'Light' : 'Dark'}
                 </span>
               </div>
               <div className={styles.linkActions}>
