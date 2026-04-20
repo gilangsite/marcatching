@@ -2659,15 +2659,13 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><Type size={12}/> Headline</div>
                             {/* Rich text editor - select text to see formatting toolbar */}
-                            <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
-                              <RichTextEditor
-                                value={block.text}
-                                onChange={html => updateBlock(block.id, { text: html } as any)}
-                                placeholder="Tulis headline... (pilih teks untuk format)"
-                                minHeight={60}
-                                style={{ fontSize:'1.25rem', fontWeight:700, color: block.color || '#ffffff', textAlign: (block.align as any) || 'left' }}
-                              />
-                            </div>
+                            <RichTextEditor
+                              value={block.text}
+                              onChange={html => updateBlock(block.id, { text: html } as any)}
+                              placeholder="Tulis headline... (pilih teks untuk format)"
+                              minHeight={60}
+                              style={{ fontSize:'1.25rem', fontWeight:700, color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', background: '#0a0a0a', border: '1px solid #1e293b' }}
+                            />
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="hero">Hero (2.5rem)</option>
@@ -2702,15 +2700,13 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><AlignLeft size={12}/> Text</div>
                             {/* Rich text editor - select text to see formatting toolbar */}
-                            <div style={{ background: '#0a0a0a', padding: '16px', borderRadius: '12px' }}>
-                              <RichTextEditor
-                                value={block.text}
-                                onChange={html => updateBlock(block.id, { text: html } as any)}
-                                placeholder="Tulis paragraf... (pilih teks untuk format)"
-                                minHeight={100}
-                                style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans' }}
-                              />
-                            </div>
+                            <RichTextEditor
+                              value={block.text}
+                              onChange={html => updateBlock(block.id, { text: html } as any)}
+                              placeholder="Tulis paragraf... (pilih teks untuk format)"
+                              minHeight={100}
+                              style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans', background: '#0a0a0a', border: '1px solid #1e293b' }}
+                            />
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size || '1rem'} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="2rem">Hero (2rem)</option>
