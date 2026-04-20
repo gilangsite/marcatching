@@ -2743,7 +2743,8 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <option value="1.25rem">Semi Bold (1.25rem)</option>
                                 <option value="1rem">Regular (1rem)</option>
                                 <option value="0.875rem">Kecil (0.875rem)</option>
-                      <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight || 'normal'} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
+                              </select>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight || 'normal'} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
                                 <option value="normal">Normal</option>
                                 <option value="semibold">Semi Bold</option>
                                 <option value="bold">Bold</option>
