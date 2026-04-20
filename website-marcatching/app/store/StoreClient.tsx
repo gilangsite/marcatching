@@ -42,7 +42,7 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
           background: 'none' 
         } : {}),
         textAlign: (c.align as any) || 'left',
-      }} dangerouslySetInnerHTML={{ __html: c.text }} />
+      }} dangerouslySetInnerHTML={{ __html: c.text || '' }} />
     )
   }
   if (block.type === 'text') {
@@ -53,7 +53,7 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
         fontStyle: c.italic ? 'italic' : 'normal',
         color: (c.color && c.color !== '#ffffff' && c.color !== 'rgba(255,255,255,0.85)') ? c.color : '#475569',
         textAlign: (c.align as any) || 'left',
-      }} dangerouslySetInnerHTML={{ __html: c.text }} />
+      }} dangerouslySetInnerHTML={{ __html: c.text || '' }} />
     )
   }
   if (block.type === 'image' && c.url) {
