@@ -7,6 +7,7 @@ import Cropper from 'react-easy-crop'
 import { supabase } from '@/lib/supabaseClient'
 import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
+import RichTextEditor from '@/components/RichTextEditor'
 
 export default function ChampagneTab({ products }: { products: Product[] }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
@@ -290,15 +291,24 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
 
               {blockType === 'headline' && (
                 <div className={styles.formGrid}>
-                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Teks Headline</label>
-                    <input className="input" autoFocus value={blockContent.text || ''} onChange={e => setBlockContent({ ...blockContent, text: e.target.value })} required /></div>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Teks Headline (Pilih teks untuk format bold/italic/warna)</label>
+                    <RichTextEditor
+                      value={blockContent.text || ''}
+                      onChange={html => setBlockContent({ ...blockContent, text: html })}
+                      placeholder="Tulis headline... (pilih teks untuk format)"
+                      minHeight={60}
+                      style={{ fontSize: '1.25rem', fontWeight: 700, color: blockContent.color || (selectedCampaign.theme === 'white' ? '#000000' : '#ffffff'), textAlign: blockContent.align as any || 'left' }}
+                    />
+                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Pilih/select teks untuk bold, italic, warna, ukuran per bagian</p>
+                  </div>
                   <div className="form-group"><label className="label">Ukuran (Class)</label>
                     <select className="select" value={blockContent.size || 'h2'} onChange={e => setBlockContent({ ...blockContent, size: e.target.value })}>
                       <option value="h1">H1 (Besar)</option><option value="h2">H2 (Sedang)</option><option value="h3">H3 (Kecil)</option>
                     </select></div>
-                  <div className="form-group"><label className="label">Warna Teks</label>
+                  <div className="form-group"><label className="label">Warna Teks Default</label>
                     <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.color || (selectedCampaign.theme === 'white' ? '#000000' : '#ffffff')} onChange={e => setBlockContent({ ...blockContent, color: e.target.value })} /></div>
-                  <div className="form-group"><label className="label">Align</label>
+                  <div className="form-group"><label className="label">Align (Seluruh Block)</label>
                     <select className="select" value={blockContent.align || 'left'} onChange={e => setBlockContent({ ...blockContent, align: e.target.value })}>
                       <option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option><option value="justify">Rata Kanan-Kiri</option>
                     </select></div>
@@ -307,14 +317,27 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
 
               {blockType === 'text' && (
                 <div className={styles.formGrid}>
-                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Isi Teks</label>
-                    <textarea className="input" rows={4} value={blockContent.text || ''} onChange={e => setBlockContent({ ...blockContent, text: e.target.value })} required /></div>
-                  <div className="form-group"><label className="label">Ukuran (rem)</label>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}>
+                    <label className="label">Isi Teks (Pilih teks untuk format bold/italic/warna)</label>
+                    <RichTextEditor
+                      value={blockContent.text || ''}
+                      onChange={html => setBlockContent({ ...blockContent, text: html })}
+                      placeholder="Tulis paragraf... (pilih teks untuk format)"
+                      minHeight={120}
+                      style={{ fontSize: blockContent.font_size || '1rem', color: blockContent.color || (selectedCampaign.theme === 'white' ? '#475569' : '#94a3b8'), textAlign: blockContent.align as any || 'left' }}
+                    />
+                    <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Pilih/select teks untuk bold, italic, warna, ukuran, highlight per kata</p>
+                  </div>
+                  <div className="form-group"><label className="label">Ukuran Default (rem)</label>
                     <select className="select" value={blockContent.font_size || '1rem'} onChange={e => setBlockContent({ ...blockContent, font_size: e.target.value })}>
                       <option value="1.25rem">Besar (1.25rem)</option><option value="1rem">Normal (1rem)</option><option value="0.9rem">Kecil (0.9rem)</option>
                     </select></div>
-                  <div className="form-group"><label className="label">Warna Teks</label>
+                  <div className="form-group"><label className="label">Warna Teks Default</label>
                     <input type="color" className="input" style={{ padding: 4, height: 42 }} value={blockContent.color || (selectedCampaign.theme === 'white' ? '#475569' : '#94a3b8')} onChange={e => setBlockContent({ ...blockContent, color: e.target.value })} /></div>
+                  <div className="form-group"><label className="label">Align (Seluruh Block)</label>
+                    <select className="select" value={blockContent.align || 'left'} onChange={e => setBlockContent({ ...blockContent, align: e.target.value })}>
+                      <option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option><option value="justify">Rata Kanan-Kiri</option>
+                    </select></div>
                 </div>
               )}
 

@@ -20,6 +20,7 @@ import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem,
 import styles from './admin.module.css'
 import AboutPageConfigTab from './AboutPageConfigTab'
 import ChampagneTab from './ChampagneTab'
+import RichTextEditor from '@/components/RichTextEditor'
 
 // ─── Icon map ────────────────────────────────────────────────
 const ICON_OPTIONS = [
@@ -1404,11 +1405,21 @@ function AdminDashboardInner() {
                   </div>
                   {(storeBlockType === 'headline' || storeBlockType === 'text') && (
                     <div className={styles.formGrid}>
-                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Teks</label><textarea className="input" rows={3} value={storeBlockContent.text || ''} onChange={e => setStoreBlockContent(c => ({ ...c, text: e.target.value }))} /></div>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                        <label className="label">Teks (Pilih teks untuk format bold/italic/warna/ukuran)</label>
+                        <RichTextEditor
+                          value={storeBlockContent.text || ''}
+                          onChange={html => setStoreBlockContent(c => ({ ...c, text: html }))}
+                          placeholder="Tulis teks... pilih untuk format"
+                          minHeight={storeBlockType === 'text' ? 100 : 60}
+                          style={{ fontSize: storeBlockContent.font_size || (storeBlockType === 'headline' ? '1.5rem' : '1rem'), color: storeBlockContent.color || '#ffffff', textAlign: storeBlockContent.align as any || 'left' }}
+                        />
+                        <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>💡 Select teks untuk bold, italic, warna, ukuran per kata</p>
+                      </div>
                       {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
-                      {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
-                      <div className="form-group"><label className="label">Warna Teks</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
-                      <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                      {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size Default</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
+                      <div className="form-group"><label className="label">Warna Teks Default</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option><option value="justify">Rata Kanan-Kiri</option></select></div>
                     </div>
                   )}
                   {storeBlockType === 'image' && (
@@ -2647,7 +2658,14 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                         {block.type === 'headline' && (
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><Type size={12}/> Headline</div>
-                            <textarea className="input" rows={2} placeholder="Tulis headline..." value={block.text} onChange={e => updateBlock(block.id, { text: e.target.value } as any)} style={{ fontSize:'1rem', fontWeight:700 }}/>
+                            {/* Rich text editor - select text to see formatting toolbar */}
+                            <RichTextEditor
+                              value={block.text}
+                              onChange={html => updateBlock(block.id, { text: html } as any)}
+                              placeholder="Tulis headline... (pilih teks untuk format)"
+                              minHeight={60}
+                              style={{ fontSize:'1.25rem', fontWeight:700, color: block.color || '#ffffff', textAlign: (block.align as any) || 'left' }}
+                            />
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="hero">Hero (2.5rem)</option>
@@ -2656,10 +2674,11 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <option value="h3">H3 (1.25rem)</option>
                                 <option value="sub">Sub (1rem)</option>
                               </select>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align || 'left'} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
                                 <option value="left">Kiri</option>
                                 <option value="center">Tengah</option>
                                 <option value="right">Kanan</option>
+                                <option value="justify">Rata Kanan-Kiri</option>
                               </select>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
                                 <option value="DM Sans">DM Sans</option>
@@ -2668,10 +2687,11 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <option value="monospace">Monospace</option>
                               </select>
                               <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>
-                                <input type="color" className={styles.colorPicker} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
-                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="color" className={styles.colorPicker} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
                               </div>
                             </div>
+                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>💡 Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
                           </div>
                         )}
 
@@ -2679,9 +2699,16 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                         {block.type === 'text' && (
                           <div className={styles.articleBlockInner}>
                             <div className={styles.articleBlockLabel}><AlignLeft size={12}/> Text</div>
-                            <textarea className="input" rows={4} placeholder="Tulis paragraf..." value={block.text} onChange={e => updateBlock(block.id, { text: e.target.value } as any)}/>
+                            {/* Rich text editor - select text to see formatting toolbar */}
+                            <RichTextEditor
+                              value={block.text}
+                              onChange={html => updateBlock(block.id, { text: html } as any)}
+                              placeholder="Tulis paragraf... (pilih teks untuk format)"
+                              minHeight={100}
+                              style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans' }}
+                            />
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size || '1rem'} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>
                                 <option value="2rem">Hero (2rem)</option>
                                 <option value="1.5rem">Large (1.5rem)</option>
                                 <option value="1.25rem">Semi Bold (1.25rem)</option>
@@ -2689,31 +2716,32 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <option value="0.875rem">Kecil (0.875rem)</option>
                                 <option value="0.75rem">Sangat Kecil (0.75rem)</option>
                               </select>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight || 'normal'} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
                                 <option value="normal">Normal</option>
                                 <option value="semibold">Semi Bold</option>
                                 <option value="bold">Bold</option>
                               </select>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.align || 'left'} onChange={e => updateBlock(block.id, { align: e.target.value } as any)}>
                                 <option value="left">Kiri</option>
                                 <option value="center">Tengah</option>
                                 <option value="right">Kanan</option>
-                                <option value="justify">Justify</option>
+                                <option value="justify">Rata Kanan-Kiri</option>
                               </select>
                               <label className={styles.checkboxLabel} style={{ alignSelf:'center' }}>
-                                <input type="checkbox" checked={block.italic} onChange={e => updateBlock(block.id, { italic: e.target.checked } as any)}/> Italic
+                                <input type="checkbox" checked={block.italic || false} onChange={e => updateBlock(block.id, { italic: e.target.checked } as any)}/> Italic
                               </label>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family || 'DM Sans'} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
                                 <option value="DM Sans">DM Sans</option>
                                 <option value="Montserrat">Montserrat</option>
                                 <option value="serif">Serif</option>
                                 <option value="monospace">Monospace</option>
                               </select>
                               <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>
-                                <input type="color" className={styles.colorPicker} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
-                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="color" className={styles.colorPicker} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
+                                <input type="text" className="input" style={{ width:90, padding:'8px 10px', fontSize:'0.82rem' }} value={block.color || '#ffffff'} onChange={e => updateBlock(block.id, { color: e.target.value } as any)}/>
                               </div>
                             </div>
+                            <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'6px 0 0' }}>💡 Pilih/select teks untuk bold, italic, ubah ukuran, warna, & highlight pada teks terpilih</p>
                           </div>
                         )}
 
