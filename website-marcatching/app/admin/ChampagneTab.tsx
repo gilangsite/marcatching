@@ -447,10 +447,21 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                 </div>
               )}
 
-              <div className={styles.formActions}>
-                <button type="button" className="btn btn-ghost" onClick={() => setShowBlockForm(false)}>Batal</button>
-                <button type="submit" className="btn btn-navy" disabled={saving}>{saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
-              </div>
+                {/* Spacer for fixed actions */}
+                <div className={styles.spacer} />
+
+                {/* Fixed bar for block editor */}
+                <div className={styles.fixedActions}>
+                  <button type="button" className="btn btn-ghost" onClick={() => setShowBlockForm(false)} style={{ padding: '10px 24px' }}>Batal</button>
+                  
+                  <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} onClick={openAddBlock}>
+                    <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
+                  </button>
+
+                  <button type="submit" className="btn btn-navy" disabled={saving} style={{ padding: '10px 24px', fontWeight: 700 }}>
+                    {saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
+                  </button>
+                </div>
             </form>
           </div>
         )}
@@ -484,11 +495,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
           </Reorder.Group>
         )}
 
-        <div className={styles.ecommerceAddFixed}>
-          <button className="btn btn-navy" onClick={openAddBlock} style={{ padding: '10px 28px', fontWeight: 700, fontSize: '0.92rem', borderRadius: 999 }}>
-            <Plus size={16} /> Tambah Block
-          </button>
-        </div>
+
 
         {/* Shared meta form */}
         {showMetaForm && (

@@ -147,7 +147,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         color: textColor,
         textShadow: `0 2px 12px ${shadowColor}, 0 1px 2px ${shadowColor}`,
       }}>
-        {c.text}
+        <div dangerouslySetInnerHTML={{ __html: c.text }} />
       </div>
     )
   }
@@ -165,9 +165,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         textAlign: (c.align as any) || 'left',
         fontFamily: "'DM Sans', sans-serif",
       }}>
-        {(c.text || '').split('\\n').map((line: string, i: number, arr: string[]) => (
-          <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
-        ))}
+        <div dangerouslySetInnerHTML={{ __html: c.text }} />
       </div>
     )
   }

@@ -1263,7 +1263,13 @@ function AdminDashboardInner() {
                     </>)}
                   </div>
                   {linkError && <p className={styles.formError}>{linkError}</p>}
-                  <div className={styles.formActions}><button type="button" className="btn btn-ghost" onClick={cancelLinkForm}>Batal</button><button type="submit" className="btn btn-navy" disabled={linkSaving}>{linkSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}</button></div>
+                  <div className={styles.spacer} />
+                  <div className={styles.fixedActions}>
+                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={cancelLinkForm}>Batal</button>
+                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={linkSaving}>
+                      {linkSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
@@ -1310,7 +1316,13 @@ function AdminDashboardInner() {
                   </div>
                   <div className="form-group"><label className="label">Deskripsi Produk</label><textarea className="input" rows={5} placeholder="Deskripsikan detail produk di sini..." value={pf.description} onChange={e => setPf(f => ({...f, description: e.target.value}))} /></div>
                   {productError && <p className={styles.formError}>{productError}</p>}
-                  <div className={styles.formActions}><button type="button" className="btn btn-ghost" onClick={() => setShowProductForm(false)}>Batal</button><button type="submit" className="btn btn-navy" disabled={productSaving}>{productSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Product</>}</button></div>
+                  <div className={styles.spacer} />
+                  <div className={styles.fixedActions}>
+                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => setShowProductForm(false)}>Batal</button>
+                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={productSaving}>
+                      {productSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Product</>}
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
@@ -1463,9 +1475,17 @@ function AdminDashboardInner() {
                       </div>
                     </div>
                   )}
-                  <div className={styles.formActions}>
-                    <button type="button" className="btn btn-ghost" onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
-                    <button type="submit" className="btn btn-navy" disabled={storeBlockSaving}>{storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}</button>
+                  <div className={styles.spacer} />
+                  <div className={styles.fixedActions}>
+                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
+                    
+                    <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} onClick={openAddStoreBlock}>
+                      <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
+                    </button>
+
+                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={storeBlockSaving}>
+                      {storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
+                    </button>
                   </div>
                 </form>
               </div>
@@ -1586,7 +1606,13 @@ function AdminDashboardInner() {
                   </div>
 
                   {voucherError && <p className={styles.formError}>{voucherError}</p>}
-                  <div className={styles.formActions}><button type="button" className="btn btn-ghost" onClick={() => setShowVoucherForm(false)}>Batal</button><button type="submit" className="btn btn-navy" disabled={voucherSaving}>{voucherSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}</button></div>
+                  <div className={styles.spacer} />
+                  <div className={styles.fixedActions}>
+                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => setShowVoucherForm(false)}>Batal</button>
+                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={voucherSaving}>
+                      {voucherSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
@@ -2001,9 +2027,12 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                   </div>
 
                   {navError && <p className={styles.formError}>{navError}</p>}
-                  <div className={styles.formActions}>
-                    <button type="button" className="btn btn-ghost" onClick={() => { setShowNavForm(false); setEditingNavLink(null) }}>Batal</button>
-                    <button type="submit" className="btn btn-navy" disabled={navSaving}>{navSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}</button>
+                  <div className={styles.spacer} />
+                  <div className={styles.fixedActions}>
+                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => { setShowNavForm(false); setEditingNavLink(null) }}>Batal</button>
+                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={navSaving}>
+                      {navSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan</>}
+                    </button>
                   </div>
                 </form>
               </div>
@@ -2714,9 +2743,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 <option value="1.25rem">Semi Bold (1.25rem)</option>
                                 <option value="1rem">Regular (1rem)</option>
                                 <option value="0.875rem">Kecil (0.875rem)</option>
-                                <option value="0.75rem">Sangat Kecil (0.75rem)</option>
-                              </select>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight || 'normal'} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
+                      <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.weight || 'normal'} onChange={e => updateBlock(block.id, { weight: e.target.value } as any)}>
                                 <option value="normal">Normal</option>
                                 <option value="semibold">Semi Bold</option>
                                 <option value="bold">Bold</option>
@@ -2772,6 +2799,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                   style={{ width:'100%', aspectRatio: block.aspect_ratio.replace(':','/'), objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0' }}
                                 />
                                 <button
+                                  type="button"
                                   onClick={() => updateBlock(block.id, { url: '' } as any)}
                                   style={{ position:'absolute', top:8, right:8, background:'rgba(220,38,38,0.9)', border:'none', borderRadius:6, padding:'4px 8px', color:'#fff', cursor:'pointer', fontSize:'0.78rem', display:'flex', alignItems:'center', gap:4 }}
                                 ><Trash2 size={12}/> Ganti
@@ -2829,11 +2857,29 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
 
                 {articleError && <p className={styles.formError} style={{ marginTop:8 }}>{articleError}</p>}
 
-                {/* Save actions */}
-                <div className={styles.formActions} style={{ paddingBottom: '90px' }}>
-                  <button className="btn btn-ghost" onClick={() => setShowArticleEditor(false)}>Batal</button>
-                  <button className="btn btn-navy" onClick={saveArticle} disabled={articleSaving}>
-                    {articleSaving ? 'Menyimpan...' : <><Check size={16}/> Simpan Artikel</>}
+                {/* Fixed bar for Article Editor */}
+                <div className={styles.spacer} />
+                <div className={styles.fixedActions}>
+                  <button type="button" className="btn btn-ghost" onClick={() => setShowArticleEditor(false)} style={{ padding: '10px 24px' }}>Batal</button>
+                  
+                  {/* Tambah Block with its dropdown */}
+                  <div style={{ position:'relative' }}>
+                    {showBlockMenu && (
+                      <div className={styles.addMenuDropdown} style={{ position: 'absolute', bottom: '120%', right: '50%', transform: 'translateX(50%)', width:200, marginBottom: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', borderRadius: 12 }}>
+                        <button type="button" onClick={() => { addBlock('headline'); setShowBlockMenu(false); }}><Type size={14}/> Headline / Judul</button>
+                        <button type="button" onClick={() => { addBlock('text'); setShowBlockMenu(false); }}><AlignLeft size={14}/> Text / Paragraf</button>
+                        <button type="button" onClick={() => { addBlock('image'); setShowBlockMenu(false); }}><ImageIcon size={14}/> Gambar</button>
+                        <button type="button" onClick={() => { addBlock('video'); setShowBlockMenu(false); }}><Video size={14}/> Video YouTube</button>
+                        <button type="button" onClick={() => { addBlock('product'); setShowBlockMenu(false); }}><Package size={14}/> Product Card</button>
+                      </div>
+                    )}
+                    <button type="button" className="btn btn-navy" style={{ fontSize:'0.92rem', fontWeight: 700, padding: '10px 24px', borderRadius: '100px' }} onClick={() => setShowBlockMenu(b => !b)}>
+                      <Plus size={18} style={{ marginRight: 6 }}/> Tambah Block
+                    </button>
+                  </div>
+
+                  <button type="button" onClick={saveArticle} className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={articleSaving}>
+                    {articleSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Artikel</>}
                   </button>
                 </div>
               </div>

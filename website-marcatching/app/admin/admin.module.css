@@ -341,6 +341,34 @@
   border-top: 1px solid #e2e8f0;
 }
 
+.fixedActions {
+  position: fixed;
+  bottom: 0;
+  left: 240px;
+  right: 0;
+  padding: 16px 40px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  z-index: 10000;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+
+.spacer {
+  height: 100px;
+}
+
+@media (max-width: 768px) {
+  .fixedActions {
+    left: 0;
+    padding: 12px 20px;
+  }
+}
+
 /* ── Links List ──────────────────────────────────────────── */
 .linksList {
   display: flex;

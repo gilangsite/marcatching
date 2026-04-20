@@ -325,6 +325,7 @@ export default function RichTextEditor({
           {/* Font size */}
           <div style={{ position: 'relative' }}>
             <button
+              type="button"
               onMouseDown={e => { e.preventDefault(); setShowFontSizePicker(p => !p); setShowColorPicker(false); setShowHighlightPicker(false) }}
               style={{
                 background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: 6,
@@ -345,6 +346,7 @@ export default function RichTextEditor({
                 {FONT_SIZES.map(size => (
                   <button
                     key={size}
+                    type="button"
                     onMouseDown={e => { e.preventDefault(); handleFontSize(size) }}
                     style={{
                       background: toolbarState.fontSize === size ? 'rgba(37,99,235,0.5)' : 'transparent',
@@ -362,6 +364,7 @@ export default function RichTextEditor({
           {/* Text color */}
           <div style={{ position: 'relative' }}>
             <button
+              type="button"
               onMouseDown={e => { e.preventDefault(); setShowColorPicker(p => !p); setShowFontSizePicker(false); setShowHighlightPicker(false) }}
               title="Warna Teks"
               style={{
@@ -384,6 +387,7 @@ export default function RichTextEditor({
           {/* Highlight */}
           <div style={{ position: 'relative' }}>
             <button
+              type="button"
               onMouseDown={e => { e.preventDefault(); setShowHighlightPicker(p => !p); setShowFontSizePicker(false); setShowColorPicker(false) }}
               title="Highlight / Latar Teks"
               style={{
@@ -445,6 +449,7 @@ export default function RichTextEditor({
 function ToolbarBtn({ children, active, onClick, title }: { children: React.ReactNode, active: boolean, onClick: () => void, title?: string }) {
   return (
     <button
+      type="button"
       onMouseDown={e => { e.preventDefault(); onClick() }}
       title={title}
       style={{
@@ -474,6 +479,7 @@ function ColorPicker({ colors, onSelect, allowCustom, transparentOption }: {
     }}>
       {transparentOption && (
         <button
+          type="button"
           onMouseDown={e => { e.preventDefault(); onSelect('transparent') }}
           title="Hapus Highlight"
           style={{
@@ -488,6 +494,7 @@ function ColorPicker({ colors, onSelect, allowCustom, transparentOption }: {
       {colors.filter(c => c !== 'transparent').map(c => (
         <button
           key={c}
+          type="button"
           onMouseDown={e => { e.preventDefault(); onSelect(c) }}
           title={c}
           style={{
