@@ -1399,69 +1399,56 @@
 }
 
 @media (max-width: 768px) {
-  .financeKpiGrid {
-    grid-template-columns: 1fr;
-  }
+  .financeKpiGrid { grid-template-columns: 1fr; }
+}
+
+.financeKpiCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.financeKpiCard:hover {
+  border-color: #0d3369;
+  box-shadow: 0 4px 12px rgba(13,51,105,0.08);
 }
 
 .financeTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.84rem;
 }
 
-.financeTable th,
-.financeTable td {
-  padding: 12px 16px;
+.financeTable th, .financeTable td {
+  padding: 14px 16px;
   text-align: left;
   border-bottom: 1px solid #f1f5f9;
 }
 
 .financeTable thead th {
-  background: linear-gradient(to right, #f8fafc, #f1f5f9);
+  background: #f8fafc;
   font-weight: 700;
   color: #0d3369;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   border-bottom: 2px solid #e2e8f0;
 }
 
-.financeTable tbody tr:hover {
-  background: #f8fafc;
-}
-
-.financeTable tfoot td {
-  background: #f8fafc;
-  border-top: 2px solid #e2e8f0;
-  font-weight: 800;
-  font-size: 0.85rem;
-  padding: 12px 16px;
-}
-
-/* ── Finance-specific badge states ───────────────────────────── */
-.financeBadgePaid     { background: #d1fae5; color: #065f46; }
-.financeBadgePending  { background: #fef3c7; color: #92400e; }
-.financeBadgeOverdue  { background: #fee2e2; color: #991b1b; }
-.financeBadgeDefault  { background: #f1f5f9; color: #475569; }
-
-/* ── Finance settings panel ───────────────────────────────────── */
-.financeSettingsPanel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 24px 28px;
-  margin-bottom: 28px;
-}
+/* ── Status badges (Minimalist) ───────────────────────────── */
+.financeBadgePaid     { background: #f1f5f9; color: #0d3369; border: 1px solid #e2e8f0; }
+.financeBadgePending  { background: #ffffff; color: #64748b; border: 1px solid #e2e8f0; }
+.financeBadgeOverdue  { background: #ffffff; color: #0d3369; border: 1px solid #cbd5e1; }
+.financeBadgeDefault  { background: #f8fafc; color: #94a3b8; }
 
 /* ── Cashflow analytics charts ───────────────────────────────── */
 .cashflowChartWrap {
-  background: #ffffff;
+  background: #ffffff !important;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(13,51,105,0.06);
 }
 
 .cashflowPieGrid {
@@ -1471,16 +1458,22 @@
   margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-  .cashflowPieGrid { grid-template-columns: 1fr; }
-}
-
 .cashflowResultCard {
-  border-radius: 20px;
-  padding: 28px 32px;
+  background: #0d3369 !important;
+  border-radius: 16px;
+  padding: 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
+  color: #ffffff !important;
+}
+
+.cashflowResultCard * {
+  color: #ffffff !important;
+}
+
+.cashflowResultCardSub {
+  color: rgba(255,255,255,0.7) !important;
 }

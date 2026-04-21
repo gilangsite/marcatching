@@ -5,11 +5,11 @@ import { RefreshCw, TrendingUp, TrendingDown, DollarSign, BarChart3 } from 'luci
 import styles from './admin.module.css'
 import type { FinanceRecord } from './FinanceTab'
 
-// ─── Colour palette ────────────────────────────────────────────
+// ─── Colour palette (Monochromatic Navy/Blue) ────────────────
 const PALETTE = [
-  '#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6',
-  '#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16',
-  '#06b6d4','#e11d48','#0ea5e9','#a3e635','#fb923c'
+  '#0d3369', '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd',
+  '#1e3a8a', '#2563eb', '#3b82f6', '#475569', '#64748b',
+  '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#f8fafc'
 ]
 
 // ─── Format helpers ────────────────────────────────────────────
@@ -49,12 +49,12 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
       <defs>
         <linearGradient id="cfIncomeG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#059669" stopOpacity="0.7" />
+          <stop offset="0%" stopColor="#0d3369" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.8" />
         </linearGradient>
         <linearGradient id="cfCostG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f87171" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#dc2626" stopOpacity="0.7" />
+          <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#cbd5e1" stopOpacity="0.7" />
         </linearGradient>
       </defs>
 
@@ -62,10 +62,9 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
       {yTicks.map((t, i) => (
         <g key={i}>
           <line x1={PAD.left} y1={t.y} x2={W - PAD.right} y2={t.y}
-            stroke={i === 0 ? '#cbd5e1' : '#e2e8f0'} strokeWidth={i === 0 ? 1.5 : 1}
-            strokeDasharray={i === 0 ? '0' : '4,3'} />
+            stroke={i === 0 ? '#cbd5e1' : '#f1f5f9'} strokeWidth={i === 0 ? 1 : 1} />
           <text x={PAD.left - 8} y={parseFloat(t.y) + 4} textAnchor="end"
-            fontSize="10" fill="#94a3b8">{t.label}</text>
+            fontSize="10" fill="#94a3b8" fontWeight="500">{t.label}</text>
         </g>
       ))}
 
@@ -87,17 +86,17 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
               <title>Cost: Rp {formatRpFull(d.cost)}</title>
             </rect>
             {/* X label */}
-            <text x={gx + barW + 2} y={H - 8} textAnchor="middle" fontSize="9" fill="#94a3b8">{d.month}</text>
+            <text x={gx + barW + 2} y={H - 8} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">{d.month}</text>
           </g>
         )
       })}
 
       {/* Legend */}
       <g>
-        <rect x={PAD.left} y={H - 20} width={10} height={10} rx="2" fill="#10b981" />
-        <text x={PAD.left + 14} y={H - 11} fontSize="10" fill="#64748b" fontWeight="600">Income</text>
-        <rect x={PAD.left + 68} y={H - 20} width={10} height={10} rx="2" fill="#f87171" />
-        <text x={PAD.left + 82} y={H - 11} fontSize="10" fill="#64748b" fontWeight="600">Cost</text>
+        <rect x={PAD.left} y={H - 20} width={10} height={10} rx="2" fill="#0d3369" />
+        <text x={PAD.left + 14} y={H - 11} fontSize="10" fill="#0d3369" fontWeight="700">Income</text>
+        <rect x={PAD.left + 72} y={H - 20} width={10} height={10} rx="2" fill="#cbd5e1" />
+        <text x={PAD.left + 86} y={H - 11} fontSize="10" fill="#94a3b8" fontWeight="700">Cost</text>
       </g>
     </svg>
   )
@@ -114,7 +113,7 @@ function CashflowPieChart({ data, label }: {
 
   if (total === 0) return (
     <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '0.82rem' }}>
-      Tidak ada data {label}
+      No {label} data
     </div>
   )
 
@@ -137,27 +136,27 @@ function CashflowPieChart({ data, label }: {
     <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: SIZE, height: SIZE, flexShrink: 0 }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.color} stroke="#ffffff" strokeWidth="2.5">
+          <path key={i} d={s.path} fill={s.color} stroke="#ffffff" strokeWidth="2">
             <title>{s.name}: {s.pct}% — Rp {formatRpFull(s.value)}</title>
           </path>
         ))}
         {/* Centre hole */}
         <circle cx={cx} cy={cy} r={r * 0.45} fill="#ffffff" />
         <text x={cx} y={cy - 6} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">TOTAL</text>
-        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="11" fill="#0f172a" fontWeight="800">
+        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="11" fill="#0d3369" fontWeight="900">
           {formatRp(total)}
         </text>
       </svg>
 
       {/* Legend */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
         {slices.map((s, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 3, background: s.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+            <span style={{ fontSize: '0.75rem', color: '#0f172a', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {s.name}
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }}>
               {s.pct}%
             </span>
           </div>
@@ -280,55 +279,42 @@ export default function CashflowAnalytics({
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 24 }}>
         <button className={styles.analyticsRefreshBtn} onClick={fetchData} disabled={loading}>
           <RefreshCw size={14} className={loading ? 'spin' : ''} />
-          {loading ? 'Loading...' : 'Refresh'}
+          {loading ? 'Update Data...' : 'Refresh'}
         </button>
       </div>
 
       {/* ── KPI Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 28 }}>
-        <div style={{ background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)', border: '1.5px solid #6ee7b7', borderRadius: 18, padding: '18px 22px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Income</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#064e3b' }}>Rp {formatRpFull(totalIncome)}</div>
-          <div style={{ fontSize: '0.75rem', color: '#34d399', marginTop: 4 }}>{income.length} transaksi</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 28 }}>
+        <div className={styles.financeKpiCard}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Income</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0d3369', letterSpacing: '-0.02em' }}>Rp {formatRpFull(totalIncome)}</div>
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 6, fontWeight: 500 }}>{income.length} transaksi ditransfer</div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #fff1f2, #fee2e2)', border: '1.5px solid #fca5a5', borderRadius: 18, padding: '18px 22px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Cost</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#7f1d1d' }}>Rp {formatRpFull(totalCost)}</div>
-          <div style={{ fontSize: '0.75rem', color: '#f87171', marginTop: 4 }}>{cost.length} transaksi</div>
+        <div className={styles.financeKpiCard}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Cost</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>Rp {formatRpFull(totalCost)}</div>
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 6, fontWeight: 500 }}>{cost.length} pengeluaran tercatat</div>
         </div>
-        <div style={{
-          background: net >= 0 ? 'linear-gradient(135deg, #ecfdf5, #d1fae5)' : 'linear-gradient(135deg, #fff1f2, #fee2e2)',
-          border: `1.5px solid ${net >= 0 ? '#6ee7b7' : '#fca5a5'}`, borderRadius: 18, padding: '18px 22px'
-        }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 800, color: net >= 0 ? '#059669' : '#dc2626', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-            {net >= 0 ? '● Surplus' : '● Deficit'}
+        <div className={styles.financeKpiCard} style={{ background: '#0d3369', borderColor: '#0d3369' }}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+            {net >= 0 ? 'Net Surplus' : 'Net Deficit'}
           </div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: net >= 0 ? '#064e3b' : '#7f1d1d' }}>Rp {formatRpFull(Math.abs(net))}</div>
-          <div style={{ fontSize: '0.75rem', color: net >= 0 ? '#34d399' : '#f87171', marginTop: 4 }}>
-            {net >= 0 ? 'Perusahaan dalam kondisi UNTUNG' : 'Perusahaan dalam kondisi RUGI'}
+          <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>Rp {formatRpFull(Math.abs(net))}</div>
+          <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginTop: 6, fontWeight: 500 }}>
+            Status: {net >= 0 ? 'Profit Terjaga' : 'Evaluasi Pengeluaran'}
           </div>
         </div>
       </div>
 
       {/* ── Bar chart ── */}
-      <div className={styles.analyticsMiniChart} style={{ marginBottom: 24 }}>
+      <div className={styles.cashflowChartWrap}>
         <div className={styles.analyticsMiniChartHeader}>
           <div>
-            <div className={styles.analyticsMiniChartTitle}>Income vs Cost — Per Bulan</div>
-            <div className={styles.analyticsMiniChartSub}>
-              Performa keuangan bulanan selama periode dipilih
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', fontWeight: 700, color: '#10b981' }}>
-              <TrendingUp size={14} /> Income
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', fontWeight: 700, color: '#ef4444' }}>
-              <TrendingDown size={14} /> Cost
-            </span>
+            <div className={styles.analyticsMiniChartTitle} style={{ color: '#0d3369' }}>Balance Trend</div>
+            <div className={styles.analyticsMiniChartSub}>Trend pemasukan &amp; pengeluaran bulanan</div>
           </div>
         </div>
-        <div className={styles.analyticsMiniChartSvgWrap}>
+        <div className={styles.analyticsMiniChartSvgWrap} style={{ marginTop: 24 }}>
           <CashflowBarChart data={monthlyData} />
         </div>
       </div>
@@ -336,75 +322,54 @@ export default function CashflowAnalytics({
       {/* ── Pie charts ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
         {/* Income pie */}
-        <div className={styles.analyticsTableCard}>
-          <div className={styles.analyticsTableHeader}>
-            <div>
-              <h3 className={styles.analyticsTableTitle} style={{ color: '#15803d' }}>Breakdown Income by Kategori</h3>
-              <p className={styles.analyticsTableSubtitle}>Proporsi pemasukan per kategori</p>
-            </div>
-          </div>
-          <div style={{ padding: '0 8px 8px' }}>
-            <CashflowPieChart data={incomeCats} label="income" />
-          </div>
+        <div className={styles.cashflowChartWrap}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0d3369', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Income Breakdown</h3>
+          <CashflowPieChart data={incomeCats} label="income" />
         </div>
 
         {/* Cost pie */}
-        <div className={styles.analyticsTableCard}>
-          <div className={styles.analyticsTableHeader}>
-            <div>
-              <h3 className={styles.analyticsTableTitle} style={{ color: '#be123c' }}>Breakdown Cost by Kategori</h3>
-              <p className={styles.analyticsTableSubtitle}>Proporsi pengeluaran per kategori</p>
-            </div>
-          </div>
-          <div style={{ padding: '0 8px 8px' }}>
-            <CashflowPieChart data={costCats} label="cost" />
-          </div>
+        <div className={styles.cashflowChartWrap}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0d3369', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cost Breakdown</h3>
+          <CashflowPieChart data={costCats} label="cost" />
         </div>
       </div>
 
       {/* ── Head-to-head table ── */}
       {allCategories.length > 0 && (
-        <div className={styles.analyticsTableCard} style={{ marginBottom: 24 }}>
-          <div className={styles.analyticsTableHeader}>
-            <div>
-              <h3 className={styles.analyticsTableTitle}>Head-to-Head Income vs Cost</h3>
-              <p className={styles.analyticsTableSubtitle}>Perbandingan per kategori — hijau = untung, merah = rugi</p>
-            </div>
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9' }}>
+            <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0d3369' }}>Category Performance</h3>
           </div>
           <div style={{ overflowX: 'auto' }}>
-            <table className={styles.analyticsTable}>
+            <table className={styles.financeTable}>
               <thead>
                 <tr>
-                  <th style={{ width: '28%' }}>Kategori</th>
-                  <th style={{ width: '22%', textAlign: 'right' }}>Income</th>
-                  <th style={{ width: '22%', textAlign: 'right' }}>Cost</th>
-                  <th style={{ width: '28%', textAlign: 'right' }}>Net (Surplus/Deficit)</th>
+                  <th style={{ width: '35%' }}>Kategori</th>
+                  <th style={{ width: '20%', textAlign: 'right' }}>Income</th>
+                  <th style={{ width: '20%', textAlign: 'right' }}>Cost</th>
+                  <th style={{ width: '25%', textAlign: 'right' }}>Net</th>
                 </tr>
               </thead>
               <tbody>
                 {allCategories.map((row, i) => (
                   <tr key={i}>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 3, background: PALETTE[i % PALETTE.length], flexShrink: 0 }} />
-                        <span style={{ fontWeight: 600, color: '#0f172a' }}>{row.cat}</span>
-                      </div>
-                      {/* Progress bar */}
-                      <div style={{ marginTop: 6, height: 4, borderRadius: 999, background: '#f1f5f9', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', borderRadius: 999, width: `${((row.income + row.cost) / (maxH2H * 2)) * 100}%`, background: PALETTE[i % PALETTE.length] }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 2, background: PALETTE[i % PALETTE.length], flexShrink: 0 }} />
+                        <span style={{ fontWeight: 700, color: '#0f172a' }}>{row.cat}</span>
                       </div>
                     </td>
-                    <td className={styles.analyticsClickCount} style={{ textAlign: 'right', color: '#15803d' }}>
+                    <td style={{ textAlign: 'right', color: '#0d3369', fontWeight: 800 }}>
                       {row.income > 0 ? `Rp ${formatRpFull(row.income)}` : '—'}
                     </td>
-                    <td className={styles.analyticsClickCount} style={{ textAlign: 'right', color: '#be123c' }}>
+                    <td style={{ textAlign: 'right', color: '#64748b', fontWeight: 700 }}>
                       {row.cost > 0 ? `Rp ${formatRpFull(row.cost)}` : '—'}
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <span style={{
-                        padding: '4px 10px', borderRadius: 8, fontSize: '0.82rem', fontWeight: 800,
-                        background: row.net >= 0 ? '#d1fae5' : '#fee2e2',
-                        color: row.net >= 0 ? '#065f46' : '#991b1b'
+                        padding: '4px 10px', borderRadius: 8, fontSize: '0.75rem', fontWeight: 900,
+                        background: '#f8fafc', border: '1px solid #e2e8f0',
+                        color: row.net >= 0 ? '#0d3369' : '#64748b'
                       }}>
                         {row.net >= 0 ? '+' : '−'} Rp {formatRpFull(Math.abs(row.net))}
                       </span>
@@ -412,54 +377,48 @@ export default function CashflowAnalytics({
                   </tr>
                 ))}
               </tbody>
-              {/* Summary footer */}
-              <tfoot>
-                <tr style={{ background: '#f8fafc', borderTop: '2px solid #e2e8f0' }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 800, color: '#0d3369', fontSize: '0.85rem' }}>TOTAL</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, color: '#15803d', fontSize: '0.85rem' }}>Rp {formatRpFull(totalIncome)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, color: '#be123c', fontSize: '0.85rem' }}>Rp {formatRpFull(totalCost)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <span style={{
-                      padding: '6px 14px', borderRadius: 10, fontSize: '0.88rem', fontWeight: 900,
-                      background: net >= 0 ? '#064e3b' : '#7f1d1d',
-                      color: net >= 0 ? '#d1fae5' : '#fee2e2'
-                    }}>
-                      {net >= 0 ? '▲ SURPLUS' : '▼ DEFICIT'} Rp {formatRpFull(Math.abs(net))}
-                    </span>
-                  </td>
-                </tr>
-              </tfoot>
             </table>
           </div>
         </div>
       )}
 
       {/* ── Period result card ── */}
-      <div style={{
-        background: net >= 0
-          ? 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)'
-          : 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)',
-        borderRadius: 20, padding: '28px 32px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        boxShadow: `0 8px 32px ${net >= 0 ? 'rgba(5,150,105,0.3)' : 'rgba(220,38,38,0.3)'}`,
-        gap: 20, flexWrap: 'wrap'
-      }}>
+      <div className={styles.cashflowResultCard}>
         <div>
-          <div style={{ fontSize: '0.78rem', fontWeight: 800, color: net >= 0 ? '#6ee7b7' : '#fca5a5', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
-            Laporan Periode
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 12 }}>
+            Financial Report Summary
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 900, color: '#ffffff', lineHeight: 1.1 }}>
-            {net >= 0 ? '▲ SURPLUS' : '▼ DEFICIT'} Rp {formatRpFull(Math.abs(net))}
+          <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#ffffff', lineHeight: 1, letterSpacing: '-0.04em' }}>
+            {net >= 0 ? 'SURPLUS' : 'DEFICIT'} Rp {formatRpFull(Math.abs(net))}
           </div>
-          <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.75)', marginTop: 8 }}>
+          <div className={styles.cashflowResultCardSub} style={{ fontSize: '0.88rem', marginTop: 16, fontWeight: 500 }}>
             {net >= 0
-              ? `Perusahaan untung sebesar Rp ${formatRpFull(net)} pada periode ini.`
-              : `Perusahaan rugi sebesar Rp ${formatRpFull(Math.abs(net))} pada periode ini.`}
+              ? `Marcatching mencatatkan profit sebesar Rp ${formatRpFull(net)} pada periode ini.`
+              : `Terjadi defisit anggaran sebesar Rp ${formatRpFull(Math.abs(net))} pada periode ini.`}
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 200 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 240, padding: 24, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Total Income</span>
+            <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Total Income</span>
+            <span style={{ fontSize: '0.88rem', color: '#ffffff', fontWeight: 800 }}>Rp {formatRpFull(totalIncome)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Total Cost</span>
+            <span style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>Rp {formatRpFull(totalCost)}</span>
+          </div>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>Balance</span>
+            <span style={{ fontSize: '1rem', color: '#ffffff', fontWeight: 950 }}>
+              {net >= 0 ? '+' : '−'} Rp {formatRpFull(Math.abs(net))}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+', fontWeight: 600 }}>Total Income</span>
             <span style={{ fontSize: '0.88rem', color: '#6ee7b7', fontWeight: 800 }}>Rp {formatRpFull(totalIncome)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
