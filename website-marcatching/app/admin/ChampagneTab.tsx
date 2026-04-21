@@ -447,21 +447,6 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                 </div>
               )}
 
-                {/* Spacer for fixed actions */}
-                <div className={styles.spacer} />
-
-                {/* Fixed bar for block editor */}
-                <div className={styles.fixedActions}>
-                  <button type="button" className="btn btn-ghost" onClick={() => setShowBlockForm(false)} style={{ padding: '10px 24px' }}>Batal</button>
-                  
-                  <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} onClick={openAddBlock}>
-                    <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
-                  </button>
-
-                  <button type="submit" className="btn btn-navy" disabled={saving} style={{ padding: '10px 24px', fontWeight: 700 }}>
-                    {saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
-                  </button>
-                </div>
             </form>
           </div>
         )}
@@ -495,7 +480,24 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
           </Reorder.Group>
         )}
 
+        <div className={styles.spacer} />
+        
+        {/* Fixed bar for block editor ALWAYS visible */}
+        <div className={styles.fixedActions}>
+          {showBlockForm && (
+            <button type="button" className="btn btn-ghost" onClick={() => setShowBlockForm(false)} style={{ padding: '10px 24px' }}>Batal</button>
+          )}
+          
+          <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700, borderRadius: 999 }} onClick={openAddBlock}>
+            <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
+          </button>
 
+          {showBlockForm && (
+            <button type="button" className="btn btn-navy" disabled={saving} style={{ padding: '10px 24px', fontWeight: 700 }} onClick={(e) => saveBlockForm(e as any)}>
+              {saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
+            </button>
+          )}
+        </div>
 
         {/* Shared meta form */}
         {showMetaForm && (

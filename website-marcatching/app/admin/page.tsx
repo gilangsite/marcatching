@@ -1475,18 +1475,6 @@ function AdminDashboardInner() {
                       </div>
                     </div>
                   )}
-                  <div className={styles.spacer} />
-                  <div className={styles.fixedActions}>
-                    <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
-                    
-                    <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} onClick={openAddStoreBlock}>
-                      <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
-                    </button>
-
-                    <button type="submit" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={storeBlockSaving}>
-                      {storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
-                    </button>
-                  </div>
                 </form>
               </div>
             )}
@@ -1541,11 +1529,24 @@ function AdminDashboardInner() {
           </div>
         )}
         {tab === 'ecommerce' && (
-          <div className={styles.ecommerceAddFixed}>
-            <button className="btn btn-navy" onClick={openAddStoreBlock} style={{ padding: '10px 28px', fontWeight: 700, fontSize: '0.92rem', borderRadius: 999 }}>
-              <Plus size={16} /> Tambah Block
-            </button>
-          </div>
+          <>
+            <div className={styles.spacer} />
+            <div className={styles.fixedActions}>
+              {showStoreBlockForm && (
+                <button type="button" className="btn btn-ghost" style={{ padding: '10px 24px' }} onClick={() => { setShowStoreBlockForm(false); setEditingStoreBlock(null) }}>Batal</button>
+              )}
+              
+              <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700, borderRadius: 999 }} onClick={openAddStoreBlock}>
+                <Plus size={16} style={{ marginRight: 6 }} /> Tambah Block
+              </button>
+
+              {showStoreBlockForm && (
+                <button type="button" className="btn btn-navy" style={{ padding: '10px 24px', fontWeight: 700 }} disabled={storeBlockSaving} onClick={(e) => saveStoreBlock(e as any)}>
+                  {storeBlockSaving ? 'Menyimpan...' : <><Check size={16} /> Simpan Block</>}
+                </button>
+              )}
+            </div>
+          </>
         )}
 
         {/* ── VOUCHERS TAB ─── */}
@@ -2886,25 +2887,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
               </div>
             )}
             
-            {/* Fixed ADD BLOCK bar at the bottom */}
-            {showArticleEditor && (
-              <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <div style={{ position:'relative' }}>
-                  {showBlockMenu && (
-                    <div className={styles.addMenuDropdown} style={{ bottom: '120%', top: 'auto', right: 0, left: 'auto', width:200, marginBottom: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', borderRadius: 12 }}>
-                      <button onClick={() => addBlock('headline')}><Type size={14}/> Headline / Judul</button>
-                      <button onClick={() => addBlock('text')}><AlignLeft size={14}/> Text / Paragraf</button>
-                      <button onClick={() => addBlock('image')}><ImageIcon size={14}/> Gambar</button>
-                      <button onClick={() => addBlock('video')}><Video size={14}/> Video YouTube</button>
-                      <button onClick={() => addBlock('product')}><Package size={14}/> Product Card</button>
-                    </div>
-                  )}
-                  <button className="btn btn-navy" style={{ fontSize:'0.95rem', fontWeight: 600, padding: '14px 28px', borderRadius: '100px', boxShadow: '0 8px 24px rgba(13,51,105,0.4)' }} onClick={() => setShowBlockMenu(b => !b)}>
-                    <Plus size={18} style={{ marginRight: 6 }}/> Tambah Block
-                  </button>
-                </div>
-              </div>
-            )}
+
           </div>
         )}
 
