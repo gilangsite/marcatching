@@ -13,13 +13,16 @@ import {
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper
+  Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
+  TrendingDown, DollarSign, Globe as GlobeAnalytics
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 import AboutPageConfigTab from './AboutPageConfigTab'
 import ChampagneTab from './ChampagneTab'
+import FinanceTab from './FinanceTab'
+import CashflowAnalytics from './CashflowAnalytics'
 import RichTextEditor from '@/components/RichTextEditor'
 
 // ─── Icon map ────────────────────────────────────────────────
@@ -196,8 +199,9 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance'
   const [tab, setTab] = useState<TabType>('links')
+  const [analyticsSubView, setAnalyticsSubView] = useState<'website' | 'cashflow'>('website')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
 
@@ -680,7 +684,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -1164,6 +1168,7 @@ function AdminDashboardInner() {
         </div>
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
+          <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }} style={tab === 'finance' ? {} : { background: 'rgba(16,185,129,0.12)', color: '#6ee7b7' }}><DollarSign size={18} /> Finance</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
@@ -1376,6 +1381,9 @@ function AdminDashboardInner() {
         {/* ── ABOUT PAGE CONFIG TAB ─── */}
         {tab === 'aboutpage' && <AboutPageConfigTab />}
         {tab === 'champagne' && <ChampagneTab products={products} />}
+
+        {/* ── FINANCE TAB ─── */}
+        {tab === 'finance' && <FinanceTab />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (
@@ -2102,14 +2110,43 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
               <div>
                 <h1 className={styles.contentTitle}>Analytics</h1>
                 <p className={styles.contentDesc}>
-                  <span className={styles.analyticsLiveDot} />
-                  <span className={styles.analyticsLiveLabel}>Realtime</span>
-                  {' · '}Pantau performa website dan klik button
+                  {analyticsSubView === 'website' && <><span className={styles.analyticsLiveDot} /><span className={styles.analyticsLiveLabel}>Realtime</span>{' · '}</>}
+                  {analyticsSubView === 'website' ? 'Pantau performa website dan klik button' : 'Laporan keuangan — Cashflow Analysis'}
                 </p>
               </div>
             </div>
 
-            {/* Date Range Bar */}
+            {/* ── Sub-tab toggle: Website / Cashflow ── */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+              <button
+                onClick={() => setAnalyticsSubView('website')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '10px 22px', borderRadius: 10, fontWeight: 700,
+                  fontSize: '0.88rem', border: 'none', cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: analyticsSubView === 'website' ? '#0d3369' : '#f1f5f9',
+                  color: analyticsSubView === 'website' ? '#ffffff' : '#475569',
+                  boxShadow: analyticsSubView === 'website' ? '0 4px 14px rgba(13,51,105,0.25)' : 'none',
+                }}>
+                <GlobeAnalytics size={16} /> Website
+              </button>
+              <button
+                onClick={() => setAnalyticsSubView('cashflow')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '10px 22px', borderRadius: 10, fontWeight: 700,
+                  fontSize: '0.88rem', border: 'none', cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: analyticsSubView === 'cashflow' ? '#0d3369' : '#f1f5f9',
+                  color: analyticsSubView === 'cashflow' ? '#ffffff' : '#475569',
+                  boxShadow: analyticsSubView === 'cashflow' ? '0 4px 14px rgba(13,51,105,0.25)' : 'none',
+                }}>
+                <DollarSign size={16} /> Cashflow
+              </button>
+            </div>
+
+            {/* Date Range Bar (shared for both sub-views) */}
             <div className={styles.analyticsDateBar}>
               <select
                 className={styles.analyticsPresetSelect}
@@ -2143,18 +2180,20 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
               <button className={styles.analyticsRefreshBtn} onClick={handleCustomDateApply} title="Apply date range">
                 <Calendar size={14} /> Apply
               </button>
-              <button
-                className={styles.analyticsRefreshBtn}
-                onClick={() => fetchAnalytics()}
-                disabled={analyticsLoading}
-                title="Refresh data"
-              >
-                <RefreshCw size={14} className={analyticsLoading ? 'spin' : ''} />
-                {analyticsLoading ? 'Loading...' : 'Refresh'}
-              </button>
+              {analyticsSubView === 'website' && (
+                <button
+                  className={styles.analyticsRefreshBtn}
+                  onClick={() => fetchAnalytics()}
+                  disabled={analyticsLoading}
+                  title="Refresh data"
+                >
+                  <RefreshCw size={14} className={analyticsLoading ? 'spin' : ''} />
+                  {analyticsLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              )}
             </div>
 
-            {analyticsLoading && !analyticsData ? (
+            {analyticsSubView === 'website' && (analyticsLoading && !analyticsData ? (
               <div className={styles.loading}>Memuat data analytics...</div>
             ) : analyticsData ? (
               <>
@@ -2384,6 +2423,19 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
               </>
             ) : (
               <div className={styles.emptyState}>Klik tab Analytics untuk melihat data.</div>
+            ))}
+
+            {/* ── CASHFLOW sub-view ── */}
+            {analyticsSubView === 'cashflow' && (
+              <CashflowAnalytics
+                analyticsPreset={analyticsPreset}
+                analyticsStart={analyticsStart}
+                analyticsEnd={analyticsEnd}
+                onPresetChange={handlePresetChange}
+                setAnalyticsStart={setAnalyticsStart}
+                setAnalyticsEnd={setAnalyticsEnd}
+                onDateApply={handleCustomDateApply}
+              />
             )}
           </div>
         )}

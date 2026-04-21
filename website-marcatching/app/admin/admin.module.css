@@ -1380,3 +1380,107 @@
   letter-spacing: 0.07em;
   margin-bottom: 10px;
 }
+
+/* ── Spin animation (used on RefreshCw icons) ─────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+:global(.spin) {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Finance Tab ─────────────────────────────────────────────── */
+.financeKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 768px) {
+  .financeKpiGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.financeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.financeTable th,
+.financeTable td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.financeTable thead th {
+  background: linear-gradient(to right, #f8fafc, #f1f5f9);
+  font-weight: 700;
+  color: #0d3369;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.financeTable tbody tr:hover {
+  background: #f8fafc;
+}
+
+.financeTable tfoot td {
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 12px 16px;
+}
+
+/* ── Finance-specific badge states ───────────────────────────── */
+.financeBadgePaid     { background: #d1fae5; color: #065f46; }
+.financeBadgePending  { background: #fef3c7; color: #92400e; }
+.financeBadgeOverdue  { background: #fee2e2; color: #991b1b; }
+.financeBadgeDefault  { background: #f1f5f9; color: #475569; }
+
+/* ── Finance settings panel ───────────────────────────────────── */
+.financeSettingsPanel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+
+/* ── Cashflow analytics charts ───────────────────────────────── */
+.cashflowChartWrap {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(13,51,105,0.06);
+}
+
+.cashflowPieGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .cashflowPieGrid { grid-template-columns: 1fr; }
+}
+
+.cashflowResultCard {
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}

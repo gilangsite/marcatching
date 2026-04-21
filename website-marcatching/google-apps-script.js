@@ -35,6 +35,12 @@ function formatRupiah(num) {
   return 'Rp ' + result;
 }
 
+// Google Sheets ID for Finance tracking (income + cost sheets)
+var FINANCE_SPREADSHEET_ID = '1TvV_dii3oNwrxUTv_B0Mx7H-mLYk0LeHpAWglyyBGl8';
+
+// Column layout for Finance sheets:
+// A: Date | B: Nominal | C: Category | D: Item | E: Details | F: Billing | G: Status | H: ID
+
 function doPost(e) {
   try {
     var rawData = e.postData ? e.postData.contents : '{}';
@@ -53,6 +59,14 @@ function doPost(e) {
       return handleSendCourseEmail(data);
     } else if (data.action === 'notifyAdmin') {
       return handleNotifyAdmin(data);
+    } else if (data.action === 'financeRead') {
+      return handleFinanceRead(data);
+    } else if (data.action === 'financeAdd') {
+      return handleFinanceAdd(data);
+    } else if (data.action === 'financeUpdate') {
+      return handleFinanceUpdate(data);
+    } else if (data.action === 'financeDelete') {
+      return handleFinanceDelete(data);
     } else {
       return handleImageUpload(data);
     }
@@ -516,4 +530,167 @@ function doOptions(e) {
 function doGet(e) {
   return ContentService.createTextOutput('Web App Marcatching (All-in-One) berjalan normal!')
     .setMimeType(ContentService.MimeType.TEXT);
+}
+
+// ─── FINANCE HELPERS ─────────────────────────────────────────
+
+/**
+ * Ensure headers exist and return the sheet.
+ * sheetType: 'income' | 'cost'
+ */
+function getFinanceSheet(sheetType) {
+  var ss = SpreadsheetApp.openById(FINANCE_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(sheetType);
+  if (!sheet) {
+    throw new Error('Sheet "' + sheetType + '" tidak ditemukan di spreadsheet Finance.');
+  }
+  // Add header row if the sheet is completely empty
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Date', 'Nominal', 'Category', 'Item', 'Details', 'Billing', 'Status', 'ID']);
+    sheet.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#0d3369').setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+// ─── READ all rows ───────────────────────────────────────────
+function handleFinanceRead(data) {
+  try {
+    var sheet = getFinanceSheet(data.sheetType);
+    var lastRow = sheet.getLastRow();
+    var rows = [];
+
+    if (lastRow > 1) {
+      var values = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
+      for (var i = 0; i < values.length; i++) {
+        var row = values[i];
+        if (!row[7]) continue; // skip rows without ID (blank rows)
+        // Date might be a Date object from Sheets — convert to ISO string
+        var rawDate = row[0];
+        var dateStr = '';
+        if (rawDate instanceof Date) {
+          var yr = rawDate.getFullYear();
+          var mo = String(rawDate.getMonth() + 1).padStart('0', '0');
+          var dy = String(rawDate.getDate()).padStart('0', '0');
+          dateStr = yr + '-' + mo + '-' + dy;
+        } else {
+          dateStr = String(rawDate);
+        }
+        rows.push({
+          date:     dateStr,
+          nominal:  Number(row[1]) || 0,
+          category: String(row[2] || ''),
+          item:     String(row[3] || ''),
+          details:  String(row[4] || ''),
+          billing:  String(row[5] || ''),
+          status:   String(row[6] || ''),
+          id:       String(row[7])
+        });
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', rows: rows
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', rows: [], message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── ADD a new row ───────────────────────────────────────────
+function handleFinanceAdd(data) {
+  try {
+    var sheet = getFinanceSheet(data.sheetType);
+    var id = Utilities.getUuid();
+    sheet.appendRow([
+      data.date     || '',
+      Number(data.nominal) || 0,
+      data.category || '',
+      data.item     || '',
+      data.details  || '',
+      data.billing  || '',
+      data.status   || '',
+      id
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', id: id
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── UPDATE an existing row (find by ID, update in-place) ────
+function handleFinanceUpdate(data) {
+  try {
+    var sheet = getFinanceSheet(data.sheetType);
+    var lastRow = sheet.getLastRow();
+    var found = false;
+
+    if (lastRow > 1) {
+      var ids = sheet.getRange(2, 8, lastRow - 1, 1).getValues();
+      for (var i = 0; i < ids.length; i++) {
+        if (String(ids[i][0]) === String(data.id)) {
+          var rowNum = i + 2;
+          sheet.getRange(rowNum, 1, 1, 7).setValues([[
+            data.date     || '',
+            Number(data.nominal) || 0,
+            data.category || '',
+            data.item     || '',
+            data.details  || '',
+            data.billing  || '',
+            data.status   || ''
+          ]]);
+          found = true;
+          break;
+        }
+      }
+    }
+
+    if (!found) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'error', message: 'Row dengan ID ' + data.id + ' tidak ditemukan.'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── DELETE a row by ID ─────────────────────────────────────
+function handleFinanceDelete(data) {
+  try {
+    var sheet = getFinanceSheet(data.sheetType);
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow > 1) {
+      var ids = sheet.getRange(2, 8, lastRow - 1, 1).getValues();
+      for (var i = ids.length - 1; i >= 0; i--) {
+        if (String(ids[i][0]) === String(data.id)) {
+          sheet.deleteRow(i + 2);
+          return ContentService.createTextOutput(JSON.stringify({
+            status: 'success'
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: 'Row dengan ID ' + data.id + ' tidak ditemukan.'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
