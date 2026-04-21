@@ -418,22 +418,3 @@ export default function CashflowAnalytics({
     </div>
   )
 }
-', fontWeight: 600 }}>Total Income</span>
-            <span style={{ fontSize: '0.88rem', color: '#6ee7b7', fontWeight: 800 }}>Rp {formatRpFull(totalIncome)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Total Cost</span>
-            <span style={{ fontSize: '0.88rem', color: '#fca5a5', fontWeight: 800 }}>Rp {formatRpFull(totalCost)}</span>
-          </div>
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.2)' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Net</span>
-            <span style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: 900 }}>
-              {net >= 0 ? '+' : '−'} Rp {formatRpFull(Math.abs(net))}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
