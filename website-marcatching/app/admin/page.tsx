@@ -1501,7 +1501,7 @@ function AdminDashboardInner() {
                       <div className={styles.linkInfo}>
                         {b.type === 'product'
                           ? <><span className={styles.linkTitle}>{linkedProduct?.name || '(produk dihapus)'}</span><span className={styles.linkUrl}>Rp {formatRp(linkedProduct?.price_after_discount ?? 0)} · <ShoppingCart size={11} style={{ display: 'inline', verticalAlign: 'middle' }} /> {linkedProduct?.checkout_clicks ?? 0}</span></>
-                          : <><span className={styles.linkTitle}>{b.type.toUpperCase()} — {b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—'}</span><span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Aktif' : 'Tersembunyi'}</span></span></>
+                          : <><span className={styles.linkTitle}>{b.type.toUpperCase()} — {typeof (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—') === 'string' ? (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—').replace(/<[^>]*>?/gm, '') : '—'}</span><span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Aktif' : 'Tersembunyi'}</span></span></>
                         }
                       </div>
                       <div className={styles.linkActions}>

@@ -466,7 +466,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                   </div>
                   <div className={styles.linkInfo} style={{ marginLeft: 12 }}>
                     <span className={styles.linkTitle}>
-                      {b.type === 'product' ? (pDetails?.name || 'Produk tidak ditemukan') : (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—')}
+                      {b.type === 'product' ? (pDetails?.name || 'Produk tidak ditemukan') : (typeof (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—') === 'string' ? (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—').replace(/<[^>]*>?/gm, '') : '—')}
                     </span>
                     <span className={styles.linkUrl}>{b.type.toUpperCase()}</span>
                   </div>

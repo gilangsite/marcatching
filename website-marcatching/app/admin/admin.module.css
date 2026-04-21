@@ -415,20 +415,24 @@
 }
 
 .linkTitle {
+  display: block;
   font-size: 0.9rem;
   font-weight: 600;
   color: #0f172a !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .linkUrl {
+  display: block;
   font-size: 0.78rem;
   color: #64748b !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .linkTypeBadge {
