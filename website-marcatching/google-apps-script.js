@@ -68,13 +68,18 @@ function doPost(e) {
     } else if (data.action === 'financeDelete') {
       return handleFinanceDelete(data);
     } else {
-      return handleImageUpload(data);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'error',
+        message: 'Action "' + data.action + '" not recognized.'
+      })).setMimeType(ContentService.MimeType.JSON);
     }
     
   } catch (error) {
+    console.error('Apps Script Error:', error);
     return ContentService.createTextOutput(JSON.stringify({
       status: 'error',
-      message: error.toString()
+      message: error.toString(),
+      stack: error.stack
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -540,9 +545,19 @@ function doGet(e) {
  */
 function getFinanceSheet(sheetType) {
   var ss = SpreadsheetApp.openById(FINANCE_SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(sheetType);
+  // Match sheet name case-insensitively just in case
+  var sheets = ss.getSheets();
+  var target = sheetType.toLowerCase().trim();
+  var sheet = null;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName().toLowerCase().trim() === target) {
+      sheet = sheets[i];
+      break;
+    }
+  }
+  
   if (!sheet) {
-    throw new Error('Sheet "' + sheetType + '" tidak ditemukan di spreadsheet Finance.');
+    throw new Error('Sheet "' + sheetType + '" tidak ditemukan. Pastikan ada tab bernama "income" atau "cost".');
   }
   // Add header row if the sheet is completely empty
   if (sheet.getLastRow() === 0) {
@@ -570,8 +585,8 @@ function handleFinanceRead(data) {
         var dateStr = '';
         if (rawDate instanceof Date) {
           var yr = rawDate.getFullYear();
-          var mo = String(rawDate.getMonth() + 1).padStart('0', '0');
-          var dy = String(rawDate.getDate()).padStart('0', '0');
+          var mo = String(rawDate.getMonth() + 1).padStart(2, '0');
+          var dy = String(rawDate.getDate()).padStart(2, '0');
           dateStr = yr + '-' + mo + '-' + dy;
         } else {
           dateStr = String(rawDate);
