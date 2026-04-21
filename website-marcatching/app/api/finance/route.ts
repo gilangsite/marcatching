@@ -3,13 +3,31 @@ import { NextRequest, NextResponse } from 'next/server'
 const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwYB7gmDbz_bZPD6TiABrd9g95VEvZ4_psIDcm5smDGFJU52koC5scR6Bl0whF_iMLR/exec'
 
 async function proxyToScript(body: object) {
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  })
-  return res.json()
+  try {
+    console.log('--- Proxing to GAS ---')
+    console.log('Action:', (body as any).action)
+    
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body),
+      redirect: 'follow', // Explicitly follow redirects
+      cache: 'no-store',
+    })
+
+    const text = await res.text()
+    console.log('GAS Response Status:', res.status)
+    
+    try {
+      return JSON.parse(text)
+    } catch (e) {
+      console.error('GAS Response not JSON:', text)
+      throw new Error(`Invalid JSON from GAS: ${text.substring(0, 100)}`)
+    }
+  } catch (err) {
+    console.error('Proxy Error:', err)
+    throw err
+  }
 }
 
 // GET /api/finance?type=income|cost

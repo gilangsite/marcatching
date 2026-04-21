@@ -357,23 +357,29 @@ export default function FinanceTab() {
       status: form.status,
     }
     try {
+      let res;
       if (modal.editing) {
-        await fetch('/api/finance', {
+        res = await fetch('/api/finance', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: modal.editing.id }),
         })
       } else {
-        await fetch('/api/finance', {
+        res = await fetch('/api/finance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
       }
-      setModal({ open: false, type: 'income', editing: null })
-      fetchData()
-    } catch {
-      alert('Gagal menyimpan data keuangan.')
+      const result = await res.json()
+      if (result.status === 'success') {
+        setModal({ open: false, type: 'income', editing: null })
+        fetchData()
+      } else {
+        alert('Apps Script Error: ' + (result.message || 'Unknown error'))
+      }
+    } catch (err) {
+      alert('Network Error: ' + String(err))
     }
     setSaving(false)
   }
