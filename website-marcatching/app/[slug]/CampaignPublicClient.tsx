@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 import type { Campaign, CampaignBlock, Product, NavLink } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
+import VideoEmbed from '@/components/VideoEmbed'
 
 // ── Helpers ──────────────────────────────────────────────────
 function getDriveThumb(url: string | null | undefined, size = 'w1400-h1400') {
@@ -218,23 +219,9 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
   }
 
   if (block.type === 'video' && c.video_url) {
-    const ytId = getYouTubeId(c.video_url)
-    if (!ytId) return null
     return (
       <div style={{ marginBottom: '1.5rem', width: '100%' }}>
-        <div style={{
-          position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden',
-          borderRadius: 16, backgroundColor: '#000',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-        }}>
-          <iframe
-            src={`https://www.youtube.com/embed/${ytId}?rel=0`}
-            title={c.caption || 'Video'}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-          />
-        </div>
+        <VideoEmbed url={c.video_url} title={c.caption || 'Video'} />
         {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
       </div>
     )

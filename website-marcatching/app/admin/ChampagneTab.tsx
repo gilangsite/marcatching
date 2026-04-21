@@ -283,7 +283,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                   {(['headline', 'text', 'button', 'image', 'video', 'product'] as const).map(t => (
                     <button type="button" key={t} onClick={() => { setBlockType(t); setBlockContent({}) }}
                       style={{ padding: '8px 14px', borderRadius: 8, border: blockType === t ? '2px solid #0d3369' : '1px solid #e2e8f0', background: blockType === t ? '#eff6ff' : '#fff', color: blockType === t ? '#0d3369' : '#64748b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
-                      {t.charAt(0).toUpperCase() + t.slice(1)}
+                      {t === 'video' ? 'Online Video' : t.charAt(0).toUpperCase() + t.slice(1)}
                     </button>
                   ))}
                 </div>
@@ -432,8 +432,8 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
 
               {blockType === 'video' && (
                 <div className={styles.formGrid}>
-                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">YouTube/TikTok URL / ID</label>
-                    <input className="input" placeholder="contoh: dQw4w9WgXcQ" value={blockContent.video_url || ''} onChange={e => setBlockContent({ ...blockContent, video_url: e.target.value })} required /></div>
+                  <div className="form-group" style={{ gridColumn: '1/-1' }}><label className="label">Online Video</label>
+                    <input className="input" placeholder="URL lengkap video (YouTube, TikTok, IG, Drive)" value={blockContent.video_url || ''} onChange={e => setBlockContent({ ...blockContent, video_url: e.target.value })} required /></div>
                 </div>
               )}
 

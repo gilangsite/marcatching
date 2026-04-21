@@ -1214,7 +1214,7 @@ function AdminDashboardInner() {
                         {linkForm.type === 'button' && <><MousePointerClick size={16}/> Link Button</>}
                         {linkForm.type === 'text' && <><Type size={16}/> Text Block</>}
                         {linkForm.type === 'carousel' && <><ImageIcon size={16}/> Image Carousel</>}
-                        {linkForm.type === 'video' && <><Video size={16}/> Video Embed</>}
+                        {linkForm.type === 'video' && <><Video size={16}/> Online Video</>}
                       </span></div>
                     </div>
                     {linkForm.type === 'button' && (<>
@@ -1410,7 +1410,7 @@ function AdminDashboardInner() {
                       <option value="headline">Headline</option>
                       <option value="text">Text</option>
                       <option value="image">Image</option>
-                      <option value="video">Video (YouTube)</option>
+                      <option value="video">Online Video</option>
                       <option value="button">Button</option>
                       <option value="product">Produk</option>
                     </select>
@@ -1443,7 +1443,7 @@ function AdminDashboardInner() {
                   )}
                   {storeBlockType === 'video' && (
                     <div className={styles.formGrid}>
-                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">URL YouTube</label><input className="input" placeholder="https://youtube.com/watch?v=..." value={storeBlockContent.video_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, video_url: e.target.value }))} /></div>
+                      <div className="form-group" style={{ gridColumn: '1 / -1' }}><label className="label">Online Video</label><input className="input" placeholder="URL lengkap video (YouTube, TikTok, IG, Drive)" value={storeBlockContent.video_url || ''} onChange={e => setStoreBlockContent(c => ({ ...c, video_url: e.target.value }))} /></div>
                       <div className="form-group"><label className="label">Caption</label><input className="input" placeholder="Opsional" value={storeBlockContent.caption || ''} onChange={e => setStoreBlockContent(c => ({ ...c, caption: e.target.value }))} /></div>
                     </div>
                   )}
@@ -2871,7 +2871,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                         <button type="button" onClick={() => { addBlock('headline'); setShowBlockMenu(false); }}><Type size={14}/> Headline / Judul</button>
                         <button type="button" onClick={() => { addBlock('text'); setShowBlockMenu(false); }}><AlignLeft size={14}/> Text / Paragraf</button>
                         <button type="button" onClick={() => { addBlock('image'); setShowBlockMenu(false); }}><ImageIcon size={14}/> Gambar</button>
-                        <button type="button" onClick={() => { addBlock('video'); setShowBlockMenu(false); }}><Video size={14}/> Video YouTube</button>
+                        <button type="button" onClick={() => { addBlock('video'); setShowBlockMenu(false); }}><Video size={14}/> Online Video</button>
                         <button type="button" onClick={() => { addBlock('product'); setShowBlockMenu(false); }}><Package size={14}/> Product Card</button>
                       </div>
                     )}

@@ -7,6 +7,7 @@ import type { Article, ArticleBlock, Product, NavLink } from '@/lib/supabaseClie
 import styles from './page.module.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import VideoEmbed from '@/components/VideoEmbed'
 
 // ── Helpers ──────────────────────────────────────────────────
 function getDriveThumb(url: string | null | undefined, size = 'w1200-h900') {
@@ -123,12 +124,10 @@ function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: Artic
     )
   }
   if (block.type === 'video') {
-    const ytId = getYouTubeId(block.url)
-    if (!ytId) return null
     return (
       <div className={styles.blockVideo}>
         <div className={styles.blockVideoWrap}>
-          <iframe src={`https://www.youtube.com/embed/${ytId}`} title={block.caption || 'YouTube video'} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className={styles.blockVideoFrame} />
+          <VideoEmbed url={block.url} title={block.caption || 'Video'} />
         </div>
         {block.caption && <p className={styles.blockImageCaption}>{block.caption}</p>}
       </div>

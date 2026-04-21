@@ -6,6 +6,7 @@ import { Search, X, ShoppingCart } from 'lucide-react'
 import type { NavLink, StorePageBlock, Product, ProductCategory } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import VideoEmbed from '@/components/VideoEmbed'
 import styles from './store.module.css'
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -69,13 +70,9 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
     )
   }
   if (block.type === 'video' && c.video_url) {
-    const ytId = getYouTubeId(c.video_url)
-    if (!ytId) return null
     return (
       <div className={styles.blockVideo}>
-        <div className={styles.blockVideoWrap}>
-          <iframe src={`https://www.youtube.com/embed/${ytId}`} title={c.caption || 'Video'} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className={styles.blockVideoFrame} />
-        </div>
+        <VideoEmbed url={c.video_url} title={c.caption || 'Video'} />
         {c.caption && <p className={styles.blockCaption}>{c.caption}</p>}
       </div>
     )
