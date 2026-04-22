@@ -111,11 +111,13 @@ function ReadingProgress() {
 
 function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: ArticleBlock; products: Product[]; onOpenProduct: (p: Product) => void }) {
   if (block.type === 'headline') {
-    return <div className={styles.blockHeadline} style={{ fontSize: HEADLINE_SIZES[block.size] || '1.5rem', color: block.color || '#ffffff', textAlign: block.align as any || 'left', fontFamily: block.font_family || 'DM Sans, sans-serif' }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
+    const font = block.font_family === 'serif' ? "'Times New Roman', Times, serif" : (block.font_family || "DM Sans, sans-serif")
+    return <div className={styles.blockHeadline} style={{ fontSize: HEADLINE_SIZES[block.size] || '1.5rem', color: block.color || '#ffffff', textAlign: block.align as any || 'left', fontFamily: font }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
   }
   if (block.type === 'text') {
+    const font = block.font_family === 'serif' ? "'Times New Roman', Times, serif" : (block.font_family || "'Times New Roman', Times, serif")
     return (
-      <div className={styles.blockText} style={{ fontSize: block.size || '1rem', fontWeight: WEIGHT_MAP[block.weight || 'normal'], fontStyle: block.italic ? 'italic' : 'normal', color: block.color || 'rgba(255,255,255,0.85)', textAlign: block.align as any || 'left', fontFamily: block.font_family || 'DM Sans, sans-serif' }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
+      <div className={styles.blockText} style={{ fontSize: block.size || '1rem', fontWeight: WEIGHT_MAP[block.weight || 'normal'], fontStyle: block.italic ? 'italic' : 'normal', color: block.color || 'rgba(255,255,255,0.85)', textAlign: block.align as any || 'left', fontFamily: font }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
     )
   }
   if (block.type === 'image') {
