@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwYB7gmDbz_bZPD6TiABrd9g95VEvZ4_psIDcm5smDGFJU52koC5scR6Bl0whF_iMLR/exec'
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYB7gmDbz_bZPD6TiABrd9g95VEvZ4_psIDcm5smDGFJU52koC5scR6Bl0whF_iMLR/exec';
 
 async function proxyToScript(body: object) {
   try {
