@@ -2764,7 +2764,8 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                               </select>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family || 'DM Sans'} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
                                 <option value="DM Sans">DM Sans</option>
-                                <option value="'Times New Roman', Times, serif">Serif</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="serif">Serif</option>
                                 <option value="monospace">Monospace</option>
                               </select>
                               <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>
@@ -2810,8 +2811,10 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                               <label className={styles.checkboxLabel} style={{ alignSelf:'center' }}>
                                 <input type="checkbox" checked={block.italic || false} onChange={e => updateBlock(block.id, { italic: e.target.checked } as any)}/> Italic
                               </label>
-                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family || "'Times New Roman', Times, serif"} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
-                                <option value="'Times New Roman', Times, serif">Serif</option>
+                              <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.font_family || 'DM Sans'} onChange={e => updateBlock(block.id, { font_family: e.target.value } as any)}>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="serif">Serif</option>
                                 <option value="monospace">Monospace</option>
                               </select>
                               <div className={styles.colorInputWrap} style={{ flex:'0 0 auto' }}>

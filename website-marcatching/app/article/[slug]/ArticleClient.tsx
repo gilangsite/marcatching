@@ -52,6 +52,15 @@ const WEIGHT_MAP: Record<string, number> = {
   bold: 700,
 }
 
+function getMappedFont(fontValue: string | null | undefined, defaultFont: string) {
+  if (!fontValue) return defaultFont
+  if (fontValue === 'Montserrat') return "'Montserrat', sans-serif"
+  if (fontValue === 'DM Sans') return "'DM Sans', sans-serif"
+  if (fontValue === 'serif') return "'Times New Roman', Times, serif"
+  if (fontValue === 'monospace') return "'Courier New', Courier, monospace"
+  return fontValue
+}
+
 // ── Components ───────────────────────────────────────────────
 function ProductPopup({ product, onClose }: { product: Product; onClose: () => void }) {
   const thumb = getDriveThumb(product.image_url, 'w600-h750')
@@ -111,11 +120,11 @@ function ReadingProgress() {
 
 function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: ArticleBlock; products: Product[]; onOpenProduct: (p: Product) => void }) {
   if (block.type === 'headline') {
-    const font = block.font_family === 'serif' ? "'Times New Roman', Times, serif" : (block.font_family || "DM Sans, sans-serif")
+    const font = getMappedFont(block.font_family, "'DM Sans', sans-serif")
     return <div className={styles.blockHeadline} style={{ fontSize: HEADLINE_SIZES[block.size] || '1.5rem', color: block.color || '#ffffff', textAlign: block.align as any || 'left', fontFamily: font }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
   }
   if (block.type === 'text') {
-    const font = block.font_family === 'serif' ? "'Times New Roman', Times, serif" : (block.font_family || "'Times New Roman', Times, serif")
+    const font = getMappedFont(block.font_family, "'DM Sans', sans-serif")
     return (
       <div className={styles.blockText} style={{ fontSize: block.size || '1rem', fontWeight: WEIGHT_MAP[block.weight || 'normal'], fontStyle: block.italic ? 'italic' : 'normal', color: block.color || 'rgba(255,255,255,0.85)', textAlign: block.align as any || 'left', fontFamily: font }} dangerouslySetInnerHTML={{ __html: block.text || '' }} />
     )
