@@ -47,6 +47,8 @@ function doPost(e) {
     var data = JSON.parse(rawData);
     
     // Route based on action type
+    console.log('Action received:', data.action);
+    console.log('Payload:', rawData);
     if (data.action === 'checkout') {
       return handleCheckout(data);
     } else if (data.action === 'upload') {
@@ -86,6 +88,9 @@ function doPost(e) {
 
 // ─── IMAGE UPLOAD ───────────────────────────────────────────
 function handleImageUpload(data) {
+  if (!data.base64) {
+    throw new Error('Data base64 tidak ditemukan untuk action: ' + data.action);
+  }
   var base64Data = data.base64.split(",")[1] || data.base64;
   var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType, data.filename);
   
@@ -105,6 +110,9 @@ function handleImageUpload(data) {
 
 // ─── PDF UPLOAD (Course Materials) ─────────────────────────
 function handlePdfUpload(data) {
+  if (!data.base64) {
+    throw new Error('Data base64 tidak ditemukan untuk pdf upload (action: ' + data.action + ')');
+  }
   var base64Data = data.base64.split(",")[1] || data.base64;
   var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType || 'application/pdf', data.filename);
   
