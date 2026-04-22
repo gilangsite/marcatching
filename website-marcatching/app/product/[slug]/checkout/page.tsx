@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Copy, Check, Loader2, ShoppingCart, Plus, X, Search, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Product, AddonItem } from '@/lib/supabaseClient'
@@ -107,7 +108,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       <div className={styles.checkoutPage}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b', gap: 16, padding: 24 }}>
           <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0d3369' }}>Produk tidak ditemukan</p>
-          <a href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</a>
+          <Link href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</Link>
         </div>
       </div>
     )
@@ -265,7 +266,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
         {/* Left: Poster (desktop only) */}
         <div className={styles.posterSide}>
           {posterUrl ? (
-            <img src={posterUrl} alt={product.name} className={styles.posterImage} />
+            <img src={posterUrl} alt={product.name} className={styles.posterImage} loading="lazy" />
           ) : (
             <div style={{ width: '100%', height: '100%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
               No Image

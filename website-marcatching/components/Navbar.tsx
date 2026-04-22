@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Image from 'next/image'
 import {
   Menu, X, Camera as Instagram, Music2, Globe, Video,
@@ -23,7 +24,7 @@ export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
   return (
     <nav className={styles.navbar}>
       <div className={styles.inner}>
-        <div className={styles.logo}>
+        <Link href="/" className={styles.logo}>
           <Image
             src="/logo-type-white.png"
             alt="Marcatching"
@@ -32,7 +33,7 @@ export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
             priority
             style={{ objectFit: 'contain', height: '32px', width: 'auto' }}
           />
-        </div>
+        </Link>
         
         <div className={styles.dropdownWrap}>
           <button 
@@ -49,6 +50,26 @@ export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
                 activeLinks.map(link => {
                   const IconComp = ICON_MAP[link.icon] ?? Globe
                   const hasBtn = !!link.btn_color
+                  const isInternal = link.url?.startsWith('/') && !link.url?.startsWith('//')
+
+                  if (isInternal) {
+                    return (
+                      <Link
+                        key={link.id}
+                        href={link.url || '#'}
+                        className={hasBtn ? styles.dropdownItemBtn : styles.dropdownItem}
+                        style={{
+                          color: link.text_color || '#ffffff',
+                          ...(hasBtn ? { background: link.btn_color! } : {}),
+                        }}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <IconComp size={20} />
+                        <span>{link.title}</span>
+                      </Link>
+                    )
+                  }
+
                   return (
                     <a
                       key={link.id}

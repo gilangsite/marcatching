@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, Calendar, Tag, X, ShoppingCart, ArrowLeft, ExternalLink } from 'lucide-react'
 import type { Article, ArticleBlock, Product, NavLink } from '@/lib/supabaseClient'
 import styles from './page.module.css'
@@ -63,8 +64,14 @@ function ProductPopup({ product, onClose }: { product: Product; onClose: () => v
       <div className={styles.popup} onClick={e => e.stopPropagation()}>
         <button className={styles.popupClose} onClick={onClose}><X size={18} /></button>
         {thumb && (
-          <div className={styles.popupImgWrap}>
-            <img src={thumb} alt={product.name} className={styles.popupImg} />
+          <div className={styles.popupImgWrap} style={{ position: 'relative' }}>
+            <Image
+              src={thumb}
+              alt={product.name}
+              fill
+              className={styles.popupImg}
+              style={{ objectFit: 'cover' }}
+            />
             {product.discount_percentage > 0 && (
               <span className={styles.popupDiscount}>-{product.discount_percentage}%</span>
             )}
@@ -116,8 +123,14 @@ function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: Artic
     const [w, h] = block.aspect_ratio.split(':').map(Number)
     return (
       <div className={styles.blockImage}>
-        <div style={{ aspectRatio: `${w}/${h}`, overflow: 'hidden', borderRadius: 12 }}>
-          <img src={thumb || block.url} alt={block.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <div style={{ aspectRatio: `${w}/${h}`, overflow: 'hidden', borderRadius: 12, position: 'relative' }}>
+          <Image
+            src={thumb || block.url}
+            alt={block.caption || ''}
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="(max-width: 768px) 100vw, 800px"
+          />
         </div>
         {block.caption && <p className={styles.blockImageCaption}>{block.caption}</p>}
       </div>
@@ -141,8 +154,14 @@ function ArticleBlockRenderer({ block, products, onOpenProduct }: { block: Artic
       <div className={styles.blockProduct} onClick={() => onOpenProduct(product)}>
         <div className={styles.blockProductInner}>
           {thumb && (
-            <div className={styles.blockProductThumb}>
-              <img src={thumb} alt={product.name} className={styles.blockProductImg} />
+            <div className={styles.blockProductThumb} style={{ position: 'relative' }}>
+              <Image
+                src={thumb}
+                alt={product.name}
+                fill
+                className={styles.blockProductImg}
+                style={{ objectFit: 'cover' }}
+              />
               {product.discount_percentage > 0 && <span className={styles.blockProductBadge}>-{product.discount_percentage}%</span>}
             </div>
           )}
@@ -191,7 +210,14 @@ export default function ArticleClient({ article, products, navbarLinks }: { arti
             {author && (
               <div className={styles.authorRow}>
                 {author.photo_url ? (
-                  <img src={getDriveThumb(author.photo_url, 'w80-h80') || ''} alt={author.name} className={styles.authorAvatar} />
+                  <div className={styles.authorAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
+                    <Image
+                      src={getDriveThumb(author.photo_url, 'w80-h80') || ''}
+                      alt={author.name}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
                 ) : (
                   <div className={styles.authorAvatarPlaceholder}>{author.name[0]}</div>
                 )}
@@ -216,7 +242,14 @@ export default function ArticleClient({ article, products, navbarLinks }: { arti
           {author && (
             <div className={styles.authorFooter}>
               {author.photo_url ? (
-                <img src={getDriveThumb(author.photo_url, 'w160-h160') || ''} alt={author.name} className={styles.authorFooterAvatar} />
+                <div className={styles.authorFooterAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
+                  <Image
+                    src={getDriveThumb(author.photo_url, 'w160-h160') || ''}
+                    alt={author.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
               ) : (
                 <div className={styles.authorAvatarLgPlaceholder}>{author.name[0]}</div>
               )}

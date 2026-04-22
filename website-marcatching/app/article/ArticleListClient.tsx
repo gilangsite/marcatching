@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, Clock, Eye, X, SlidersHorizontal } from 'lucide-react'
 import type { Article, ArticleCategory, NavLink } from '@/lib/supabaseClient'
 import styles from './page.module.css'
@@ -129,7 +130,18 @@ export default function ArticleListClient({
                   return (
                     <Link key={article.id} href={`/article/${article.slug}`} className={styles.card}>
                       <div className={styles.cardThumb}>
-                        {thumb ? <img src={thumb} alt={article.title} className={styles.cardThumbImg} /> : <div className={styles.cardThumbPlaceholder}><span>M</span></div>}
+                        {thumb
+                          ? (
+                            <Image
+                              src={thumb}
+                              alt={article.title}
+                              fill
+                              className={styles.cardThumbImg}
+                              sizes="(max-width: 640px) 100vw, 400px"
+                            />
+                          )
+                          : <div className={styles.cardThumbPlaceholder}><span>M</span></div>
+                        }
                         {cat && <span className={styles.cardCatBadge}>{cat.name}</span>}
                       </div>
                       <div className={styles.cardBody}>
@@ -138,7 +150,18 @@ export default function ArticleListClient({
                         <div className={styles.cardMeta}>
                           {author && (
                             <div className={styles.cardAuthor}>
-                              {author.photo_url ? <img src={getDriveThumb(author.photo_url, 'w80-h80') || ''} alt={author.name} className={styles.cardAuthorAvatar} /> : <div className={styles.cardAuthorAvatarPlaceholder}>{author.name[0]}</div>}
+                              {author.photo_url ? (
+                                <div className={styles.cardAuthorAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
+                                  <Image
+                                    src={getDriveThumb(author.photo_url, 'w80-h80') || ''}
+                                    alt={author.name}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                  />
+                                </div>
+                              ) : (
+                                <div className={styles.cardAuthorAvatarPlaceholder}>{author.name[0]}</div>
+                              )}
                               <span className={styles.cardAuthorName}>{author.name}</span>
                             </div>
                           )}

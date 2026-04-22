@@ -2,6 +2,7 @@
 
 import { useState, useRef, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, X, ShoppingCart } from 'lucide-react'
 import type { NavLink, StorePageBlock, Product, ProductCategory } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
@@ -62,8 +63,15 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
     const [w, h] = (c.aspect_ratio || '16:9').split(':').map(Number)
     return (
       <div className={styles.blockImage}>
-        <div style={{ aspectRatio: `${w}/${h}`, overflow: 'hidden', borderRadius: 12 }}>
-          <img src={thumb || c.url} alt={c.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ aspectRatio: `${w}/${h}`, overflow: 'hidden', borderRadius: 12, position: 'relative' }}>
+          <Image
+            src={thumb || c.url}
+            alt={c.caption || ''}
+            fill
+            className={styles.blockImageActual}
+            style={{ objectFit: 'cover' }}
+            sizes="(max-width: 700px) 100vw, 700px"
+          />
         </div>
         {c.caption && <p className={styles.blockCaption}>{c.caption}</p>}
       </div>
@@ -110,7 +118,15 @@ function ProductCard({ product, categories, isComingSoon }: { product: Product; 
     >
       <div className={styles.cardThumb}>
         {thumb
-          ? <img src={thumb} alt={product.name} className={styles.cardThumbImg} />
+          ? (
+            <Image
+              src={thumb}
+              alt={product.name}
+              fill
+              className={styles.cardThumbImg}
+              sizes="(max-width: 640px) 50vw, 300px"
+            />
+          )
           : <div className={styles.cardThumbPlaceholder}><span>M</span></div>
         }
         {product.discount_percentage > 0 && (

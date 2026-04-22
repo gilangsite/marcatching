@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ShoppingCart } from 'lucide-react'
 import type { Campaign, CampaignBlock, Product, NavLink } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
@@ -196,22 +197,34 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
     return (
       <ImageWrapper {...wrapperProps}>
         <div style={{
-          ...(isOriginal ? { width: '100%' } : { aspectRatio: `${w}/${h}` }),
+          ...(isOriginal ? { width: '100%', aspectRatio: 'auto' } : { aspectRatio: `${w}/${h}` }),
           overflow: 'hidden',
           borderRadius: 16,
           backgroundColor: theme === 'black' ? '#1e293b' : '#f1f5f9',
+          position: 'relative',
           boxShadow: hasShadow 
             ? (theme === 'black' ? '0 8px 32px rgba(0,0,0,0.45)' : '0 6px 24px rgba(0,0,0,0.07)')
             : 'none',
           border: hasBorder
             ? (theme === 'black' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)')
             : 'none',
+          ...(isOriginal ? { height: 'auto', minHeight: 100 } : {})
         }}>
-          <img
-            src={thumb || c.url}
-            alt={c.caption || ''}
-            style={{ width: '100%', height: isOriginal ? 'auto' : '100%', objectFit: isOriginal ? 'contain' : 'cover', display: 'block' }}
-          />
+          {isOriginal ? (
+            <img
+              src={thumb || c.url}
+              alt={c.caption || ''}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          ) : (
+            <Image
+              src={thumb || c.url}
+              alt={c.caption || ''}
+              fill
+              style={{ objectFit: 'cover' }}
+              sizes="520px"
+            />
+          )}
         </div>
         {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
       </ImageWrapper>
@@ -299,7 +312,15 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
     >
       <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: theme === 'black' ? '#1f2937' : '#f8fafc' }}>
         {thumb
-          ? <img src={thumb} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? (
+            <Image
+              src={thumb}
+              alt={product.name}
+              fill
+              style={{ objectFit: 'cover' }}
+              sizes="520px"
+            />
+          )
           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', fontWeight: 800, color: theme === 'black' ? '#374151' : '#d1d5db' }}>M</div>
         }
         {product.discount_percentage > 0 && (

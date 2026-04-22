@@ -92,7 +92,13 @@ export default async function HomePage() {
                             <Link href={`/product/${product.slug}`} className={styles.productCard}>
                               <div className={styles.productPoster}>
                                 {posterUrl ? (
-                                  <img src={posterUrl} alt={product.name} className={styles.productPosterImg} />
+                                  <Image
+                                    src={posterUrl}
+                                    alt={product.name}
+                                    fill
+                                    className={styles.productPosterImg}
+                                    sizes="(max-width: 640px) 100vw, 300px"
+                                  />
                                 ) : (
                                   <div className={styles.productPosterPlaceholder}>No Image</div>
                                 )}

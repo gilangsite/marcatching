@@ -1,6 +1,8 @@
 'use client'
 
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Link from 'next/link'
+import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Filter, BrainCircuit, ScanEye, Database, ArrowRight, Check, X, Mail } from 'lucide-react'
@@ -73,7 +75,12 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
               variants={itemVariants}
               className={styles.philosophyImageWrapper}
             >
-               <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1000" alt="Business Strategy System" className={styles.philosophyImage} />
+               <Image
+                 src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1000"
+                 alt="Business Strategy System"
+                 fill
+                 className={styles.philosophyImage}
+               />
             </motion.div>
             
             <motion.div
@@ -251,8 +258,13 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
               variants={itemVariants}
             >
               {config.founder_photo_url && (
-                <div className={styles.founderPhotoWrapper}>
-                  <img src={getDriveThumb(config.founder_photo_url) || config.founder_photo_url} alt={config.founder_name} className={styles.founderPhoto} />
+                <div className={styles.founderPhotoWrapper} style={{ position: 'relative' }}>
+                  <Image
+                    src={getDriveThumb(config.founder_photo_url) || config.founder_photo_url}
+                    alt={config.founder_name}
+                    fill
+                    className={styles.founderPhoto}
+                  />
                 </div>
               )}
               <div className={styles.founderContent}>
@@ -277,15 +289,15 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
           >
             <h2 className={styles.ctaTitle}>
               Upgrade Your Business<br/>
-              Instinct with <img src="/logo-type-white.png" alt="Marcatching" className={styles.ctaLogoTitle} />
+              Instinct with <Image src="/logo-type-white.png" alt="Marcatching" width={220} height={40} className={styles.ctaLogoTitle} />
             </h2>
             <p className={styles.ctaDesc}>
               Bergabung bersama sekumpulan perancang ekosistem bisnis modern. Buat sistem penopang konversi kamu hari ini.
             </p>
             <div className={styles.ctaButtons}>
-              <a href={config.cta_url || '/store'} className={styles.btnPrimary}>
+              <Link href={config.cta_url || '/store'} className={styles.btnPrimary}>
                 {config.cta_text || 'Marcatching Store'} <ArrowRight size={18} />
-              </a>
+              </Link>
               <a href={`mailto:${config.contact_email || 'gilang@marcatching.com'}`} className={styles.btnSecondary}>
                 <Mail size={18} /> Hubungi Kami
               </a>
