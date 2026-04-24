@@ -43,11 +43,12 @@ export default function SecurityTab() {
   }
 
   async function handleLogoutAll() {
-    if (!window.confirm('Yakin ingin logout dari semua perangkat? Anda akan diminta untuk login kembali.')) return
+    if (!window.confirm('Hard Exit: Yakin ingin keluar dari SEMUA perangkat dan browser? Semua sesi akan dihapus.')) return
     try {
       const res = await fetch('/api/admin/logout-all', { method: 'POST' })
       if (res.ok) {
-        window.location.href = '/admin/login'
+        // /login works for inside.marcatching.com subdomain
+        window.location.href = '/login'
       }
     } catch (err) {
       console.error('Failed to logout:', err)
@@ -125,7 +126,7 @@ export default function SecurityTab() {
         {msg && <div style={{ color: '#10b981', background: '#ecfdf5', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{msg}</div>}
 
         {step === 1 ? (
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' }}>
             <button
               onClick={requestOtp}
               disabled={loading}
@@ -135,6 +136,20 @@ export default function SecurityTab() {
               <Lock size={16} />
               {loading ? 'Memproses...' : 'Kirim Kode OTP'}
             </button>
+
+            <div style={{ width: '100%', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>
+                Keluar paksa dari semua perangkat dan browser yang sedang aktif:
+              </p>
+              <button
+                onClick={handleLogoutAll}
+                className="btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ef4444', color: 'white', border: 'none', fontSize: '14px' }}
+              >
+                <LogOut size={15} />
+                Hard Exit
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
