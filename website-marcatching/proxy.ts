@@ -35,8 +35,13 @@ export function proxy(req: NextRequest) {
 
   // 3. Protect /admin routes (not /admin/login) – applies after rewrite
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const authCookie = req.cookies.get('marcatching_admin')
-    if (!authCookie || authCookie.value !== 'authenticated') {
+    const authCookieV1 = req.cookies.get('marcatching_admin')
+    const authCookieV2 = req.cookies.get('marcatching_admin_v2')
+    
+    const hasV1 = authCookieV1 && authCookieV1.value === 'authenticated'
+    const hasV2 = authCookieV2 && authCookieV2.value === 'authenticated'
+    
+    if (!hasV1 && !hasV2) {
       return NextResponse.redirect(new URL('/admin/login', req.url))
     }
   }
