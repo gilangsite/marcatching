@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Lock } from 'lucide-react'
+import { Lock, Eye, EyeOff } from 'lucide-react'
 import styles from './admin.module.css'
 
 export default function SecurityTab() {
@@ -16,6 +16,12 @@ export default function SecurityTab() {
   const [oldPassword, setOldPassword] = useState('')
   const [newEmail, setNewEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  // Show password states
+  const [showOldPassword, setShowOldPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   async function requestOtp() {
     setLoading(true)
@@ -41,6 +47,13 @@ export default function SecurityTab() {
     setLoading(true)
     setError('')
     setMsg('')
+    
+    if (newPassword !== confirmPassword) {
+      setError('Konfirmasi password baru tidak cocok.')
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await fetch('/api/admin/change-credentials', {
         method: 'POST',
@@ -119,16 +132,23 @@ export default function SecurityTab() {
                 required
               />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ position: 'relative' }}>
               <label className="label">Password Lama</label>
               <input
-                type="password"
+                type={showOldPassword ? "text" : "password"}
                 className="input"
                 placeholder="Password Lama"
                 value={oldPassword}
                 onChange={e => setOldPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowOldPassword(!showOldPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+              >
+                {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }}></div>
@@ -144,17 +164,47 @@ export default function SecurityTab() {
                 required
               />
             </div>
-            <div className="form-group">
-              <label className="label">Password Login Baru</label>
+            <div className="form-group" style={{ position: 'relative' }}>
+              <label className="label">Password Baru</label>
               <input
-                type="password"
+                type={showNewPassword ? "text" : "password"}
                 className="input"
                 placeholder="Password Baru"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 required
+                minLength={8}
               />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+              >
+                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            
+            <div className="form-group" style={{ position: 'relative' }}>
+              <label className="label">Konfirmasi Password Baru</label>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                className="input"
+                placeholder="Ketik ulang password baru"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+                minLength={8}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            
+            {error && <p className={styles.formError} style={{ marginTop: '16px' }}>{error}</p>}
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
               <button
