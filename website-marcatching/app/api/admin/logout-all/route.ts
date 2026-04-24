@@ -6,26 +6,33 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function POST(req: NextRequest) {
-  // 1. Verify Authentication
+  // 1. Verify Authentication — accept session cookie OR legacy cookies
   const sessionCookie = req.cookies.get('marcatching_admin_session')?.value
-  
-  if (!sessionCookie) {
+  const authCookieV2 = req.cookies.get('marcatching_admin_v2')?.value
+  const authCookieV1 = req.cookies.get('marcatching_admin')?.value
+  const isLegacyAuth = authCookieV2 === 'authenticated' || authCookieV1 === 'authenticated'
+
+  if (!sessionCookie && !isLegacyAuth) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    // Check if the current session exists
-    const { data } = await supabase.from('admin_sessions').select('id').eq('session_token', sessionCookie).single()
-    if (!data) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+    // Delete ALL sessions unconditionally — no filtering
+    const { error, count } = await supabase
+      .from('admin_sessions')
+      .delete()
+      .gte('created_at', '1970-01-01') // match all rows
+
+    if (error) {
+      console.error('[logout-all] Delete error:', error)
+      return NextResponse.json({ success: false, message: 'Gagal menghapus sesi: ' + error.message }, { status: 500 })
     }
 
-    // Delete all sessions to force everyone (including current user) out
-    await supabase.from('admin_sessions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    console.log(`[logout-all] Deleted ${count} sessions`)
 
-    const res = NextResponse.json({ success: true, message: 'Berhasil logout dari semua device' })
-    res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
-    res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
+    const res = NextResponse.json({ success: true, message: `Hard Exit berhasil. ${count ?? 'Semua'} sesi dihapus.` })
+    res.cookies.set('marcatching_admin_session', '', { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 0, path: '/' })
+    res.cookies.set('marcatching_admin_v2', '', { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 0, path: '/' })
     res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
     return res
 

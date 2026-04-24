@@ -3,23 +3,38 @@ import { NextRequest, NextResponse } from 'next/server'
 // Edge Runtime compatible — NO Supabase client, use REST API directly
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+// Anon key also works for reads since we created table without RLS
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 async function isValidSession(sessionToken: string): Promise<boolean> {
   try {
+    // Use service key if available, else fall back to anon key
+    const authKey = supabaseServiceKey || supabaseAnonKey
     const res = await fetch(
       `${supabaseUrl}/rest/v1/admin_sessions?session_token=eq.${encodeURIComponent(sessionToken)}&select=id&limit=1`,
       {
+        method: 'GET',
         headers: {
-          'apikey': supabaseServiceKey,
-          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'apikey': authKey,
+          'Authorization': `Bearer ${authKey}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
         },
+        // Disable edge/fetch caching entirely - critical for session revocation
+        cache: 'no-store',
       }
     )
-    if (!res.ok) return false
+    if (!res.ok) {
+      console.error('[proxy] Supabase session check failed:', res.status, await res.text())
+      // If Supabase is down, allow through to avoid locking admin out
+      return true
+    }
     const data = await res.json()
     return Array.isArray(data) && data.length > 0
-  } catch {
-    return false
+  } catch (err) {
+    console.error('[proxy] isValidSession error:', err)
+    // On network error, allow through to avoid locking admin out
+    return true
   }
 }
 
@@ -67,6 +82,7 @@ export async function proxy(req: NextRequest) {
       return res
     }
 
+    // Always verify against DB with no-store cache — critical for Hard Exit to work
     const valid = await isValidSession(sessionToken)
     if (!valid) {
       const res = NextResponse.redirect(new URL(loginPath, req.url))
