@@ -245,7 +245,6 @@ export default function SecurityTab() {
           </form>
         )}
       </div>
-    </div>
 
       <div className={styles.card} style={{ maxWidth: '600px', marginTop: '24px' }}>
         <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
