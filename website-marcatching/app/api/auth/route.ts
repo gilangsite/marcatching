@@ -53,15 +53,40 @@ export async function POST(req: NextRequest) {
 
       // Valid OTP
       const res = NextResponse.json({ success: true })
-      res.cookies.set('marcatching_admin_v2', 'authenticated', {
+      // Clear old cookie just in case
+      res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
+      res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
+
+      // Device logging
+      const userAgent = req.headers.get('user-agent') || ''
+      let browser = 'Unknown Browser'
+      let os = 'Unknown OS'
+      if (userAgent.includes('Firefox')) browser = 'Firefox'
+      else if (userAgent.includes('Edg/')) browser = 'Edge'
+      else if (userAgent.includes('Chrome')) browser = 'Chrome'
+      else if (userAgent.includes('Safari')) browser = 'Safari'
+      
+      if (userAgent.includes('Mac OS')) os = 'Mac OS'
+      else if (userAgent.includes('Windows')) os = 'Windows'
+      else if (userAgent.includes('Linux')) os = 'Linux'
+      else if (userAgent.includes('Android')) os = 'Android'
+      else if (userAgent.includes('iPhone') || userAgent.includes('iPad')) os = 'iOS'
+      
+      const sessionToken = crypto.randomUUID()
+      await supabase.from('admin_sessions').insert({
+        session_token: sessionToken,
+        device_name: os,
+        browser: browser,
+        ip_address: req.headers.get('x-forwarded-for') || 'Unknown IP'
+      })
+
+      res.cookies.set('marcatching_admin_session', sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 30, // 30 days persistence
+        maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
       })
-      // Clear old cookie just in case
-      res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
       
       // Clear OTP from DB
       await supabase.from('admin_credentials').update({ otp: null, otp_expires_at: null }).eq('id', credentials.id)
@@ -113,8 +138,21 @@ export async function POST(req: NextRequest) {
   )
 }
 
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
   const res = NextResponse.json({ success: true })
+  const sessionToken = req.cookies.get('marcatching_admin_session')?.value
+  
+  if (sessionToken) {
+    await supabase.from('admin_sessions').delete().eq('session_token', sessionToken)
+  }
+
+  res.cookies.set('marcatching_admin_session', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 0,
+    path: '/',
+  })
   res.cookies.set('marcatching_admin_v2', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

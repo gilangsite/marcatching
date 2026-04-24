@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Lock, Eye, EyeOff } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Lock, Eye, EyeOff, MonitorSmartphone, Clock } from 'lucide-react'
 import styles from './admin.module.css'
 
 export default function SecurityTab() {
@@ -22,6 +22,25 @@ export default function SecurityTab() {
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // Device Sessions state
+  const [sessions, setSessions] = useState<any[]>([])
+
+  useEffect(() => {
+    fetchSessions()
+  }, [])
+
+  async function fetchSessions() {
+    try {
+      const res = await fetch('/api/admin/sessions')
+      const data = await res.json()
+      if (data.success) {
+        setSessions(data.sessions)
+      }
+    } catch (err) {
+      console.error('Failed to fetch sessions:', err)
+    }
+  }
 
   async function requestOtp() {
     setLoading(true)
@@ -224,6 +243,43 @@ export default function SecurityTab() {
               </button>
             </div>
           </form>
+        )}
+      </div>
+    </div>
+
+      <div className={styles.card} style={{ maxWidth: '600px', marginTop: '24px' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <MonitorSmartphone size={20} className="text-navy" />
+          Device yang Sedang Login
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+          Berikut adalah daftar perangkat yang berhasil melewati gate login dan memiliki akses ke dashboard saat ini. Jika Anda mengubah password di atas, semua perangkat di bawah ini akan otomatis dikeluarkan (logout).
+        </p>
+
+        {sessions.length === 0 ? (
+          <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>Belum ada data device / Anda login menggunakan versi sistem lama.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {sessions.map(session => (
+              <div key={session.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <div style={{ padding: '10px', background: '#e2e8f0', borderRadius: '50%', color: '#334155' }}>
+                  <MonitorSmartphone size={20} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                    {session.device_name || 'Unknown OS'} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>— {session.browser || 'Unknown Browser'}</span>
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Clock size={14} />
+                    Login sejak: {new Date(session.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
+                    IP: {session.ip_address || 'Unknown'}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

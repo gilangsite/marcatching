@@ -72,7 +72,15 @@ export async function POST(req: NextRequest) {
       otp_expires_at: null
     }).eq('id', credentials.id)
 
-    return NextResponse.json({ success: true, message: 'Kredensial berhasil diperbarui.' })
+    // 6. Logout other devices
+    const currentSessionToken = req.cookies.get('marcatching_admin_session')?.value
+    if (currentSessionToken) {
+      await supabase.from('admin_sessions').delete().neq('session_token', currentSessionToken)
+    } else {
+      await supabase.from('admin_sessions').delete().neq('id', '00000000-0000-0000-0000-000000000000') // delete all
+    }
+
+    return NextResponse.json({ success: true, message: 'Kredensial berhasil diperbarui. Semua device lain telah dilogout.' })
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 })
   }
