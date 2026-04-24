@@ -87,15 +87,14 @@ export async function POST(req: NextRequest) {
       otp_expires_at: null
     }).eq('id', credentials.id)
 
-    // 6. Logout other devices
-    const currentSessionToken = req.cookies.get('marcatching_admin_session')?.value
-    if (currentSessionToken) {
-      await supabase.from('admin_sessions').delete().neq('session_token', currentSessionToken)
-    } else {
-      await supabase.from('admin_sessions').delete().neq('id', '00000000-0000-0000-0000-000000000000') // delete all
-    }
+    // 6. Logout ALL devices (including the current one)
+    await supabase.from('admin_sessions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
 
-    return NextResponse.json({ success: true, message: 'Kredensial berhasil diperbarui. Semua device lain telah dilogout.' })
+    const res = NextResponse.json({ success: true, message: 'Kredensial berhasil diperbarui. Semua device telah dilogout, silakan login kembali.' })
+    res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
+    res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
+    res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
+    return res
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 })
   }

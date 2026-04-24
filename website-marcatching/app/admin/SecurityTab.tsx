@@ -25,33 +25,34 @@ export default function SecurityTab() {
 
   // Device Sessions state
   const [sessions, setSessions] = useState<any[]>([])
+  const [sessionsLoading, setSessionsLoading] = useState(true)
 
   useEffect(() => {
     fetchSessions()
   }, [])
 
   async function fetchSessions() {
+    setSessionsLoading(true)
     try {
       const res = await fetch('/api/admin/sessions')
       const data = await res.json()
-      if (data.success) {
-        setSessions(data.sessions)
-      }
+      if (data.success) setSessions(data.sessions)
     } catch (err) {
       console.error('Failed to fetch sessions:', err)
+    } finally {
+      setSessionsLoading(false)
     }
   }
 
   async function handleLogoutAll() {
-    if (!window.confirm('Hard Exit: Yakin ingin keluar dari SEMUA perangkat dan browser? Semua sesi akan dihapus.')) return
+    if (!window.confirm('Hard Exit: Yakin ingin keluar dari SEMUA perangkat dan browser? Semua sesi aktif akan dihapus.')) return
     try {
       const res = await fetch('/api/admin/logout-all', { method: 'POST' })
       if (res.ok) {
-        // /login works for inside.marcatching.com subdomain
         window.location.href = '/login'
       }
     } catch (err) {
-      console.error('Failed to logout:', err)
+      console.error('Failed to hard exit:', err)
     }
   }
 
@@ -79,7 +80,7 @@ export default function SecurityTab() {
     setLoading(true)
     setError('')
     setMsg('')
-    
+
     if (newPassword !== confirmPassword) {
       setError('Konfirmasi password baru tidak cocok.')
       setLoading(false)
@@ -94,13 +95,8 @@ export default function SecurityTab() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        setMsg('Kredensial berhasil diperbarui. Silakan gunakan kredensial baru untuk login selanjutnya.')
-        setStep(1)
-        setOtp('')
-        setOldEmail('')
-        setOldPassword('')
-        setNewEmail('')
-        setNewPassword('')
+        // Credentials changed — all sessions deleted, redirect to login
+        window.location.href = '/login'
       } else {
         setError(data.message || 'Gagal mengubah kredensial')
       }
@@ -115,42 +111,30 @@ export default function SecurityTab() {
       <div className={styles.sectionHeader}>
         <h2 className={styles.sectionTitle}>Keamanan Login</h2>
       </div>
+
+      {/* ── Card 1: Ganti Kredensial ── */}
       <div className={styles.card} style={{ maxWidth: '600px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
-            Untuk mengganti username dan password login dashboard, sistem akan mengirimkan 6 digit kode OTP ke email utama (<strong>marcatching.id@gmail.com</strong>) terlebih dahulu.
-          </p>
-        </div>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+          Ganti Username & Password
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+          Sistem akan mengirimkan 6 digit kode OTP ke email utama (<strong>marcatching.id@gmail.com</strong>) sebelum kamu bisa mengubah kredensial.
+          Setelah berhasil, <strong>semua device yang sedang login akan otomatis dikeluarkan</strong>.
+        </p>
 
         {error && <div style={{ color: '#ef4444', background: '#fef2f2', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{error}</div>}
         {msg && <div style={{ color: '#10b981', background: '#ecfdf5', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{msg}</div>}
 
         {step === 1 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' }}>
-            <button
-              onClick={requestOtp}
-              disabled={loading}
-              className={`btn btn-navy`}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-            >
-              <Lock size={16} />
-              {loading ? 'Memproses...' : 'Kirim Kode OTP'}
-            </button>
-
-            <div style={{ width: '100%', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
-              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>
-                Keluar paksa dari semua perangkat dan browser yang sedang aktif:
-              </p>
-              <button
-                onClick={handleLogoutAll}
-                className="btn"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ef4444', color: 'white', border: 'none', fontSize: '14px' }}
-              >
-                <LogOut size={15} />
-                Hard Exit
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={requestOtp}
+            disabled={loading}
+            className={`btn btn-navy`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+          >
+            <Lock size={16} />
+            {loading ? 'Memproses...' : 'Kirim Kode OTP'}
+          </button>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="form-group">
@@ -164,9 +148,9 @@ export default function SecurityTab() {
                 required
               />
             </div>
-            
-            <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }}></div>
-            
+
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '4px 0' }}></div>
+
             <div className="form-group">
               <label className="label">Username Lama</label>
               <input
@@ -181,23 +165,20 @@ export default function SecurityTab() {
             <div className="form-group" style={{ position: 'relative' }}>
               <label className="label">Password Lama</label>
               <input
-                type={showOldPassword ? "text" : "password"}
+                type={showOldPassword ? 'text' : 'password'}
                 className="input"
                 placeholder="Password Lama"
                 value={oldPassword}
                 onChange={e => setOldPassword(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowOldPassword(!showOldPassword)}
-                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
-              >
+              <button type="button" onClick={() => setShowOldPassword(!showOldPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
                 {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
 
-            <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }}></div>
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '4px 0' }}></div>
 
             <div className="form-group">
               <label className="label">Username Baru</label>
@@ -213,27 +194,23 @@ export default function SecurityTab() {
             <div className="form-group" style={{ position: 'relative' }}>
               <label className="label">Password Baru</label>
               <input
-                type={showNewPassword ? "text" : "password"}
+                type={showNewPassword ? 'text' : 'password'}
                 className="input"
-                placeholder="Password Baru"
+                placeholder="Minimal 8 karakter"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 required
                 minLength={8}
               />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
-              >
+              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
                 {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            
             <div className="form-group" style={{ position: 'relative' }}>
               <label className="label">Konfirmasi Password Baru</label>
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 className="input"
                 placeholder="Ketik ulang password baru"
                 value={confirmPassword}
@@ -241,31 +218,17 @@ export default function SecurityTab() {
                 required
                 minLength={8}
               />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
-              >
+              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            
-            {error && <p className={styles.formError} style={{ marginTop: '16px' }}>{error}</p>}
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={() => setStep(1)}
-                disabled={loading}
-              >
+            <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+              <button type="button" className="btn btn-outline" onClick={() => setStep(1)} disabled={loading}>
                 Batal
               </button>
-              <button
-                type="submit"
-                className="btn btn-navy"
-                disabled={loading}
-              >
+              <button type="submit" className="btn btn-navy" disabled={loading}>
                 {loading ? 'Menyimpan...' : 'Simpan Kredensial'}
               </button>
             </div>
@@ -273,33 +236,41 @@ export default function SecurityTab() {
         )}
       </div>
 
+      {/* ── Card 2: Login Activity ── */}
       <div className={styles.card} style={{ maxWidth: '600px', marginTop: '24px' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <MonitorSmartphone size={20} className="text-navy" />
-          Device yang Sedang Login
-        </h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
-          Berikut adalah daftar perangkat yang berhasil melewati gate login dan memiliki akses ke dashboard saat ini. Jika Anda mengubah password di atas, semua perangkat di bawah ini akan otomatis dikeluarkan (logout).
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+            <MonitorSmartphone size={20} />
+            Login Activity
+          </h3>
+          <button onClick={fetchSessions} style={{ fontSize: '12px', color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+            Refresh
+          </button>
+        </div>
 
-        {sessions.length === 0 ? (
-          <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>Belum ada data device / Anda login menggunakan versi sistem lama.</p>
+        {sessionsLoading ? (
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Memuat data...</p>
+        ) : sessions.length === 0 ? (
+          <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>
+            Belum ada sesi aktif tercatat. Jika kamu baru deploy fitur ini, silakan logout dan login ulang agar sesi kamu tercatat di sini.
+          </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {sessions.map(session => (
-              <div key={session.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                <div style={{ padding: '10px', background: '#e2e8f0', borderRadius: '50%', color: '#334155' }}>
-                  <MonitorSmartphone size={20} />
+              <div key={session.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <div style={{ padding: '10px', background: '#e2e8f0', borderRadius: '50%', color: '#334155', flexShrink: 0 }}>
+                  <MonitorSmartphone size={18} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
-                    {session.device_name || 'Unknown OS'} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>— {session.browser || 'Unknown Browser'}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
+                    {session.device_name || 'Unknown OS'}
+                    <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}> — {session.browser || 'Unknown Browser'}</span>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Clock size={14} />
+                  <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Clock size={13} />
                     Login sejak: {new Date(session.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '2px' }}>
                     IP: {session.ip_address || 'Unknown'}
                   </div>
                 </div>
@@ -307,17 +278,25 @@ export default function SecurityTab() {
             ))}
           </div>
         )}
+      </div>
 
-        <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            onClick={handleLogoutAll}
-            className="btn"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ef4444', color: 'white', border: 'none' }}
-          >
-            <LogOut size={16} />
-            Keluar dari Semua Device
-          </button>
-        </div>
+      {/* ── Card 3: Hard Exit ── */}
+      <div className={styles.card} style={{ maxWidth: '600px', marginTop: '24px', borderColor: '#fecaca' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <LogOut size={18} />
+          Hard Exit
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '16px' }}>
+          Keluar paksa dari <strong>semua perangkat dan browser</strong> yang sedang aktif sekaligus. Semua sesi akan dihapus dan setiap device akan diminta untuk login kembali menggunakan OTP.
+        </p>
+        <button
+          onClick={handleLogoutAll}
+          className="btn"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ef4444', color: 'white', border: 'none' }}
+        >
+          <LogOut size={15} />
+          Hard Exit — Keluarkan Semua Device
+        </button>
       </div>
     </div>
   )
