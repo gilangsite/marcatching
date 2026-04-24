@@ -73,7 +73,7 @@ export default function SecurityTab() {
       <div className={styles.card} style={{ maxWidth: '600px' }}>
         <div style={{ marginBottom: '24px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
-            Untuk mengganti email dan password login dashboard, sistem akan mengirimkan 6 digit kode OTP ke email utama (<strong>marcatching.id@gmail.com</strong>) terlebih dahulu.
+            Untuk mengganti username dan password login dashboard, sistem akan mengirimkan 6 digit kode OTP ke email utama (<strong>marcatching.id@gmail.com</strong>) terlebih dahulu.
           </p>
         </div>
 
@@ -109,11 +109,11 @@ export default function SecurityTab() {
             <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }}></div>
             
             <div className="form-group">
-              <label className="label">Email Lama</label>
+              <label className="label">Username Lama</label>
               <input
-                type="text" // using text to support current username 'admin'
+                type="text"
                 className="input"
-                placeholder="Email/Username Lama"
+                placeholder="Username Lama"
                 value={oldEmail}
                 onChange={e => setOldEmail(e.target.value)}
                 required
@@ -134,11 +134,11 @@ export default function SecurityTab() {
             <div style={{ borderTop: '1px solid var(--border-color)', margin: '8px 0' }}></div>
 
             <div className="form-group">
-              <label className="label">Email Login Baru</label>
+              <label className="label">Username Baru</label>
               <input
-                type="email"
+                type="text"
                 className="input"
-                placeholder="Email Baru"
+                placeholder="Username Baru"
                 value={newEmail}
                 onChange={e => setNewEmail(e.target.value)}
                 required

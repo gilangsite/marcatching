@@ -12,8 +12,9 @@ function hashPassword(password: string) {
 
 export async function POST(req: NextRequest) {
   // 1. Verify Authentication
-  const authCookie = req.cookies.get('marcatching_admin')?.value
-  if (authCookie !== 'authenticated') {
+  const authCookieV2 = req.cookies.get('marcatching_admin_v2')?.value
+  const authCookieV1 = req.cookies.get('marcatching_admin')?.value
+  if (authCookieV2 !== 'authenticated' && authCookieV1 !== 'authenticated') {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
   }
 
