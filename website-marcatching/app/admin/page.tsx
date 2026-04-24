@@ -14,7 +14,7 @@ import {
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -24,6 +24,7 @@ import ChampagneTab from './ChampagneTab'
 import FinanceTab from './FinanceTab'
 import CashflowAnalytics from './CashflowAnalytics'
 import RichTextEditor from '@/components/RichTextEditor'
+import SecurityTab from './SecurityTab'
 
 // ─── Icon map ────────────────────────────────────────────────
 const ICON_OPTIONS = [
@@ -199,7 +200,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security'
   const [tab, setTab] = useState<TabType>('links')
   const [analyticsSubView, setAnalyticsSubView] = useState<'website' | 'cashflow'>('website')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -684,7 +685,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance','security'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -1180,6 +1181,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'vouchers' ? styles.navActive : ''}`} onClick={() => { setTab('vouchers'); setIsSidebarOpen(false) }}><Tag size={18} /> Vouchers</button>
           <button className={`${styles.navItem} ${tab === 'orders' ? styles.navActive : ''}`} onClick={() => { setTab('orders'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Orders</button>
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
+          <button className={`${styles.navItem} ${tab === 'security' ? styles.navActive : ''}`} onClick={() => { setTab('security'); setIsSidebarOpen(false) }}><Lock size={18} /> Keamanan</button>
 
           <div style={{ position: 'relative' }}>
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
@@ -1384,6 +1386,9 @@ function AdminDashboardInner() {
 
         {/* ── FINANCE TAB ─── */}
         {tab === 'finance' && <FinanceTab />}
+
+        {/* ── SECURITY TAB ─── */}
+        {tab === 'security' && <SecurityTab />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (

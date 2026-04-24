@@ -61,6 +61,8 @@ function doPost(e) {
       return handleSendCourseEmail(data);
     } else if (data.action === 'notifyAdmin') {
       return handleNotifyAdmin(data);
+    } else if (data.action === 'otpAdmin') {
+      return handleOtpAdmin(data);
     } else if (data.action === 'financeRead') {
       return handleFinanceRead(data);
     } else if (data.action === 'financeAdd') {
@@ -82,6 +84,33 @@ function doPost(e) {
       status: 'error',
       message: error.toString(),
       stack: error.stack
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── ADMIN OTP EMAIL ─────────────────────────────────────────
+function handleOtpAdmin(data) {
+  try {
+    var otp = data.otp || '000000';
+    var htmlBody = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;">' +
+      '<h2 style="color:#0d3369;">Kode Konfirmasi Ganti Kredensial</h2>' +
+      '<p>Seseorang mencoba mengganti email/password login admin Marcatching.</p>' +
+      '<p>Masukkan kode berikut di dashboard untuk melanjutkan:</p>' +
+      '<h1 style="background:#f1f5f9;padding:16px;text-align:center;letter-spacing:4px;color:#111827;border-radius:8px;">' + otp + '</h1>' +
+      '<p>Jika ini bukan Anda, abaikan email ini.</p></div>';
+      
+    MailApp.sendEmail({
+      to: 'marcatching.id@gmail.com',
+      subject: 'Kode OTP Ganti Kredensial Admin - Marcatching',
+      htmlBody: htmlBody
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', message: 'OTP sent'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
