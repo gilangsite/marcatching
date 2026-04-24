@@ -41,31 +41,32 @@ export async function proxy(req: NextRequest) {
 
   // 3. Protect /admin routes (not /admin/login) – applies after rewrite
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const authCookieV1 = req.cookies.get('marcatching_admin')
-    const authCookieV2 = req.cookies.get('marcatching_admin_v2')
     const sessionCookie = req.cookies.get('marcatching_admin_session')
     
-    const hasV1 = authCookieV1 && authCookieV1.value === 'authenticated'
-    const hasV2 = authCookieV2 && authCookieV2.value === 'authenticated'
+    // Determine the correct login URL to redirect to based on the current hostname
+    const loginPath = hostname.startsWith('inside.') ? '/login' : '/admin/login'
     
-    if (!hasV1 && !hasV2 && !sessionCookie) {
-      return NextResponse.redirect(new URL('/admin/login', req.url))
+    if (!sessionCookie?.value) {
+      const res = NextResponse.redirect(new URL(loginPath, req.url))
+      res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
+      res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
+      return res
     }
 
-    // Verify session token in DB if it exists (for v3 auth)
-    if (sessionCookie?.value) {
-      const { data } = await supabase
-        .from('admin_sessions')
-        .select('id')
-        .eq('session_token', sessionCookie.value)
-        .single()
-        
-      if (!data) {
-        // Invalid session (logged out from another device)
-        const res = NextResponse.redirect(new URL('/admin/login', req.url))
-        res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
-        return res
-      }
+    // Verify session token in DB
+    const { data } = await supabase
+      .from('admin_sessions')
+      .select('id')
+      .eq('session_token', sessionCookie.value)
+      .single()
+      
+    if (!data) {
+      // Invalid session (logged out from another device)
+      const res = NextResponse.redirect(new URL(loginPath, req.url))
+      res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
+      res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
+      res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
+      return res
     }
   }
 

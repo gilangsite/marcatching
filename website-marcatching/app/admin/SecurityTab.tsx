@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Lock, Eye, EyeOff, MonitorSmartphone, Clock } from 'lucide-react'
+import { Lock, Eye, EyeOff, MonitorSmartphone, Clock, LogOut } from 'lucide-react'
 import styles from './admin.module.css'
 
 export default function SecurityTab() {
@@ -39,6 +39,18 @@ export default function SecurityTab() {
       }
     } catch (err) {
       console.error('Failed to fetch sessions:', err)
+    }
+  }
+
+  async function handleLogoutAll() {
+    if (!window.confirm('Yakin ingin logout dari semua perangkat? Anda akan diminta untuk login kembali.')) return
+    try {
+      const res = await fetch('/api/admin/logout-all', { method: 'POST' })
+      if (res.ok) {
+        window.location.href = '/admin/login'
+      }
+    } catch (err) {
+      console.error('Failed to logout:', err)
     }
   }
 
@@ -280,6 +292,17 @@ export default function SecurityTab() {
             ))}
           </div>
         )}
+
+        <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={handleLogoutAll}
+            className="btn"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ef4444', color: 'white', border: 'none' }}
+          >
+            <LogOut size={16} />
+            Keluar dari Semua Device
+          </button>
+        </div>
       </div>
     </div>
   )
