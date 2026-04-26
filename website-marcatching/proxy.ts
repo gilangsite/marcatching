@@ -3,12 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 // Edge Runtime compatible — NO Supabase client, use REST API directly
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-// Anon key also works for reads since we created table without RLS
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 async function isValidSession(sessionToken: string): Promise<boolean> {
   try {
-    // Use service key if available, else fall back to anon key
     const authKey = supabaseServiceKey || supabaseAnonKey
     const res = await fetch(
       `${supabaseUrl}/rest/v1/admin_sessions?session_token=eq.${encodeURIComponent(sessionToken)}&select=id&limit=1`,
@@ -20,21 +18,23 @@ async function isValidSession(sessionToken: string): Promise<boolean> {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
         },
-        // Disable edge/fetch caching entirely - critical for session revocation
+        // Disable edge/fetch caching entirely - critical for Hard Exit to work
         cache: 'no-store',
       }
     )
+
     if (!res.ok) {
       console.error('[proxy] Supabase session check failed:', res.status, await res.text())
-      // If Supabase is down, allow through to avoid locking admin out
-      return true
+      // SECURITY: fail-CLOSED — deny access on any Supabase error
+      return false
     }
+
     const data = await res.json()
     return Array.isArray(data) && data.length > 0
   } catch (err) {
     console.error('[proxy] isValidSession error:', err)
-    // On network error, allow through to avoid locking admin out
-    return true
+    // SECURITY: fail-CLOSED — deny access on network error
+    return false
   }
 }
 
@@ -71,9 +71,10 @@ export async function proxy(req: NextRequest) {
 
   // 3. Protect /admin routes (not /admin/login)
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const sessionToken = req.cookies.get('marcatching_admin_session')?.value
     const loginPath = hostname.startsWith('inside.') ? '/login' : '/admin/login'
+    const sessionToken = req.cookies.get('marcatching_admin_session')?.value
 
+    // No session cookie → redirect to login
     if (!sessionToken) {
       const res = NextResponse.redirect(new URL(loginPath, req.url))
       res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
