@@ -632,6 +632,19 @@ function AdminDashboardInner() {
     }
   }
 
+  // ── Session check to prevent Service Worker bypass ─────────
+  useEffect(() => {
+    fetch('/api/admin/sessions', { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) {
+          window.location.replace('/admin/login')
+        }
+      })
+      .catch(() => {
+        // Ignore network errors, only kick on actual 401
+      })
+  }, [])
+
   useEffect(() => { fetchLinks(); fetchContact(); fetchProducts(); fetchVouchers(); fetchOrders(); fetchProductCategories() }, [])
 
   // Fetch ecommerce data when tab is active

@@ -67,10 +67,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Bypass cache untuk Next.js internals & API routes
+  // Bypass cache untuk Next.js internals, API routes, dan Admin Dashboard
   if (
     url.pathname.startsWith('/_next/') ||
     url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/admin') ||
+    url.hostname.startsWith('inside.') ||
     url.pathname === '/sw.js'
   ) {
     return;
