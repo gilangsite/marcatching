@@ -47,11 +47,12 @@ export async function proxy(req: NextRequest) {
   const { pathname } = url
   const hostname = req.headers.get('host') || ''
 
+  let effectivePath = pathname
+
   // 1. Subdomain Course Logic
   if (hostname.startsWith('course.')) {
     if (!pathname.startsWith('/course')) {
-      url.pathname = `/course${pathname === '/' ? '' : pathname}`
-      return NextResponse.rewrite(url)
+      effectivePath = `/course${pathname === '/' ? '' : pathname}`
     }
   } else if (pathname.startsWith('/course')) {
     const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
@@ -63,8 +64,7 @@ export async function proxy(req: NextRequest) {
   // 2. Subdomain Admin (inside.) Logic
   if (hostname.startsWith('inside.')) {
     if (!pathname.startsWith('/admin')) {
-      url.pathname = `/admin${pathname === '/' ? '' : pathname}`
-      return NextResponse.rewrite(url)
+      effectivePath = `/admin${pathname === '/' ? '' : pathname}`
     }
   } else if (pathname.startsWith('/admin')) {
     const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
@@ -73,8 +73,8 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // 3. Protect /admin routes (not /admin/login)
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+  // 3. Protect effective /admin routes (not /admin/login)
+  if (effectivePath.startsWith('/admin') && !effectivePath.startsWith('/admin/login')) {
     const loginPath = hostname.startsWith('inside.') ? '/login' : '/admin/login'
     const sessionToken = req.cookies.get('marcatching_admin_session')?.value
 
@@ -96,6 +96,12 @@ export async function proxy(req: NextRequest) {
       res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
       return res
     }
+  }
+
+  // 4. Apply rewrite if effectivePath changed
+  if (effectivePath !== pathname) {
+    url.pathname = effectivePath
+    return NextResponse.rewrite(url)
   }
 
   return NextResponse.next()
