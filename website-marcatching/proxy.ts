@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 // Edge Runtime compatible — NO Supabase client, use REST API directly
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Support both env var naming conventions (Vercel uses PUBLISHABLE_DEFAULT_KEY)
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
+  ''
 
 async function isValidSession(sessionToken: string): Promise<boolean> {
   try {
