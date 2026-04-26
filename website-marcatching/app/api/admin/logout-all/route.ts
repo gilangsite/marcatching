@@ -14,14 +14,20 @@ export async function POST(req: NextRequest) {
   }
 
   // Verify session exists in DB before allowing hard-exit
-  const { data: session } = await supabase
+  const { data: session, error: sessionError } = await supabase
     .from('admin_sessions')
     .select('id')
     .eq('session_token', sessionToken)
     .maybeSingle()
 
+  if (sessionError) {
+    console.error('[logout-all] Session check error:', sessionError.message, sessionError.code)
+    return NextResponse.json({ success: false, message: 'Gagal memvalidasi sesi: ' + sessionError.message }, { status: 500 })
+  }
+
   if (!session) {
-    return NextResponse.json({ success: false, message: 'Sesi tidak valid' }, { status: 401 })
+    console.error('[logout-all] No session found for token:', sessionToken?.slice(0, 8) + '...')
+    return NextResponse.json({ success: false, message: 'Sesi tidak valid atau sudah expired' }, { status: 401 })
   }
 
   try {
