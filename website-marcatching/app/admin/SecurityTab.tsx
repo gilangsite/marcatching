@@ -48,11 +48,17 @@ export default function SecurityTab() {
     if (!window.confirm('Hard Exit: Yakin ingin keluar dari SEMUA perangkat dan browser? Semua sesi aktif akan dihapus.')) return
     try {
       const res = await fetch('/api/admin/logout-all', { method: 'POST' })
-      if (res.ok) {
-        window.location.href = '/login'
+      const data = await res.json()
+      if (res.ok && data.success) {
+        // Hard reload forces browser to re-request — middleware will catch
+        // the now-invalid session and redirect to login
+        window.location.replace('/admin')
+      } else {
+        alert(data.message || 'Hard Exit gagal. Coba lagi.')
       }
     } catch (err) {
       console.error('Failed to hard exit:', err)
+      alert('Terjadi kesalahan saat Hard Exit.')
     }
   }
 

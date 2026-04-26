@@ -6,12 +6,21 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function GET(req: NextRequest) {
-  // Verify Authentication
-  const authCookieV2 = req.cookies.get('marcatching_admin_v2')?.value
-  const sessionCookie = req.cookies.get('marcatching_admin_session')?.value
-  
-  if (authCookieV2 !== 'authenticated' && !sessionCookie) {
+  const sessionToken = req.cookies.get('marcatching_admin_session')?.value
+
+  if (!sessionToken) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+  }
+
+  // Verify session exists in DB
+  const { data: session } = await supabase
+    .from('admin_sessions')
+    .select('id')
+    .eq('session_token', sessionToken)
+    .maybeSingle()
+
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Sesi tidak valid' }, { status: 401 })
   }
 
   try {

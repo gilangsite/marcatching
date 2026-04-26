@@ -11,26 +11,22 @@ function hashPassword(password: string) {
 }
 
 export async function POST(req: NextRequest) {
-  // 1. Verify Authentication — accept new session cookie OR legacy cookies
+  // Strictly require a valid session cookie — no legacy cookie fallbacks
   const sessionCookie = req.cookies.get('marcatching_admin_session')?.value
-  const authCookieV2 = req.cookies.get('marcatching_admin_v2')?.value
-  const authCookieV1 = req.cookies.get('marcatching_admin')?.value
-  const isLegacyAuth = authCookieV2 === 'authenticated' || authCookieV1 === 'authenticated'
 
-  if (!sessionCookie && !isLegacyAuth) {
+  if (!sessionCookie) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
   }
 
-  // If using new session cookie, verify it exists in DB
-  if (sessionCookie) {
-    const { data: session } = await supabase
-      .from('admin_sessions')
-      .select('id')
-      .eq('session_token', sessionCookie)
-      .single()
-    if (!session) {
-      return NextResponse.json({ success: false, message: 'Sesi tidak valid, silakan login kembali.' }, { status: 401 })
-    }
+  // Verify session exists in DB
+  const { data: session } = await supabase
+    .from('admin_sessions')
+    .select('id')
+    .eq('session_token', sessionCookie)
+    .maybeSingle()
+
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Sesi tidak valid, silakan login kembali.' }, { status: 401 })
   }
 
   try {
