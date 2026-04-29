@@ -13,11 +13,9 @@ interface Survey {
   survey_questions: SurveyQuestion[]
 }
 
-const F = "DM Sans, system-ui, sans-serif"
 const BLK = "#111111"
 
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
 @keyframes zoomIn {
   from { opacity:0; transform:scale(0.93) translateY(14px); }
   to   { opacity:1; transform:scale(1) translateY(0); }
@@ -36,19 +34,19 @@ const css = `
 .sv-pop   { animation: popIn 0.5s cubic-bezier(.22,.68,0,1.2) both; }
 .sv-inp {
   width:100%; padding:13px 16px; border:1.5px solid #e2e8f0; border-radius:10px;
-  font-size:0.95rem; font-family:DM Sans,system-ui,sans-serif; outline:none; box-sizing:border-box;
+  font-size:0.95rem; font-family:var(--font); outline:none; box-sizing:border-box;
   transition:border-color .18s, box-shadow .18s; background:#fff; color:#0f172a;
 }
 .sv-inp:focus { border-color:#111111; box-shadow:0 0 0 3px rgba(0,0,0,.06); }
 .sv-opt {
   display:flex; align-items:center; gap:12px; padding:12px 16px; border:1.5px solid #e2e8f0;
   border-radius:10px; cursor:pointer; transition:all .15s; background:#fff; margin-bottom:8px;
-  font-family:DM Sans,system-ui,sans-serif; font-size:0.95rem; font-weight:600; color:#0f172a; user-select:none;
+  font-family:var(--font); font-size:0.95rem; font-weight:600; color:#0f172a; user-select:none;
 }
 .sv-opt.sel { border-color:#111111; background:#f5f5f5; }
 .sv-btn {
   display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 28px;
-  border:none; border-radius:12px; cursor:pointer; font-family:DM Sans,system-ui,sans-serif; font-weight:800;
+  border:none; border-radius:12px; cursor:pointer; font-family:var(--font); font-weight:800;
   font-size:1rem; transition:all .2s; letter-spacing:-0.01em;
 }
 .sv-btn-navy { background:#111111; color:#fff; box-shadow:0 6px 20px rgba(0,0,0,.18); }
@@ -96,7 +94,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
   }
 
   if (loading) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)'}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-fade" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
         <div style={{width:36,height:36,borderRadius:'50%',border:'3px solid #e2e8f0',borderTopColor:BLK,animation:'spin 0.8s linear infinite'}}/>
@@ -106,7 +104,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
   )
 
   if (!survey?.id) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)'}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:400}}>
         <Search size={40} color="#cbd5e1" style={{marginBottom:16}}/>
@@ -117,7 +115,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
   )
 
   if (survey.status === 'inactive') return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F,padding:24}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)',padding:24}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:440,width:'100%'}}>
         <ClipboardList size={40} color="#cbd5e1" style={{marginBottom:16}}/>
@@ -150,7 +148,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
     }
 
     return (
-      <div style={{minHeight:'100vh',background:BG,fontFamily:F,paddingTop:NAVBAR_H+32,paddingBottom:80}}>
+      <div style={{minHeight:'100vh',background:BG,fontFamily:'var(--font)',paddingTop:NAVBAR_H+32,paddingBottom:80}}>
         <style dangerouslySetInnerHTML={{__html:css}}/>
         <NavBar/>
         <div style={{maxWidth:660,margin:'0 auto',padding:'0 20px'}}>
@@ -226,7 +224,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
     function goPrev() { setQError(''); setAnimKey(k=>k+1); if(currentQ>0) setCurrentQ(i=>i-1) }
 
     return (
-      <div style={{minHeight:'100vh',background:BG,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:20,fontFamily:F,paddingTop:NAVBAR_H+20}}>
+      <div style={{minHeight:'100vh',background:BG,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:20,fontFamily:'var(--font)',paddingTop:NAVBAR_H+20}}>
         <style dangerouslySetInnerHTML={{__html:css}}/>
         <NavBar/>
         <div style={{width:'100%',maxWidth:620,marginBottom:20}}>
@@ -293,7 +291,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
 
   // ── CONSENT ──
   if (phase === 'consent') return (
-    <div style={{minHeight:'100vh',background:BG,display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:F,paddingTop:NAVBAR_H}}>
+    <div style={{minHeight:'100vh',background:BG,display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:'var(--font)',paddingTop:NAVBAR_H}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-zoom" style={{padding:'48px 40px',maxWidth:520,width:'100%',textAlign:'center'}}>
@@ -324,7 +322,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
         }}>
           {submitting?'Mengirim…':<><Check size={18}/> Kirim Survey</>}
         </button>
-        <button onClick={()=>setPhase('questions')} style={{marginTop:14,background:'none',border:'none',color:'#94a3b8',fontSize:'0.82rem',cursor:'pointer',fontFamily:F,fontWeight:600}}>← Kembali</button>
+        <button onClick={()=>setPhase('questions')} style={{marginTop:14,background:'none',border:'none',color:'#94a3b8',fontSize:'0.82rem',cursor:'pointer',fontFamily:'var(--font)',fontWeight:600}}>← Kembali</button>
       </div>
     </div>
   )
@@ -337,7 +335,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
   })()
 
   return (
-    <div style={{minHeight:'100vh',background:BG,display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:F,paddingTop:NAVBAR_H}}>
+    <div style={{minHeight:'100vh',background:BG,display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:'var(--font)',paddingTop:NAVBAR_H}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-pop" style={{padding:'56px 44px',maxWidth:520,width:'100%',textAlign:'center'}}>
@@ -353,7 +351,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
         </p>
         <div style={{height:1,background:'linear-gradient(90deg,transparent,#e2e8f0,transparent)',margin:'0 0 28px'}}/>
         <p style={{fontSize:'0.95rem',fontWeight:800,color:BLK,letterSpacing:'-0.02em',margin:'0 0 24px'}}>— Marcatching</p>
-        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'#f5f5f5',border:'1px solid #e2e8f0',borderRadius:12,color:BLK,fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:F}}>
+        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'#f5f5f5',border:'1px solid #e2e8f0',borderRadius:12,color:BLK,fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:'var(--font)'}}>
           Kembali ke Marcatching.com
         </a>
       </div>
