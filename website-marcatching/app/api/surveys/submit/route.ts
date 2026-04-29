@@ -7,19 +7,17 @@ const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { surveyId, surveyTitle, fullName, email, whatsapp, answers } = body
+    const { surveyId, surveyTitle, biodataAnswers, answers } = body
 
-    if (!surveyId || !surveyTitle || !fullName) {
-      return NextResponse.json({ error: 'surveyId, surveyTitle, and fullName are required' }, { status: 400 })
+    if (!surveyId || !surveyTitle) {
+      return NextResponse.json({ error: 'surveyId and surveyTitle are required' }, { status: 400 })
     }
 
     const payload = JSON.stringify({
       action: 'surveySubmit',
       surveyId,
       surveyTitle,
-      fullName,
-      email: email || '',
-      whatsapp: whatsapp || '',
+      biodataAnswers: biodataAnswers || [],
       answers: answers || [],
       submittedAt: new Date().toISOString(),
     })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Star, ChevronLeft, ChevronRight, Check, Shield, CheckCircle2, Search, ClipboardList } from 'lucide-react'
 
 interface SurveyQuestion {
@@ -14,6 +14,7 @@ interface Survey {
 }
 
 const F = "DM Sans, system-ui, sans-serif"
+const BLK = "#111111"
 
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
@@ -35,44 +36,32 @@ const css = `
 .sv-pop   { animation: popIn 0.5s cubic-bezier(.22,.68,0,1.2) both; }
 .sv-inp {
   width:100%; padding:13px 16px; border:1.5px solid #e2e8f0; border-radius:10px;
-  font-size:0.95rem; font-family:${F}; outline:none; box-sizing:border-box;
+  font-size:0.95rem; font-family:DM Sans,system-ui,sans-serif; outline:none; box-sizing:border-box;
   transition:border-color .18s, box-shadow .18s; background:#fff; color:#0f172a;
 }
-.sv-inp:focus { border-color:#0d3369; box-shadow:0 0 0 3px rgba(13,51,105,.08); }
+.sv-inp:focus { border-color:#111111; box-shadow:0 0 0 3px rgba(0,0,0,.06); }
 .sv-opt {
   display:flex; align-items:center; gap:12px; padding:12px 16px; border:1.5px solid #e2e8f0;
   border-radius:10px; cursor:pointer; transition:all .15s; background:#fff; margin-bottom:8px;
-  font-family:${F}; font-size:0.95rem; font-weight:600; color:#0f172a; user-select:none;
+  font-family:DM Sans,system-ui,sans-serif; font-size:0.95rem; font-weight:600; color:#0f172a; user-select:none;
 }
-.sv-opt.sel { border-color:#0d3369; background:#eff6ff; }
+.sv-opt.sel { border-color:#111111; background:#f5f5f5; }
 .sv-btn {
   display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 28px;
-  border:none; border-radius:12px; cursor:pointer; font-family:${F}; font-weight:800;
+  border:none; border-radius:12px; cursor:pointer; font-family:DM Sans,system-ui,sans-serif; font-weight:800;
   font-size:1rem; transition:all .2s; letter-spacing:-0.01em;
 }
-.sv-btn-navy { background:linear-gradient(135deg,#0d3369,#1e40af); color:#fff; box-shadow:0 6px 20px rgba(13,51,105,.22); }
-.sv-btn-navy:hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(13,51,105,.28); }
+.sv-btn-navy { background:#111111; color:#fff; box-shadow:0 6px 20px rgba(0,0,0,.18); }
+.sv-btn-navy:hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(0,0,0,.24); }
 .sv-btn-ghost { background:#f1f5f9; color:#475569; }
 .sv-btn-ghost:hover { background:#e2e8f0; }
 .sv-btn:disabled { opacity:.55; cursor:not-allowed; transform:none !important; }
 .sv-card {
   background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border-radius:24px; box-shadow:0 8px 48px rgba(13,51,105,.10),0 2px 8px rgba(0,0,0,.05);
-  border:1px solid rgba(200,215,235,.55);
+  border-radius:24px; box-shadow:0 8px 48px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
+  border:1px solid rgba(200,200,200,.4);
 }
 `
-
-function Loader() {
-  return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(160deg,#f0f4ff 0%,#fff 60%)',fontFamily:F}}>
-      <style dangerouslySetInnerHTML={{__html:css}}/>
-      <div className="sv-fade" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
-        <div style={{width:40,height:40,borderRadius:'50%',border:'3px solid #e2e8f0',borderTopColor:'#0d3369',animation:'spin 0.8s linear infinite'}}/>
-        <span style={{color:'#64748b',fontSize:'0.9rem',fontWeight:600}}>Memuat survey…</span>
-      </div>
-    </div>
-  )
-}
 
 export default function SurveyClient({ slug }: { slug: string }) {
   const [survey, setSurvey] = useState<Survey | null>(null)
@@ -95,25 +84,44 @@ export default function SurveyClient({ slug }: { slug: string }) {
       .catch(() => setLoading(false))
   }, [slug])
 
-  if (loading) return <Loader />
+  const BG = 'linear-gradient(160deg,#f5f5f7 0%,#ffffff 60%)'
+  const NAVBAR_H = 64
+
+  function NavBar() {
+    return (
+      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(255,255,255,0.85)',backdropFilter:'blur(18px) saturate(180%)',WebkitBackdropFilter:'blur(18px) saturate(180%)',borderBottom:'1px solid rgba(0,0,0,.08)',height:NAVBAR_H,display:'flex',alignItems:'center',paddingLeft:24,paddingRight:24}}>
+        <img src="/logo-type.png" alt="Marcatching" style={{height:28,objectFit:'contain'}} onError={e=>{(e.target as HTMLImageElement).src='/logo-type-white.png'}}/>
+      </nav>
+    )
+  }
+
+  if (loading) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F}}>
+      <style dangerouslySetInnerHTML={{__html:css}}/>
+      <div className="sv-fade" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+        <div style={{width:36,height:36,borderRadius:'50%',border:'3px solid #e2e8f0',borderTopColor:BLK,animation:'spin 0.8s linear infinite'}}/>
+        <span style={{color:'#64748b',fontSize:'0.9rem',fontWeight:600}}>Memuat survey…</span>
+      </div>
+    </div>
+  )
 
   if (!survey?.id) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(160deg,#f0f4ff 0%,#fff 60%)',fontFamily:F}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:400}}>
         <Search size={40} color="#cbd5e1" style={{marginBottom:16}}/>
-        <h2 style={{color:'#0d3369',fontWeight:800,margin:'0 0 8px'}}>Survey tidak ditemukan</h2>
+        <h2 style={{color:BLK,fontWeight:800,margin:'0 0 8px'}}>Survey tidak ditemukan</h2>
         <p style={{color:'#94a3b8',margin:0,fontSize:'0.9rem'}}>URL survey tidak valid atau sudah dihapus.</p>
       </div>
     </div>
   )
 
   if (survey.status === 'inactive') return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(160deg,#f0f4ff 0%,#fff 60%)',fontFamily:F,padding:24}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:F,padding:24}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:440,width:'100%'}}>
         <ClipboardList size={40} color="#cbd5e1" style={{marginBottom:16}}/>
-        <h2 style={{color:'#0d3369',fontWeight:900,fontSize:'1.4rem',margin:'0 0 12px'}}>{survey.title}</h2>
+        <h2 style={{color:BLK,fontWeight:900,fontSize:'1.4rem',margin:'0 0 12px'}}>{survey.title}</h2>
         <p style={{color:'#64748b',fontSize:'0.95rem',lineHeight:1.7,margin:'0 0 28px'}}>Survey ini telah ditutup. Terima kasih atas antusiasmu!</p>
         <div style={{fontSize:'0.82rem',color:'#94a3b8',fontWeight:700}}>— Marcatching</div>
       </div>
@@ -121,20 +129,8 @@ export default function SurveyClient({ slug }: { slug: string }) {
   )
 
   const allQs = (survey.survey_questions ?? []).sort((a,b) => a.order_index - b.order_index)
-  // fallback: if section column doesn't exist yet in DB, treat all as 'survey'
   const biodataQs = allQs.filter(q => q.section === 'biodata')
   const surveyQs  = allQs.filter(q => q.section === 'survey' || !q.section)
-
-  const BG = 'linear-gradient(160deg,#f0f4ff 0%,#ffffff 60%)'
-  const NAVBAR_H = 64
-
-  function NavBar() {
-    return (
-      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(255,255,255,0.75)',backdropFilter:'blur(18px) saturate(180%)',WebkitBackdropFilter:'blur(18px) saturate(180%)',borderBottom:'1px solid rgba(200,215,235,.4)',height:NAVBAR_H,display:'flex',alignItems:'center',paddingLeft:24,paddingRight:24}}>
-        <img src="/logo-type.png" alt="Marcatching" style={{height:28,objectFit:'contain'}} onError={e=>{(e.target as HTMLImageElement).src='/logo-type-white.png'}}/>
-      </nav>
-    )
-  }
 
   // ── LANDING ──
   if (phase === 'landing') {
@@ -142,9 +138,8 @@ export default function SurveyClient({ slug }: { slug: string }) {
       for (const q of biodataQs) {
         if (q.is_required) {
           const v = biodataAnswers[q.id]
-          if (!v || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && v.length === 0)) {
-            setBiodataError(`"${q.label}" wajib diisi`)
-            return
+          if (!v || (typeof v==='string'&&!v.trim()) || (Array.isArray(v)&&v.length===0)) {
+            setBiodataError(`"${q.label}" wajib diisi`); return
           }
         }
       }
@@ -160,19 +155,18 @@ export default function SurveyClient({ slug }: { slug: string }) {
         <NavBar/>
         <div style={{maxWidth:660,margin:'0 auto',padding:'0 20px'}}>
           {survey.image_url && (
-            <div className="sv-fade" style={{borderRadius:20,overflow:'hidden',marginBottom:32,boxShadow:'0 12px 40px rgba(13,51,105,.10)'}}>
+            <div className="sv-fade" style={{borderRadius:20,overflow:'hidden',marginBottom:32,boxShadow:'0 12px 40px rgba(0,0,0,.10)'}}>
               <img src={survey.image_url} alt={survey.title} style={{width:'100%',display:'block',objectFit:'cover'}}/>
             </div>
           )}
-          <h1 className="sv-fade" style={{fontSize:'2rem',fontWeight:900,color:'#0d3369',marginBottom:14,lineHeight:1.2,animationDelay:'.05s'}}>{survey.title}</h1>
+          <h1 className="sv-fade" style={{fontSize:'2rem',fontWeight:900,color:BLK,marginBottom:14,lineHeight:1.2,animationDelay:'.05s'}}>{survey.title}</h1>
           {survey.description && (
             <div className="sv-fade" style={{color:'#475569',lineHeight:1.8,fontSize:'0.97rem',marginBottom:32,animationDelay:'.1s'}} dangerouslySetInnerHTML={{__html:survey.description}}/>
           )}
-
           {biodataQs.length > 0 && (
             <div className="sv-card sv-fade" style={{padding:28,marginBottom:24,animationDelay:'.15s'}}>
-              <h3 style={{margin:'0 0 20px',fontSize:'1rem',fontWeight:800,color:'#0d3369',display:'flex',alignItems:'center',gap:8}}>
-                <ClipboardList size={18} color="#0d3369"/> Data Diri Kamu
+              <h3 style={{margin:'0 0 20px',fontSize:'1rem',fontWeight:800,color:BLK,display:'flex',alignItems:'center',gap:8}}>
+                <ClipboardList size={18} color={BLK}/> Data Diri Kamu
               </h3>
               <div style={{display:'flex',flexDirection:'column',gap:14}}>
                 {biodataQs.map(q => (
@@ -180,21 +174,21 @@ export default function SurveyClient({ slug }: { slug: string }) {
                     <label style={{display:'block',fontSize:'0.83rem',fontWeight:700,color:'#475569',marginBottom:6}}>
                       {q.label}{q.is_required && <span style={{color:'#ef4444'}}> *</span>}
                     </label>
-                    {(q.type === 'short_answer' || !q.type) && (
-                      <input className="sv-inp" value={biodataAnswers[q.id]??''} onChange={e => setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))} placeholder={`Masukkan ${q.label.toLowerCase()}...`}/>
+                    {(q.type==='short_answer'||!q.type) && (
+                      <input className="sv-inp" value={biodataAnswers[q.id]??''} onChange={e=>setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))} placeholder={`Masukkan ${q.label.toLowerCase()}...`}/>
                     )}
-                    {q.type === 'long_answer' && (
-                      <textarea className="sv-inp" rows={3} style={{resize:'vertical'}} value={biodataAnswers[q.id]??''} onChange={e => setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))} placeholder="Tulis di sini..."/>
+                    {q.type==='long_answer' && (
+                      <textarea className="sv-inp" rows={3} style={{resize:'vertical'}} value={biodataAnswers[q.id]??''} onChange={e=>setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))} placeholder="Tulis di sini..."/>
                     )}
-                    {q.type === 'dropdown' && (
-                      <select className="sv-inp" style={{cursor:'pointer'}} value={biodataAnswers[q.id]??''} onChange={e => setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))}>
+                    {q.type==='dropdown' && (
+                      <select className="sv-inp" style={{cursor:'pointer'}} value={biodataAnswers[q.id]??''} onChange={e=>setBiodataAnswers(p=>({...p,[q.id]:e.target.value}))}>
                         <option value="">-- Pilih --</option>
-                        {q.options.map((o,i) => <option key={i} value={o}>{o}</option>)}
+                        {q.options.map((o,i)=><option key={i} value={o}>{o}</option>)}
                       </select>
                     )}
-                    {(q.type === 'radio') && q.options.map((o,i) => (
+                    {q.type==='radio' && q.options.map((o,i)=>(
                       <label key={i} className={`sv-opt${biodataAnswers[q.id]===o?' sel':''}`} onClick={()=>setBiodataAnswers(p=>({...p,[q.id]:o}))}>
-                        <input type="radio" style={{accentColor:'#0d3369'}} checked={biodataAnswers[q.id]===o} readOnly/><span>{o}</span>
+                        <input type="radio" style={{accentColor:BLK}} checked={biodataAnswers[q.id]===o} readOnly/><span>{o}</span>
                       </label>
                     ))}
                   </div>
@@ -203,7 +197,6 @@ export default function SurveyClient({ slug }: { slug: string }) {
               {biodataError && <p style={{color:'#ef4444',fontSize:'0.82rem',marginTop:12,fontWeight:600}}>{biodataError}</p>}
             </div>
           )}
-
           <div className="sv-fade" style={{textAlign:'center',color:'#94a3b8',fontSize:'0.8rem',marginBottom:20,animationDelay:'.2s'}}>
             {surveyQs.length} pertanyaan · Dijawab satu per satu
           </div>
@@ -218,16 +211,16 @@ export default function SurveyClient({ slug }: { slug: string }) {
   // ── QUESTIONS ──
   if (phase === 'questions') {
     const q = surveyQs[currentQ]
+    if (!q) { setPhase('consent'); return null }
     const total = surveyQs.length
     const cur = answers[q.id]
 
     function setAns(v: any) { setAnswers(p=>({...p,[q.id]:v})); setQError('') }
 
     function goNext() {
-      if (q.is_required && (!cur || cur==='' || (Array.isArray(cur)&&cur.length===0))) { setQError('Pertanyaan ini wajib dijawab'); return }
-      setQError('')
-      setAnimKey(k=>k+1)
-      if (currentQ < total-1) setCurrentQ(i=>i+1)
+      if (q.is_required&&(!cur||cur===''||(Array.isArray(cur)&&cur.length===0))) { setQError('Pertanyaan ini wajib dijawab'); return }
+      setQError(''); setAnimKey(k=>k+1)
+      if (currentQ<total-1) setCurrentQ(i=>i+1)
       else setPhase('consent')
     }
     function goPrev() { setQError(''); setAnimKey(k=>k+1); if(currentQ>0) setCurrentQ(i=>i-1) }
@@ -238,17 +231,17 @@ export default function SurveyClient({ slug }: { slug: string }) {
         <NavBar/>
         <div style={{width:'100%',maxWidth:620,marginBottom:20}}>
           <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
-            <span style={{color:'#0d3369',fontSize:'0.78rem',fontWeight:700}}>{survey.title}</span>
+            <span style={{color:BLK,fontSize:'0.78rem',fontWeight:700}}>{survey.title}</span>
             <span style={{color:'#94a3b8',fontSize:'0.78rem',fontWeight:700}}>{currentQ+1} / {total}</span>
           </div>
           <div style={{height:5,background:'#e2e8f0',borderRadius:99,overflow:'hidden'}}>
-            <div style={{height:'100%',width:`${((currentQ+1)/total)*100}%`,background:'linear-gradient(90deg,#0d3369,#3b82f6)',borderRadius:99,transition:'width .4s ease'}}/>
+            <div style={{height:'100%',width:`${((currentQ+1)/total)*100}%`,background:BLK,borderRadius:99,transition:'width .4s ease'}}/>
           </div>
         </div>
 
         <div key={animKey} className="sv-card sv-zoom" style={{width:'100%',maxWidth:620,padding:'40px 36px',minHeight:300}}>
           <p style={{fontSize:'0.72rem',fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.12em',margin:'0 0 10px'}}>Pertanyaan {currentQ+1}</p>
-          <h2 style={{fontSize:'1.18rem',fontWeight:800,color:'#0d3369',margin:'0 0 28px',lineHeight:1.45}}>
+          <h2 style={{fontSize:'1.18rem',fontWeight:800,color:BLK,margin:'0 0 28px',lineHeight:1.45}}>
             {q.label}{q.is_required&&<span style={{color:'#ef4444'}}> *</span>}
           </h2>
 
@@ -262,14 +255,14 @@ export default function SurveyClient({ slug }: { slug: string }) {
           )}
           {q.type==='radio' && q.options.map((o,i)=>(
             <label key={i} className={`sv-opt${cur===o?' sel':''}`} onClick={()=>setAns(o)}>
-              <input type="radio" style={{accentColor:'#0d3369'}} checked={cur===o} readOnly/><span>{o}</span>
+              <input type="radio" style={{accentColor:BLK}} checked={cur===o} readOnly/><span>{o}</span>
             </label>
           ))}
           {q.type==='checkbox' && q.options.map((o,i)=>{
             const chk=Array.isArray(cur)&&cur.includes(o)
             return (
               <label key={i} className={`sv-opt${chk?' sel':''}`} onClick={()=>{const p=Array.isArray(cur)?cur:[];setAns(chk?p.filter((x:string)=>x!==o):[...p,o])}}>
-                <input type="checkbox" style={{accentColor:'#0d3369'}} checked={chk} readOnly/><span>{o}</span>
+                <input type="checkbox" style={{accentColor:BLK}} checked={chk} readOnly/><span>{o}</span>
               </label>
             )
           })}
@@ -304,16 +297,16 @@ export default function SurveyClient({ slug }: { slug: string }) {
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-zoom" style={{padding:'48px 40px',maxWidth:520,width:'100%',textAlign:'center'}}>
-        <div style={{width:64,height:64,borderRadius:'50%',background:'linear-gradient(135deg,#eff6ff,#dbeafe)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
-          <Shield size={28} color="#0d3369"/>
+        <div style={{width:64,height:64,borderRadius:'50%',background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
+          <Shield size={28} color={BLK}/>
         </div>
-        <h2 style={{color:'#0d3369',fontWeight:900,fontSize:'1.3rem',margin:'0 0 16px'}}>Persetujuan Data</h2>
+        <h2 style={{color:BLK,fontWeight:900,fontSize:'1.3rem',margin:'0 0 16px'}}>Persetujuan Data</h2>
         <p style={{color:'#475569',lineHeight:1.8,fontSize:'0.93rem',margin:'0 0 28px',textAlign:'left'}}>
           Dengan mengisi survey ini, kamu menyetujui bahwa data yang telah kamu berikan akan disimpan dan digunakan oleh tim Marcatching sebagai bahan analisis internal.<br/><br/>
           Marcatching berkomitmen untuk <strong>tidak menyebarkan atau memperjualbelikan</strong> data pribadimu kepada pihak manapun.
         </p>
-        <label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',padding:'16px 18px',background:'#f8fafc',borderRadius:14,border:`1.5px solid ${consentChecked?'#0d3369':'#e2e8f0'}`,marginBottom:28,textAlign:'left',transition:'border-color .18s'}}>
-          <input type="checkbox" checked={consentChecked} onChange={e=>setConsentChecked(e.target.checked)} style={{accentColor:'#0d3369',marginTop:2,flexShrink:0,width:18,height:18}}/>
+        <label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',padding:'16px 18px',background:'#f8f8f8',borderRadius:14,border:`1.5px solid ${consentChecked?BLK:'#e2e8f0'}`,marginBottom:28,textAlign:'left',transition:'border-color .18s'}}>
+          <input type="checkbox" checked={consentChecked} onChange={e=>setConsentChecked(e.target.checked)} style={{accentColor:BLK,marginTop:2,flexShrink:0,width:18,height:18}}/>
           <span style={{fontSize:'0.88rem',color:'#0f172a',fontWeight:600,lineHeight:1.6}}>Saya memahami dan menyetujui bahwa data saya akan disimpan dan digunakan oleh Marcatching.</span>
         </label>
         {submitError && <p style={{color:'#ef4444',fontSize:'0.82rem',marginBottom:14,fontWeight:600}}>{submitError}</p>}
@@ -348,19 +341,19 @@ export default function SurveyClient({ slug }: { slug: string }) {
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-pop" style={{padding:'56px 44px',maxWidth:520,width:'100%',textAlign:'center'}}>
-        <div style={{width:72,height:72,borderRadius:'50%',background:'linear-gradient(135deg,#dcfce7,#bbf7d0)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px'}}>
-          <CheckCircle2 size={34} color="#16a34a"/>
+        <div style={{width:72,height:72,borderRadius:'50%',background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px'}}>
+          <CheckCircle2 size={34} color={BLK}/>
         </div>
-        <h1 style={{color:'#0d3369',fontWeight:900,fontSize:'1.55rem',margin:'0 0 10px',lineHeight:1.3}}>
+        <h1 style={{color:BLK,fontWeight:900,fontSize:'1.55rem',margin:'0 0 10px',lineHeight:1.3}}>
           Terima kasih{firstName?`, ${firstName}`:''}!
         </h1>
         <p style={{color:'#475569',fontSize:'0.97rem',lineHeight:1.8,margin:'0 0 32px'}}>
-          Partisipasimu dalam survey <strong style={{color:'#0d3369'}}>"{survey.title}"</strong> sangat berarti bagi kami.<br/><br/>
+          Partisipasimu dalam survey <strong style={{color:BLK}}>"{survey.title}"</strong> sangat berarti bagi kami.<br/><br/>
           Tim Marcatching akan segera menghubungimu secara personal untuk menindaklanjuti hasil survey ini.
         </p>
         <div style={{height:1,background:'linear-gradient(90deg,transparent,#e2e8f0,transparent)',margin:'0 0 28px'}}/>
-        <p style={{fontSize:'0.95rem',fontWeight:800,color:'#0d3369',letterSpacing:'-0.02em',margin:'0 0 24px'}}>— Marcatching</p>
-        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:12,color:'#0d3369',fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:F}}>
+        <p style={{fontSize:'0.95rem',fontWeight:800,color:BLK,letterSpacing:'-0.02em',margin:'0 0 24px'}}>— Marcatching</p>
+        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'#f5f5f5',border:'1px solid #e2e8f0',borderRadius:12,color:BLK,fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:F}}>
           Kembali ke Marcatching.com
         </a>
       </div>
