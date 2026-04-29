@@ -16,6 +16,9 @@ const FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 // Google Drive Folder ID for PDF course materials
 const PDF_FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 
+// Google Drive Folder ID for Survey thumbnails
+const SURVEY_THUMBNAIL_FOLDER_ID = "1pLlJg2LjywNZAAreWvBwfC916erxv8w8";
+
 // Google Sheets ID for checkout data
 const SPREADSHEET_ID = "14QTnyV8hCvuNIGVdgcUrN42NfPKmxqmCJhw61Tut870";
 
@@ -73,6 +76,8 @@ function doPost(e) {
       return handleFinanceDelete(data);
     } else if (data.action === 'surveySubmit') {
       return handleSurveySubmit(data);
+    } else if (data.action === 'uploadSurveyThumbnail') {
+      return handleSurveyThumbnailUpload(data);
     } else {
       return ContentService.createTextOutput(JSON.stringify({
         status: 'error',
@@ -132,6 +137,28 @@ function handleImageUpload(data) {
   var fileId = file.getId();
   var directUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
   
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'success',
+    url: directUrl,
+    id: fileId
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── SURVEY THUMBNAIL UPLOAD ────────────────────────────────
+function handleSurveyThumbnailUpload(data) {
+  if (!data.base64) {
+    throw new Error('Data base64 tidak ditemukan untuk survey thumbnail upload.');
+  }
+  var base64Data = data.base64.split(',')[1] || data.base64;
+  var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType || 'image/jpeg', data.filename || 'survey_thumb.jpg');
+
+  var folder = DriveApp.getFolderById(SURVEY_THUMBNAIL_FOLDER_ID);
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  var fileId = file.getId();
+  var directUrl = 'https://drive.google.com/uc?export=view&id=' + fileId;
+
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
     url: directUrl,
@@ -759,19 +786,25 @@ var SURVEY_SPREADSHEET_ID = '1p1ozBVVL6-wbsdwwBsQ-_3DUejrYFnW_SBXoAMt6aQ0';
 
 function handleSurveySubmit(data) {
   try {
-    var surveyTitle  = data.surveyTitle  || 'Survey';
-    var fullName     = data.fullName     || '';
-    var email        = data.email        || '';
-    var whatsapp     = data.whatsapp     || '';
-    var answers      = data.answers      || []; // [{question, answer}]
-    var submittedAt  = data.submittedAt  || new Date().toISOString();
+    var surveyTitle     = data.surveyTitle     || 'Survey';
+    var fullName        = data.fullName        || '';
+    var email           = data.email           || '';
+    var whatsapp        = data.whatsapp        || '';
+    var biodataAnswers  = data.biodataAnswers  || []; // [{question, answer}] — biodata section
+    var answers         = data.answers         || []; // [{question, answer}] — survey questions
+    var submittedAt     = data.submittedAt     || new Date().toISOString();
 
     // Get or create sheet named after the survey
     var sheet = getSurveySheet(surveyTitle);
 
     // Build header row if sheet is empty
     if (sheet.getLastRow() === 0) {
-      var headers = ['Timestamp', 'Nama Lengkap', 'Email', 'WhatsApp'];
+      var headers = ['Timestamp'];
+      // Biodata headers
+      for (var b = 0; b < biodataAnswers.length; b++) {
+        headers.push('[Biodata] ' + (biodataAnswers[b].question || ('B' + (b + 1))));
+      }
+      // Survey question headers
       for (var i = 0; i < answers.length; i++) {
         headers.push(answers[i].question || ('Q' + (i + 1)));
       }
@@ -784,15 +817,33 @@ function handleSurveySubmit(data) {
     }
 
     // Build data row
-    var row = [submittedAt, fullName, email, whatsapp];
+    var row = [submittedAt];
+    for (var k = 0; k < biodataAnswers.length; k++) {
+      row.push(biodataAnswers[k].answer || '');
+    }
     for (var j = 0; j < answers.length; j++) {
       row.push(answers[j].answer || '');
     }
     sheet.appendRow(row);
     sheet.autoResizeColumns(1, row.length);
 
+    // Compose combined answers for notification email
+    var allAnswersForEmail = [];
+    if (biodataAnswers.length > 0) {
+      allAnswersForEmail.push({ question: '— BIODATA —', answer: '' });
+      for (var n = 0; n < biodataAnswers.length; n++) {
+        allAnswersForEmail.push(biodataAnswers[n]);
+      }
+    }
+    if (answers.length > 0) {
+      allAnswersForEmail.push({ question: '— JAWABAN SURVEY —', answer: '' });
+      for (var m = 0; m < answers.length; m++) {
+        allAnswersForEmail.push(answers[m]);
+      }
+    }
+
     // Send email notification to admin
-    sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, answers, submittedAt);
+    sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, allAnswersForEmail, submittedAt);
 
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success', message: 'Survey submitted successfully'
@@ -836,7 +887,7 @@ function sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, ans
       '<div style="font-family:\'Helvetica Neue\',Arial,sans-serif;max-width:600px;margin:0 auto;background:#f8fafc;">' +
       '<div style="background:linear-gradient(135deg,#0d3369,#1e40af);padding:32px 28px;border-radius:16px 16px 0 0;">' +
       '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:26px;margin-bottom:14px;display:block;" />' +
-      '<h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:900;">📋 Survey Baru Masuk!</h1>' +
+      '<h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:900;">Survey Baru Masuk!</h1>' +
       '<p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:13px;">' + surveyTitle + '</p>' +
       '</div>' +
       '<div style="background:#ffffff;padding:28px;border-radius:0 0 16px 16px;">' +
@@ -849,7 +900,7 @@ function sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, ans
       '<h3 style="font-size:13px;font-weight:800;color:#0d3369;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">Jawaban Survey</h3>' +
       '<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">' + answersHtml + '</table>' +
       '<div style="margin-top:28px;text-align:center;">' +
-      '<a href="' + sheetUrl + '" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#0d3369,#1e40af);color:#ffffff;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">📊 Lihat Hasil Survey</a>' +
+      '<a href="' + sheetUrl + '" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#0d3369,#1e40af);color:#ffffff;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">Lihat Hasil Survey</a>' +
       '</div>' +
       '<p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:24px;">— Tim Marcatching</p>' +
       '</div>' +

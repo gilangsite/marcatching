@@ -20,6 +20,7 @@ export interface SurveyQuestion {
   options: string[]
   is_required: boolean
   order_index: number
+  section: 'biodata' | 'survey'
 }
 
 export interface Survey {
@@ -189,7 +190,8 @@ export default function SurveyTab() {
   const [imageUrl, setImageUrl] = useState('')
   const [aspectRatio, setAspectRatio] = useState('16:9')
   const [status, setStatus] = useState<'active' | 'inactive'>('active')
-  const [questions, setQuestions] = useState<SurveyQuestion[]>([])
+  const [questions, setQuestions] = useState<SurveyQuestion[]>([])      // section='survey'
+  const [biodataQs, setBiodataQs] = useState<SurveyQuestion[]>([])     // section='biodata'
 
   // Crop state
   const [cropSrc, setCropSrc] = useState('')
@@ -214,7 +216,7 @@ export default function SurveyTab() {
   function openNew() {
     setEditing(null)
     setTitle(''); setSlug(''); setDescription(''); setImageUrl(''); setAspectRatio('16:9')
-    setStatus('active'); setQuestions([])
+    setStatus('active'); setQuestions([]); setBiodataQs([])
     setShowForm(true)
   }
 
@@ -226,13 +228,17 @@ export default function SurveyTab() {
     const qs = (s.survey_questions ?? []).map(q => ({
       ...q,
       options: Array.isArray(q.options) ? q.options : [],
+      section: (q.section ?? 'survey') as 'biodata' | 'survey',
     }))
-    setQuestions(qs.sort((a, b) => a.order_index - b.order_index))
+    const sorted = qs.sort((a, b) => a.order_index - b.order_index)
+    setBiodataQs(sorted.filter(q => q.section === 'biodata'))
+    setQuestions(sorted.filter(q => q.section === 'survey'))
     setShowForm(true)
   }
 
-  function addQuestion() {
-    setQuestions(prev => [...prev, {
+  function addQuestion(section: 'biodata' | 'survey' = 'survey') {
+    const setter = section === 'biodata' ? setBiodataQs : setQuestions
+    setter(prev => [...prev, {
       id: genId(),
       survey_id: editing?.id ?? '',
       label: '',
@@ -240,14 +246,16 @@ export default function SurveyTab() {
       options: [],
       is_required: true,
       order_index: prev.length,
+      section,
     }])
   }
 
-  function moveQuestion(idx: number, dir: 'up' | 'down') {
-    const next = [...questions]
+  function moveQuestion(idx: number, dir: 'up' | 'down', section: 'biodata' | 'survey' = 'survey') {
+    const list = section === 'biodata' ? [...biodataQs] : [...questions]
+    const setter = section === 'biodata' ? setBiodataQs : setQuestions
     const swapIdx = dir === 'up' ? idx - 1 : idx + 1
-    ;[next[idx], next[swapIdx]] = [next[swapIdx], next[idx]]
-    setQuestions(next.map((q, i) => ({ ...q, order_index: i })))
+    ;[list[idx], list[swapIdx]] = [list[swapIdx], list[idx]]
+    setter(list.map((q, i) => ({ ...q, order_index: i })))
   }
 
   // Image upload flow
@@ -273,7 +281,7 @@ export default function SurveyTab() {
     try {
       const res = await fetch(appScriptUrl, {
         method: 'POST',
-        body: JSON.stringify({ action: 'uploadImage', filename, mimeType: 'image/jpeg', base64 }),
+        body: JSON.stringify({ action: 'uploadSurveyThumbnail', filename, mimeType: 'image/jpeg', base64 }),
         redirect: 'follow',
       })
       const data = await res.json()
@@ -300,7 +308,6 @@ export default function SurveyTab() {
     }
 
     if (surveyId) {
-      // Delete all old questions then re-insert
       if (editing) {
         await fetch('/api/surveys/questions', {
           method: 'DELETE',
@@ -308,12 +315,16 @@ export default function SurveyTab() {
           body: JSON.stringify({ survey_id: surveyId }),
         })
       }
-      // Insert questions
-      if (questions.length > 0) {
+      // Merge biodata + survey questions with correct section tags
+      const allQs = [
+        ...biodataQs.map((q, i) => ({ ...q, survey_id: surveyId, order_index: i, section: 'biodata' })),
+        ...questions.map((q, i) => ({ ...q, survey_id: surveyId, order_index: i, section: 'survey' })),
+      ]
+      if (allQs.length > 0) {
         await fetch('/api/surveys/questions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ questions: questions.map((q, i) => ({ ...q, survey_id: surveyId, order_index: i })) }),
+          body: JSON.stringify({ questions: allQs }),
         })
       }
     }
@@ -444,30 +455,61 @@ export default function SurveyTab() {
             <RichTextEditor value={description} onChange={setDescription} placeholder="Tulis deskripsi survey..." minHeight={120} />
           </div>
 
-          {/* Questions */}
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0d3369' }}>Pertanyaan ({questions.length})</h3>
-              <button className="btn btn-ghost" style={{ padding: '7px 14px', fontSize: '0.82rem' }} onClick={addQuestion}>
-                <Plus size={14} /> Tambah Pertanyaan
+          {/* ── BIODATA QUESTIONS ── */}
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0d3369' }}>Pertanyaan Biodata ({biodataQs.length})</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Ditampilkan di awal survey untuk collect data diri</p>
+              </div>
+              <button className="btn btn-ghost" style={{ padding: '7px 14px', fontSize: '0.82rem' }} onClick={() => addQuestion('biodata')}>
+                <Plus size={14} /> Tambah
               </button>
             </div>
-
-            {questions.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '0.85rem', border: '1.5px dashed #e2e8f0', borderRadius: 10 }}>
-                Belum ada pertanyaan. Klik "Tambah Pertanyaan" untuk mulai.
+            {biodataQs.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: '#94a3b8', fontSize: '0.82rem', border: '1.5px dashed #e2e8f0', borderRadius: 10 }}>
+                Belum ada pertanyaan biodata.
               </div>
             )}
+            {biodataQs.map((q, i) => (
+              <QuestionEditor key={q.id} q={q}
+                onChange={updated => setBiodataQs(prev => prev.map((x, j) => j === i ? updated : x))}
+                onDelete={() => setBiodataQs(prev => prev.filter((_, j) => j !== i))}
+                onMove={dir => moveQuestion(i, dir, 'biodata')}
+                isFirst={i === 0} isLast={i === biodataQs.length - 1}
+              />
+            ))}
+          </div>
 
+          {/* divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Pertanyaan Survey</span>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+          </div>
+
+          {/* ── SURVEY QUESTIONS ── */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0d3369' }}>Pertanyaan Survey ({questions.length})</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Pertanyaan utama yang akan dijawab satu per satu</p>
+              </div>
+              <button className="btn btn-ghost" style={{ padding: '7px 14px', fontSize: '0.82rem' }} onClick={() => addQuestion('survey')}>
+                <Plus size={14} /> Tambah
+              </button>
+            </div>
+            {questions.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: '#94a3b8', fontSize: '0.82rem', border: '1.5px dashed #e2e8f0', borderRadius: 10 }}>
+                Belum ada pertanyaan survey.
+              </div>
+            )}
             {questions.map((q, i) => (
-              <QuestionEditor
-                key={q.id}
-                q={q}
+              <QuestionEditor key={q.id} q={q}
                 onChange={updated => setQuestions(prev => prev.map((x, j) => j === i ? updated : x))}
                 onDelete={() => setQuestions(prev => prev.filter((_, j) => j !== i))}
-                onMove={dir => moveQuestion(i, dir)}
-                isFirst={i === 0}
-                isLast={i === questions.length - 1}
+                onMove={dir => moveQuestion(i, dir, 'survey')}
+                isFirst={i === 0} isLast={i === questions.length - 1}
               />
             ))}
           </div>
