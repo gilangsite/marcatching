@@ -71,6 +71,8 @@ function doPost(e) {
       return handleFinanceUpdate(data);
     } else if (data.action === 'financeDelete') {
       return handleFinanceDelete(data);
+    } else if (data.action === 'surveySubmit') {
+      return handleSurveySubmit(data);
     } else {
       return ContentService.createTextOutput(JSON.stringify({
         status: 'error',
@@ -744,5 +746,121 @@ function handleFinanceDelete(data) {
     return ContentService.createTextOutput(JSON.stringify({
       status: 'error', message: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ==========================================================
+// SURVEY SUBMIT HANDLER
+// Spreadsheet: 1p1ozBVVL6-wbsdwwBsQ-_3DUejrYFnW_SBXoAMt6aQ0
+// Setiap survey baru akan membuat sheet baru dengan nama survey
+// ==========================================================
+
+var SURVEY_SPREADSHEET_ID = '1p1ozBVVL6-wbsdwwBsQ-_3DUejrYFnW_SBXoAMt6aQ0';
+
+function handleSurveySubmit(data) {
+  try {
+    var surveyTitle  = data.surveyTitle  || 'Survey';
+    var fullName     = data.fullName     || '';
+    var email        = data.email        || '';
+    var whatsapp     = data.whatsapp     || '';
+    var answers      = data.answers      || []; // [{question, answer}]
+    var submittedAt  = data.submittedAt  || new Date().toISOString();
+
+    // Get or create sheet named after the survey
+    var sheet = getSurveySheet(surveyTitle);
+
+    // Build header row if sheet is empty
+    if (sheet.getLastRow() === 0) {
+      var headers = ['Timestamp', 'Nama Lengkap', 'Email', 'WhatsApp'];
+      for (var i = 0; i < answers.length; i++) {
+        headers.push(answers[i].question || ('Q' + (i + 1)));
+      }
+      sheet.appendRow(headers);
+      var headerRange = sheet.getRange(1, 1, 1, headers.length);
+      headerRange.setFontWeight('bold');
+      headerRange.setBackground('#0d3369');
+      headerRange.setFontColor('#ffffff');
+      sheet.setFrozenRows(1);
+    }
+
+    // Build data row
+    var row = [submittedAt, fullName, email, whatsapp];
+    for (var j = 0; j < answers.length; j++) {
+      row.push(answers[j].answer || '');
+    }
+    sheet.appendRow(row);
+    sheet.autoResizeColumns(1, row.length);
+
+    // Send email notification to admin
+    sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, answers, submittedAt);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', message: 'Survey submitted successfully'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (e) {
+    Logger.log('handleSurveySubmit error: ' + e.toString());
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: e.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Get (or create) a sheet named after the survey title
+function getSurveySheet(surveyTitle) {
+  var ss = SpreadsheetApp.openById(SURVEY_SPREADSHEET_ID);
+  // Clean sheet name (max 100 chars, strip special chars)
+  var sheetName = surveyTitle.replace(/[\/\\?\*\[\]':]/g, ' ').substring(0, 100).trim();
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+  }
+  return sheet;
+}
+
+// Send email notification for new survey submission
+function sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, answers, submittedAt) {
+  try {
+    var adminEmail = 'marcatching.id@gmail.com';
+    var sheetUrl   = 'https://docs.google.com/spreadsheets/d/' + SURVEY_SPREADSHEET_ID + '/edit';
+
+    var answersHtml = '';
+    for (var i = 0; i < answers.length; i++) {
+      answersHtml +=
+        '<tr>' +
+        '<td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#475569;font-size:13px;width:40%;">' + (answers[i].question || 'Q' + (i + 1)) + '</td>' +
+        '<td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;color:#0f172a;font-size:13px;">' + (answers[i].answer || '—') + '</td>' +
+        '</tr>';
+    }
+
+    var htmlBody =
+      '<div style="font-family:\'Helvetica Neue\',Arial,sans-serif;max-width:600px;margin:0 auto;background:#f8fafc;">' +
+      '<div style="background:linear-gradient(135deg,#0d3369,#1e40af);padding:32px 28px;border-radius:16px 16px 0 0;">' +
+      '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:26px;margin-bottom:14px;display:block;" />' +
+      '<h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:900;">📋 Survey Baru Masuk!</h1>' +
+      '<p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:13px;">' + surveyTitle + '</p>' +
+      '</div>' +
+      '<div style="background:#ffffff;padding:28px;border-radius:0 0 16px 16px;">' +
+      '<table style="width:100%;border-collapse:collapse;margin-bottom:24px;background:#f8fafc;border-radius:10px;overflow:hidden;">' +
+      '<tr><td style="padding:10px 14px;font-size:13px;color:#475569;font-weight:600;width:35%;">Nama</td><td style="padding:10px 14px;font-size:13px;color:#0f172a;font-weight:700;">' + fullName + '</td></tr>' +
+      '<tr><td style="padding:10px 14px;font-size:13px;color:#475569;font-weight:600;">Email</td><td style="padding:10px 14px;font-size:13px;color:#0f172a;">' + (email || '—') + '</td></tr>' +
+      '<tr><td style="padding:10px 14px;font-size:13px;color:#475569;font-weight:600;">WhatsApp</td><td style="padding:10px 14px;font-size:13px;color:#0f172a;">' + (whatsapp || '—') + '</td></tr>' +
+      '<tr><td style="padding:10px 14px;font-size:13px;color:#475569;font-weight:600;">Waktu</td><td style="padding:10px 14px;font-size:13px;color:#0f172a;">' + submittedAt + '</td></tr>' +
+      '</table>' +
+      '<h3 style="font-size:13px;font-weight:800;color:#0d3369;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">Jawaban Survey</h3>' +
+      '<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">' + answersHtml + '</table>' +
+      '<div style="margin-top:28px;text-align:center;">' +
+      '<a href="' + sheetUrl + '" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#0d3369,#1e40af);color:#ffffff;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">📊 Lihat Hasil Survey</a>' +
+      '</div>' +
+      '<p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:24px;">— Tim Marcatching</p>' +
+      '</div>' +
+      '</div>';
+
+    MailApp.sendEmail({
+      to: adminEmail,
+      subject: '[Survey Baru] Ada jawaban baru di survey "' + surveyTitle + '"',
+      htmlBody: htmlBody
+    });
+  } catch (e) {
+    Logger.log('sendSurveyNotificationEmail error: ' + e.toString());
   }
 }
