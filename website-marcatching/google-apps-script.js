@@ -148,7 +148,7 @@ function handleImageUpload(data) {
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   
   var fileId = file.getId();
-  var directUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
+  var directUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1200";
   
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
@@ -179,7 +179,7 @@ function handleSurveyThumbnailUpload(data) {
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
   var fileId = file.getId();
-  var directUrl = 'https://drive.google.com/uc?export=view&id=' + fileId;
+  var directUrl = 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w1200';
 
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
