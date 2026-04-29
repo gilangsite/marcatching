@@ -45,6 +45,8 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
     label: formatRp(f * maxVal),
   }))
 
+  const baseY = PAD.top + cH
+
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
       <defs>
@@ -71,7 +73,6 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
       {/* Bars */}
       {data.map((d, i) => {
         const gx = PAD.left + i * groupW + groupW * 0.12
-        const baseY = PAD.top + cH
         const ih = (d.income / maxVal) * cH
         const ch = (d.cost / maxVal) * cH
         const mx = gx + barW + 4
