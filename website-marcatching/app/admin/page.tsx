@@ -25,6 +25,7 @@ import FinanceTab from './FinanceTab'
 import CashflowAnalytics from './CashflowAnalytics'
 import RichTextEditor from '@/components/RichTextEditor'
 import SecurityTab from './SecurityTab'
+import SurveyTab from './SurveyTab'
 
 // ─── Icon map ────────────────────────────────────────────────
 const ICON_OPTIONS = [
@@ -200,7 +201,7 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security'
+  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
   const [tab, setTab] = useState<TabType>('links')
   const [analyticsSubView, setAnalyticsSubView] = useState<'website' | 'cashflow'>('website')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -698,7 +699,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance','security'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance','security','survey'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -1195,6 +1196,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'orders' ? styles.navActive : ''}`} onClick={() => { setTab('orders'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Orders</button>
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
           <button className={`${styles.navItem} ${tab === 'security' ? styles.navActive : ''}`} onClick={() => { setTab('security'); setIsSidebarOpen(false) }}><Lock size={18} /> Keamanan</button>
+          <button className={`${styles.navItem} ${tab === 'survey' ? styles.navActive : ''}`} onClick={() => { setTab('survey'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Survey</button>
 
           <div style={{ position: 'relative' }}>
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
@@ -1402,6 +1404,9 @@ function AdminDashboardInner() {
 
         {/* ── SECURITY TAB ─── */}
         {tab === 'security' && <SecurityTab />}
+
+        {/* ── SURVEY TAB ─── */}
+        {tab === 'survey' && <SurveyTab />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (
