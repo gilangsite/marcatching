@@ -281,7 +281,7 @@ export default function SurveyTab() {
     try {
       const res = await fetch(appScriptUrl, {
         method: 'POST',
-        body: JSON.stringify({ action: 'uploadSurveyThumbnail', filename, mimeType: 'image/jpeg', base64 }),
+        body: JSON.stringify({ action: 'upload', filename, mimeType: 'image/jpeg', base64 }),
         redirect: 'follow',
       })
       const data = await res.json()
