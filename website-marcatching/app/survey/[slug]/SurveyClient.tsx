@@ -121,8 +121,9 @@ export default function SurveyClient({ slug }: { slug: string }) {
   )
 
   const allQs = (survey.survey_questions ?? []).sort((a,b) => a.order_index - b.order_index)
+  // fallback: if section column doesn't exist yet in DB, treat all as 'survey'
   const biodataQs = allQs.filter(q => q.section === 'biodata')
-  const surveyQs  = allQs.filter(q => q.section === 'survey')
+  const surveyQs  = allQs.filter(q => q.section === 'survey' || !q.section)
 
   const BG = 'linear-gradient(160deg,#f0f4ff 0%,#ffffff 60%)'
   const NAVBAR_H = 64
@@ -149,6 +150,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
       }
       setBiodataError('')
       setCurrentQ(0)
+      if (surveyQs.length === 0) { setPhase('consent'); return }
       setPhase('questions')
     }
 
