@@ -221,13 +221,13 @@ export default function CashflowAnalytics({
   const totalCost   = cost.reduce(  (s, r) => s + (Number(r.nominal) || 0), 0)
   const net         = totalIncome - totalCost
 
-  // ── Monthly bar chart data ──────────────────────────────────
+  // ── Daily bar chart data ──────────────────────────────────
   const monthlyData = useMemo(() => {
     const map: Record<string, { income: number; cost: number }> = {}
     const addRecord = (r: FinanceRecord, type: 'income' | 'cost') => {
       if (!r.date) return
-      const d = new Date(r.date)
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      // Use YYYY-MM-DD for daily grouping
+      const key = r.date.substring(0, 10)
       if (!map[key]) map[key] = { income: 0, cost: 0 }
       map[key][type] += Number(r.nominal) || 0
     }
@@ -236,9 +236,9 @@ export default function CashflowAnalytics({
     return Object.entries(map)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, v]) => {
-        const [y, m] = key.split('-')
+        const [y, m, d] = key.split('-')
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        return { month: `${months[parseInt(m) - 1]} ${y.slice(2)}`, income: v.income, cost: v.cost }
+        return { month: `${d} ${months[parseInt(m) - 1]}`, income: v.income, cost: v.cost }
       })
   }, [income, cost])
 

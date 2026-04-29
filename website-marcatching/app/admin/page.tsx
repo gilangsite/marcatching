@@ -2369,7 +2369,36 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                               : 0
                             return (
                               <tr key={pg.path || i}>
-                                <td style={{ fontWeight: 600, fontFamily: 'monospace', fontSize: '0.82rem' }}>{pg.path}</td>
+                                <td>
+                                  <details style={{ margin: 0, cursor: 'pointer' }}>
+                                    <summary style={{ 
+                                      outline: 'none', 
+                                      maxWidth: '150px', 
+                                      overflow: 'hidden', 
+                                      textOverflow: 'ellipsis', 
+                                      whiteSpace: 'nowrap',
+                                      fontWeight: 600,
+                                      fontSize: '0.82rem',
+                                      color: '#0d3369'
+                                    }}>
+                                      {pg.path}
+                                    </summary>
+                                    <div style={{ 
+                                      fontSize: '0.75rem', 
+                                      color: '#64748b', 
+                                      wordBreak: 'break-all', 
+                                      marginTop: 6, 
+                                      whiteSpace: 'normal',
+                                      padding: '6px 8px',
+                                      background: '#f8fafc',
+                                      borderRadius: 6,
+                                      border: '1px solid #e2e8f0',
+                                      fontWeight: 500
+                                    }}>
+                                      {pg.path}
+                                    </div>
+                                  </details>
+                                </td>
                                 <td className={styles.analyticsClickCount}>{pg.count.toLocaleString()}</td>
                                 <td>
                                   <div className={styles.analyticsBarWrap}>

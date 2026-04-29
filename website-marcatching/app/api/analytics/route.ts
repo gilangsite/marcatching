@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 
+export const dynamic = 'force-dynamic'
+
 // POST — Record analytics event (page_view or click)
 export async function POST(req: NextRequest) {
   try {
@@ -87,6 +89,21 @@ export async function GET(req: NextRequest) {
 
     // Daily trend data (for sparkline/chart)
     const dailyMap: Record<string, { views: number; clicks: number; visitors: Set<string> }> = {}
+    
+    // Fill dailyMap with all dates in range
+    const dStart = new Date(startDate)
+    const dEnd = new Date(endDate)
+    let currentD = new Date(dStart)
+    currentD.setHours(0,0,0,0)
+    const lastD = new Date(dEnd)
+    lastD.setHours(0,0,0,0)
+    
+    while (currentD <= lastD) {
+      const dayStr = currentD.toISOString().substring(0, 10)
+      dailyMap[dayStr] = { views: 0, clicks: 0, visitors: new Set() }
+      currentD.setDate(currentD.getDate() + 1)
+    }
+
     for (const ev of allEvents) {
       const day = ev.created_at.substring(0, 10) // YYYY-MM-DD
       if (!dailyMap[day]) {
