@@ -17,7 +17,20 @@ const FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 const PDF_FOLDER_ID = "1vuTdOt6_Xz4F6WQjf0KUD_B7ugT7eaFA";
 
 // Google Drive Folder ID for Survey thumbnails
+// NOTE: This folder must be owned by or explicitly shared to the Google account
+// that owns this Apps Script (not just 'anyone with link').
 const SURVEY_THUMBNAIL_FOLDER_ID = "1pLlJg2LjywNZAAreWvBwfC916erxv8w8";
+
+// Run this function in the editor to test if the folder is accessible:
+function testThumbnailFolderAccess() {
+  try {
+    var folder = DriveApp.getFolderById(SURVEY_THUMBNAIL_FOLDER_ID);
+    console.log('OK - Folder ditemukan: ' + folder.getName());
+  } catch (e) {
+    console.error('GAGAL - Folder tidak dapat diakses: ' + e.toString());
+    console.log('Solusi: Share folder tersebut ke akun Google pemilik script ini sebagai Editor.');
+  }
+}
 
 // Google Sheets ID for checkout data
 const SPREADSHEET_ID = "14QTnyV8hCvuNIGVdgcUrN42NfPKmxqmCJhw61Tut870";
@@ -46,7 +59,7 @@ var FINANCE_SPREADSHEET_ID = '1TvV_dii3oNwrxUTv_B0Mx7H-mLYk0LeHpAWglyyBGl8';
 
 function doPost(e) {
   try {
-    var rawData = e.postData ? e.postData.contents : '{}';
+    var rawData = (e && e.postData) ? e.postData.contents : '{}';
     var data = JSON.parse(rawData);
     
     // Route based on action type
@@ -152,7 +165,16 @@ function handleSurveyThumbnailUpload(data) {
   var base64Data = data.base64.split(',')[1] || data.base64;
   var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), data.mimeType || 'image/jpeg', data.filename || 'survey_thumb.jpg');
 
-  var folder = DriveApp.getFolderById(SURVEY_THUMBNAIL_FOLDER_ID);
+  // Try dedicated survey thumbnail folder first, fall back to main folder
+  var folder;
+  try {
+    folder = DriveApp.getFolderById(SURVEY_THUMBNAIL_FOLDER_ID);
+    folder.getName(); // test access
+  } catch (e) {
+    Logger.log('Survey thumbnail folder inaccessible, falling back to main folder. Error: ' + e.toString());
+    folder = DriveApp.getFolderById(FOLDER_ID);
+  }
+
   var file = folder.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
