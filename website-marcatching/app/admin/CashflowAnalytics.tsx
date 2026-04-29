@@ -86,17 +86,17 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
               <title>Cost: Rp {formatRpFull(d.cost)}</title>
             </rect>
             {/* X label */}
-            <text x={gx + barW + 2} y={H - 8} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">{d.month}</text>
+            <text x={gx + barW + 2} y={baseY + 16} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">{d.month}</text>
           </g>
         )
       })}
 
       {/* Legend */}
       <g>
-        <rect x={PAD.left} y={H - 20} width={10} height={10} rx="2" fill="#0d3369" />
-        <text x={PAD.left + 14} y={H - 11} fontSize="10" fill="#0d3369" fontWeight="700">Income</text>
-        <rect x={PAD.left + 72} y={H - 20} width={10} height={10} rx="2" fill="#cbd5e1" />
-        <text x={PAD.left + 86} y={H - 11} fontSize="10" fill="#94a3b8" fontWeight="700">Cost</text>
+        <rect x={PAD.left} y={baseY + 30} width={10} height={10} rx="2" fill="#0d3369" />
+        <text x={PAD.left + 14} y={baseY + 39} fontSize="10" fill="#0d3369" fontWeight="700">Income</text>
+        <rect x={PAD.left + 72} y={baseY + 30} width={10} height={10} rx="2" fill="#cbd5e1" />
+        <text x={PAD.left + 86} y={baseY + 39} fontSize="10" fill="#94a3b8" fontWeight="700">Cost</text>
       </g>
     </svg>
   )
