@@ -59,6 +59,7 @@ const css = `
   border-radius:24px; box-shadow:0 8px 48px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
   border:1px solid rgba(200,200,200,.4);
 }
+body { background: #f5f5f7 !important; }
 `
 
 export default function SurveyClient({ slug }: { slug: string }) {
@@ -88,7 +89,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
   function NavBar() {
     return (
       <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(255,255,255,0.85)',backdropFilter:'blur(18px) saturate(180%)',WebkitBackdropFilter:'blur(18px) saturate(180%)',borderBottom:'1px solid rgba(0,0,0,.08)',height:NAVBAR_H,display:'flex',alignItems:'center',paddingLeft:24,paddingRight:24}}>
-        <img src="/logo-type.png" alt="Marcatching" style={{height:28,objectFit:'contain'}} onError={e=>{(e.target as HTMLImageElement).src='/logo-type-white.png'}}/>
+        <img src="https://www.marcatching.com/logo-type-black.png" alt="Marcatching" style={{height:28,objectFit:'contain'}} />
       </nav>
     )
   }

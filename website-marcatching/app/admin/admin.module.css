@@ -1497,6 +1497,21 @@
     box-shadow: none !important;
     border: none !important;
     background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-after: auto;
+  }
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+  /* Force all modal wrappers to expand and not cut off the print area */
+  .cropModalOverlay, .cropModalContent, div[style*="90vh"], div[style*="overflow"] {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
   }
   .noPrint {
     display: none !important;

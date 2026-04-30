@@ -280,6 +280,7 @@ export default function SurveyTab() {
       order_index: prev.length,
       section,
     }])
+    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
   }
 
   function moveQuestion(idx: number, dir: 'up' | 'down', section: 'biodata' | 'survey' = 'survey') {
@@ -567,12 +568,18 @@ export default function SurveyTab() {
             ))}
           </div>
 
-          {/* Save */}
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', borderTop: '1px solid #f1f5f9', paddingTop: 20 }}>
-            <button className="btn btn-ghost" onClick={() => setShowForm(false)}>Batal</button>
-            <button className="btn btn-navy" onClick={handleSave} disabled={saving} style={{ minWidth: 140 }}>
-              {saving ? 'Menyimpan...' : <><Check size={14} /> Simpan Survey</>}
-            </button>
+          {/* Action Bar (Sticky Bottom) */}
+          <div style={{ position: 'sticky', bottom: -28, left: 0, right: 0, background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '16px 28px', margin: '20px -28px -28px -28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, boxShadow: '0 -8px 30px rgba(0,0,0,0.06)', borderRadius: '0 0 16px 16px' }}>
+            <div style={{ display: 'flex', gap: 12 }}>
+               <button className="btn btn-ghost" style={{ background: '#f8fafc', color: '#0d3369', border: '1px solid #e2e8f0', fontWeight: 700 }} onClick={() => addQuestion('biodata')}><Plus size={16}/> Tambah Biodata</button>
+               <button className="btn btn-navy" style={{ background: '#3b82f6', border: 'none', fontWeight: 700 }} onClick={() => addQuestion('survey')}><Plus size={16}/> Tambah Pertanyaan</button>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="btn btn-ghost" onClick={() => setShowForm(false)}>Batal</button>
+              <button className="btn btn-navy" onClick={handleSave} disabled={saving} style={{ minWidth: 140 }}>
+                {saving ? 'Menyimpan...' : <><Check size={16} /> Simpan Survey</>}
+              </button>
+            </div>
           </div>
         </div>
       ) : (
@@ -687,7 +694,7 @@ export default function SurveyTab() {
                 
                 {/* Kop Surat */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0d3369', paddingBottom: 24, marginBottom: 32 }}>
-                  <img src="/logo-type-black.png" alt="Marcatching Logo" style={{ height: 40, objectFit: 'contain' }} />
+                  <img src="https://www.marcatching.com/logo-type-black.png" alt="Marcatching Logo" style={{ height: 40, objectFit: 'contain' }} />
                   <div style={{ textAlign: 'right' }}>
                     <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Survey Document
