@@ -5,7 +5,8 @@ import Cropper from 'react-easy-crop'
 import RichTextEditor from '@/components/RichTextEditor'
 import {
   Plus, Trash2, Pencil, X, Check, GripVertical, Upload,
-  ToggleLeft, ToggleRight, Star, ChevronDown, ChevronUp
+  ToggleLeft, ToggleRight, Star, ChevronDown, ChevronUp,
+  Printer, Download, FileText
 } from 'lucide-react'
 import styles from './admin.module.css'
 
@@ -183,6 +184,13 @@ export default function SurveyTab() {
   const [editing, setEditing] = useState<Survey | null>(null)
   const [saving, setSaving] = useState(false)
 
+  // Tabs & Results
+  const [activeTab, setActiveTab] = useState<'manage' | 'results'>('manage')
+  const [resultsSurveyTitle, setResultsSurveyTitle] = useState('')
+  const [responses, setResponses] = useState<any[]>([])
+  const [loadingResponses, setLoadingResponses] = useState(false)
+  const [selectedResponse, setSelectedResponse] = useState<any | null>(null)
+
   // Form state
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -211,7 +219,31 @@ export default function SurveyTab() {
     setLoading(false)
   }
 
+  async function fetchResponses(title: string) {
+    if (!title) return
+    setLoadingResponses(true)
+    try {
+      const res = await fetch(`/api/surveys/responses?surveyTitle=${encodeURIComponent(title)}`)
+      const data = await res.json()
+      if (Array.isArray(data)) {
+        setResponses(data)
+      } else {
+        setResponses([])
+      }
+    } catch (err) {
+      console.error(err)
+      setResponses([])
+    }
+    setLoadingResponses(false)
+  }
+
   useEffect(() => { fetchSurveys() }, [])
+
+  useEffect(() => {
+    if (activeTab === 'results' && resultsSurveyTitle) {
+      fetchResponses(resultsSurveyTitle)
+    }
+  }, [activeTab, resultsSurveyTitle])
 
   function openNew() {
     setEditing(null)
@@ -349,12 +381,32 @@ export default function SurveyTab() {
   return (
     <div className={styles.tabContent} style={{ maxWidth: 960 }}>
       {/* Header */}
-      <div className={styles.contentHeader}>
-        <div>
-          <h1 className={styles.contentTitle}>Survey</h1>
-          <p className={styles.contentDesc}>Kelola survey Marcatching — buat, aktifkan, dan lihat hasilnya.</p>
+      <div className={styles.contentHeader} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <div>
+            <h1 className={styles.contentTitle}>Survey</h1>
+            <p className={styles.contentDesc}>Kelola survey Marcatching — buat, aktifkan, dan lihat hasilnya.</p>
+          </div>
+          {activeTab === 'manage' && (
+            <button className="btn btn-navy" onClick={openNew}><Plus size={16} /> Buat Survey</button>
+          )}
         </div>
-        <button className="btn btn-navy" onClick={openNew}><Plus size={16} /> Buat Survey</button>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid #e2e8f0', width: '100%', paddingBottom: 10 }}>
+          <button
+            onClick={() => setActiveTab('manage')}
+            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'manage' ? 800 : 500, color: activeTab === 'manage' ? '#0d3369' : '#64748b', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'manage' ? '2px solid #0d3369' : '2px solid transparent' }}
+          >
+            Kelola Survey
+          </button>
+          <button
+            onClick={() => setActiveTab('results')}
+            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'results' ? 800 : 500, color: activeTab === 'results' ? '#0d3369' : '#64748b', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'results' ? '2px solid #0d3369' : '2px solid transparent' }}
+          >
+            Hasil Survey
+          </button>
+        </div>
       </div>
 
       {/* Crop modal */}
@@ -386,8 +438,9 @@ export default function SurveyTab() {
         </div>
       )}
 
-      {/* Survey form */}
-      {showForm ? (
+      {/* Main Content */}
+      {activeTab === 'manage' ? (
+        showForm ? (
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 28 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0d3369' }}>
@@ -564,6 +617,126 @@ export default function SurveyTab() {
               ))}
             </div>
           )}
+        </div>
+      ) ) : (
+        /* Results View */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#0d3369' }}>Pilih Survey:</label>
+            <select className="select" value={resultsSurveyTitle} onChange={e => setResultsSurveyTitle(e.target.value)} style={{ width: 240 }}>
+              <option value="">-- Pilih Survey --</option>
+              {surveys.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}
+            </select>
+          </div>
+
+          {loadingResponses ? (
+             <div className={styles.loading}>Memuat hasil survey...</div>
+          ) : !resultsSurveyTitle ? (
+             <div className={styles.emptyState}>Pilih survey dari dropdown di atas untuk melihat hasilnya.</div>
+          ) : responses.length === 0 ? (
+             <div className={styles.emptyState}>Belum ada respon untuk survey ini, atau data belum ditarik dari Apps Script. Pastikan script update sudah dipasang.</div>
+          ) : (
+             <div className={styles.ordersTable}>
+               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                 <thead>
+                   <tr>
+                     <th>No</th>
+                     <th>Timestamp</th>
+                     <th>Nama / Email</th>
+                     <th>Aksi</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   {responses.map((resp, i) => {
+                     const name = resp.Nama || resp.nama || resp.Name || resp.name || '-';
+                     const email = resp.Email || resp.email || '-';
+                     const ts = resp.Timestamp || resp.timestamp || resp.submittedAt || '-';
+                     return (
+                       <tr key={i}>
+                         <td>{i + 1}</td>
+                         <td>{ts}</td>
+                         <td>{name !== '-' ? name : email}</td>
+                         <td>
+                           <button onClick={() => setSelectedResponse(resp)} className="btn btn-navy" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                             <FileText size={14} /> Preview
+                           </button>
+                         </td>
+                       </tr>
+                     )
+                   })}
+                 </tbody>
+               </table>
+             </div>
+          )}
+        </div>
+      )}
+
+      {/* Document Preview Modal */}
+      {selectedResponse && (
+        <div className={styles.cropModalOverlay} style={{ padding: '20px 0', zIndex: 9999 }}>
+          <div className={styles.cropModalContent} style={{ maxWidth: 800, width: '90%', height: '90vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+            {/* Header Modal */}
+            <div className={`${styles.cropModalHeader} ${styles.noPrint}`} style={{ flexShrink: 0, background: '#fff' }}>
+              <h3 className={styles.cropModalTitle}>Preview Dokumen Survey</h3>
+              <button className={styles.closeBtn} onClick={() => setSelectedResponse(null)}><X size={18} /></button>
+            </div>
+            
+            {/* Document Area */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', position: 'relative' }}>
+              <div className={styles.printArea} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '48px 56px', minHeight: 800, margin: '0 auto', maxWidth: 700, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', position: 'relative' }}>
+                
+                {/* Kop Surat */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0d3369', paddingBottom: 24, marginBottom: 32 }}>
+                  <img src="/logo-type-black.png" alt="Marcatching Logo" style={{ height: 40, objectFit: 'contain' }} />
+                  <div style={{ textAlign: 'right' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Survey Document
+                    </h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                      {resultsSurveyTitle}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div style={{ marginBottom: 32 }}>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 16 }}>
+                    <strong>Tanggal Submit:</strong> {selectedResponse.Timestamp || selectedResponse.timestamp || selectedResponse.submittedAt || new Date().toISOString()}
+                  </div>
+                  
+                  {Object.keys(selectedResponse).filter(k => k.toLowerCase() !== 'timestamp' && k.toLowerCase() !== 'submittedat').map((key, i) => (
+                    <div key={i} style={{ marginBottom: 20, breakInside: 'avoid' }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>{key}</div>
+                      <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: 1.5, background: '#f8fafc', padding: '10px 14px', borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                        {selectedResponse[key]?.toString() || '-'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className={styles.noPrint} style={{ padding: 20, background: '#fff', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+              <button className="btn btn-ghost" onClick={() => {
+                const content = `# Marcatching Survey Document\n\n**Survey:** ${resultsSurveyTitle}\n**Tanggal:** ${selectedResponse.Timestamp || selectedResponse.submittedAt || new Date().toISOString()}\n\n` + 
+                  Object.keys(selectedResponse).filter(k => k.toLowerCase() !== 'timestamp' && k.toLowerCase() !== 'submittedat').map(k => `### ${k}\n${selectedResponse[k]}\n`).join('\n')
+                const blob = new Blob([content], { type: 'text/markdown' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `survey-${resultsSurveyTitle.replace(/\s+/g, '-')}-${Date.now()}.md`
+                a.click()
+              }}>
+                <Download size={16} /> Download .md
+              </button>
+              <button className="btn btn-navy" onClick={() => window.print()}>
+                <Printer size={16} /> Print PDF
+              </button>
+            </div>
+
+          </div>
         </div>
       )}
     </div>

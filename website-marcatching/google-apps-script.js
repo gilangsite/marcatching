@@ -91,6 +91,8 @@ function doPost(e) {
       return handleSurveySubmit(data);
     } else if (data.action === 'uploadSurveyThumbnail') {
       return handleSurveyThumbnailUpload(data);
+    } else if (data.action === 'surveyRead') {
+      return handleSurveyRead(data);
     } else {
       return ContentService.createTextOutput(JSON.stringify({
         status: 'error',
@@ -935,5 +937,52 @@ function sendSurveyNotificationEmail(surveyTitle, fullName, email, whatsapp, ans
     });
   } catch (e) {
     Logger.log('sendSurveyNotificationEmail error: ' + e.toString());
+  }
+}
+
+// ==========================================================
+// SURVEY READ HANDLER
+// Membaca data survey berdasarkan judul (nama sheet)
+// ==========================================================
+function handleSurveyRead(data) {
+  var surveyTitle = data.surveyTitle;
+  if (!surveyTitle) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: 'surveyTitle is required' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  try {
+    var ss = SpreadsheetApp.openById(SURVEY_SPREADSHEET_ID);
+    var sheetName = surveyTitle.replace(/[\/\\?\*\[\]':]/g, ' ').substring(0, 100).trim();
+    var sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    var rangeValues = sheet.getDataRange().getValues();
+    if (rangeValues.length <= 1) {
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    var headers = rangeValues[0];
+    var rows = [];
+    
+    for (var i = 1; i < rangeValues.length; i++) {
+      var rowObj = {};
+      for (var j = 0; j < headers.length; j++) {
+        rowObj[headers[j]] = rangeValues[i][j];
+      }
+      rows.push(rowObj);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: rows }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
