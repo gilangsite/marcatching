@@ -39,7 +39,7 @@ function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } }
 }
 
 const stagger = {
@@ -49,17 +49,17 @@ const stagger = {
 
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
+  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' as const } }
 }
 
 const slideLeft = {
   hidden: { opacity: 0, x: -28 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } }
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' as const } }
 }
 
 const slideRight = {
   hidden: { opacity: 0, x: 28 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } }
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' as const } }
 }
 
 // ── Canvas particle types ──────────────────────────────────
