@@ -100,7 +100,8 @@ export default async function LandingPage() {
                   if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
                   if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
                   if (link.type === 'product' || link.url?.includes('/product/')) {
-                    const slug = link.url?.replace('/product/', '')
+                    // Ekstrak slug dari URL relatif (/product/slug) atau absolute (https://marcatching.com/product/slug)
+                    const slug = link.url?.match(/\/product\/([^/?#]+)/)?.[1]
                     const product = products.find(p => p.slug === slug)
                     if (product) {
                       let posterUrl = product.image_url || ''
@@ -111,7 +112,7 @@ export default async function LandingPage() {
                       return (
                         <div key={link.id} className={styles.productGrid} style={{marginTop: 0, marginBottom: 8}}>
                           <ProductCardTracker linkId={link.id} linkTitle={link.title}>
-                            <Link href={`/product/${product.slug}`} className={styles.productCard}>
+                            <a href={`https://marcatching.com/product/${product.slug}`} className={styles.productCard}>
                               <div className={styles.productPoster}>
                                 {posterUrl ? (
                                   <Image
@@ -134,7 +135,7 @@ export default async function LandingPage() {
                                   <p className={styles.productCardSub}>{product.sub_headline}</p>
                                 )}
                               </div>
-                            </Link>
+                            </a>
                           </ProductCardTracker>
                         </div>
                       )
