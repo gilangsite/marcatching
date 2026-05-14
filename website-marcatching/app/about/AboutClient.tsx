@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
@@ -10,7 +11,7 @@ import {
   ArrowRight, Check, X, Mail,
   TrendingUp, Layers, Cpu, Target,
   Hammer, Compass, BookOpen, Activity,
-  ChevronDown
+  ChevronDown, Send
 } from 'lucide-react'
 import type { NavLink } from '@/lib/supabaseClient'
 import styles from './about.module.css'
@@ -49,11 +50,106 @@ const slideRight = {
   visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 55, damping: 18 } }
 }
 
+// ── Canvas particle types ──────────────────────────────────
+interface Particle {
+  x: number; y: number
+  vx: number; vy: number
+  size: number
+  opacity: number; opacityDir: number; opacitySpeed: number
+  color: string; blur: number
+}
+
+const COLORS = ['255,255,255', '165,243,252', '191,219,254', '203,213,225']
+
+function makeParticle(w: number, h: number): Particle {
+  return {
+    x: Math.random() * w,
+    y: Math.random() * h,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: (Math.random() - 0.5) * 0.35,
+    size: Math.random() * 2.2 + 0.4,
+    opacity: Math.random(),
+    opacityDir: Math.random() > 0.5 ? 1 : -1,
+    opacitySpeed: Math.random() * 0.008 + 0.003,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    blur: Math.random() * 8 + 2,
+  }
+}
+
 export default function AboutClient({ navLinks, config }: { navLinks: NavLink[], config: any }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [waOpen, setWaOpen] = useState(false)
+  const [waName, setWaName] = useState('')
+  const [waMsg, setWaMsg] = useState('')
+
+  // ── Canvas particle animation ──────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let raf: number
+    let particles: Particle[] = []
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      particles = Array.from({ length: 110 }, () => makeParticle(canvas.width, canvas.height))
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+
+    const draw = () => {
+      const { width, height } = canvas
+      ctx.clearRect(0, 0, width, height)
+
+      for (const p of particles) {
+        // pulse opacity
+        p.opacity += p.opacityDir * p.opacitySpeed
+        if (p.opacity >= 1) { p.opacity = 1; p.opacityDir = -1 }
+        if (p.opacity <= 0) { p.opacity = 0; p.opacityDir = 1 }
+
+        // move
+        p.x += p.vx
+        p.y += p.vy
+        if (p.x < 0) p.x = width
+        if (p.x > width) p.x = 0
+        if (p.y < 0) p.y = height
+        if (p.y > height) p.y = 0
+
+        // draw glow
+        ctx.save()
+        ctx.globalAlpha = p.opacity * 0.9
+        ctx.shadowBlur = p.blur * 6
+        ctx.shadowColor = `rgba(${p.color},0.9)`
+        ctx.fillStyle = `rgba(${p.color},1)`
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.restore()
+      }
+
+      raf = requestAnimationFrame(draw)
+    }
+
+    draw()
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  // ── WA send handler ────────────────────────────────────
+  const handleWaSend = () => {
+    if (!waName.trim() && !waMsg.trim()) return
+    const text = `Halo, nama saya ${waName.trim()}.\n\n${waMsg.trim()}`
+    window.open(`https://wa.me/62895412747584?text=${encodeURIComponent(text)}`, '_blank')
+  }
+
   const { scrollYProgress } = useScroll()
   const opacityFade = useTransform(scrollYProgress, [0, 0.2], [1, 0])
-  const scaleZoom = useTransform(scrollYProgress, [0, 0.2], [1, 1.08])
-  const blurFade = useTransform(scrollYProgress, [0, 0.2], ['blur(0px)', 'blur(8px)'])
 
   return (
     <>
@@ -61,16 +157,14 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
 
       <main className={styles.main}>
 
-        {/* ── 1. HERO ── */}
+        {/* ── 1. HERO (canvas particle animation) ── */}
         <div className={styles.heroWrapper}>
-          <motion.div
-            className={styles.heroBackground}
-            style={{ opacity: opacityFade, scale: scaleZoom, filter: blurFade }}
-          />
+          <canvas ref={canvasRef} className={styles.heroCanvas} />
           <div className={styles.heroOverlay} />
 
           <motion.section
             className={styles.hero}
+            style={{ opacity: opacityFade }}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, ease: 'easeOut' }}
@@ -487,6 +581,93 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
       </main>
 
       <Footer />
+
+      {/* ── WhatsApp Floating Widget ── */}
+      {/* Trigger button */}
+      <motion.button
+        className={styles.waBtn}
+        onClick={() => setWaOpen(true)}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        title="Chat via WhatsApp"
+        aria-label="Open WhatsApp contact"
+      >
+        <Image src="/logo-shape-white.png" alt="Marcatching" width={28} height={28} />
+      </motion.button>
+
+      {/* Popup */}
+      <AnimatePresence>
+        {waOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className={styles.waBackdrop}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setWaOpen(false)}
+            />
+
+            {/* Popup panel */}
+            <motion.div
+              className={styles.waPopup}
+              initial={{ opacity: 0, scale: 0.25, x: '35vw', y: '35vh' }}
+              animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+              exit={{ opacity: 0, scale: 0.25, x: '35vw', y: '35vh' }}
+              transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+            >
+              {/* Header */}
+              <div className={styles.waHeader}>
+                <div className={styles.waHeaderLeft}>
+                  <Image src="/logo-shape-white.png" alt="Marcatching" width={24} height={24} />
+                  <div>
+                    <p className={styles.waHeaderName}>Marcatching</p>
+                    <p className={styles.waHeaderSub}>via WhatsApp</p>
+                  </div>
+                </div>
+                <button className={styles.waClose} onClick={() => setWaOpen(false)} aria-label="Close">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Form */}
+              <div className={styles.waBody}>
+                <p className={styles.waGreeting}>Halo! Ada yang bisa kami bantu? Isi form di bawah, kami akan membalas via WhatsApp.</p>
+
+                <div className={styles.waField}>
+                  <label className={styles.waLabel}>Nama kamu</label>
+                  <input
+                    className={styles.waInput}
+                    type="text"
+                    placeholder="Masukkan nama kamu"
+                    value={waName}
+                    onChange={e => setWaName(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.waField}>
+                  <label className={styles.waLabel}>Pesan</label>
+                  <textarea
+                    className={styles.waTextarea}
+                    rows={4}
+                    placeholder="Tulis pesanmu di sini..."
+                    value={waMsg}
+                    onChange={e => setWaMsg(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  className={styles.waSend}
+                  onClick={handleWaSend}
+                  disabled={!waName.trim() && !waMsg.trim()}
+                >
+                  <Send size={16} /> Kirim via WhatsApp
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   )
 }

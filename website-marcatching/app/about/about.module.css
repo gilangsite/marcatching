@@ -17,20 +17,27 @@
   overflow: hidden;
 }
 
-.heroBackground {
+/* Canvas replaces the photo background */
+.heroCanvas {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('/about_system_abstract.png');
-  background-size: cover;
-  background-position: center;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
   z-index: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(30,58,138,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(8,145,178,0.10) 0%, transparent 60%),
+              #050505;
 }
 
+/* Gradient fade to black at the bottom */
 .heroOverlay {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(5,5,5,0.35) 0%, rgba(5,5,5,0.80) 50%, #050505 100%);
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to bottom, transparent, #050505);
   z-index: 1;
+  pointer-events: none;
 }
 
 .hero {
@@ -751,5 +758,183 @@
 @media (max-width: 480px) {
   .credGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── WhatsApp Floating Widget ── */
+
+/* Trigger button — fixed, bottom-right */
+.waBtn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #050505;
+  border: 1px solid rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.waBtn:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 24px rgba(255,255,255,0.08);
+}
+
+/* Backdrop */
+.waBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9001;
+}
+
+/* Popup panel — fixed, centered */
+.waPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9002;
+  width: 100%;
+  max-width: 420px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+}
+
+/* Header */
+.waHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+}
+
+.waHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.waHeaderName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.waHeaderSub {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.35);
+  margin-top: 2px;
+}
+
+.waClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  padding: 4px;
+}
+.waClose:hover { color: #ffffff; }
+
+/* Body */
+.waBody {
+  padding: 24px;
+}
+
+.waGreeting {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.waField {
+  margin-bottom: 16px;
+}
+
+.waLabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.waInput,
+.waTextarea {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+.waInput:focus,
+.waTextarea:focus {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.06);
+}
+.waInput::placeholder,
+.waTextarea::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+.waSend {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 24px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.waSend:hover:not(:disabled) {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+}
+.waSend:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .waPopup {
+    max-width: calc(100vw - 32px);
+  }
+  .waBtn {
+    bottom: 20px;
+    right: 20px;
   }
 }
