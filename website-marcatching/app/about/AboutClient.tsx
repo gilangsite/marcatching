@@ -454,7 +454,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                   if (item.type === 'product' && item.data) {
                     const product = item.data
                     return (
-                      <Link key={item.id} href={`/store/${product.slug}`} className={styles.articleCard}>
+                      <Link key={item.id} href={`/product/${product.slug}`} className={styles.articleCard}>
                         <div className={styles.articleThumb}>
                           {product.image_url ? (
                             <Image src={product.image_url} alt={product.name} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
