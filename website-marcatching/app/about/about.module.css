@@ -1369,7 +1369,7 @@
 }
 
 /* ── Typography & Mobile Fixes ── */
-h1, h2, h3, h4, .sectionTitle {
+:global(h1), :global(h2), :global(h3), :global(h4), .sectionTitle {
   text-wrap: balance;
 }
 
