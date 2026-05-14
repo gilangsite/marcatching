@@ -56,8 +56,8 @@ function formatRupiah(num: number): string {
 
 // Konversi URL relatif menjadi absolute ke marcatching.com
 // Diperlukan karena halaman ini berjalan di subdomain page.marcatching.com
-function toAbsoluteUrl(url: string | null | undefined): string | null | undefined {
-  if (!url) return url
+function toAbsoluteUrl(url: string | null | undefined): string | null {
+  if (!url) return null
   if (url.startsWith('/')) return `https://marcatching.com${url}`
   return url
 }
