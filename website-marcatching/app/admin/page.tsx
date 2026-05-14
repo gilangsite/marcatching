@@ -68,11 +68,16 @@ function formatWaNumber(wa: string): string {
 function cleanUrl(url: string | null | undefined): string {
   if (!url) return ''
   let finalUrl = url.trim()
-  finalUrl = finalUrl.replace(/^(https?:\/\/)?(www\.)?marcatching\.com\/?/i, '/')
-  if (finalUrl && !finalUrl.startsWith('http') && !finalUrl.startsWith('/') && !finalUrl.startsWith('#') && !finalUrl.startsWith('mailto:') && !finalUrl.startsWith('tel:')) {
-    finalUrl = 'https://' + finalUrl
+  // Jika URL sudah punya protocol (http/https), kembalikan apa adanya
+  if (finalUrl.startsWith('http://') || finalUrl.startsWith('https://')) {
+    return finalUrl
   }
-  return finalUrl
+  // Jika path relatif (/survey, /about, dll), kembalikan apa adanya
+  if (finalUrl.startsWith('/') || finalUrl.startsWith('#') || finalUrl.startsWith('mailto:') || finalUrl.startsWith('tel:')) {
+    return finalUrl
+  }
+  // Jika tidak punya protocol, tambahkan https://
+  return 'https://' + finalUrl
 }
 
 // ─── Sortable Item ─────────────────────────────────────────

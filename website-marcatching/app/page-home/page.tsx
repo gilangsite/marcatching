@@ -54,8 +54,19 @@ function formatRupiah(num: number): string {
   return 'Rp ' + num.toLocaleString('id-ID')
 }
 
+// Konversi URL relatif menjadi absolute ke marcatching.com
+// Diperlukan karena halaman ini berjalan di subdomain page.marcatching.com
+function toAbsoluteUrl(url: string | null | undefined): string | null | undefined {
+  if (!url) return url
+  if (url.startsWith('/')) return `https://marcatching.com${url}`
+  return url
+}
+
 export default async function LandingPage() {
-  const [links, contact, products, navLinks] = await Promise.all([getLinks(), getContact(), getProducts(), getNavLinks()])
+  const [rawLinks, contact, products, navLinks] = await Promise.all([getLinks(), getContact(), getProducts(), getNavLinks()])
+
+  // Normalisasi semua link URL agar mengarah ke marcatching.com bukan subdomain page.
+  const links = rawLinks.map(link => ({ ...link, url: toAbsoluteUrl(link.url) }))
 
   return (
     <>
