@@ -466,8 +466,8 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                           <p className={styles.articleExcerpt}>{product.sub_headline}</p>
                           <div className={styles.articleMeta}>
                             <div className={styles.articleAuthor}>
-                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#f59e0b', color: 'white' }}>$</div>
-                              <span className={styles.articleAuthorName}>Premium</span>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#f59e0b', color: 'white' }}>ST</div>
+                              <span className={styles.articleAuthorName}>Store</span>
                             </div>
                             <div className={styles.articleMetaRight}>
                               {product.price_after_discount > 0 && (
@@ -486,7 +486,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                   if (item.type === 'survey' && item.data) {
                     const survey = item.data
                     return (
-                      <Link key={item.id} href={`/survey`} className={styles.articleCard}>
+                      <Link key={item.id} href={`/survey/${survey.slug}`} className={styles.articleCard}>
                         <div className={styles.articleThumb}>
                           {survey.image_url ? (
                             <Image src={survey.image_url.includes('drive.google.com') ? survey.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : survey.image_url} alt={survey.title} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
@@ -495,11 +495,13 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                         </div>
                         <div className={styles.articleBody}>
                           <h2 className={styles.articleTitle}>{survey.title}</h2>
-                          <p className={styles.articleExcerpt}>{survey.description || 'Diagnosis marketing bisnismu.'}</p>
+                          <p className={styles.articleExcerpt}>
+                            {survey.description ? survey.description.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 'Diagnosis marketing bisnismu.'}
+                          </p>
                           <div className={styles.articleMeta}>
                             <div className={styles.articleAuthor}>
-                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#2563eb', color: 'white' }}>✓</div>
-                              <span className={styles.articleAuthorName}>Diagnostics</span>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#2563eb', color: 'white' }}>SV</div>
+                              <span className={styles.articleAuthorName}>Survey</span>
                             </div>
                             <div className={styles.articleMetaRight}>
                               <span className={styles.articleViews}><Share2 size={11} /> Start</span>
@@ -524,8 +526,8 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                           <p className={styles.articleExcerpt}>Insight praktis dan edukasi marketing yang siap diaplikasikan.</p>
                           <div className={styles.articleMeta}>
                             <div className={styles.articleAuthor}>
-                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#e1306c', color: 'white' }}>M</div>
-                              <span className={styles.articleAuthorName}>Marcatching</span>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#e1306c', color: 'white' }}>CT</div>
+                              <span className={styles.articleAuthorName}>Content</span>
                             </div>
                             <div className={styles.articleMetaRight}>
                               <span className={styles.articleViews}><ExternalLink size={11} /> View</span>
