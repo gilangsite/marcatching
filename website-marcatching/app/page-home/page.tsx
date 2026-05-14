@@ -96,10 +96,11 @@ export default async function LandingPage() {
             <div className={styles.linksList}>
               {links.length > 0 ? (
                 links.map((link, i) => {
+                  // Strict type-based rendering — no URL fallback detection
                   if (link.type === 'text') return <TextBlock key={link.id} link={link} />
                   if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
                   if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
-                  if (link.type === 'product' || link.url?.includes('/product/')) {
+                  if (link.type === 'product') {
                     // Ekstrak slug dari URL relatif (/product/slug) atau absolute (https://marcatching.com/product/slug)
                     const slug = link.url?.match(/\/product\/([^/?#]+)/)?.[1]
                     const product = products.find(p => p.slug === slug)
@@ -141,6 +142,7 @@ export default async function LandingPage() {
                       )
                     }
                   }
+                  // Default: render as button (type === 'button' or unknown)
                   return <ButtonCard key={link.id} link={link} index={i} />
                 })
               ) : (
