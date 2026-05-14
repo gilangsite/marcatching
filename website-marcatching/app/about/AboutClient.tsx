@@ -12,10 +12,21 @@ import {
   TrendingUp, Layers, Cpu, Target,
   Hammer, Compass, BookOpen, Activity,
   ChevronDown, Send,
-  FileText, Share2, ClipboardList, ShoppingBag, ExternalLink
+  FileText, Share2, ClipboardList, ShoppingBag, ExternalLink, Eye
 } from 'lucide-react'
-import type { NavLink } from '@/lib/supabaseClient'
+import type { NavLink, Article } from '@/lib/supabaseClient'
 import styles from './about.module.css'
+
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function getFirstImageFromContent(content: any[]): string | null {
+  if (!Array.isArray(content)) return null
+  const block = content.find((b: any) => b.type === 'image' && b.url)
+  return block ? getDriveThumb(block.url) : null
+}
 
 function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
   if (!url) return null
@@ -97,7 +108,7 @@ function useCountUp(target: number, inView: boolean, duration = 1800) {
   return count
 }
 
-export default function AboutClient({ navLinks, config }: { navLinks: NavLink[], config: any }) {
+export default function AboutClient({ navLinks, config, latestArticles }: { navLinks: NavLink[], config: any, latestArticles?: Article[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
@@ -385,25 +396,72 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
             </motion.div>
 
             <motion.div
+              className={styles.articleGrid}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-40px' }}
+              variants={stagger}
+            >
+              {latestArticles?.map(article => {
+                const thumb = getFirstImageFromContent(article.content)
+                const cat = (article as any).article_categories
+                const author = (article as any).article_authors
+                return (
+                  <Link key={article.id} href={`/article/${article.slug}`} className={styles.articleCard}>
+                    <div className={styles.articleThumb}>
+                      {thumb
+                        ? (
+                          <Image
+                            src={thumb}
+                            alt={article.title}
+                            fill
+                            className={styles.articleThumbImg}
+                            sizes="(max-width: 640px) 100vw, 300px"
+                          />
+                        )
+                        : <div className={styles.articleThumbPlaceholder}><span>M</span></div>
+                      }
+                      {cat && <span className={styles.articleCatBadge}>{cat.name}</span>}
+                    </div>
+                    <div className={styles.articleBody}>
+                      <h2 className={styles.articleTitle}>{article.title}</h2>
+                      {article.excerpt && <p className={styles.articleExcerpt}>{article.excerpt}</p>}
+                      <div className={styles.articleMeta}>
+                        {author && (
+                          <div className={styles.articleAuthor}>
+                            {author.photo_url ? (
+                              <div className={styles.articleAuthorAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
+                                <Image
+                                  src={getDriveThumb(author.photo_url, 'w80-h80') || ''}
+                                  alt={author.name}
+                                  fill
+                                  style={{ objectFit: 'cover' }}
+                                />
+                              </div>
+                            ) : (
+                              <div className={styles.articleAuthorAvatarPlaceholder}>{author.name[0]}</div>
+                            )}
+                            <span className={styles.articleAuthorName}>{author.name}</span>
+                          </div>
+                        )}
+                        <div className={styles.articleMetaRight}>
+                          <span className={styles.articleDate}>{formatDate(article.published_at)}</span>
+                          <span className={styles.articleViews}><Eye size={11} /> {article.view_count}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </motion.div>
+
+            <motion.div
               className={styles.ecoGrid}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-40px' }}
               variants={stagger}
             >
-              {/* Card 1 — Articles */}
-              <motion.button
-                className={styles.ecoCard}
-                variants={fadeUp}
-                onClick={() => setActiveModal('articles')}
-                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
-              >
-                <div className={styles.ecoIconWrap}><FileText size={20} /></div>
-                <h3 className={styles.ecoTitle}>Articles &amp; Intelligence</h3>
-                <p className={styles.ecoDesc}>Membongkar tren, AI, consumer psychology, dan marketing strategy menjadi insight yang bisa dipakai untuk mengambil keputusan bisnis.</p>
-                <span className={styles.ecoCta}>Read Articles <ExternalLink size={13} /></span>
-              </motion.button>
-
               {/* Card 2 — Social Media */}
               <motion.button
                 className={styles.ecoCard}

@@ -54,7 +54,15 @@ export default async function AboutPage() {
 
   const config = configRes || defaultConfig
 
+  // Fetch Latest Articles
+  const { data: articlesRes } = await supabase
+    .from('articles')
+    .select('*, article_categories(name, slug), article_authors(name, photo_url)')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+    .limit(3)
+
   return (
-    <AboutClient navLinks={navLinks} config={config} />
+    <AboutClient navLinks={navLinks} config={config} latestArticles={articlesRes || []} />
   )
 }
