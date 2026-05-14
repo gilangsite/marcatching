@@ -151,7 +151,7 @@
 
 /* ── Generic Section ── */
 .section {
-  padding: 120px 24px;
+  padding: 60px 24px;
   position: relative;
   z-index: 10;
 }

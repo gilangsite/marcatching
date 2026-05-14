@@ -6,10 +6,10 @@ import AboutClient from './about/AboutClient'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'About | Marcatching',
+  title: 'Marcatching - Marketing Intelligence',
   description: 'Marketing isn\'t selling. It\'s system design. Kami membongkar cara kerja sistem di balik kebisingan pasar.',
   openGraph: {
-    title: 'About | Marcatching',
+    title: 'Marcatching - Marketing Intelligence',
     description: 'Marketing isn\'t selling. It\'s system design.',
     url: 'https://marcatching.com',
   },

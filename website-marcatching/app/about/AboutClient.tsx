@@ -38,8 +38,8 @@ function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
 }
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 36 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 55, damping: 18 } }
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6 } }
 }
 
 const stagger = {
@@ -53,13 +53,13 @@ const fadeIn = {
 }
 
 const slideLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 55, damping: 18 } }
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6 } }
 }
 
 const slideRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 55, damping: 18 } }
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6 } }
 }
 
 // ── Canvas particle types ──────────────────────────────────
@@ -188,12 +188,6 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
     <>
       <Navbar navLinks={navLinks} />
 
-      {/* ── Scroll Progress Bar ── */}
-      <motion.div
-        className={styles.scrollProgress}
-        style={{ scaleX: scrollYProgress }}
-      />
-
       <main className={styles.main}>
 
         {/* ── 1. HERO (canvas particle animation) ── */}
@@ -205,11 +199,10 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
           <motion.section
             className={styles.hero}
             style={{ opacity: opacityFade }}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.85, ease: 'easeOut' }}
           >
-            <span className={styles.heroTag}>What is Marcatching</span>
             <h1 className={styles.heroTitle}>
               Build a Business That<br />Learns Faster Than<br />the Market.
             </h1>
@@ -271,7 +264,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                 Banyak pemilik bisnis percaya bahwa AI akan mengubah cara mereka bekerja. Namun, keyakinan saja tidak cukup. Tantangan sebenarnya bukan lagi &quot;apakah bisnis harus menggunakan AI&quot;, melainkan &quot;bagaimana AI diintegrasikan ke dalam sistem marketing, content production, customer journey, dan decision-making sehari-hari.&quot;
               </p>
               <p className={styles.textBlock}>
-                Ketimpangan ini disebabkan oleh kesenjangan talenta digital. Marcatching hadir untuk memecah kebuntuan ini — menjembatani ruang antara wacana integrasi AI dengan implementasi sistem cerdas pada marketing intelligence.
+                Ketimpangan ini disebabkan oleh kesenjangan talenta digital. Marcatching hadir untuk memecah kebuntuan ini, menjembatani ruang antara wacana integrasi AI dengan implementasi sistem cerdas pada marketing intelligence.
               </p>
               <p className={styles.dataNote}>
                 Data should not decorate the page. Data should create urgency.
@@ -325,7 +318,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                 What Marcatching<br />Actually Does
               </motion.h2>
               <motion.p className={styles.sectionSubtitle} variants={fadeUp}>
-                Bukan sekadar belajar marketing — ini sistem untuk business growth.
+                Bukan sekadar belajar marketing, ini sistem untuk business growth.
               </motion.p>
             </motion.div>
 
@@ -400,7 +393,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
                       From Insight<br />to Impact
                     </motion.h2>
                     <motion.p className={styles.ecoIntro} variants={fadeUp}>
-                      Marcatching tidak berhenti sebagai ide. Kami membangun ekosistem yang bergerak dari edukasi, validasi, hingga implementasi — melalui artikel, konten sosial media, survey gratis untuk UMKM, dan course yang bisa langsung diakses.
+                      Marcatching tidak berhenti sebagai ide. Kami membangun ekosistem yang bergerak dari edukasi, validasi, hingga implementasi melalui artikel, konten sosial media, survey gratis untuk UMKM, dan course yang bisa langsung diakses.
                     </motion.p>
                   </>
                 )}
@@ -710,7 +703,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
 
                 <div className={styles.founderBelief}>
                   <p className={styles.founderBeliefText}>
-                    Marcatching was created from one belief: most businesses do not need more noise. They need a clearer system — one that helps them understand their market, design stronger perception, produce better content, and turn attention into measurable business outcomes.
+                    Marcatching was created from one belief: most businesses do not need more noise. They need a clearer system, one that helps them understand their market, design stronger perception, produce better content, and turn attention into measurable business outcomes.
                   </p>
                 </div>
               </motion.div>
