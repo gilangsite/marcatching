@@ -1,159 +1,106 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
-import type { Link as LinkType, Contact, Product, NavLink } from '@/lib/supabaseClient'
-import Navbar from '@/components/Navbar'
-import ButtonCard from '@/components/ButtonCard'
-import TextBlock from '@/components/TextBlock'
-import ImageCarousel from '@/components/ImageCarousel'
-import VideoEmbed from '@/components/VideoEmbed'
-import FloatingLogo from '@/components/FloatingLogo'
-import Footer from '@/components/Footer'
-import ProductCardTracker from '@/components/ProductCardTracker'
-import { Mail, ArrowRight } from 'lucide-react'
-import styles from './page.module.css'
+import type { NavLink } from '@/lib/supabaseClient'
+import AboutClient from './about/AboutClient'
 
-async function getLinks(): Promise<LinkType[]> {
-  const { data, error } = await supabase.from('links').select('*').order('order_index', { ascending: true })
-  if (error) { console.error('Error fetching links:', error); return [] }
-  return data ?? []
-}
+export const dynamic = 'force-dynamic'
 
-async function getContact(): Promise<Contact | null> {
-  const { data, error } = await supabase.from('contact').select('*').limit(1).single()
-  if (error) return null
-  return data
-}
-
-async function getProducts(): Promise<Product[]> {
-  const { data, error } = await supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false })
-  if (error) { console.error('Error fetching products:', error); return [] }
-  return data ?? []
-}
-
-async function getNavLinks(): Promise<NavLink[]> {
-  const { data, error } = await supabase.from('nav_links').select('*').eq('is_active', true).order('order_index', { ascending: true })
-  if (error) { console.error('Error fetching nav_links:', error); return [] }
-  return data ?? []
-}
-
-export const revalidate = 0
-
-function formatRupiah(num: number): string {
-  return 'Rp ' + num.toLocaleString('id-ID')
+export const metadata: Metadata = {
+  title: 'About | Marcatching',
+  description: 'Marketing isn\'t selling. It\'s system design. Kami membongkar cara kerja sistem di balik kebisingan pasar.',
+  openGraph: {
+    title: 'About | Marcatching',
+    description: 'Marketing isn\'t selling. It\'s system design.',
+    url: 'https://marcatching.com',
+  },
 }
 
 export default async function HomePage() {
-  const [links, contact, products, navLinks] = await Promise.all([getLinks(), getContact(), getProducts(), getNavLinks()])
+  // Fetch Navigation Links
+  const { data: navLinksRes } = await supabase
+    .from('nav_links')
+    .select('*')
+    .eq('is_active', true)
+    .order('order_index')
+  const navLinks: NavLink[] = navLinksRes || []
+
+  // Fetch About Page Config
+  const { data: configRes } = await supabase
+    .from('about_config')
+    .select('*')
+    .limit(1)
+    .single()
+
+  const defaultConfig = {
+    contact_email: 'gilang@marcatching.com',
+    cta_text: 'Marcatching Store',
+    cta_url: '/store',
+    founder_name: 'Gilang Ramadhan',
+    founder_photo_url: '',
+    founder_quote: 'Kesuksesan di era AI milik mereka yang mampu mensintesis raw data buatan mesin menjadi arah kreatif yang memiliki nyawa. Marketing bukan sekadar tentang barang apa yang kamu kemas, tapi sistem apa yang kamu desain untuk mengunci perhatian audiens secara elegan.',
+    comparison_pros: ['Mencari hasil bisnis jangka panjang', 'Menginginkan sistem berbasis AI', 'Ingin memposisikan brand dengan estetika premium', 'Percaya pada data, bukan sekadar opini'],
+    comparison_cons: ['Menginginkan jalan pintas atau hasil instan semalam', 'Mencari trik kontroversi untuk viral', 'Hanya peduli pada likes tanpa melihat impact ke revenue', 'Malas beradaptasi dengan teknologi baru'],
+    // Ecosystem links
+    article_url: '/article',
+    instagram_url: 'https://www.instagram.com/marcatching.id/',
+    tiktok_url: 'https://www.tiktok.com/@marcatching',
+    survey_url: '/survey',
+    store_url: '/store',
+    // Impact stats
+    stat_umkm_helped: 0,
+    stat_total_reach: 0,
+    stat_product_sold: 0,
+    // Embed visuals
+    embed_social_title: 'Tonton di Instagram',
+    embed_survey_image_url: '',
+    embed_survey_title: 'Mulai Survey Gratis',
+    embed_product_id: null,
+    ecosystem_sections: []
+  }
+
+  const config = configRes || defaultConfig
+
+  // Resolve dynamic ecosystem sections
+  const sections = config.ecosystem_sections || []
+  const resolvedSections = []
+
+  for (const section of sections) {
+    const resolvedItems = []
+    for (const item of section.items || []) {
+      if (item.type === 'article' && item.ref_id) {
+        const { data: article } = await supabase
+          .from('articles')
+          .select('*, article_categories(name, slug), article_authors(name, photo_url)')
+          .eq('id', item.ref_id)
+          .single()
+        if (article) resolvedItems.push({ ...item, data: article })
+      } else if (item.type === 'product' && item.ref_id) {
+        const { data: product } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', item.ref_id)
+          .single()
+        if (product) resolvedItems.push({ ...item, data: product })
+      } else if (item.type === 'survey' && item.ref_id) {
+        const { data: survey } = await supabase
+          .from('surveys')
+          .select('*')
+          .eq('id', item.ref_id)
+          .single()
+        if (survey) resolvedItems.push({ ...item, data: survey })
+      } else if (item.type === 'content') {
+        resolvedItems.push(item)
+      }
+    }
+    resolvedSections.push({ ...section, items: resolvedItems })
+  }
 
   return (
-    <>
-      <Navbar navLinks={navLinks} />
-
-      <main className={styles.main}>
-        {/* ── Main Content ────────────────────────────────── */}
-        <div className={styles.heroDecor} />
-        <section className={styles.hero}>
-          <div className={styles.heroContent}>
-            
-            <div className={styles.homeLogoWrap}>
-              <Image
-                src="/logo-type-white.png"
-                alt="Marcatching Logo"
-                width={800}
-                height={200}
-                className={styles.homeLogoType}
-                priority
-              />
-            </div>
-            
-            <p className={styles.homeTagline}>
-              Where Innovation Meets Marketing
-            </p>
-
-            <div className={styles.linksList}>
-              {links.length > 0 ? (
-                links.map((link, i) => {
-                  if (link.type === 'text') return <TextBlock key={link.id} link={link} />
-                  if (link.type === 'carousel') return <ImageCarousel key={link.id} link={link} />
-                  if (link.type === 'video') return <VideoEmbed key={link.id} link={link} />
-                  if (link.type === 'product' || link.url?.includes('/product/')) {
-                    const slug = link.url?.replace('/product/', '')
-                    const product = products.find(p => p.slug === slug)
-                    if (product) {
-                      let posterUrl = product.image_url || ''
-                      if (posterUrl && posterUrl.includes('drive.google.com/uc')) {
-                        const match = posterUrl.match(/id=([^&]+)/)
-                        if (match?.[1]) posterUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600-h2000`
-                      }
-                      return (
-                        <div key={link.id} className={styles.productGrid} style={{marginTop: 0, marginBottom: 8}}>
-                          <ProductCardTracker linkId={link.id} linkTitle={link.title}>
-                            <Link href={`/product/${product.slug}`} className={styles.productCard}>
-                              <div className={styles.productPoster}>
-                                {posterUrl ? (
-                                  <Image
-                                    src={posterUrl}
-                                    alt={product.name}
-                                    fill
-                                    className={styles.productPosterImg}
-                                    sizes="(max-width: 640px) 100vw, 300px"
-                                  />
-                                ) : (
-                                  <div className={styles.productPosterPlaceholder}>No Image</div>
-                                )}
-                                {product.discount_percentage > 0 && (
-                                  <span className={styles.productDiscountBadge}>-{product.discount_percentage}%</span>
-                                )}
-                              </div>
-                              <div className={styles.productCardInfo}>
-                                <h3 className={styles.productCardName}>{product.name}</h3>
-                                {product.sub_headline && (
-                                  <p className={styles.productCardSub}>{product.sub_headline}</p>
-                                )}
-                              </div>
-                            </Link>
-                          </ProductCardTracker>
-                        </div>
-                      )
-                    }
-                  }
-                  return <ButtonCard key={link.id} link={link} index={i} />
-                })
-              ) : (
-                <p className={styles.emptyState}>Belum ada link tersedia.</p>
-              )}
-            </div>
-            
-          </div>
-        </section>
-
-        {/* ── Contact ─────────────────────────────────────── */}
-        <section className={styles.contactSection}>
-          <div className={styles.heroContent}>
-            <div className={styles.contactCard}>
-              <div className={styles.contactIcon}>
-                <Mail size={24} strokeWidth={1.75} />
-              </div>
-              <div className={styles.contactBody}>
-                <h2 className={styles.contactTitle}>Get in touch with Marcatching</h2>
-                <p className={styles.contactDesc}>
-                  Punya pertanyaan atau ingin berkolaborasi? Kirimkan pesan ke kami.
-                </p>
-                {contact?.email && (
-                  <a href={`mailto:${contact.email}`} className={styles.emailLink}>
-                    {contact.email}
-                    <ArrowRight size={16} strokeWidth={2} />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-      <FloatingLogo />
-    </>
+    <AboutClient
+      navLinks={navLinks}
+      config={config}
+      resolvedSections={resolvedSections}
+    />
   )
 }
+

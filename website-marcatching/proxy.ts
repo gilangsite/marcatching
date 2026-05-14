@@ -49,7 +49,21 @@ export async function proxy(req: NextRequest) {
 
   let effectivePath = pathname
 
-  // 1. Subdomain Course Logic
+  // 1. Subdomain Page (Landing Page) Logic
+  // page.marcatching.com → rewrite ke /page-home
+  if (hostname.startsWith('page.')) {
+    if (!pathname.startsWith('/page-home')) {
+      effectivePath = `/page-home${pathname === '/' ? '' : pathname}`
+    }
+  } else if (pathname.startsWith('/page-home')) {
+    // Akses langsung ke /page-home tanpa subdomain → redirect ke page.marcatching.com
+    const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
+    url.hostname = isLocal ? `page.${hostname}` : 'page.marcatching.com'
+    url.pathname = pathname.replace('/page-home', '') || '/'
+    return NextResponse.redirect(url)
+  }
+
+  // 2. Subdomain Course Logic
   if (hostname.startsWith('course.')) {
     if (!pathname.startsWith('/course')) {
       effectivePath = `/course${pathname === '/' ? '' : pathname}`

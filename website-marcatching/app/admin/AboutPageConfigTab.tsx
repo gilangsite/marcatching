@@ -210,7 +210,7 @@ export default function AboutPageConfigTab() {
       <div className={styles.contentHeader}>
         <div>
           <h1 className={styles.contentTitle}>About Page</h1>
-          <p className={styles.contentDesc}>Kelola informasi public pada halaman marcatching.com/about</p>
+          <p className={styles.contentDesc}>Kelola informasi public pada halaman marcatching.com</p>
         </div>
       </div>
 
