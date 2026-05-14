@@ -11,7 +11,8 @@ import {
   ArrowRight, Check, X, Mail,
   TrendingUp, Layers, Cpu, Target,
   Hammer, Compass, BookOpen, Activity,
-  ChevronDown, Send
+  ChevronDown, Send,
+  FileText, Share2, ClipboardList, ShoppingBag, ExternalLink
 } from 'lucide-react'
 import type { NavLink } from '@/lib/supabaseClient'
 import styles from './about.module.css'
@@ -76,11 +77,33 @@ function makeParticle(w: number, h: number): Particle {
   }
 }
 
+// ── Simple count-up hook ──────────────────────────────────────
+function useCountUp(target: number, inView: boolean, duration = 1800) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!inView || target === 0) { setCount(target); return }
+    let start = 0
+    const startTime = performance.now()
+    const step = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.floor(eased * target))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [inView, target, duration])
+  return count
+}
+
 export default function AboutClient({ navLinks, config }: { navLinks: NavLink[], config: any }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
   const [waMsg, setWaMsg] = useState('')
+  const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [impactInView, setImpactInView] = useState(false)
 
   // ── Canvas particle animation ──────────────────────────
   useEffect(() => {
@@ -343,7 +366,136 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
           </div>
         </section>
 
-        {/* ── 5. PILLARS ── */}
+        {/* ── 4b. FROM INSIGHT TO IMPACT (Ecosystem) ── */}
+        <section className={`${styles.section} ${styles.sectionAlt}`}>
+          <div className={styles.container}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={stagger}
+            >
+              <motion.span className={styles.sectionTag} variants={fadeUp}>The Ecosystem</motion.span>
+              <motion.h2 className={styles.sectionTitle} variants={fadeUp}>
+                From Insight<br />to Impact
+              </motion.h2>
+              <motion.p className={styles.ecoIntro} variants={fadeUp}>
+                Marcatching tidak berhenti sebagai ide. Kami membangun ekosistem yang bergerak dari edukasi, validasi, hingga implementasi — melalui artikel, konten sosial media, survey gratis untuk UMKM, dan course yang bisa langsung diakses.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              className={styles.ecoGrid}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-40px' }}
+              variants={stagger}
+            >
+              {/* Card 1 — Articles */}
+              <motion.button
+                className={styles.ecoCard}
+                variants={fadeUp}
+                onClick={() => setActiveModal('articles')}
+                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+              >
+                <div className={styles.ecoIconWrap}><FileText size={20} /></div>
+                <h3 className={styles.ecoTitle}>Articles &amp; Intelligence</h3>
+                <p className={styles.ecoDesc}>Membongkar tren, AI, consumer psychology, dan marketing strategy menjadi insight yang bisa dipakai untuk mengambil keputusan bisnis.</p>
+                <span className={styles.ecoCta}>Read Articles <ExternalLink size={13} /></span>
+              </motion.button>
+
+              {/* Card 2 — Social Media */}
+              <motion.button
+                className={styles.ecoCard}
+                variants={fadeUp}
+                onClick={() => setActiveModal('social')}
+                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+              >
+                <div className={styles.ecoIconWrap}><Share2 size={20} /></div>
+                <h3 className={styles.ecoTitle}>Social Media Education</h3>
+                <p className={styles.ecoDesc}>Menerjemahkan strategi marketing modern ke dalam konten Instagram dan TikTok yang lebih mudah dipahami, relatable, dan actionable.</p>
+                <span className={styles.ecoCta}>Explore Content <ExternalLink size={13} /></span>
+              </motion.button>
+
+              {/* Card 3 — UMKM Survey */}
+              <motion.button
+                className={styles.ecoCard}
+                variants={fadeUp}
+                onClick={() => setActiveModal('survey')}
+                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+              >
+                <div className={styles.ecoIconWrap}><ClipboardList size={20} /></div>
+                <h3 className={styles.ecoTitle}>Free UMKM Survey</h3>
+                <p className={styles.ecoDesc}>Membantu UMKM memahami tantangan bisnis dan marketing mereka melalui survey gratis sebagai langkah awal menuju strategi yang lebih terarah.</p>
+                <span className={styles.ecoCta}>Join the Survey <ExternalLink size={13} /></span>
+              </motion.button>
+
+              {/* Card 4 — Store */}
+              <motion.button
+                className={styles.ecoCard}
+                variants={fadeUp}
+                onClick={() => setActiveModal('store')}
+                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+              >
+                <div className={styles.ecoIconWrap}><ShoppingBag size={20} /></div>
+                <h3 className={styles.ecoTitle}>Marcatching Store</h3>
+                <p className={styles.ecoDesc}>Landing page untuk course dan produk digital yang membantu audience upgrade skill marketing, memahami AI workflow, dan membangun sistem pertumbuhan bisnis.</p>
+                <span className={styles.ecoCta}>Visit Store <ExternalLink size={13} /></span>
+              </motion.button>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── 4c. IMPACT IN MOTION (Live Count) ── */}
+        <section className={styles.section}>
+          <div className={styles.container}>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={stagger}
+              onViewportEnter={() => setImpactInView(true)}
+            >
+              <motion.span className={styles.sectionTag} variants={fadeUp}>Marcatching in Motion</motion.span>
+              <motion.h2 className={styles.sectionTitle} variants={fadeUp}>
+                Marcatching Impact<br />in Motion
+              </motion.h2>
+              <motion.p className={styles.sectionSubtitle} variants={fadeUp}>
+                Setiap artikel, konten, survey, dan produk digital Marcatching dirancang untuk satu tujuan: membantu lebih banyak bisnis memahami marketing modern dan beradaptasi dengan era AI.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              className={styles.impactGrid}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-40px' }}
+              variants={stagger}
+            >
+              <ImpactCard
+                inView={impactInView}
+                target={config.stat_umkm_helped || 0}
+                label="UMKM Terbantu"
+                sub="UMKM yang mengikuti survey, mendapatkan insight, atau terbantu melalui ekosistem Marcatching."
+                suffix="+"
+              />
+              <ImpactCard
+                inView={impactInView}
+                target={config.stat_total_reach || 0}
+                label="Total Reached"
+                sub="Total estimasi audience yang dijangkau melalui artikel, Instagram, TikTok, dan kanal edukasi Marcatching."
+                suffix="+"
+              />
+              <ImpactCard
+                inView={impactInView}
+                target={config.stat_product_sold || 0}
+                label="Products Sold"
+                sub="Course, produk digital, dan learning assets yang telah diakses untuk upgrade skill marketing."
+                suffix="+"
+              />
+            </motion.div>
+          </div>
+        </section>
         <section className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
             <motion.div
@@ -668,6 +820,86 @@ export default function AboutClient({ navLinks, config }: { navLinks: NavLink[],
           </>
         )}
       </AnimatePresence>
+
+      {/* ── Ecosystem Modals ── */}
+      <AnimatePresence>
+        {activeModal && (() => {
+          const modals: Record<string, { title: string; body: string; btnLabel: string; href: string }> = {
+            articles: {
+              title: 'Marketing Intelligence, Made Practical.',
+              body: 'Artikel Marcatching dirancang untuk membantu business owner dan marketer membaca perubahan pasar dengan lebih tajam. Topik yang dibahas mencakup AI marketing, branding, positioning, consumer behavior, digital growth, content strategy, dan business model thinking. Tujuannya bukan sekadar memberi inspirasi, tetapi membantu audience memahami pola di balik pertumbuhan bisnis modern.',
+              btnLabel: 'Read Articles',
+              href: config.article_url || '/article',
+            },
+            social: {
+              title: 'Turning Complex Strategy Into Daily Learning.',
+              body: 'Di Instagram dan TikTok, Marcatching mengubah konsep marketing yang kompleks menjadi konten edukasi yang lebih mudah dipahami. Konten sosial media digunakan sebagai pintu masuk bagi audience untuk mengenal AI, psikologi konsumen, brand perception, dan sistem pertumbuhan digital dengan format yang ringan, cepat, dan relevan.',
+              btnLabel: 'Explore Instagram & TikTok',
+              href: config.instagram_url || 'https://www.instagram.com/marcatching.id/',
+            },
+            survey: {
+              title: 'Helping UMKM Start With Clarity.',
+              body: 'Marcatching membantu UMKM secara gratis melalui survey untuk memahami kondisi bisnis, tantangan marketing, dan kesiapan mereka dalam mengadopsi teknologi. Survey ini menjadi jembatan antara masalah yang dirasakan business owner dengan insight yang lebih terstruktur, sehingga mereka bisa mulai mengambil keputusan yang lebih tepat.',
+              btnLabel: 'Join Free Survey',
+              href: config.survey_url || '/survey',
+            },
+            store: {
+              title: 'Upgrade Your Marketing Capability.',
+              body: 'Marcatching Store adalah tempat audience mengakses course, learning assets, dan produk digital yang dirancang untuk meningkatkan kemampuan marketing secara sistematis. Dari membangun akun bisnis, memahami content system, menggunakan AI, hingga menyusun strategi pertumbuhan yang lebih scalable.',
+              btnLabel: 'Visit Store',
+              href: config.store_url || '/store',
+            },
+          }
+          const m = modals[activeModal]
+          if (!m) return null
+          return (
+            <>
+              <motion.div
+                className={styles.ecoModalBackdrop}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setActiveModal(null)}
+              />
+              <motion.div
+                className={styles.ecoModalBox}
+                initial={{ opacity: 0, scale: 0.88, y: 24 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.88, y: 24 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              >
+                <div className={styles.ecoModalHeader}>
+                  <button className={styles.ecoModalClose} onClick={() => setActiveModal(null)} aria-label="Close"><X size={18} /></button>
+                </div>
+                <div className={styles.ecoModalBody}>
+                  <h2 className={styles.ecoModalTitle}>{m.title}</h2>
+                  <p className={styles.ecoModalText}>{m.body}</p>
+                  <a href={m.href} target="_blank" rel="noopener noreferrer" className={styles.ecoModalBtn}>
+                    {m.btnLabel} <ArrowRight size={16} />
+                  </a>
+                </div>
+              </motion.div>
+            </>
+          )
+        })()}
+      </AnimatePresence>
     </>
   )
 }
+
+// ── ImpactCard sub-component ────────────────────────────────────
+function ImpactCard({ inView, target, label, sub, suffix }: {
+  inView: boolean; target: number; label: string; sub: string; suffix?: string
+}) {
+  const count = useCountUp(target, inView)
+  return (
+    <motion.div className={styles.impactCard} variants={fadeUp}>
+      <div className={styles.impactNumber}>
+        {count.toLocaleString('id-ID')}{suffix}
+      </div>
+      <div className={styles.impactLabel}>{label}</div>
+      <p className={styles.impactSub}>{sub}</p>
+    </motion.div>
+  )
+}
+

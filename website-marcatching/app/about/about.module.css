@@ -938,3 +938,244 @@
     right: 20px;
   }
 }
+
+/* ── From Insight to Impact ── */
+.ecoIntro {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.8;
+  max-width: 680px;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.ecoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 52px;
+}
+
+.ecoCard {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  padding: 36px 30px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* reset button */
+  appearance: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+.ecoCard:hover {
+  background: rgba(255,255,255,0.04);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.5);
+}
+
+.ecoIconWrap {
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 20px;
+}
+
+.ecoTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.ecoDesc {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.65;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.ecoCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-top: auto;
+  transition: color 0.2s;
+}
+
+.ecoCard:hover .ecoCta {
+  color: rgba(255,255,255,0.7);
+}
+
+/* Ecosystem Modal */
+.ecoModalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  z-index: 9010;
+}
+
+.ecoModalBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9011;
+  width: 100%;
+  max-width: 520px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 48px 96px rgba(0,0,0,0.85);
+}
+
+.ecoModalHeader {
+  display: flex;
+  justify-content: flex-end;
+  padding: 18px 20px 0;
+}
+
+.ecoModalClose {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.ecoModalClose:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.1);
+}
+
+.ecoModalBody {
+  padding: 12px 36px 40px;
+}
+
+.ecoModalTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.ecoModalText {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+
+.ecoModalBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.ecoModalBtn:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255,255,255,0.1);
+}
+
+/* ── Impact in Motion ── */
+.impactGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 52px;
+}
+
+.impactCard {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 44px 32px;
+  text-align: center;
+  transition: all 0.35s ease;
+  backdrop-filter: blur(10px);
+}
+
+.impactCard:hover {
+  background: rgba(255,255,255,0.045);
+  border-color: rgba(255,255,255,0.16);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+}
+
+.impactNumber {
+  font-size: clamp(2.8rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.impactLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 14px;
+}
+
+.impactSub {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.65;
+}
+
+/* Responsive overrides for new sections */
+@media (max-width: 768px) {
+  .ecoGrid {
+    grid-template-columns: 1fr;
+  }
+  .impactGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .ecoModalBox {
+    max-width: calc(100vw - 32px);
+  }
+  .ecoModalBody {
+    padding: 8px 24px 32px;
+  }
+  .ecoModalTitle {
+    font-size: 1.3rem;
+  }
+}

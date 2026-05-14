@@ -245,3 +245,18 @@ values (
 alter table about_config enable row level security;
 create policy "Public read about_config" on about_config for select using (true);
 create policy "Public update about_config" on about_config for update using (true);
+create policy "Public insert about_config" on about_config for insert with check (true);
+
+-- ============================================================
+-- About Config: Ecosystem Links & Impact Stats (Migration)
+-- Run these if the about_config table already exists
+-- ============================================================
+alter table about_config
+  add column if not exists article_url        text default '/article',
+  add column if not exists instagram_url      text default 'https://www.instagram.com/marcatching.id/',
+  add column if not exists tiktok_url         text default 'https://www.tiktok.com/@marcatching',
+  add column if not exists survey_url         text default '/survey',
+  add column if not exists store_url          text default '/store',
+  add column if not exists stat_umkm_helped   integer default 0,
+  add column if not exists stat_total_reach   integer default 0,
+  add column if not exists stat_product_sold  integer default 0;

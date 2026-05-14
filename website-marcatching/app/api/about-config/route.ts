@@ -22,7 +22,17 @@ export async function GET() {
       founder_photo_url: '',
       founder_quote: 'Kesuksesan di era AI milik mereka yang mampu mensintesis raw data buatan mesin menjadi arah kreatif yang memiliki nyawa. Marketing bukan sekadar tentang barang apa yang kamu kemas, tapi sistem apa yang kamu desain untuk mengunci perhatian audiens secara elegan.',
       comparison_pros: ['Mencari hasil bisnis jangka panjang', 'Menginginkan sistem berbasis AI', 'Ingin memposisikan brand dengan estetika premium', 'Percaya pada data, bukan sekadar opini'],
-      comparison_cons: ['Menginginkan jalan pintas atau hasil instan semalam', 'Mencari trik kontroversi untuk viral', 'Hanya peduli pada likes tanpa melihat impact ke revenue', 'Malas beradaptasi dengan teknologi baru']
+      comparison_cons: ['Menginginkan jalan pintas atau hasil instan semalam', 'Mencari trik kontroversi untuk viral', 'Hanya peduli pada likes tanpa melihat impact ke revenue', 'Malas beradaptasi dengan teknologi baru'],
+      // Ecosystem links
+      article_url: '/article',
+      instagram_url: 'https://www.instagram.com/marcatching.id/',
+      tiktok_url: 'https://www.tiktok.com/@marcatching',
+      survey_url: '/survey',
+      store_url: '/store',
+      // Impact stats
+      stat_umkm_helped: 0,
+      stat_total_reach: 0,
+      stat_product_sold: 0
     }
 
     return NextResponse.json(config || defaultConfig)

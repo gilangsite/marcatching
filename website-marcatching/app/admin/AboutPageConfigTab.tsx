@@ -44,7 +44,17 @@ export default function AboutPageConfigTab() {
     founder_photo_url: '',
     founder_quote: '',
     comparison_pros: [] as string[],
-    comparison_cons: [] as string[]
+    comparison_cons: [] as string[],
+    // Ecosystem links
+    article_url: '/article',
+    instagram_url: 'https://www.instagram.com/marcatching.id/',
+    tiktok_url: 'https://www.tiktok.com/@marcatching',
+    survey_url: '/survey',
+    store_url: '/store',
+    // Impact stats
+    stat_umkm_helped: 0,
+    stat_total_reach: 0,
+    stat_product_sold: 0
   })
 
   useEffect(() => {
@@ -60,7 +70,15 @@ export default function AboutPageConfigTab() {
             founder_photo_url: data.founder_photo_url || '',
             founder_quote: data.founder_quote || '',
             comparison_pros: data.comparison_pros || [],
-            comparison_cons: data.comparison_cons || []
+            comparison_cons: data.comparison_cons || [],
+            article_url: data.article_url || '/article',
+            instagram_url: data.instagram_url || 'https://www.instagram.com/marcatching.id/',
+            tiktok_url: data.tiktok_url || 'https://www.tiktok.com/@marcatching',
+            survey_url: data.survey_url || '/survey',
+            store_url: data.store_url || '/store',
+            stat_umkm_helped: data.stat_umkm_helped || 0,
+            stat_total_reach: data.stat_total_reach || 0,
+            stat_product_sold: data.stat_product_sold || 0
           })
         }
         setLoading(false)
@@ -167,6 +185,52 @@ export default function AboutPageConfigTab() {
           <div className="form-group">
             <label className="label">TIDAK Cocok Untuk (Kontra)</label>
             <ProsConsList items={form.comparison_cons} onAdd={addCon} onRemove={removeCon} color="#dc2626" />
+          </div>
+        </div>
+
+        <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
+
+        <h3 className={styles.formTitle}>Link Ekosistem</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>URL untuk setiap card di section "From Insight to Impact" dan tombol popup.</p>
+        <div className={styles.formGrid}>
+          <div className="form-group">
+            <label className="label">Articles URL</label>
+            <input className="input" value={form.article_url} onChange={e => setForm(f => ({ ...f, article_url: e.target.value }))} placeholder="/article" />
+          </div>
+          <div className="form-group">
+            <label className="label">Instagram URL</label>
+            <input className="input" value={form.instagram_url} onChange={e => setForm(f => ({ ...f, instagram_url: e.target.value }))} placeholder="https://www.instagram.com/marcatching.id/" />
+          </div>
+          <div className="form-group">
+            <label className="label">TikTok URL</label>
+            <input className="input" value={form.tiktok_url} onChange={e => setForm(f => ({ ...f, tiktok_url: e.target.value }))} placeholder="https://www.tiktok.com/@marcatching" />
+          </div>
+          <div className="form-group">
+            <label className="label">Survey URL</label>
+            <input className="input" value={form.survey_url} onChange={e => setForm(f => ({ ...f, survey_url: e.target.value }))} placeholder="/survey" />
+          </div>
+          <div className="form-group">
+            <label className="label">Store URL</label>
+            <input className="input" value={form.store_url} onChange={e => setForm(f => ({ ...f, store_url: e.target.value }))} placeholder="/store" />
+          </div>
+        </div>
+
+        <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
+
+        <h3 className={styles.formTitle}>Impact Stats (Live Count)</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Angka yang ditampilkan di section "Marcatching Impact in Motion". Counter akan animate dari 0 ke angka ini.</p>
+        <div className={styles.formGrid}>
+          <div className="form-group">
+            <label className="label">UMKM Terbantu</label>
+            <input className="input" type="number" min={0} value={form.stat_umkm_helped} onChange={e => setForm(f => ({ ...f, stat_umkm_helped: parseInt(e.target.value) || 0 }))} />
+          </div>
+          <div className="form-group">
+            <label className="label">Total Reached</label>
+            <input className="input" type="number" min={0} value={form.stat_total_reach} onChange={e => setForm(f => ({ ...f, stat_total_reach: parseInt(e.target.value) || 0 }))} />
+          </div>
+          <div className="form-group">
+            <label className="label">Products Sold</label>
+            <input className="input" type="number" min={0} value={form.stat_product_sold} onChange={e => setForm(f => ({ ...f, stat_product_sold: parseInt(e.target.value) || 0 }))} />
           </div>
         </div>
 
