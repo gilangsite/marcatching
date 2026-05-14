@@ -30,8 +30,11 @@ export default function AboutPageConfigTab() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [uploadTarget, setUploadTarget] = useState<'founder' | 'social' | 'survey' | null>(null)
+  const [uploadTarget, setUploadTarget] = useState<'founder' | string | null>(null)
+  
   const [products, setProducts] = useState<{id: string, name: string}[]>([])
+  const [articles, setArticles] = useState<{id: string, title: string}[]>([])
+  const [surveys, setSurveys] = useState<{id: string, title: string}[]>([])
 
   const [cropData, setCropData] = useState<{ src: string, file?: File }>({ src: '' })
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -58,19 +61,21 @@ export default function AboutPageConfigTab() {
     stat_umkm_helped: 0,
     stat_total_reach: 0,
     stat_product_sold: 0,
-    // Embed visuals
+    // Embed visuals (legacy, kept for fallback)
     embed_social_image_url: '',
     embed_social_title: 'Tonton di Instagram',
     embed_survey_image_url: '',
     embed_survey_title: 'Mulai Survey Gratis',
-    embed_product_id: ''
+    embed_product_id: '',
+    // Dynamic Ecosystem
+    ecosystem_sections: [] as any[]
   })
 
   useEffect(() => {
-    // Fetch available products for dropdown
-    supabase.from('products').select('id, name').order('name').then(({ data }) => {
-      if (data) setProducts(data)
-    })
+    // Fetch available products, articles, surveys for dropdowns
+    supabase.from('products').select('id, name').order('name').then(({ data }) => { if (data) setProducts(data) })
+    supabase.from('articles').select('id, title').order('created_at', { ascending: false }).then(({ data }) => { if (data) setArticles(data) })
+    supabase.from('surveys').select('id, title').order('created_at', { ascending: false }).then(({ data }) => { if (data) setSurveys(data) })
 
     fetch('/api/about-config')
       .then(res => res.json())
@@ -97,7 +102,8 @@ export default function AboutPageConfigTab() {
             embed_social_title: data.embed_social_title || 'Tonton di Instagram',
             embed_survey_image_url: data.embed_survey_image_url || '',
             embed_survey_title: data.embed_survey_title || 'Mulai Survey Gratis',
-            embed_product_id: data.embed_product_id || ''
+            embed_product_id: data.embed_product_id || '',
+            ecosystem_sections: data.ecosystem_sections || []
           })
         }
         setLoading(false)
@@ -126,13 +132,70 @@ export default function AboutPageConfigTab() {
     setTimeout(() => setSuccessMsg(''), 3000)
   }
 
-  function handleGenericUpload(e: React.ChangeEvent<HTMLInputElement>, target: 'founder' | 'social' | 'survey') {
+  function handleGenericUpload(e: React.ChangeEvent<HTMLInputElement>, target: string) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadTarget(target)
     const reader = new FileReader()
     reader.onload = () => setCropData({ src: reader.result as string, file })
     reader.readAsDataURL(file)
+  }
+
+  // Builder Helpers
+  function addSection() {
+    setForm(f => ({
+      ...f,
+      ecosystem_sections: [
+        ...f.ecosystem_sections,
+        { id: `sec-${Date.now()}`, title: 'New Section', items: [] }
+      ]
+    }))
+  }
+
+  function removeSection(secIndex: number) {
+    setForm(f => ({
+      ...f,
+      ecosystem_sections: f.ecosystem_sections.filter((_, i) => i !== secIndex)
+    }))
+  }
+
+  function updateSection(secIndex: number, title: string) {
+    setForm(f => {
+      const newSec = [...f.ecosystem_sections]
+      newSec[secIndex].title = title
+      return { ...f, ecosystem_sections: newSec }
+    })
+  }
+
+  function addItem(secIndex: number) {
+    setForm(f => {
+      const newSec = [...f.ecosystem_sections]
+      newSec[secIndex].items.push({
+        id: `item-${Date.now()}`,
+        type: 'article',
+        ref_id: '',
+        content_url: '',
+        content_title: '',
+        content_image_url: ''
+      })
+      return { ...f, ecosystem_sections: newSec }
+    })
+  }
+
+  function removeItem(secIndex: number, itemIndex: number) {
+    setForm(f => {
+      const newSec = [...f.ecosystem_sections]
+      newSec[secIndex].items = newSec[secIndex].items.filter((_: any, i: number) => i !== itemIndex)
+      return { ...f, ecosystem_sections: newSec }
+    })
+  }
+
+  function updateItem(secIndex: number, itemIndex: number, field: string, value: any) {
+    setForm(f => {
+      const newSec = [...f.ecosystem_sections]
+      newSec[secIndex].items[itemIndex][field] = value
+      return { ...f, ecosystem_sections: newSec }
+    })
   }
 
   function addPro(val: string) { if (val.trim()) setForm(f => ({ ...f, comparison_pros: [...f.comparison_pros, val.trim()] })) }
@@ -238,55 +301,107 @@ export default function AboutPageConfigTab() {
 
         <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
 
-        <h3 className={styles.formTitle}>Visual Embeds (Card Grid)</h3>
-        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Konten visual yang akan ditampilkan di card ekosistem untuk membuka popup.</p>
+        <h3 className={styles.formTitle}>Dynamic Ecosystem Sections</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Buat section-section baru yang membatasi tiap kelompok card. Kamu bisa menambah Artikel, Produk, Survey, atau custom link.</p>
         
-        <div className={styles.formGrid}>
-          {/* Social Media Embed */}
-          <div className="form-group">
-            <label className="label">Social Media Card Title</label>
-            <input className="input" value={form.embed_social_title} onChange={e => setForm(f => ({ ...f, embed_social_title: e.target.value }))} />
-            
-            <label className="label" style={{ marginTop: 12 }}>Thumbnail Social Media</label>
-            <div className={styles.uploadArea}>
-              <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, 'social')} disabled={uploadingImage} className={styles.fileInput} />
-              <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === 'social' ? 'Mengupload...' : 'Pilih Gambar Thumbnail'}</div>
-            </div>
-            {form.embed_social_image_url && (
-              <div style={{ marginTop: 12 }}>
-                <img src={form.embed_social_image_url.includes('drive.google.com') ? form.embed_social_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w600-h600' : form.embed_social_image_url} alt="Social Preview" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {form.ecosystem_sections.map((section, secIdx) => (
+            <div key={section.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20 }}>
+              <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                <input 
+                  className="input" 
+                  value={section.title} 
+                  onChange={e => updateSection(secIdx, e.target.value)} 
+                  placeholder="Nama Section (misal: Premium Store)" 
+                  style={{ fontWeight: 600, fontSize: '1.05rem' }}
+                />
+                <button type="button" onClick={() => removeSection(secIdx)} className="btn btn-ghost" style={{ color: '#dc2626', borderColor: '#fca5a5' }}><X size={16}/></button>
               </div>
-            )}
-          </div>
 
-          {/* Survey Embed */}
-          <div className="form-group">
-            <label className="label">Survey Card Title</label>
-            <input className="input" value={form.embed_survey_title} onChange={e => setForm(f => ({ ...f, embed_survey_title: e.target.value }))} />
-            
-            <label className="label" style={{ marginTop: 12 }}>Thumbnail Survey</label>
-            <div className={styles.uploadArea}>
-              <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, 'survey')} disabled={uploadingImage} className={styles.fileInput} />
-              <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === 'survey' ? 'Mengupload...' : 'Pilih Gambar Thumbnail'}</div>
-            </div>
-            {form.embed_survey_image_url && (
-              <div style={{ marginTop: 12 }}>
-                <img src={form.embed_survey_image_url.includes('drive.google.com') ? form.embed_survey_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w600-h600' : form.embed_survey_image_url} alt="Survey Preview" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingLeft: 16, borderLeft: '2px solid #e2e8f0' }}>
+                {section.items.map((item: any, itemIdx: number) => (
+                  <div key={item.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 16 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                      <select 
+                        className="input" 
+                        value={item.type} 
+                        onChange={e => {
+                          updateItem(secIdx, itemIdx, 'type', e.target.value);
+                          updateItem(secIdx, itemIdx, 'ref_id', ''); // reset ref
+                        }} 
+                        style={{ width: '200px', appearance: 'auto', WebkitAppearance: 'menulist' }}
+                      >
+                        <option value="article">Article</option>
+                        <option value="product">Product</option>
+                        <option value="survey">Survey</option>
+                        <option value="content">Custom Content (Link)</option>
+                      </select>
+                      <button type="button" onClick={() => removeItem(secIdx, itemIdx)} className="btn btn-ghost" style={{ padding: '6px' }}><X size={14}/></button>
+                    </div>
+
+                    {item.type === 'article' && (
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="label">Pilih Artikel</label>
+                        <select className="input" value={item.ref_id} onChange={e => updateItem(secIdx, itemIdx, 'ref_id', e.target.value)} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
+                          <option value="">-- Pilih Artikel --</option>
+                          {articles.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                        </select>
+                      </div>
+                    )}
+                    
+                    {item.type === 'product' && (
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="label">Pilih Produk</label>
+                        <select className="input" value={item.ref_id} onChange={e => updateItem(secIdx, itemIdx, 'ref_id', e.target.value)} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
+                          <option value="">-- Pilih Produk --</option>
+                          {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    {item.type === 'survey' && (
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="label">Pilih Survey</label>
+                        <select className="input" value={item.ref_id} onChange={e => updateItem(secIdx, itemIdx, 'ref_id', e.target.value)} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
+                          <option value="">-- Pilih Survey --</option>
+                          {surveys.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    {item.type === 'content' && (
+                      <div className={styles.formGrid}>
+                        <div className="form-group">
+                          <label className="label">Judul Card</label>
+                          <input className="input" value={item.content_title || ''} onChange={e => updateItem(secIdx, itemIdx, 'content_title', e.target.value)} placeholder="Tonton di IG" />
+                        </div>
+                        <div className="form-group">
+                          <label className="label">URL Tujuan</label>
+                          <input className="input" value={item.content_url || ''} onChange={e => updateItem(secIdx, itemIdx, 'content_url', e.target.value)} placeholder="https://instagram.com/..." />
+                        </div>
+                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                          <label className="label">Thumbnail (Rasio 16:9 disarankan)</label>
+                          <div className={styles.uploadArea}>
+                            <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, `item-${secIdx}-${itemIdx}`)} disabled={uploadingImage} className={styles.fileInput} />
+                            <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === `item-${secIdx}-${itemIdx}` ? 'Mengupload...' : 'Pilih Gambar'}</div>
+                          </div>
+                          {item.content_image_url && (
+                            <div style={{ marginTop: 12 }}>
+                              <img src={item.content_image_url.includes('drive.google.com') ? item.content_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w400-h225' : item.content_image_url} alt="Preview" style={{ width: 160, height: 90, objectFit: 'cover', borderRadius: 8 }} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                
+                <button type="button" onClick={() => addItem(secIdx)} className="btn btn-outline" style={{ alignSelf: 'flex-start', padding: '6px 14px', fontSize: '0.8rem' }}><Plus size={14} /> Tambah Item</button>
               </div>
-            )}
-          </div>
-
-          {/* Store Product Embed */}
-          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-            <label className="label">Featured Store Product</label>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: 8 }}>Pilih produk yang akan di-embed di card Store. Gambar dan harga akan diambil otomatis.</p>
-            <select className="input" value={form.embed_product_id} onChange={e => setForm(f => ({ ...f, embed_product_id: e.target.value }))} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
-              <option value="">-- Pilih Produk --</option>
-              {products.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
+            </div>
+          ))}
+          
+          <button type="button" onClick={addSection} className="btn btn-outline" style={{ alignSelf: 'center', borderStyle: 'dashed' }}><Plus size={18} /> Buat Section Baru</button>
         </div>
 
         <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
@@ -319,7 +434,7 @@ export default function AboutPageConfigTab() {
         <div className={styles.cropModalOverlay}>
           <div className={styles.cropModalContent} style={{ width: 400, margin: '0 auto' }}>
             <div className={styles.cropModalHeader}>
-              <h3 className={styles.cropModalTitle}>Potong Foto {uploadTarget === 'founder' ? 'Founder' : uploadTarget === 'social' ? 'Social Media' : 'Survey'}</h3>
+              <h3 className={styles.cropModalTitle}>Potong Foto {uploadTarget === 'founder' ? 'Founder' : 'Konten'}</h3>
               <button onClick={() => setCropData({ src: '' })} className={styles.closeBtn}><X size={20} /></button>
             </div>
             <div style={{ position: 'relative', height: 400, background: '#333' }}>
@@ -327,7 +442,7 @@ export default function AboutPageConfigTab() {
                 image={cropData.src}
                 crop={crop}
                 zoom={zoom}
-                aspect={uploadTarget === 'founder' ? 9 / 16 : 1 / 1} /* 1:1 for social/survey */
+                aspect={uploadTarget === 'founder' ? 9 / 16 : 16 / 9}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
@@ -348,10 +463,12 @@ export default function AboutPageConfigTab() {
                   if (data.status === 'success') {
                     if (uploadTarget === 'founder') {
                       setForm(f => ({ ...f, founder_photo_url: data.url }))
-                    } else if (uploadTarget === 'social') {
-                      setForm(f => ({ ...f, embed_social_image_url: data.url }))
-                    } else if (uploadTarget === 'survey') {
-                      setForm(f => ({ ...f, embed_survey_image_url: data.url }))
+                    } else if (uploadTarget?.startsWith('item-')) {
+                      // It's a custom content upload
+                      const parts = uploadTarget.split('-')
+                      const secIdx = parseInt(parts[1])
+                      const itemIdx = parseInt(parts[2])
+                      updateItem(secIdx, itemIdx, 'content_image_url', data.url)
                     }
                     setCropData({ src: '' })
                   } else alert('Gagal: ' + data.message)

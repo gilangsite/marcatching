@@ -51,40 +51,55 @@ export default async function AboutPage() {
     stat_total_reach: 0,
     stat_product_sold: 0,
     // Embed visuals
-    embed_social_image_url: '',
     embed_social_title: 'Tonton di Instagram',
     embed_survey_image_url: '',
     embed_survey_title: 'Mulai Survey Gratis',
-    embed_product_id: null
+    embed_product_id: null,
+    ecosystem_sections: []
   }
 
   const config = configRes || defaultConfig
 
-  // Fetch Latest Articles
-  const { data: articlesRes } = await supabase
-    .from('articles')
-    .select('*, article_categories(name, slug), article_authors(name, photo_url)')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false })
-    .limit(3)
+  // Resolve dynamic ecosystem sections
+  const sections = config.ecosystem_sections || []
+  const resolvedSections = []
 
-  // Fetch Embedded Product if available
-  let embedProduct = null
-  if (config.embed_product_id) {
-    const { data: product } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', config.embed_product_id)
-      .single()
-    embedProduct = product
+  for (const section of sections) {
+    const resolvedItems = []
+    for (const item of section.items || []) {
+      if (item.type === 'article' && item.ref_id) {
+        const { data: article } = await supabase
+          .from('articles')
+          .select('*, article_categories(name, slug), article_authors(name, photo_url)')
+          .eq('id', item.ref_id)
+          .single()
+        if (article) resolvedItems.push({ ...item, data: article })
+      } else if (item.type === 'product' && item.ref_id) {
+        const { data: product } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', item.ref_id)
+          .single()
+        if (product) resolvedItems.push({ ...item, data: product })
+      } else if (item.type === 'survey' && item.ref_id) {
+        const { data: survey } = await supabase
+          .from('surveys')
+          .select('*')
+          .eq('id', item.ref_id)
+          .single()
+        if (survey) resolvedItems.push({ ...item, data: survey })
+      } else if (item.type === 'content') {
+        resolvedItems.push(item)
+      }
+    }
+    resolvedSections.push({ ...section, items: resolvedItems })
   }
 
   return (
     <AboutClient 
       navLinks={navLinks} 
       config={config} 
-      latestArticles={articlesRes || []} 
-      embedProduct={embedProduct}
+      resolvedSections={resolvedSections}
     />
   )
 }

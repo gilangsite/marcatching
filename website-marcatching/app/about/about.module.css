@@ -1354,3 +1354,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Dynamic Ecosystem Sections ── */
+.ecosystemSection {
+  margin-bottom: 60px;
+}
+.ecosystemSectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 12px;
+}
+
+/* ── Typography & Mobile Fixes ── */
+h1, h2, h3, h4, .sectionTitle {
+  text-wrap: balance;
+}
+
+@media (max-width: 768px) {
+  .ecosystemSectionTitle {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+}

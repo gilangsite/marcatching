@@ -108,12 +108,11 @@ function useCountUp(target: number, inView: boolean, duration = 1800) {
   return count
 }
 
-export default function AboutClient({ navLinks, config, latestArticles, embedProduct }: { navLinks: NavLink[], config: any, latestArticles?: Article[], embedProduct?: any }) {
+export default function AboutClient({ navLinks, config, resolvedSections }: { navLinks: NavLink[], config: any, resolvedSections?: any[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
   const [waMsg, setWaMsg] = useState('')
-  const [activeModal, setActiveModal] = useState<string | null>(null)
   const [impactInView, setImpactInView] = useState(false)
 
   // ── Canvas particle animation ──────────────────────────
@@ -378,193 +377,171 @@ export default function AboutClient({ navLinks, config, latestArticles, embedPro
         </section>
 
         {/* ── 4b. FROM INSIGHT TO IMPACT (Ecosystem) ── */}
-        <section className={`${styles.section} ${styles.sectionAlt}`}>
-          <div className={styles.container}>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
-              variants={stagger}
-            >
-              <motion.span className={styles.sectionTag} variants={fadeUp}>The Ecosystem</motion.span>
-              <motion.h2 className={styles.sectionTitle} variants={fadeUp}>
-                From Insight<br />to Impact
-              </motion.h2>
-              <motion.p className={styles.ecoIntro} variants={fadeUp}>
-                Marcatching tidak berhenti sebagai ide. Kami membangun ekosistem yang bergerak dari edukasi, validasi, hingga implementasi — melalui artikel, konten sosial media, survey gratis untuk UMKM, dan course yang bisa langsung diakses.
-              </motion.p>
-            </motion.div>
+        {resolvedSections?.map((section, sIdx) => (
+          <section key={section.id || sIdx} className={`${styles.section} ${styles.sectionAlt} ${styles.ecosystemSection}`}>
+            <div className={styles.container}>
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-60px' }}
+                variants={stagger}
+              >
+                {sIdx === 0 && (
+                  <>
+                    <motion.span className={styles.sectionTag} variants={fadeUp}>The Ecosystem</motion.span>
+                    <motion.h2 className={styles.sectionTitle} variants={fadeUp}>
+                      From Insight<br />to Impact
+                    </motion.h2>
+                    <motion.p className={styles.ecoIntro} variants={fadeUp}>
+                      Marcatching tidak berhenti sebagai ide. Kami membangun ekosistem yang bergerak dari edukasi, validasi, hingga implementasi — melalui artikel, konten sosial media, survey gratis untuk UMKM, dan course yang bisa langsung diakses.
+                    </motion.p>
+                  </>
+                )}
+                <motion.h3 
+                  className={styles.ecosystemSectionTitle} 
+                  variants={fadeUp} 
+                  style={{ marginTop: sIdx === 0 ? 40 : 0 }}
+                >
+                  {section.title}
+                </motion.h3>
+              </motion.div>
 
-            <motion.div
-              className={styles.articleGrid}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-40px' }}
-              variants={stagger}
-            >
-              {latestArticles?.map(article => {
-                const thumb = getFirstImageFromContent(article.content)
-                const cat = (article as any).article_categories
-                const author = (article as any).article_authors
-                return (
-                  <Link key={article.id} href={`/article/${article.slug}`} className={styles.articleCard}>
-                    <div className={styles.articleThumb}>
-                      {thumb
-                        ? (
-                          <Image
-                            src={thumb}
-                            alt={article.title}
-                            fill
-                            className={styles.articleThumbImg}
-                            sizes="(max-width: 640px) 100vw, 300px"
-                          />
-                        )
-                        : <div className={styles.articleThumbPlaceholder}><span>M</span></div>
-                      }
-                      {cat && <span className={styles.articleCatBadge}>{cat.name}</span>}
-                    </div>
-                    <div className={styles.articleBody}>
-                      <h2 className={styles.articleTitle}>{article.title}</h2>
-                      {article.excerpt && <p className={styles.articleExcerpt}>{article.excerpt}</p>}
-                      <div className={styles.articleMeta}>
-                        {author && (
-                          <div className={styles.articleAuthor}>
-                            {author.photo_url ? (
-                              <div className={styles.articleAuthorAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
-                                <Image
-                                  src={getDriveThumb(author.photo_url, 'w80-h80') || ''}
-                                  alt={author.name}
-                                  fill
-                                  style={{ objectFit: 'cover' }}
-                                />
-                              </div>
-                            ) : (
-                              <div className={styles.articleAuthorAvatarPlaceholder}>{author.name[0]}</div>
-                            )}
-                            <span className={styles.articleAuthorName}>{author.name}</span>
-                          </div>
-                        )}
-                        <div className={styles.articleMetaRight}>
-                          <span className={styles.articleDate}>{formatDate(article.published_at)}</span>
-                          <span className={styles.articleViews}><Eye size={11} /> {article.view_count}</span>
+              <motion.div
+                className={styles.articleGrid}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-40px' }}
+                variants={stagger}
+              >
+                {section.items?.map((item: any) => {
+                  if (item.type === 'article' && item.data) {
+                    const article = item.data
+                    const thumb = getFirstImageFromContent(article.content)
+                    const cat = article.article_categories
+                    const author = article.article_authors
+                    return (
+                      <Link key={item.id} href={`/article/${article.slug}`} className={styles.articleCard}>
+                        <div className={styles.articleThumb}>
+                          {thumb ? (
+                            <Image src={thumb} alt={article.title} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
+                          ) : <div className={styles.articleThumbPlaceholder}><span>M</span></div>}
+                          {cat && <span className={styles.articleCatBadge}>{cat.name}</span>}
                         </div>
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
+                        <div className={styles.articleBody}>
+                          <h2 className={styles.articleTitle}>{article.title}</h2>
+                          {article.excerpt && <p className={styles.articleExcerpt}>{article.excerpt}</p>}
+                          <div className={styles.articleMeta}>
+                            {author && (
+                              <div className={styles.articleAuthor}>
+                                {author.photo_url ? (
+                                  <div className={styles.articleAuthorAvatar} style={{ position: 'relative', overflow: 'hidden' }}>
+                                    <Image src={getDriveThumb(author.photo_url, 'w80-h80') || ''} alt={author.name} fill style={{ objectFit: 'cover' }} />
+                                  </div>
+                                ) : <div className={styles.articleAuthorAvatarPlaceholder}>{author.name[0]}</div>}
+                                <span className={styles.articleAuthorName}>{author.name}</span>
+                              </div>
+                            )}
+                            <div className={styles.articleMetaRight}>
+                              <span className={styles.articleDate}>{formatDate(article.published_at)}</span>
+                              <span className={styles.articleViews}><Eye size={11} /> {article.view_count}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  }
+                  
+                  if (item.type === 'product' && item.data) {
+                    const product = item.data
+                    return (
+                      <Link key={item.id} href={`/store/${product.slug}`} className={styles.articleCard}>
+                        <div className={styles.articleThumb}>
+                          {product.image_url ? (
+                            <Image src={product.image_url} alt={product.name} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
+                          ) : <div className={styles.articleThumbPlaceholder}><span>ST</span></div>}
+                          <span className={styles.articleCatBadge}>Store</span>
+                        </div>
+                        <div className={styles.articleBody}>
+                          <h2 className={styles.articleTitle}>{product.name}</h2>
+                          <p className={styles.articleExcerpt}>{product.sub_headline}</p>
+                          <div className={styles.articleMeta}>
+                            <div className={styles.articleAuthor}>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#f59e0b', color: 'white' }}>$</div>
+                              <span className={styles.articleAuthorName}>Premium</span>
+                            </div>
+                            <div className={styles.articleMetaRight}>
+                              {product.price_after_discount > 0 && (
+                                <span className={styles.articleViews} style={{ color: '#fff', fontWeight: 600 }}>Rp {product.price_after_discount.toLocaleString('id-ID')}</span>
+                              )}
+                              {product.price_after_discount === 0 && (
+                                <span className={styles.articleViews}><ShoppingBag size={11} /> Store</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  }
 
-              {/* Card — Social Media */}
-              <motion.button
-                className={styles.articleCard}
-                variants={fadeUp}
-                onClick={() => setActiveModal('social')}
-                style={{ textAlign: 'left', border: 'none', padding: 0 }}
-              >
-                <div className={styles.articleThumb}>
-                  {config.embed_social_image_url ? (
-                    <Image
-                      src={config.embed_social_image_url.includes('drive.google.com') ? config.embed_social_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : config.embed_social_image_url}
-                      alt="Social Media"
-                      fill
-                      className={styles.articleThumbImg}
-                      sizes="(max-width: 640px) 100vw, 300px"
-                    />
-                  ) : <div className={styles.articleThumbPlaceholder}><span>IG</span></div>}
-                  <span className={styles.articleCatBadge}>Social Media</span>
-                </div>
-                <div className={styles.articleBody}>
-                  <h2 className={styles.articleTitle}>{config.embed_social_title || 'Tonton di Instagram'}</h2>
-                  <p className={styles.articleExcerpt}>Edukasi, insight praktis, dan framework marketing yang siap diaplikasikan ke bisnismu.</p>
-                  <div className={styles.articleMeta}>
-                    <div className={styles.articleAuthor}>
-                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#e1306c', color: 'white' }}>M</div>
-                      <span className={styles.articleAuthorName}>Marcatching</span>
-                    </div>
-                    <div className={styles.articleMetaRight}>
-                      <span className={styles.articleViews}><Eye size={11} /> View Post</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.button>
+                  if (item.type === 'survey' && item.data) {
+                    const survey = item.data
+                    return (
+                      <Link key={item.id} href={`/survey`} className={styles.articleCard}>
+                        <div className={styles.articleThumb}>
+                          {survey.image_url ? (
+                            <Image src={survey.image_url.includes('drive.google.com') ? survey.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : survey.image_url} alt={survey.title} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
+                          ) : <div className={styles.articleThumbPlaceholder}><span>SV</span></div>}
+                          <span className={styles.articleCatBadge}>Survey</span>
+                        </div>
+                        <div className={styles.articleBody}>
+                          <h2 className={styles.articleTitle}>{survey.title}</h2>
+                          <p className={styles.articleExcerpt}>{survey.description || 'Diagnosis marketing bisnismu.'}</p>
+                          <div className={styles.articleMeta}>
+                            <div className={styles.articleAuthor}>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#2563eb', color: 'white' }}>✓</div>
+                              <span className={styles.articleAuthorName}>Diagnostics</span>
+                            </div>
+                            <div className={styles.articleMetaRight}>
+                              <span className={styles.articleViews}><Share2 size={11} /> Start</span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  }
 
-              {/* Card — UMKM Survey */}
-              <motion.button
-                className={styles.articleCard}
-                variants={fadeUp}
-                onClick={() => setActiveModal('survey')}
-                style={{ textAlign: 'left', border: 'none', padding: 0 }}
-              >
-                <div className={styles.articleThumb}>
-                  {config.embed_survey_image_url ? (
-                    <Image
-                      src={config.embed_survey_image_url.includes('drive.google.com') ? config.embed_survey_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : config.embed_survey_image_url}
-                      alt="Survey UMKM"
-                      fill
-                      className={styles.articleThumbImg}
-                      sizes="(max-width: 640px) 100vw, 300px"
-                    />
-                  ) : <div className={styles.articleThumbPlaceholder}><span>SV</span></div>}
-                  <span className={styles.articleCatBadge}>Free Survey</span>
-                </div>
-                <div className={styles.articleBody}>
-                  <h2 className={styles.articleTitle}>{config.embed_survey_title || 'Mulai Survey Gratis'}</h2>
-                  <p className={styles.articleExcerpt}>Analisis marketing gap bisnismu dan dapatkan feedback dari tim konsultan kami.</p>
-                  <div className={styles.articleMeta}>
-                    <div className={styles.articleAuthor}>
-                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#2563eb', color: 'white' }}>✓</div>
-                      <span className={styles.articleAuthorName}>Diagnostics</span>
-                    </div>
-                    <div className={styles.articleMetaRight}>
-                      <span className={styles.articleViews}><Share2 size={11} /> Start</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.button>
+                  if (item.type === 'content') {
+                    return (
+                      <a key={item.id} href={item.content_url || '#'} target="_blank" rel="noopener noreferrer" className={styles.articleCard}>
+                        <div className={styles.articleThumb}>
+                          {item.content_image_url ? (
+                            <Image src={item.content_image_url.includes('drive.google.com') ? item.content_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : item.content_image_url} alt={item.content_title || 'Content'} fill className={styles.articleThumbImg} sizes="(max-width: 640px) 100vw, 300px" />
+                          ) : <div className={styles.articleThumbPlaceholder}><span>CT</span></div>}
+                          <span className={styles.articleCatBadge}>Content</span>
+                        </div>
+                        <div className={styles.articleBody}>
+                          <h2 className={styles.articleTitle}>{item.content_title || 'Social Media'}</h2>
+                          <p className={styles.articleExcerpt}>Insight praktis dan edukasi marketing yang siap diaplikasikan.</p>
+                          <div className={styles.articleMeta}>
+                            <div className={styles.articleAuthor}>
+                              <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#e1306c', color: 'white' }}>M</div>
+                              <span className={styles.articleAuthorName}>Marcatching</span>
+                            </div>
+                            <div className={styles.articleMetaRight}>
+                              <span className={styles.articleViews}><ExternalLink size={11} /> View</span>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                    )
+                  }
 
-              {/* Card — Store Product */}
-              <motion.button
-                className={styles.articleCard}
-                variants={fadeUp}
-                onClick={() => setActiveModal('store')}
-                style={{ textAlign: 'left', border: 'none', padding: 0 }}
-              >
-                <div className={styles.articleThumb}>
-                  {embedProduct?.image_url ? (
-                    <Image
-                      src={embedProduct.image_url}
-                      alt={embedProduct.name}
-                      fill
-                      className={styles.articleThumbImg}
-                      sizes="(max-width: 640px) 100vw, 300px"
-                    />
-                  ) : <div className={styles.articleThumbPlaceholder}><span>ST</span></div>}
-                  <span className={styles.articleCatBadge}>Store</span>
-                </div>
-                <div className={styles.articleBody}>
-                  <h2 className={styles.articleTitle}>{embedProduct ? embedProduct.name : 'Marcatching Store'}</h2>
-                  <p className={styles.articleExcerpt}>{embedProduct ? embedProduct.sub_headline : 'Upgrade skill marketing-mu dengan course, template, dan toolkit premium dari kami.'}</p>
-                  <div className={styles.articleMeta}>
-                    <div className={styles.articleAuthor}>
-                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#f59e0b', color: 'white' }}>$</div>
-                      <span className={styles.articleAuthorName}>Premium</span>
-                    </div>
-                    <div className={styles.articleMetaRight}>
-                      {embedProduct && embedProduct.price_after_discount > 0 && (
-                        <span className={styles.articleViews} style={{ color: '#fff', fontWeight: 600 }}>
-                          Rp {embedProduct.price_after_discount.toLocaleString('id-ID')}
-                        </span>
-                      )}
-                      {(!embedProduct || embedProduct.price_after_discount === 0) && (
-                        <span className={styles.articleViews}><ShoppingBag size={11} /> Store</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.button>
-            </motion.div>
-          </div>
-        </section>
+                  return null
+                })}
+              </motion.div>
+            </div>
+          </section>
+        ))}
 
         {/* ── 4c. IMPACT IN MOTION (Live Count) ── */}
         <section className={styles.section}>
@@ -941,68 +918,6 @@ export default function AboutClient({ navLinks, config, latestArticles, embedPro
         )}
       </AnimatePresence>
 
-      {/* ── Ecosystem Modals ── */}
-      <AnimatePresence>
-        {activeModal && (() => {
-          const modals: Record<string, { title: string; body: string; btnLabel: string; href: string }> = {
-            articles: {
-              title: 'Marketing Intelligence, Made Practical.',
-              body: 'Artikel Marcatching dirancang untuk membantu business owner dan marketer membaca perubahan pasar dengan lebih tajam. Topik yang dibahas mencakup AI marketing, branding, positioning, consumer behavior, digital growth, content strategy, dan business model thinking. Tujuannya bukan sekadar memberi inspirasi, tetapi membantu audience memahami pola di balik pertumbuhan bisnis modern.',
-              btnLabel: 'Read Articles',
-              href: config.article_url || '/article',
-            },
-            social: {
-              title: 'Turning Complex Strategy Into Daily Learning.',
-              body: 'Di Instagram dan TikTok, Marcatching mengubah konsep marketing yang kompleks menjadi konten edukasi yang lebih mudah dipahami. Konten sosial media digunakan sebagai pintu masuk bagi audience untuk mengenal AI, psikologi konsumen, brand perception, dan sistem pertumbuhan digital dengan format yang ringan, cepat, dan relevan.',
-              btnLabel: 'Explore Instagram & TikTok',
-              href: config.instagram_url || 'https://www.instagram.com/marcatching.id/',
-            },
-            survey: {
-              title: 'Helping UMKM Start With Clarity.',
-              body: 'Marcatching membantu UMKM secara gratis melalui survey untuk memahami kondisi bisnis, tantangan marketing, dan kesiapan mereka dalam mengadopsi teknologi. Survey ini menjadi jembatan antara masalah yang dirasakan business owner dengan insight yang lebih terstruktur, sehingga mereka bisa mulai mengambil keputusan yang lebih tepat.',
-              btnLabel: 'Join Free Survey',
-              href: config.survey_url || '/survey',
-            },
-            store: {
-              title: 'Upgrade Your Marketing Capability.',
-              body: 'Marcatching Store adalah tempat audience mengakses course, learning assets, dan produk digital yang dirancang untuk meningkatkan kemampuan marketing secara sistematis. Dari membangun akun bisnis, memahami content system, menggunakan AI, hingga menyusun strategi pertumbuhan yang lebih scalable.',
-              btnLabel: 'Visit Store',
-              href: config.store_url || '/store',
-            },
-          }
-          const m = modals[activeModal]
-          if (!m) return null
-          return (
-            <>
-              <motion.div
-                className={styles.ecoModalBackdrop}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setActiveModal(null)}
-              />
-              <motion.div
-                className={styles.ecoModalBox}
-                initial={{ opacity: 0, scale: 0.88, y: 24 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.88, y: 24 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-              >
-                <div className={styles.ecoModalHeader}>
-                  <button className={styles.ecoModalClose} onClick={() => setActiveModal(null)} aria-label="Close"><X size={18} /></button>
-                </div>
-                <div className={styles.ecoModalBody}>
-                  <h2 className={styles.ecoModalTitle}>{m.title}</h2>
-                  <p className={styles.ecoModalText}>{m.body}</p>
-                  <a href={m.href} target="_blank" rel="noopener noreferrer" className={styles.ecoModalBtn}>
-                    {m.btnLabel} <ArrowRight size={16} />
-                  </a>
-                </div>
-              </motion.div>
-            </>
-          )
-        })()}
-      </AnimatePresence>
     </>
   )
 }

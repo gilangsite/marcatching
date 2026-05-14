@@ -264,4 +264,5 @@ alter table about_config
   add column if not exists embed_social_title     text default 'Tonton di Instagram',
   add column if not exists embed_survey_image_url text,
   add column if not exists embed_survey_title     text default 'Mulai Survey Gratis',
-  add column if not exists embed_product_id       uuid references products(id);
+  add column if not exists embed_product_id       uuid references products(id),
+  add column if not exists ecosystem_sections     jsonb default '[]'::jsonb;

@@ -39,7 +39,8 @@ export async function GET() {
       embed_social_title: 'Tonton di Instagram',
       embed_survey_image_url: '',
       embed_survey_title: 'Mulai Survey Gratis',
-      embed_product_id: null
+      embed_product_id: null,
+      ecosystem_sections: []
     }
 
     return NextResponse.json(config || defaultConfig)
