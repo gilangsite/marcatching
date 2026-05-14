@@ -188,11 +188,18 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
     <>
       <Navbar navLinks={navLinks} />
 
+      {/* ── Scroll Progress Bar ── */}
+      <motion.div
+        className={styles.scrollProgress}
+        style={{ scaleX: scrollYProgress }}
+      />
+
       <main className={styles.main}>
 
         {/* ── 1. HERO (canvas particle animation) ── */}
         <div className={styles.heroWrapper}>
           <canvas ref={canvasRef} className={styles.heroCanvas} />
+          <div className={styles.heroSpotlight} />
           <div className={styles.heroOverlay} />
 
           <motion.section
@@ -614,28 +621,28 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
               whileInView="visible"
               viewport={{ once: true, margin: '-50px' }}
             >
-              <motion.div className={styles.missionCard} variants={fadeUp}>
+              <motion.div className={styles.missionCard} variants={fadeUp} style={{ '--pillar-accent': '#06b6d4' } as React.CSSProperties}>
                 <div className={styles.missionIcon}><Filter size={22} /></div>
                 <h3 className={styles.missionTitle}>Noise Decoder</h3>
                 <p className={styles.missionTagline}>From scattered information to strategic clarity.</p>
                 <p className={styles.missionDesc}>Marcatching membantu bisnis memisahkan sinyal dari noise: mana tren yang layak diikuti, mana yang hanya distraksi, dan mana yang bisa menjadi peluang pertumbuhan.</p>
               </motion.div>
 
-              <motion.div className={styles.missionCard} variants={fadeUp}>
+              <motion.div className={styles.missionCard} variants={fadeUp} style={{ '--pillar-accent': '#3b82f6' } as React.CSSProperties}>
                 <div className={styles.missionIcon}><BrainCircuit size={22} /></div>
                 <h3 className={styles.missionTitle}>Human &amp; Machine</h3>
                 <p className={styles.missionTagline}>AI should accelerate human judgment, not replace it.</p>
                 <p className={styles.missionDesc}>Masa depan marketing bukan tentang manusia melawan mesin, tapi tentang founder dan marketer yang mampu menggunakan AI untuk berpikir, mengeksekusi, dan mengambil keputusan lebih cepat.</p>
               </motion.div>
 
-              <motion.div className={styles.missionCard} variants={fadeUp}>
+              <motion.div className={styles.missionCard} variants={fadeUp} style={{ '--pillar-accent': '#8b5cf6' } as React.CSSProperties}>
                 <div className={styles.missionIcon}><ScanEye size={22} /></div>
                 <h3 className={styles.missionTitle}>Perception Design</h3>
                 <p className={styles.missionTagline}>People do not buy the best product. They buy the clearest meaning.</p>
                 <p className={styles.missionDesc}>Marcatching membantu brand merancang persepsi, narasi, visual, dan pesan yang membuat audiens memahami nilai bisnis dengan lebih cepat.</p>
               </motion.div>
 
-              <motion.div className={styles.missionCard} variants={fadeUp}>
+              <motion.div className={styles.missionCard} variants={fadeUp} style={{ '--pillar-accent': '#22c55e' } as React.CSSProperties}>
                 <div className={styles.missionIcon}><Database size={22} /></div>
                 <h3 className={styles.missionTitle}>Data Authority</h3>
                 <p className={styles.missionTagline}>Strong brands are not built by guesswork.</p>
@@ -924,13 +931,14 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
   )
 }
 
-// ── ImpactCard sub-component ────────────────────────────────────
+// ── ImpactCard sub-component ────────────────────────────────────────────
 function ImpactCard({ inView, target, label, sub, suffix }: {
   inView: boolean; target: number; label: string; sub: string; suffix?: string
 }) {
   const count = useCountUp(target, inView)
   return (
     <motion.div className={styles.impactCard} variants={fadeUp}>
+      <div className={styles.impactPulseRing} />
       <div className={styles.impactNumber}>
         {count.toLocaleString('id-ID')}{suffix}
       </div>
