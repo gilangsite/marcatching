@@ -1,11 +1,12 @@
+/* ── Base ── */
 .main {
   min-height: 100vh;
-  background: #050505; /* Deeper black */
+  background: #050505;
   color: #ffffff;
   overflow-x: hidden;
 }
 
-/* ── Hero w/ Background ── */
+/* ── Hero ── */
 .heroWrapper {
   position: relative;
   min-height: 100vh;
@@ -28,7 +29,7 @@
 .heroOverlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.85) 50%, #050505 100%);
+  background: linear-gradient(180deg, rgba(5,5,5,0.35) 0%, rgba(5,5,5,0.80) 50%, #050505 100%);
   z-index: 1;
 }
 
@@ -36,19 +37,19 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
 .heroTag {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.4);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   display: inline-block;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 999px;
   background: rgba(255,255,255,0.03);
@@ -56,7 +57,7 @@
 }
 
 .heroTitle {
-  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.05;
@@ -68,12 +69,22 @@
 }
 
 .heroSubtitle {
-  font-size: clamp(1.15rem, 2vw, 1.4rem);
-  color: rgba(255,255,255,0.8);
-  line-height: 1.6;
-  max-width: 700px;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: rgba(255,255,255,0.75);
+  line-height: 1.65;
+  max-width: 680px;
   margin: 0 auto;
   font-weight: 400;
+}
+
+/* Bouncing scroll cue */
+.heroScroll {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: rgba(255,255,255,0.3);
 }
 
 /* ── Generic Section ── */
@@ -83,12 +94,13 @@
   z-index: 10;
 }
 
-.sectionLight {
-  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.02) 50%, transparent 100%);
+/* alternate background stripe */
+.sectionAlt {
+  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.025) 50%, transparent 100%);
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1040px;
   margin: 0 auto;
 }
 
@@ -100,7 +112,7 @@
 }
 
 .sectionTitle {
-  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -111,56 +123,62 @@
 }
 
 .sectionTag {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.35);
   margin-bottom: 16px;
   display: block;
 }
 
-.textBlock {
+.sectionSubtitle {
   font-size: 1.15rem;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.8;
-  margin-bottom: 24px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 0;
+  line-height: 1.6;
+  margin-top: -12px;
+}
+
+.textBlock {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.85;
+  margin-bottom: 22px;
 }
 .textBlock:last-child {
   margin-bottom: 0;
 }
 
-.punchline {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.4;
-  padding: 40px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  font-style: italic;
-  backdrop-filter: blur(10px);
+/* ── 2. Problem Section ── */
+.problemWrap {
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-.philosophyImageWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 480px;
+.problemTitle {
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.philosophyImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 24px;
-  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 75%);
-  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 75%);
-  opacity: 0.9;
+.problemDivider {
+  width: 60px;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 40px;
 }
 
-/* ── Data Boxes ── */
+.problemBody {
+  max-width: 720px;
+}
+
+/* ── 3. Data Section ── */
 .dataBoxWrap {
   display: flex;
   justify-content: center;
@@ -170,27 +188,27 @@
 .dataBox {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 18px;
   width: 100%;
 }
 
 .dataItem {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
-  padding: 32px 24px;
+  padding: 32px 24px 28px;
   text-align: center;
   backdrop-filter: blur(10px);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .dataItem:hover {
   transform: translateY(-5px);
-  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.18);
 }
 
 .dataItem h3 {
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   font-weight: 800;
   color: #ffffff;
   margin-bottom: 8px;
@@ -201,12 +219,104 @@
 }
 
 .dataItem p {
-  font-size: 0.95rem;
-  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.55);
   line-height: 1.4;
+  margin-bottom: 10px;
 }
 
-/* ── Pillars Grid ── */
+.dataSource {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  display: block;
+}
+
+.dataNote {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.25);
+  font-style: italic;
+  margin-top: 32px;
+  line-height: 1.5;
+}
+
+/* ── 4. What Marcatching Builds ── */
+.buildGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+
+.buildCard {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 24px;
+  padding: 44px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.buildCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.buildCard:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+}
+
+.buildCard:hover::before {
+  opacity: 1;
+}
+
+.buildNumber {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.18);
+  margin-bottom: 20px;
+}
+
+.buildIconWrap {
+  width: 46px;
+  height: 46px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 20px;
+}
+
+.buildTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+
+.buildDesc {
+  font-size: 0.98rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+}
+
+/* ── 5. Pillars Grid ── */
 .missionGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -225,112 +335,68 @@
 
 .missionCard:hover {
   background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.18);
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .missionIcon {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
   color: #000000;
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .missionTitle {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   letter-spacing: -0.01em;
   color: #ffffff;
 }
 
+.missionTagline {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
 .missionDesc {
-  font-size: 1rem;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.6;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.65;
 }
 
-/* ── Comparison Grid ── */
-.comparisonGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+/* ── 6. Founder ── */
+.founderSection {
+  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.015) 50%, transparent 100%);
 }
 
-.comparisonCard {
-  border-radius: 32px;
-  padding: 48px;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-}
-
-.cardPros {
-  background: linear-gradient(180deg, rgba(34, 197, 94, 0.05) 0%, rgba(255,255,255,0.02) 100%);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.cardCons {
-  background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, rgba(255,255,255,0.02) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.comparisonHeader {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.comparisonHeader h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.comparisonList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.comparisonList li {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  font-size: 1.1rem;
-  line-height: 1.5;
-  color: rgba(255,255,255,0.85);
-}
-
-/* ── Founder Profile ── */
 .founderBox {
-  background: #0a0a0a;
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 32px;
   padding: 60px;
   display: flex;
-  gap: 60px;
-  align-items: center;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+  gap: 64px;
+  align-items: flex-start;
+  margin-bottom: 40px;
 }
 
 .founderPhotoWrapper {
   flex-shrink: 0;
-  width: 240px;
-  height: 240px;
-  border-radius: 24px;
+  width: 260px;
+  height: 320px;
+  border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .founderPhoto {
@@ -343,28 +409,172 @@
   flex: 1;
 }
 
-.founderLabel {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 12px;
-}
-
 .founderName {
   font-size: 2.2rem;
   font-weight: 800;
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.founderRole {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 28px;
+}
+
+.founderBio {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+
+.founderQuoteBox {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 2px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 28px 0;
+}
+
+.founderQuoteMark {
+  font-size: 3rem;
+  line-height: 1;
+  color: rgba(255,255,255,0.1);
+  font-family: Georgia, serif;
+  position: absolute;
+  top: 8px;
+  left: 16px;
 }
 
 .founderQuote {
-  font-size: 1.3rem;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.75);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
   font-style: italic;
   font-weight: 300;
+  padding-left: 12px;
+}
+
+.founderBelief {
+  margin-top: 4px;
+}
+
+.founderBeliefText {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.75;
+}
+
+/* Credibility blocks */
+.credGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.credCard {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 28px 24px;
+  transition: all 0.35s ease;
+}
+
+.credCard:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-5px);
+}
+
+.credIcon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 16px;
+}
+
+.credTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.credDesc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+/* ── 7. Comparison Grid ── */
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.comparisonCard {
+  border-radius: 28px;
+  padding: 44px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.cardPros {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.05) 0%, rgba(255,255,255,0.015) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.cardCons {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, rgba(255,255,255,0.015) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.comparisonHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.comparisonHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.comparisonList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.comparisonList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.8);
 }
 
 /* ── CTA ── */
@@ -378,35 +588,38 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 80px 40px;
-  background: radial-gradient(circle at center, rgba(30,58,138,0.2) 0%, rgba(0,0,0,0) 70%);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  background: radial-gradient(circle at center, rgba(30,58,138,0.12) 0%, rgba(0,0,0,0) 70%);
+  border-top: 1px solid rgba(255,255,255,0.08);
   position: relative;
 }
 
+.ctaTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  display: block;
+  margin-bottom: 24px;
+}
+
 .ctaTitle {
-  font-size: 3rem;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
   font-weight: 800;
   margin-bottom: 20px;
   letter-spacing: -0.03em;
-  line-height: 1.2;
+  line-height: 1.15;
   background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.ctaLogoTitle {
-  vertical-align: middle;
-  height: 1.2em;
-  margin-top: -0.1em;
-  display: inline-block;
-}
-
 .ctaDesc {
-  font-size: 1.2rem;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 48px;
-  line-height: 1.6;
-  max-width: 600px;
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 44px;
+  line-height: 1.65;
+  max-width: 580px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -416,7 +629,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 .btnPrimary {
@@ -424,10 +637,10 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 20px 48px;
+  padding: 18px 44px;
   background: #ffffff;
   color: #000000;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 800;
   border-radius: 999px;
   text-decoration: none;
@@ -437,76 +650,106 @@
 .btnPrimary:hover {
   transform: translateY(-4px) scale(1.02);
   background: #f1f5f9;
-  box-shadow: 0 20px 40px rgba(255,255,255,0.15);
+  box-shadow: 0 20px 40px rgba(255,255,255,0.12);
 }
 
 .btnSecondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 18px 40px;
+  gap: 10px;
+  padding: 16px 36px;
   background: transparent;
   color: #ffffff;
-  border: 1px solid rgba(255,255,255,0.3);
-  font-size: 1.1rem;
-  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.25);
+  font-size: 1rem;
+  font-weight: 600;
   border-radius: 999px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .btnSecondary:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.45);
 }
 
 /* ── Responsive ── */
+@media (max-width: 1024px) {
+  .credGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 900px) {
   .founderBox {
     flex-direction: column;
-    text-align: center;
-    padding: 40px 24px;
-    gap: 32px;
+    padding: 40px 28px;
+    gap: 36px;
   }
   .founderPhotoWrapper {
     width: 180px;
-    height: 180px;
+    height: 220px;
     margin: 0 auto;
+  }
+  .buildGrid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding: 60px 0;
-  }
-  .container {
-    padding: 0;
+  .section {
+    padding: 80px 20px;
   }
   .grid2 {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 44px;
   }
   .comparisonGrid {
     grid-template-columns: 1fr;
   }
   .comparisonCard {
     padding: 32px 24px;
-    border-radius: 24px;
+    border-radius: 22px;
   }
   .ctaButtons {
     flex-direction: column;
     width: 100%;
   }
-  .btnPrimary, .btnSecondary {
+  .btnPrimary,
+  .btnSecondary {
     width: 100%;
     padding: 16px 24px;
   }
   .sectionTitle {
     font-size: 2rem;
   }
-  .punchline {
-    padding: 24px;
-    font-size: 1.3rem;
+  .problemTitle {
+    font-size: 2rem;
+  }
+  .missionGrid {
+    grid-template-columns: 1fr;
+  }
+  .credGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .dataBox {
+    grid-template-columns: 1fr 1fr;
+  }
+  .founderBox {
+    padding: 32px 20px;
+  }
+  .ctaSection {
+    padding: 80px 20px 120px;
+  }
+  .ctaBox {
+    padding: 60px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .credGrid {
+    grid-template-columns: 1fr;
   }
 }
