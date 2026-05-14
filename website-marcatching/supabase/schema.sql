@@ -259,4 +259,9 @@ alter table about_config
   add column if not exists store_url          text default '/store',
   add column if not exists stat_umkm_helped   integer default 0,
   add column if not exists stat_total_reach   integer default 0,
-  add column if not exists stat_product_sold  integer default 0;
+  add column if not exists stat_product_sold  integer default 0,
+  add column if not exists embed_social_image_url text,
+  add column if not exists embed_social_title     text default 'Tonton di Instagram',
+  add column if not exists embed_survey_image_url text,
+  add column if not exists embed_survey_title     text default 'Mulai Survey Gratis',
+  add column if not exists embed_product_id       uuid references products(id);

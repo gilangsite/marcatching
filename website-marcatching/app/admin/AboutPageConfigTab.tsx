@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '@/lib/supabaseClient'
 import { Plus, X, Check, Camera, Upload } from 'lucide-react'
 import Cropper from 'react-easy-crop'
 import styles from './admin.module.css'
@@ -29,6 +30,8 @@ export default function AboutPageConfigTab() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadTarget, setUploadTarget] = useState<'founder' | 'social' | 'survey' | null>(null)
+  const [products, setProducts] = useState<{id: string, name: string}[]>([])
 
   const [cropData, setCropData] = useState<{ src: string, file?: File }>({ src: '' })
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -54,10 +57,21 @@ export default function AboutPageConfigTab() {
     // Impact stats
     stat_umkm_helped: 0,
     stat_total_reach: 0,
-    stat_product_sold: 0
+    stat_product_sold: 0,
+    // Embed visuals
+    embed_social_image_url: '',
+    embed_social_title: 'Tonton di Instagram',
+    embed_survey_image_url: '',
+    embed_survey_title: 'Mulai Survey Gratis',
+    embed_product_id: ''
   })
 
   useEffect(() => {
+    // Fetch available products for dropdown
+    supabase.from('products').select('id, name').order('name').then(({ data }) => {
+      if (data) setProducts(data)
+    })
+
     fetch('/api/about-config')
       .then(res => res.json())
       .then(data => {
@@ -78,7 +92,12 @@ export default function AboutPageConfigTab() {
             store_url: data.store_url || '/store',
             stat_umkm_helped: data.stat_umkm_helped || 0,
             stat_total_reach: data.stat_total_reach || 0,
-            stat_product_sold: data.stat_product_sold || 0
+            stat_product_sold: data.stat_product_sold || 0,
+            embed_social_image_url: data.embed_social_image_url || '',
+            embed_social_title: data.embed_social_title || 'Tonton di Instagram',
+            embed_survey_image_url: data.embed_survey_image_url || '',
+            embed_survey_title: data.embed_survey_title || 'Mulai Survey Gratis',
+            embed_product_id: data.embed_product_id || ''
           })
         }
         setLoading(false)
@@ -107,14 +126,16 @@ export default function AboutPageConfigTab() {
     setTimeout(() => setSuccessMsg(''), 3000)
   }
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]; if (!file) return
+  function handleGenericUpload(e: React.ChangeEvent<HTMLInputElement>, target: 'founder' | 'social' | 'survey') {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadTarget(target)
     const reader = new FileReader()
-    reader.onload = (event) => setCropData({ src: event.target?.result as string, file })
+    reader.onload = () => setCropData({ src: reader.result as string, file })
     reader.readAsDataURL(file)
   }
 
-  function addPro(val: string) { if(val.trim()) setForm(f => ({ ...f, comparison_pros: [...f.comparison_pros, val.trim()] })) }
+  function addPro(val: string) { if (val.trim()) setForm(f => ({ ...f, comparison_pros: [...f.comparison_pros, val.trim()] })) }
   function addCon(val: string) { if(val.trim()) setForm(f => ({ ...f, comparison_cons: [...f.comparison_cons, val.trim()] })) }
   function removePro(idx: number) { setForm(f => ({ ...f, comparison_pros: f.comparison_pros.filter((_, i) => i !== idx) })) }
   function removeCon(idx: number) { setForm(f => ({ ...f, comparison_cons: f.comparison_cons.filter((_, i) => i !== idx) })) }
@@ -156,8 +177,8 @@ export default function AboutPageConfigTab() {
         <div className="form-group">
           <label className="label">Foto Co-Founder / The Architect</label>
           <div className={styles.uploadArea} style={{ maxWidth: 300 }}>
-            <input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={uploadingImage} className={styles.fileInput} />
-            <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage ? 'Mengupload...' : 'Pilih Foto Jelas'}</div>
+            <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, 'founder')} disabled={uploadingImage} className={styles.fileInput} />
+            <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === 'founder' ? 'Mengupload...' : 'Pilih Foto Jelas'}</div>
           </div>
           {form.founder_photo_url && (
             <div style={{ marginTop: 12 }}>
@@ -217,6 +238,59 @@ export default function AboutPageConfigTab() {
 
         <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
 
+        <h3 className={styles.formTitle}>Visual Embeds (Card Grid)</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Konten visual yang akan ditampilkan di card ekosistem untuk membuka popup.</p>
+        
+        <div className={styles.formGrid}>
+          {/* Social Media Embed */}
+          <div className="form-group">
+            <label className="label">Social Media Card Title</label>
+            <input className="input" value={form.embed_social_title} onChange={e => setForm(f => ({ ...f, embed_social_title: e.target.value }))} />
+            
+            <label className="label" style={{ marginTop: 12 }}>Thumbnail Social Media</label>
+            <div className={styles.uploadArea}>
+              <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, 'social')} disabled={uploadingImage} className={styles.fileInput} />
+              <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === 'social' ? 'Mengupload...' : 'Pilih Gambar Thumbnail'}</div>
+            </div>
+            {form.embed_social_image_url && (
+              <div style={{ marginTop: 12 }}>
+                <img src={form.embed_social_image_url.includes('drive.google.com') ? form.embed_social_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w600-h600' : form.embed_social_image_url} alt="Social Preview" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} />
+              </div>
+            )}
+          </div>
+
+          {/* Survey Embed */}
+          <div className="form-group">
+            <label className="label">Survey Card Title</label>
+            <input className="input" value={form.embed_survey_title} onChange={e => setForm(f => ({ ...f, embed_survey_title: e.target.value }))} />
+            
+            <label className="label" style={{ marginTop: 12 }}>Thumbnail Survey</label>
+            <div className={styles.uploadArea}>
+              <input type="file" accept="image/*" onChange={(e) => handleGenericUpload(e, 'survey')} disabled={uploadingImage} className={styles.fileInput} />
+              <div className={styles.uploadLabel}><Upload size={20} />{uploadingImage && uploadTarget === 'survey' ? 'Mengupload...' : 'Pilih Gambar Thumbnail'}</div>
+            </div>
+            {form.embed_survey_image_url && (
+              <div style={{ marginTop: 12 }}>
+                <img src={form.embed_survey_image_url.includes('drive.google.com') ? form.embed_survey_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w600-h600' : form.embed_survey_image_url} alt="Survey Preview" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} />
+              </div>
+            )}
+          </div>
+
+          {/* Store Product Embed */}
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+            <label className="label">Featured Store Product</label>
+            <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: 8 }}>Pilih produk yang akan di-embed di card Store. Gambar dan harga akan diambil otomatis.</p>
+            <select className="input" value={form.embed_product_id} onChange={e => setForm(f => ({ ...f, embed_product_id: e.target.value }))} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
+              <option value="">-- Pilih Produk --</option>
+              {products.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
+
         <h3 className={styles.formTitle}>Impact Stats (Live Count)</h3>
         <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Angka yang ditampilkan di section "Marcatching Impact in Motion". Counter akan animate dari 0 ke angka ini.</p>
         <div className={styles.formGrid}>
@@ -245,7 +319,7 @@ export default function AboutPageConfigTab() {
         <div className={styles.cropModalOverlay}>
           <div className={styles.cropModalContent} style={{ width: 400, margin: '0 auto' }}>
             <div className={styles.cropModalHeader}>
-              <h3 className={styles.cropModalTitle}>Potong Foto Founder</h3>
+              <h3 className={styles.cropModalTitle}>Potong Foto {uploadTarget === 'founder' ? 'Founder' : uploadTarget === 'social' ? 'Social Media' : 'Survey'}</h3>
               <button onClick={() => setCropData({ src: '' })} className={styles.closeBtn}><X size={20} /></button>
             </div>
             <div style={{ position: 'relative', height: 400, background: '#333' }}>
@@ -253,7 +327,7 @@ export default function AboutPageConfigTab() {
                 image={cropData.src}
                 crop={crop}
                 zoom={zoom}
-                aspect={9 / 16} /* 9:16 Portrait Aspect */
+                aspect={uploadTarget === 'founder' ? 9 / 16 : 1 / 1} /* 1:1 for social/survey */
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
@@ -272,7 +346,13 @@ export default function AboutPageConfigTab() {
                   })
                   const data = await res.json()
                   if (data.status === 'success') {
-                    setForm(f => ({ ...f, founder_photo_url: data.url }))
+                    if (uploadTarget === 'founder') {
+                      setForm(f => ({ ...f, founder_photo_url: data.url }))
+                    } else if (uploadTarget === 'social') {
+                      setForm(f => ({ ...f, embed_social_image_url: data.url }))
+                    } else if (uploadTarget === 'survey') {
+                      setForm(f => ({ ...f, embed_survey_image_url: data.url }))
+                    }
                     setCropData({ src: '' })
                   } else alert('Gagal: ' + data.message)
                 } catch (err) { alert('Gagal mengupload gambar.') }

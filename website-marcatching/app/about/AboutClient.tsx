@@ -108,7 +108,7 @@ function useCountUp(target: number, inView: boolean, duration = 1800) {
   return count
 }
 
-export default function AboutClient({ navLinks, config, latestArticles }: { navLinks: NavLink[], config: any, latestArticles?: Article[] }) {
+export default function AboutClient({ navLinks, config, latestArticles, embedProduct }: { navLinks: NavLink[], config: any, latestArticles?: Article[], embedProduct?: any }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
@@ -453,52 +453,114 @@ export default function AboutClient({ navLinks, config, latestArticles }: { navL
                   </Link>
                 )
               })}
-            </motion.div>
 
-            <motion.div
-              className={styles.ecoGrid}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-40px' }}
-              variants={stagger}
-            >
-              {/* Card 2 — Social Media */}
+              {/* Card — Social Media */}
               <motion.button
-                className={styles.ecoCard}
+                className={styles.articleCard}
                 variants={fadeUp}
                 onClick={() => setActiveModal('social')}
-                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+                style={{ textAlign: 'left', border: 'none', padding: 0 }}
               >
-                <div className={styles.ecoIconWrap}><Share2 size={20} /></div>
-                <h3 className={styles.ecoTitle}>Social Media Education</h3>
-                <p className={styles.ecoDesc}>Menerjemahkan strategi marketing modern ke dalam konten Instagram dan TikTok yang lebih mudah dipahami, relatable, dan actionable.</p>
-                <span className={styles.ecoCta}>Explore Content <ExternalLink size={13} /></span>
+                <div className={styles.articleThumb}>
+                  {config.embed_social_image_url ? (
+                    <Image
+                      src={config.embed_social_image_url.includes('drive.google.com') ? config.embed_social_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : config.embed_social_image_url}
+                      alt="Social Media"
+                      fill
+                      className={styles.articleThumbImg}
+                      sizes="(max-width: 640px) 100vw, 300px"
+                    />
+                  ) : <div className={styles.articleThumbPlaceholder}><span>IG</span></div>}
+                  <span className={styles.articleCatBadge}>Social Media</span>
+                </div>
+                <div className={styles.articleBody}>
+                  <h2 className={styles.articleTitle}>{config.embed_social_title || 'Tonton di Instagram'}</h2>
+                  <p className={styles.articleExcerpt}>Edukasi, insight praktis, dan framework marketing yang siap diaplikasikan ke bisnismu.</p>
+                  <div className={styles.articleMeta}>
+                    <div className={styles.articleAuthor}>
+                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#e1306c', color: 'white' }}>M</div>
+                      <span className={styles.articleAuthorName}>Marcatching</span>
+                    </div>
+                    <div className={styles.articleMetaRight}>
+                      <span className={styles.articleViews}><Eye size={11} /> View Post</span>
+                    </div>
+                  </div>
+                </div>
               </motion.button>
 
-              {/* Card 3 — UMKM Survey */}
+              {/* Card — UMKM Survey */}
               <motion.button
-                className={styles.ecoCard}
+                className={styles.articleCard}
                 variants={fadeUp}
                 onClick={() => setActiveModal('survey')}
-                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+                style={{ textAlign: 'left', border: 'none', padding: 0 }}
               >
-                <div className={styles.ecoIconWrap}><ClipboardList size={20} /></div>
-                <h3 className={styles.ecoTitle}>Free UMKM Survey</h3>
-                <p className={styles.ecoDesc}>Membantu UMKM memahami tantangan bisnis dan marketing mereka melalui survey gratis sebagai langkah awal menuju strategi yang lebih terarah.</p>
-                <span className={styles.ecoCta}>Join the Survey <ExternalLink size={13} /></span>
+                <div className={styles.articleThumb}>
+                  {config.embed_survey_image_url ? (
+                    <Image
+                      src={config.embed_survey_image_url.includes('drive.google.com') ? config.embed_survey_image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w800-h800' : config.embed_survey_image_url}
+                      alt="Survey UMKM"
+                      fill
+                      className={styles.articleThumbImg}
+                      sizes="(max-width: 640px) 100vw, 300px"
+                    />
+                  ) : <div className={styles.articleThumbPlaceholder}><span>SV</span></div>}
+                  <span className={styles.articleCatBadge}>Free Survey</span>
+                </div>
+                <div className={styles.articleBody}>
+                  <h2 className={styles.articleTitle}>{config.embed_survey_title || 'Mulai Survey Gratis'}</h2>
+                  <p className={styles.articleExcerpt}>Analisis marketing gap bisnismu dan dapatkan feedback dari tim konsultan kami.</p>
+                  <div className={styles.articleMeta}>
+                    <div className={styles.articleAuthor}>
+                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#2563eb', color: 'white' }}>✓</div>
+                      <span className={styles.articleAuthorName}>Diagnostics</span>
+                    </div>
+                    <div className={styles.articleMetaRight}>
+                      <span className={styles.articleViews}><Share2 size={11} /> Start</span>
+                    </div>
+                  </div>
+                </div>
               </motion.button>
 
-              {/* Card 4 — Store */}
+              {/* Card — Store Product */}
               <motion.button
-                className={styles.ecoCard}
+                className={styles.articleCard}
                 variants={fadeUp}
                 onClick={() => setActiveModal('store')}
-                whileHover={{ y: -6, borderColor: 'rgba(255,255,255,0.22)' }}
+                style={{ textAlign: 'left', border: 'none', padding: 0 }}
               >
-                <div className={styles.ecoIconWrap}><ShoppingBag size={20} /></div>
-                <h3 className={styles.ecoTitle}>Marcatching Store</h3>
-                <p className={styles.ecoDesc}>Landing page untuk course dan produk digital yang membantu audience upgrade skill marketing, memahami AI workflow, dan membangun sistem pertumbuhan bisnis.</p>
-                <span className={styles.ecoCta}>Visit Store <ExternalLink size={13} /></span>
+                <div className={styles.articleThumb}>
+                  {embedProduct?.image_url ? (
+                    <Image
+                      src={embedProduct.image_url}
+                      alt={embedProduct.name}
+                      fill
+                      className={styles.articleThumbImg}
+                      sizes="(max-width: 640px) 100vw, 300px"
+                    />
+                  ) : <div className={styles.articleThumbPlaceholder}><span>ST</span></div>}
+                  <span className={styles.articleCatBadge}>Store</span>
+                </div>
+                <div className={styles.articleBody}>
+                  <h2 className={styles.articleTitle}>{embedProduct ? embedProduct.name : 'Marcatching Store'}</h2>
+                  <p className={styles.articleExcerpt}>{embedProduct ? embedProduct.sub_headline : 'Upgrade skill marketing-mu dengan course, template, dan toolkit premium dari kami.'}</p>
+                  <div className={styles.articleMeta}>
+                    <div className={styles.articleAuthor}>
+                      <div className={styles.articleAuthorAvatarPlaceholder} style={{ background: '#f59e0b', color: 'white' }}>$</div>
+                      <span className={styles.articleAuthorName}>Premium</span>
+                    </div>
+                    <div className={styles.articleMetaRight}>
+                      {embedProduct && embedProduct.price_after_discount > 0 && (
+                        <span className={styles.articleViews} style={{ color: '#fff', fontWeight: 600 }}>
+                          Rp {embedProduct.price_after_discount.toLocaleString('id-ID')}
+                        </span>
+                      )}
+                      {(!embedProduct || embedProduct.price_after_discount === 0) && (
+                        <span className={styles.articleViews}><ShoppingBag size={11} /> Store</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </motion.button>
             </motion.div>
           </div>
@@ -821,9 +883,9 @@ export default function AboutClient({ navLinks, config, latestArticles }: { navL
             {/* Popup panel */}
             <motion.div
               className={styles.waPopup}
-              initial={{ opacity: 0, scale: 0.25, x: '35vw', y: '35vh' }}
-              animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-              exit={{ opacity: 0, scale: 0.25, x: '35vw', y: '35vh' }}
+              initial={{ opacity: 0, scale: 0.25, x: 'calc(-50% + 35vw)', y: 'calc(-50% + 35vh)' }}
+              animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+              exit={{ opacity: 0, scale: 0.25, x: 'calc(-50% + 35vw)', y: 'calc(-50% + 35vh)' }}
               transition={{ type: 'spring', stiffness: 280, damping: 26 }}
             >
               {/* Header */}

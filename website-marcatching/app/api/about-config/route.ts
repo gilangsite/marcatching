@@ -30,9 +30,16 @@ export async function GET() {
       survey_url: '/survey',
       store_url: '/store',
       // Impact stats
+      // Impact stats
       stat_umkm_helped: 0,
       stat_total_reach: 0,
-      stat_product_sold: 0
+      stat_product_sold: 0,
+      // Embed visuals
+      embed_social_image_url: '',
+      embed_social_title: 'Tonton di Instagram',
+      embed_survey_image_url: '',
+      embed_survey_title: 'Mulai Survey Gratis',
+      embed_product_id: null
     }
 
     return NextResponse.json(config || defaultConfig)

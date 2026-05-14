@@ -49,7 +49,13 @@ export default async function AboutPage() {
     // Impact stats
     stat_umkm_helped: 0,
     stat_total_reach: 0,
-    stat_product_sold: 0
+    stat_product_sold: 0,
+    // Embed visuals
+    embed_social_image_url: '',
+    embed_social_title: 'Tonton di Instagram',
+    embed_survey_image_url: '',
+    embed_survey_title: 'Mulai Survey Gratis',
+    embed_product_id: null
   }
 
   const config = configRes || defaultConfig
@@ -62,7 +68,23 @@ export default async function AboutPage() {
     .order('published_at', { ascending: false })
     .limit(3)
 
+  // Fetch Embedded Product if available
+  let embedProduct = null
+  if (config.embed_product_id) {
+    const { data: product } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', config.embed_product_id)
+      .single()
+    embedProduct = product
+  }
+
   return (
-    <AboutClient navLinks={navLinks} config={config} latestArticles={articlesRes || []} />
+    <AboutClient 
+      navLinks={navLinks} 
+      config={config} 
+      latestArticles={articlesRes || []} 
+      embedProduct={embedProduct}
+    />
   )
 }
