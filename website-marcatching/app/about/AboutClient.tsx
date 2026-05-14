@@ -38,28 +38,28 @@ function getDriveThumb(url: string | null | undefined, size = 'w800-h1000') {
 }
 
 const fadeUp = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 }
 
 const stagger = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.05 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.04 } }
 }
 
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
+  visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 }
 
 const slideLeft = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
+  hidden: { opacity: 0, x: -28 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 }
 
 const slideRight = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
+  hidden: { opacity: 0, x: 28 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut' } }
 }
 
 // ── Canvas particle types ──────────────────────────────────
