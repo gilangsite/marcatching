@@ -683,9 +683,9 @@ function AdminDashboardInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
-  // Initialize analytics when tab switches to analytics
+  // Initialize analytics when tab switches to analytics or menu
   useEffect(() => {
-    if (tab === 'analytics' && !analyticsData && !analyticsLoading) {
+    if ((tab === 'analytics' || tab === 'menu') && !analyticsData && !analyticsLoading) {
       const range = getDateRange('30')
       setAnalyticsStart(range.start.substring(0, 10))
       setAnalyticsEnd(range.end.substring(0, 10))
@@ -696,7 +696,7 @@ function AdminDashboardInner() {
 
   // Supabase Realtime subscription for analytics
   useEffect(() => {
-    if (tab !== 'analytics') return
+    if (tab !== 'analytics' && tab !== 'menu') return
     const channel = supabase
       .channel('analytics_realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'analytics_events' }, () => {
@@ -1241,9 +1241,54 @@ function AdminDashboardInner() {
         {tab === 'menu' && (
           <div className={styles.mobileAppGridContainer}>
             <div className={styles.mobileAppHeader}>
-              <h1 className={styles.mobileAppTitle}>Admin Dashboard</h1>
-              <p className={styles.mobileAppDesc}>Pilih menu untuk mengelola website</p>
+              <h1 className={styles.mobileAppTitle}>Marcatching App</h1>
+              <p className={styles.mobileAppDesc}>When Innovations meets Marketing</p>
             </div>
+
+            {/* Analytics Horizontal Scroll */}
+            {analyticsData && (
+              <>
+                <div className={styles.mobileMenuAnalyticsScroll}>
+                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
+                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><Users size={16} /></div>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.uniqueVisitors.toLocaleString()}</span>
+                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Unique Visitors</span>
+                  </div>
+                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
+                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><Eye size={16} /></div>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.totalPageViews.toLocaleString()}</span>
+                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Page Views</span>
+                  </div>
+                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
+                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><MousePointer size={16} /></div>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.totalClicks.toLocaleString()}</span>
+                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Total Clicks</span>
+                  </div>
+                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
+                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><TrendingUp size={16} /></div>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.ctr}%</span>
+                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>CTR</span>
+                  </div>
+                </div>
+                
+                {analyticsData.dailyTrend.length > 0 && (
+                  <div className={styles.mobileMenuAnalyticsChart}>
+                    <h3>Daily Visitors Trend</h3>
+                    <p>30 Hari Terakhir</p>
+                    <VisitorLineChart data={analyticsData.dailyTrend} />
+                  </div>
+                )}
+                
+                <div style={{ padding: '0 4px', marginBottom: '8px' }}>
+                  <button className="btn btn-navy" style={{ width: '100%', padding: '12px', borderRadius: '16px', fontWeight: 700, justifyContent: 'center' }} onClick={() => setTab('analytics')}>
+                    Full Analytics
+                  </button>
+                </div>
+                
+                <div className={styles.mobileMenuDivider} />
+              </>
+            )}
+
             <div className={styles.mobileAppGrid}>
               <button className={styles.appBox} onClick={() => setTab('analytics')}>
                 <div className={styles.appIconWrap} style={{ color: '#3b82f6' }}><BarChart3 size={28} /></div>
@@ -1310,6 +1355,8 @@ function AdminDashboardInner() {
                 <span style={{ color: '#ef4444', fontWeight: 600 }}>Keluar (Logout)</span>
               </button>
             </div>
+
+            <div className={styles.mobileMenuBottomFade} />
           </div>
         )}
 

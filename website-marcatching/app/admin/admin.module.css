@@ -1584,3 +1584,54 @@
     display: none !important;
   }
 }
+
+/* ── Menu Dashboard Analytics ────────────────────────────── */
+.mobileMenuAnalyticsScroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 4px 16px 4px;
+  margin-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.mobileMenuAnalyticsScroll::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+.mobileMenuAnalyticsScroll > div {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
+}
+.mobileMenuAnalyticsChart {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 4px 20px 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+}
+.mobileMenuAnalyticsChart h3 {
+  font-size: 0.95rem;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+}
+.mobileMenuAnalyticsChart p {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+.mobileMenuDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 24px 16px;
+}
+.mobileMenuBottomFade {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+  z-index: 80;
+}
