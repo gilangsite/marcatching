@@ -14,7 +14,7 @@ import {
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -206,8 +206,15 @@ function VisitorLineChart({ data }: {
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
-  const [tab, setTab] = useState<TabType>('links')
+  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
+  const [tab, setTab] = useState<TabType>('analytics')
+
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      setTab('menu')
+    }
+  }, [])
+
   const [analyticsSubView, setAnalyticsSubView] = useState<'website' | 'cashflow'>('website')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -1171,7 +1178,11 @@ function AdminDashboardInner() {
     <div className={styles.page}>
       {/* Mobile Header */}
       <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}><Menu size={24} color="#ffffff" /></button>
+        {tab !== 'menu' ? (
+          <button className={styles.hamburgerBtn} onClick={() => setTab('menu')}><ArrowLeft size={24} color="#ffffff" /></button>
+        ) : (
+          <button className={styles.hamburgerBtn} style={{ visibility: 'hidden' }}><ArrowLeft size={24} color="#ffffff" /></button>
+        )}
         <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={140} height={34} className={styles.mobileHeaderLogo} unoptimized={true} />
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
@@ -1225,6 +1236,82 @@ function AdminDashboardInner() {
 
       {/* Main content */}
       <main className={styles.content}>
+
+        {/* ── MENU TAB (MOBILE ONLY) ─── */}
+        {tab === 'menu' && (
+          <div className={styles.mobileAppGridContainer}>
+            <div className={styles.mobileAppHeader}>
+              <h1 className={styles.mobileAppTitle}>Admin Dashboard</h1>
+              <p className={styles.mobileAppDesc}>Pilih menu untuk mengelola website</p>
+            </div>
+            <div className={styles.mobileAppGrid}>
+              <button className={styles.appBox} onClick={() => setTab('analytics')}>
+                <div className={styles.appIconWrap} style={{ color: '#3b82f6' }}><BarChart3 size={28} /></div>
+                <span>Analytics</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('finance')}>
+                <div className={styles.appIconWrap} style={{ color: '#10b981' }}><DollarSign size={28} /></div>
+                <span>Finance</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('orders')}>
+                <div className={styles.appIconWrap} style={{ color: '#f59e0b' }}><ClipboardList size={28} /></div>
+                <span>Orders</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('products')}>
+                <div className={styles.appIconWrap} style={{ color: '#8b5cf6' }}><Package size={28} /></div>
+                <span>Products</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('ecourse')}>
+                <div className={styles.appIconWrap} style={{ color: '#ec4899' }}><BookMarked size={28} /></div>
+                <span>E-Course</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('ecommerce')}>
+                <div className={styles.appIconWrap} style={{ color: '#14b8a6' }}><ShoppingCart size={28} /></div>
+                <span>Store</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('vouchers')}>
+                <div className={styles.appIconWrap} style={{ color: '#ef4444' }}><Tag size={28} /></div>
+                <span>Vouchers</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('articles')}>
+                <div className={styles.appIconWrap} style={{ color: '#6366f1' }}><Newspaper size={28} /></div>
+                <span>Articles</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('links')}>
+                <div className={styles.appIconWrap} style={{ color: '#0ea5e9' }}><ExternalLink size={28} /></div>
+                <span>Links</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('navigation')}>
+                <div className={styles.appIconWrap} style={{ color: '#0d3369' }}><Navigation size={28} /></div>
+                <span>Nav</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('aboutpage')}>
+                <div className={styles.appIconWrap} style={{ color: '#64748b' }}><FileText size={28} /></div>
+                <span>About</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('champagne')}>
+                <div className={styles.appIconWrap} style={{ color: '#facc15' }}><PartyPopper size={28} /></div>
+                <span>Party</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('survey')}>
+                <div className={styles.appIconWrap} style={{ color: '#8b5cf6' }}><ClipboardList size={28} /></div>
+                <span>Survey</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('security')}>
+                <div className={styles.appIconWrap} style={{ color: '#ef4444' }}><Lock size={28} /></div>
+                <span>Security</span>
+              </button>
+              <button className={styles.appBox} onClick={() => setTab('contact')}>
+                <div className={styles.appIconWrap} style={{ color: '#0d3369' }}><Mail size={28} /></div>
+                <span>Contact</span>
+              </button>
+              <button className={styles.appBox} onClick={handleLogout} style={{ gridColumn: '1 / -1', background: 'rgba(239, 68, 68, 0.05)', marginTop: 12 }}>
+                <div className={styles.appIconWrap} style={{ color: '#ef4444', background: 'transparent' }}><LogOut size={24} /></div>
+                <span style={{ color: '#ef4444', fontWeight: 600 }}>Keluar (Logout)</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── LINKS TAB ─── */}
         {tab === 'links' && (

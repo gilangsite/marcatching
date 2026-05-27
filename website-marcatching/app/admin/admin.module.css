@@ -1517,3 +1517,70 @@
     display: none !important;
   }
 }
+
+/* ── Mobile App Grid ─────────────────────────────────────── */
+.mobileAppGridContainer {
+  padding: 0 4px;
+}
+.mobileAppHeader {
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+.mobileAppTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+.mobileAppDesc {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+.mobileAppGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.appBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 16px 8px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  gap: 12px;
+}
+.appBox:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+.appIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.appBox span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none !important;
+  }
+}
