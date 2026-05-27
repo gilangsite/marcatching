@@ -182,7 +182,7 @@ export default function AboutClient({ navLinks, config, resolvedSections }: { na
   }
 
   const { scrollYProgress } = useScroll()
-  const opacityFade = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+  const opacityFade = useTransform(scrollYProgress, [0, 0.15], [1, 0])
 
   return (
     <>
