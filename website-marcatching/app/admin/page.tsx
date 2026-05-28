@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense, FormEvent, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { Reorder, useDragControls } from 'framer-motion'
+import { Reorder, useDragControls, motion } from 'framer-motion'
 import Cropper from 'react-easy-crop'
 import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
@@ -128,12 +128,12 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
   return canvas.toDataURL('image/jpeg', 0.9) // Return base64 directly
 }
 
-// ─── Visitor Line Chart (stock-style SVG) ────────────────────
+// ─── Visitor Line Chart (premium navy SVG) ───────────────────
 function VisitorLineChart({ data }: {
   data: { date: string; visitors: number; views: number; clicks: number }[]
 }) {
-  const W = 820, H = 210
-  const PAD = { top: 18, bottom: 38, left: 44, right: 16 }
+  const W = 820, H = 200
+  const PAD = { top: 16, bottom: 36, left: 40, right: 12 }
   const cW = W - PAD.left - PAD.right
   const cH = H - PAD.top - PAD.bottom
   if (!data || data.length === 0) return null
@@ -151,13 +151,11 @@ function VisitorLineChart({ data }: {
   }
   const bY = (PAD.top + cH).toFixed(1)
   const areaPath = `${linePath} L ${pts[n-1].x.toFixed(1)} ${bY} L ${pts[0].x.toFixed(1)} ${bY} Z`
-  // Y-axis ticks
   const fmt = (v: number) => v >= 1000 ? `${(v/1000).toFixed(v%1000===0?0:1)}k` : `${Math.round(v)}`
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
     y: (PAD.top + cH - f * cH).toFixed(1),
     label: fmt(f * maxV)
   }))
-  // X-axis labels (max ~7)
   const step = Math.max(1, Math.floor(n / 7))
   const lblSet = new Set<number>()
   for (let i = 0; i < n; i += step) lblSet.add(i)
@@ -166,38 +164,65 @@ function VisitorLineChart({ data }: {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
       <defs>
-        <linearGradient id="visGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.30" />
-          <stop offset="70%" stopColor="#1d4ed8" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
+        <linearGradient id="visGradNavy" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#071A2E" stopOpacity="0.14" />
+          <stop offset="65%" stopColor="#071A2E" stopOpacity="0.03" />
+          <stop offset="100%" stopColor="#071A2E" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* Grid lines + Y labels */}
       {yTicks.map((t, i) => (
         <g key={i}>
           <line x1={PAD.left} y1={t.y} x2={W - PAD.right} y2={t.y}
-            stroke={i === 0 ? '#cbd5e1' : '#e2e8f0'} strokeWidth="1" />
-          <text x={PAD.left - 8} y={parseFloat(t.y) + 4} textAnchor="end"
-            fontSize="10" fill="#94a3b8">{t.label}</text>
+            stroke={i === 0 ? 'rgba(7,26,46,0.12)' : 'rgba(7,26,46,0.05)'} strokeWidth="1" />
+          <text x={PAD.left - 6} y={parseFloat(t.y) + 4} textAnchor="end"
+            fontSize="10" fill="#C8D2DD">{t.label}</text>
         </g>
       ))}
-      {/* Gradient area */}
-      <path d={areaPath} fill="url(#visGrad)" />
-      {/* Line */}
-      <path d={linePath} fill="none" stroke="#1d4ed8" strokeWidth="2.2"
+      <path d={areaPath} fill="url(#visGradNavy)" />
+      <path d={linePath} fill="none" stroke="#071A2E" strokeWidth="2"
         strokeLinecap="round" strokeLinejoin="round" />
-      {/* Dots */}
       {showDots && pts.map((p, i) => (
-        <circle key={i} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3.5"
-          fill="#1d4ed8" stroke="#ffffff" strokeWidth="1.5">
+        <circle key={i} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3"
+          fill="#071A2E" stroke="#F5F3EE" strokeWidth="1.5">
           <title>{`${p.date}: ${p.visitors} visitors · ${p.views} views · ${p.clicks} clicks`}</title>
         </circle>
       ))}
-      {/* X labels */}
       {pts.map((p, i) => lblSet.has(i) ? (
         <text key={i} x={p.x.toFixed(1)} y={H - 4} textAnchor="middle"
-          fontSize="10" fill="#94a3b8">{data[i].date.substring(5)}</text>
+          fontSize="10" fill="#C8D2DD">{data[i].date.substring(5)}</text>
       ) : null)}
+    </svg>
+  )
+}
+
+// ─── Premium Hero Sparkline ───────────────────────────────────
+function PremiumSparkline({ data }: { data: { visitors: number }[] }) {
+  if (!data || data.length < 2) return null
+  const vals = data.map(d => d.visitors)
+  const maxV = Math.max(...vals, 1)
+  const minV = Math.min(...vals, 0)
+  const range = maxV - minV || 1
+  const W = 300, H = 44
+  const n = vals.length
+  const toX = (i: number) => (i / (n - 1)) * W
+  const toY = (v: number) => H - ((v - minV) / range) * (H * 0.85)
+  const pts = vals.map((v, i) => ({ x: toX(i), y: toY(v) }))
+  let path = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`
+  for (let i = 1; i < pts.length; i++) {
+    const cp = ((pts[i-1].x + pts[i].x) / 2).toFixed(1)
+    path += ` C ${cp} ${pts[i-1].y.toFixed(1)} ${cp} ${pts[i].y.toFixed(1)} ${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)}`
+  }
+  const areaPath = `${path} L ${W} ${H} L 0 ${H} Z`
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 44, display: 'block' }} preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sparkHeroGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill="url(#sparkHeroGrad)" />
+      <path d={path} fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -1176,14 +1201,28 @@ function AdminDashboardInner() {
   // ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
-      {/* Mobile Header */}
-      <div className={styles.mobileHeader}>
+      {/* Premium App Top Bar — mobile only */}
+      <div className={styles.appTopBar}>
         {tab !== 'menu' ? (
-          <button className={styles.hamburgerBtn} onClick={() => setTab('menu')}><ArrowLeft size={24} color="#ffffff" /></button>
+          <button className={styles.appTopBarBack} onClick={() => setTab('menu')} aria-label="Kembali ke dashboard">
+            <ArrowLeft size={18} />
+          </button>
         ) : (
-          <button className={styles.hamburgerBtn} style={{ visibility: 'hidden' }}><ArrowLeft size={24} color="#ffffff" /></button>
+          <div className={styles.appTopBarLogo}>
+            <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={116} height={28} className={styles.appTopBarLogoImg} unoptimized={true} priority />
+          </div>
         )}
-        <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={140} height={34} className={styles.mobileHeaderLogo} unoptimized={true} />
+        {tab === 'menu' && (
+          <div className={styles.appTopBarContext}>Intelligence</div>
+        )}
+        <div className={styles.appTopBarActions}>
+          <button className={styles.appTopBarIconBtn} onClick={() => setTab('analytics')} aria-label="Analytics">
+            <BarChart3 size={16} />
+          </button>
+          <button className={styles.appTopBarIconBtn} onClick={handleLogout} aria-label="Keluar">
+            <UserCircle size={18} />
+          </button>
+        </div>
       </div>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
@@ -1237,127 +1276,230 @@ function AdminDashboardInner() {
       {/* Main content */}
       <main className={styles.content}>
 
-        {/* ── MENU TAB (MOBILE ONLY) ─── */}
+        {/* ── MENU TAB — Premium Intelligence Dashboard ─── */}
         {tab === 'menu' && (
-          <div className={styles.mobileAppGridContainer}>
-            <div className={styles.mobileAppHeader}>
-              <h1 className={styles.mobileAppTitle}>Marcatching App</h1>
-              <p className={styles.mobileAppDesc}>When Innovations meets Marketing</p>
-            </div>
-
-            {/* Analytics Horizontal Scroll */}
-            {analyticsData && (
-              <>
-                <div className={styles.mobileMenuAnalyticsScroll}>
-                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
-                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><Users size={16} /></div>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.uniqueVisitors.toLocaleString()}</span>
-                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Unique Visitors</span>
-                  </div>
-                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
-                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><Eye size={16} /></div>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.totalPageViews.toLocaleString()}</span>
-                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Page Views</span>
-                  </div>
-                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
-                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><MousePointer size={16} /></div>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.totalClicks.toLocaleString()}</span>
-                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>Total Clicks</span>
-                  </div>
-                  <div className={styles.appBox} style={{ flex: '0 0 140px', gap: '8px' }}>
-                    <div className={styles.analyticsKpiIcon} style={{ width: 36, height: 36, marginBottom: 4 }}><TrendingUp size={16} /></div>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{analyticsData.kpi.ctr}%</span>
-                    <span style={{ fontSize: '0.65rem', color: '#64748b', textTransform: 'uppercase' }}>CTR</span>
-                  </div>
-                </div>
-                
-                {analyticsData.dailyTrend.length > 0 && (
-                  <div className={styles.mobileMenuAnalyticsChart}>
-                    <h3>Daily Visitors Trend</h3>
-                    <p>30 Hari Terakhir</p>
-                    <VisitorLineChart data={analyticsData.dailyTrend} />
-                  </div>
+          <motion.div
+            className={styles.premiumDashboard}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* ─ Growth Signal Hero ─ */}
+            <motion.div
+              className={styles.growthHero}
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
+            >
+              <div className={styles.heroInner}>
+                <div className={styles.heroLabel}>Today&rsquo;s Growth Signal</div>
+                {analyticsData ? (
+                  <>
+                    <div className={styles.heroMetrics}>
+                      <div className={styles.heroMetric}>
+                        <span className={styles.heroMetricValue}>{analyticsData.kpi.uniqueVisitors.toLocaleString()}</span>
+                        <span className={styles.heroMetricLabel}>Visitors</span>
+                      </div>
+                      <div className={styles.heroMetricDivider} />
+                      <div className={styles.heroMetric}>
+                        <span className={styles.heroMetricValue}>{analyticsData.kpi.totalPageViews.toLocaleString()}</span>
+                        <span className={styles.heroMetricLabel}>Views</span>
+                      </div>
+                      <div className={styles.heroMetricDivider} />
+                      <div className={styles.heroMetric}>
+                        <span className={styles.heroMetricValue}>{analyticsData.kpi.totalClicks.toLocaleString()}</span>
+                        <span className={styles.heroMetricLabel}>Clicks</span>
+                      </div>
+                      <div className={styles.heroMetricDivider} />
+                      <div className={styles.heroMetric}>
+                        <span className={styles.heroMetricValue}>{analyticsData.kpi.ctr}%</span>
+                        <span className={styles.heroMetricLabel}>CTR</span>
+                      </div>
+                    </div>
+                    {analyticsData.dailyTrend.length > 0 && (
+                      <div className={styles.heroSparkline}>
+                        <PremiumSparkline data={analyticsData.dailyTrend} />
+                      </div>
+                    )}
+                    <div className={styles.heroInsight}>
+                      {kpiComparison && kpiComparison.visitors !== 0
+                        ? `Visitors ${kpiComparison.visitors > 0 ? '+' : ''}${kpiComparison.visitors}% vs previous period · Last 30 days`
+                        : 'Audience data from last 30 days.'}
+                    </div>
+                  </>
+                ) : (
+                  <div className={styles.heroLoading}>Fetching intelligence signals&hellip;</div>
                 )}
-                
-                <div style={{ padding: '0 4px', marginBottom: '8px' }}>
-                  <button className="btn btn-navy" style={{ width: '100%', padding: '12px', borderRadius: '16px', fontWeight: 700, justifyContent: 'center' }} onClick={() => setTab('analytics')}>
-                    Full Analytics
-                  </button>
+              </div>
+            </motion.div>
+
+            {/* ─ Daily Visitors Trend ─ */}
+            {analyticsData && analyticsData.dailyTrend.length > 0 && (
+              <motion.div
+                className={styles.trendCard}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1], delay: 0.14 }}
+              >
+                <div className={styles.trendCardHeader}>
+                  <div>
+                    <div className={styles.trendCardTitle}>Daily Visitors Trend</div>
+                    <div className={styles.trendCardSub}>30 Hari Terakhir</div>
+                  </div>
+                  <div className={styles.peakChip}>
+                    Peak: {Math.max(...analyticsData.dailyTrend.map(d => d.visitors))}
+                  </div>
                 </div>
-                
-                <div className={styles.mobileMenuDivider} />
-              </>
+                <VisitorLineChart data={analyticsData.dailyTrend} />
+                <motion.button
+                  className={styles.fullAnalyticsBtn}
+                  onClick={() => setTab('analytics')}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Full Analytics
+                </motion.button>
+              </motion.div>
             )}
 
-            <div className={styles.mobileAppGrid}>
-              <button className={styles.appBox} onClick={() => setTab('analytics')}>
-                <div className={styles.appIconWrap} style={{ color: '#3b82f6' }}><BarChart3 size={28} /></div>
-                <span>Analytics</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('finance')}>
-                <div className={styles.appIconWrap} style={{ color: '#10b981' }}><DollarSign size={28} /></div>
-                <span>Finance</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('orders')}>
-                <div className={styles.appIconWrap} style={{ color: '#f59e0b' }}><ClipboardList size={28} /></div>
-                <span>Orders</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('products')}>
-                <div className={styles.appIconWrap} style={{ color: '#8b5cf6' }}><Package size={28} /></div>
-                <span>Products</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('ecourse')}>
-                <div className={styles.appIconWrap} style={{ color: '#ec4899' }}><BookMarked size={28} /></div>
-                <span>E-Course</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('ecommerce')}>
-                <div className={styles.appIconWrap} style={{ color: '#14b8a6' }}><ShoppingCart size={28} /></div>
-                <span>Store</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('vouchers')}>
-                <div className={styles.appIconWrap} style={{ color: '#ef4444' }}><Tag size={28} /></div>
-                <span>Vouchers</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('articles')}>
-                <div className={styles.appIconWrap} style={{ color: '#6366f1' }}><Newspaper size={28} /></div>
-                <span>Articles</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('links')}>
-                <div className={styles.appIconWrap} style={{ color: '#0ea5e9' }}><ExternalLink size={28} /></div>
-                <span>Links</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('navigation')}>
-                <div className={styles.appIconWrap} style={{ color: '#0d3369' }}><Navigation size={28} /></div>
-                <span>Nav</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('aboutpage')}>
-                <div className={styles.appIconWrap} style={{ color: '#64748b' }}><FileText size={28} /></div>
-                <span>About</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('champagne')}>
-                <div className={styles.appIconWrap} style={{ color: '#facc15' }}><PartyPopper size={28} /></div>
-                <span>Party</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('survey')}>
-                <div className={styles.appIconWrap} style={{ color: '#8b5cf6' }}><ClipboardList size={28} /></div>
-                <span>Survey</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('security')}>
-                <div className={styles.appIconWrap} style={{ color: '#ef4444' }}><Lock size={28} /></div>
-                <span>Security</span>
-              </button>
-              <button className={styles.appBox} onClick={() => setTab('contact')}>
-                <div className={styles.appIconWrap} style={{ color: '#0d3369' }}><Mail size={28} /></div>
-                <span>Contact</span>
-              </button>
-              <button className={styles.appBox} onClick={handleLogout} style={{ gridColumn: '1 / -1', background: 'rgba(239, 68, 68, 0.05)', marginTop: 12 }}>
-                <div className={styles.appIconWrap} style={{ color: '#ef4444', background: 'transparent' }}><LogOut size={24} /></div>
-                <span style={{ color: '#ef4444', fontWeight: 600 }}>Keluar (Logout)</span>
-              </button>
+            {/* ─ Command Center Quick Actions ─ */}
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionTitle}>Command Center</span>
             </div>
 
+            <div className={styles.quickActionsGrid}>
+              {([
+                { tab: 'analytics', Icon: BarChart3, label: 'Analytics', desc: 'Audience movement' },
+                { tab: 'orders',    Icon: ClipboardList, label: 'Orders',    desc: 'Revenue activity' },
+                { tab: 'ecourse',   Icon: BookMarked,  label: 'E-Course',   desc: 'Learning system' },
+                { tab: 'ecommerce', Icon: ShoppingCart, label: 'Store',      desc: 'Product catalog' },
+              ] as const).map((item, i) => (
+                <motion.button
+                  key={item.tab}
+                  className={styles.quickActionCard}
+                  onClick={() => setTab(item.tab as TabType)}
+                  whileTap={{ scale: 0.975 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.22 + i * 0.06 }}
+                >
+                  <div className={styles.qaIconWrap}>
+                    <item.Icon size={20} strokeWidth={1.75} />
+                  </div>
+                  <div className={styles.qaInfo}>
+                    <span className={styles.qaLabel}>{item.label}</span>
+                    <span className={styles.qaDesc}>{item.desc}</span>
+                  </div>
+                  <ChevronRight size={14} className={styles.qaArrow} />
+                </motion.button>
+              ))}
+            </div>
+
+            {/* ─ Secondary Actions Grid ─ */}
+            <div className={styles.secondaryActionsGrid}>
+              {([
+                { tab: 'finance',   Icon: DollarSign,  label: 'Finance' },
+                { tab: 'products',  Icon: Package,     label: 'Products' },
+                { tab: 'articles',  Icon: Newspaper,   label: 'Content' },
+                { tab: 'security',  Icon: Lock,        label: 'Settings' },
+              ] as const).map((item, i) => (
+                <motion.button
+                  key={item.tab}
+                  className={styles.secondaryActionCard}
+                  onClick={() => setTab(item.tab as TabType)}
+                  whileTap={{ scale: 0.96 }}
+                  initial={{ opacity: 0, scale: 0.94 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.46 + i * 0.06 }}
+                >
+                  <div className={styles.saIconWrap}>
+                    <item.Icon size={18} strokeWidth={1.75} />
+                  </div>
+                  <span className={styles.saLabel}>{item.label}</span>
+                </motion.button>
+              ))}
+            </div>
+
+            {/* ─ Signals to Watch ─ */}
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionTitle}>Signals to Watch</span>
+              <span className={styles.sectionBadge}>Intelligence</span>
+            </div>
+
+            <div className={styles.signalFeed}>
+              {analyticsData ? (() => {
+                const peak = analyticsData.dailyTrend.length > 0
+                  ? analyticsData.dailyTrend.reduce((a, b) => a.visitors > b.visitors ? a : b)
+                  : null
+                const topPage = analyticsData.topPages?.[0]
+                const signals = [
+                  {
+                    Icon: TrendingUp,
+                    label: 'Traffic Signal',
+                    value: peak
+                      ? `Peak ${peak.visitors} visitors on ${peak.date.substring(5)}`
+                      : `${analyticsData.kpi.uniqueVisitors} unique visitors this period`,
+                    accent: '#5FB7B0',
+                  },
+                  {
+                    Icon: Eye,
+                    label: 'Most Visited',
+                    value: topPage ? topPage.path : 'No page data available',
+                    accent: '#B9A57A',
+                  },
+                  {
+                    Icon: MousePointer,
+                    label: 'Engagement Rate',
+                    value: `${analyticsData.kpi.ctr}% CTR · ${analyticsData.kpi.totalClicks.toLocaleString()} total clicks`,
+                    accent: '#0C3552',
+                  },
+                  {
+                    Icon: BarChart3,
+                    label: 'Revenue Pulse',
+                    value: `${orders.length} orders tracked · ${analyticsData.kpi.totalPageViews.toLocaleString()} page views`,
+                    accent: '#071A2E',
+                  },
+                ]
+                return signals.map((signal, i) => (
+                  <motion.div
+                    key={signal.label}
+                    className={styles.signalCard}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1], delay: 0.6 + i * 0.08 }}
+                  >
+                    <div
+                      className={styles.signalIconWrap}
+                      style={{ background: signal.accent + '15', color: signal.accent }}
+                    >
+                      <signal.Icon size={16} strokeWidth={1.75} />
+                    </div>
+                    <div className={styles.signalInfo}>
+                      <span className={styles.signalLabel}>{signal.label}</span>
+                      <span className={styles.signalValue}>{signal.value}</span>
+                    </div>
+                  </motion.div>
+                ))
+              })() : (
+                <div className={styles.signalLoading}>Loading intelligence signals&hellip;</div>
+              )}
+            </div>
+
+            {/* ─ Logout ─ */}
+            <motion.button
+              className={styles.logoutDashBtn}
+              onClick={handleLogout}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 }}
+            >
+              <LogOut size={13} />
+              Keluar
+            </motion.button>
+
+            <div style={{ height: 'calc(env(safe-area-inset-bottom, 12px) + 24px)' }} />
             <div className={styles.mobileMenuBottomFade} />
-          </div>
+          </motion.div>
         )}
 
         {/* ── LINKS TAB ─── */}

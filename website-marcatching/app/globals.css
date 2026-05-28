@@ -27,6 +27,30 @@
   --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─── Marcatching Premium Design Tokens ─────────────────── */
+:root {
+  --mc-navy: #071A2E;
+  --mc-blue: #0C3552;
+  --mc-blue-soft: #123C5C;
+  --mc-offwhite: #F5F3EE;
+  --mc-paper: #FFFFFF;
+  --mc-ink: #101827;
+  --mc-muted: #65758A;
+  --mc-silver: #C8D2DD;
+  --mc-border: rgba(7, 26, 46, 0.10);
+  --mc-border-strong: rgba(7, 26, 46, 0.16);
+  --mc-accent: #5FB7B0;
+  --mc-gold: #B9A57A;
+  --mc-shadow-soft: 0 18px 50px rgba(7, 26, 46, 0.08);
+  --mc-shadow-card: 0 10px 32px rgba(7, 26, 46, 0.10);
+  --mc-shadow-hover: 0 20px 60px rgba(7, 26, 46, 0.14);
+  --mc-radius-sm: 10px;
+  --mc-radius-md: 16px;
+  --mc-radius-lg: 24px;
+  --mc-radius-xl: 32px;
+  --mc-radius-pill: 999px;
+}
+
 /* ─── Reset ──────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
