@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense, FormEvent, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { Reorder, useDragControls, motion } from 'framer-motion'
+import { Reorder, useDragControls, motion, AnimatePresence } from 'framer-motion'
 import Cropper from 'react-easy-crop'
 import {
   Plus, Pencil, Trash2, LogOut, Globe, Music2,
@@ -1275,6 +1275,15 @@ function AdminDashboardInner() {
 
       {/* Main content */}
       <main className={styles.content}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            style={{ width: '100%', minHeight: '100%' }}
+          >
 
         {/* ── MENU TAB — Premium Intelligence Dashboard ─── */}
         {tab === 'menu' && (
@@ -3287,6 +3296,8 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
           </div>
         )}
 
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* ─ Mobile Bottom Navigation ─ */}

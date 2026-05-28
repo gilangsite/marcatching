@@ -214,10 +214,8 @@
 .ecommerceAddFixed {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 100%;
-  max-width: 1040px;
   z-index: 30;
   background: rgba(248,250,252,0.95);
   backdrop-filter: blur(12px);
@@ -231,14 +229,11 @@
 .content {
   flex: 1;
   padding: 40px 24px;
-  margin: 0 auto;
-  max-width: 1040px;
   width: 100%;
   min-height: 100vh;
   background: var(--mc-offwhite, #F1F5F9) !important;
   color: #0f172a !important;
   padding-bottom: 90px !important;
-  box-shadow: 0 0 40px rgba(0,0,0,0.04);
 }
 
 .tabContent {
@@ -2114,10 +2109,8 @@
   align-items: center;
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 100%;
-  max-width: 1040px;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
