@@ -1203,15 +1203,9 @@ function AdminDashboardInner() {
     <div className={styles.page}>
       {/* Premium App Top Bar — mobile only */}
       <div className={styles.appTopBar}>
-        {tab !== 'menu' ? (
-          <button className={styles.appTopBarBack} onClick={() => setTab('menu')} aria-label="Kembali ke dashboard">
-            <ArrowLeft size={18} />
-          </button>
-        ) : (
-          <div className={styles.appTopBarLogo}>
-            <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={116} height={28} className={styles.appTopBarLogoImg} unoptimized={true} priority />
-          </div>
-        )}
+        <div className={styles.appTopBarLogo}>
+          <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={116} height={28} className={styles.appTopBarLogoImg} unoptimized={true} priority />
+        </div>
         {tab === 'menu' && (
           <div className={styles.appTopBarContext}>Intelligence</div>
         )}

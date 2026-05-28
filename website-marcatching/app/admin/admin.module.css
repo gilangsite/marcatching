@@ -228,7 +228,7 @@
 /* ── Main Content Area ───────────────────────────────────── */
 .content {
   flex: 1;
-  padding: 40px 24px;
+  padding: 100px 24px 40px;
   width: 100%;
   min-height: 100vh;
   background: var(--mc-offwhite, #F1F5F9) !important;
@@ -237,7 +237,7 @@
 }
 
 .tabContent {
-  max-width: 800px;
+  max-width: 100%;
 }
 
 .contentHeader {
@@ -1645,23 +1645,18 @@
 
 /* ── Premium App Top Bar ─────────────────────────────────── */
 .appTopBar {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .appTopBar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: calc(env(safe-area-inset-top, 20px) + 10px) 20px 12px;
-    background: var(--mc-navy, #071A2E);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    min-height: 60px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top, 20px) + 10px) 24px 12px;
+  background: var(--mc-navy, #071A2E);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  min-height: 60px;
 }
 
 .appTopBarLogo {
