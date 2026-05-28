@@ -14,7 +14,7 @@ import {
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -3288,6 +3288,38 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
         )}
 
       </main>
+
+      {/* ─ Mobile Bottom Navigation ─ */}
+      <nav className={styles.bottomNav}>
+        <button
+          className={`${styles.bottomNavItem} ${tab === 'menu' ? styles.bottomNavItemActive : ''}`}
+          onClick={() => setTab('menu')}
+        >
+          <LayoutGrid size={20} strokeWidth={tab === 'menu' ? 2.5 : 2} className={styles.bottomNavIcon} />
+          Home
+        </button>
+        <button
+          className={`${styles.bottomNavItem} ${tab === 'products' ? styles.bottomNavItemActive : ''}`}
+          onClick={() => setTab('products')}
+        >
+          <Shapes size={20} strokeWidth={tab === 'products' ? 2.5 : 2} className={styles.bottomNavIcon} />
+          Services
+        </button>
+        <button
+          className={`${styles.bottomNavItem} ${tab === 'analytics' ? styles.bottomNavItemActive : ''}`}
+          onClick={() => setTab('analytics')}
+        >
+          <TrendingUp size={20} strokeWidth={tab === 'analytics' ? 2.5 : 2} className={styles.bottomNavIcon} />
+          Insights
+        </button>
+        <button
+          className={`${styles.bottomNavItem} ${tab === 'security' ? styles.bottomNavItemActive : ''}`}
+          onClick={() => setTab('security')}
+        >
+          <UserCircle size={20} strokeWidth={tab === 'security' ? 2.5 : 2} className={styles.bottomNavIcon} />
+          Profile
+        </button>
+      </nav>
     </div>
   )
 }
