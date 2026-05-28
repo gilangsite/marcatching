@@ -1938,125 +1938,49 @@
   border-radius: var(--mc-radius-pill, 999px);
 }
 
-/* ── Quick Actions (vertical card list) ──────────────────── */
-.quickActionsGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  margin-bottom: 9px;
-}
-
-.quickActionCard {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--mc-border, rgba(7,26,46,0.10));
-  border-radius: var(--mc-radius-md, 16px);
-  box-shadow: 0 6px 20px rgba(7, 26, 46, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  transition: border-color 0.22s cubic-bezier(0.22,1,0.36,1),
-              box-shadow 0.22s cubic-bezier(0.22,1,0.36,1),
-              transform 0.22s cubic-bezier(0.22,1,0.36,1);
-  font-family: var(--font, 'DM Sans', sans-serif);
-}
-
-.quickActionCard:hover {
-  border-color: var(--mc-border-strong, rgba(7,26,46,0.16));
-  box-shadow: 0 12px 36px rgba(7, 26, 46, 0.10);
-  transform: translateY(-1px);
-}
-
-.qaIconWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  border-radius: 13px;
-  background: rgba(7, 26, 46, 0.06);
-  color: var(--mc-navy, #071A2E);
-}
-
-.qaInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-}
-
-.qaLabel {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--mc-ink, #101827);
-  letter-spacing: -0.01em;
-  display: block;
-}
-
-.qaDesc {
-  font-size: 0.72rem;
-  color: var(--mc-muted, #65758A);
-  display: block;
-}
-
-.qaArrow {
-  color: rgba(7, 26, 46, 0.26);
-  flex-shrink: 0;
-}
-
-/* ── Secondary Actions (2x4 icon grid) ──────────────────── */
-.secondaryActionsGrid {
+/* ── Unified 3x3 Nav Grid ───────────────────────────────── */
+.navGrid3x {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 9px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.secondaryActionCard {
+.navCard3x {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 14px 6px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--mc-border, rgba(7,26,46,0.10));
+  padding: 18px 10px 14px;
+  background: rgba(255, 255, 255, 1);
   border-radius: var(--mc-radius-md, 16px);
-  box-shadow: 0 4px 14px rgba(7, 26, 46, 0.05);
+  box-shadow: 0 4px 16px rgba(7, 26, 46, 0.04);
   cursor: pointer;
-  font-family: var(--font, 'DM Sans', sans-serif);
-  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  text-align: center;
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), box-shadow 0.22s cubic-bezier(0.22,1,0.36,1);
+  border: 1px solid rgba(7, 26, 46, 0.03);
 }
 
-.secondaryActionCard:hover {
-  border-color: var(--mc-border-strong, rgba(7,26,46,0.16));
-  box-shadow: 0 8px 26px rgba(7, 26, 46, 0.09);
-  transform: translateY(-1px);
+.navCard3x:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(7, 26, 46, 0.08);
 }
 
-.saIconWrap {
+.navIconBox {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: rgba(7, 26, 46, 0.05);
-  color: var(--mc-navy, #071A2E);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  margin-bottom: 12px;
 }
 
-.saLabel {
-  font-size: 0.67rem;
-  font-weight: 600;
-  color: var(--mc-ink, #101827);
-  text-align: center;
-  line-height: 1.2;
+.navCardLabel {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--mc-muted, #65758A);
+  letter-spacing: -0.01em;
 }
 
 /* ── Signal Feed ─────────────────────────────────────────── */

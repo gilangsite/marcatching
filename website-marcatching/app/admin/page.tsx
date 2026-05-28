@@ -1361,60 +1361,32 @@ function AdminDashboardInner() {
               </motion.div>
             )}
 
-            {/* ─ Command Center Quick Actions ─ */}
-            <div className={styles.sectionHeader}>
-              <span className={styles.sectionTitle}>Command Center</span>
-            </div>
-
-            <div className={styles.quickActionsGrid}>
+            {/* ─ Unified Navigation Grid ─ */}
+            <div className={styles.navGrid3x}>
               {([
-                { tab: 'analytics', Icon: BarChart3, label: 'Analytics', desc: 'Audience movement' },
-                { tab: 'orders',    Icon: ClipboardList, label: 'Orders',    desc: 'Revenue activity' },
-                { tab: 'ecourse',   Icon: BookMarked,  label: 'E-Course',   desc: 'Learning system' },
-                { tab: 'ecommerce', Icon: ShoppingCart, label: 'Store',      desc: 'Product catalog' },
+                { tab: 'analytics', Icon: BarChart3,   label: 'Analytics', color: '#071A2E' },
+                { tab: 'finance',   Icon: DollarSign,  label: 'Finance',   color: '#0D9488' },
+                { tab: 'orders',    Icon: ClipboardList,label: 'Orders',   color: '#071A2E' },
+                { tab: 'products',  Icon: Package,     label: 'Products',  color: '#071A2E' },
+                { tab: 'ecourse',   Icon: BookMarked,  label: 'E-Course',  color: '#0D9488' },
+                { tab: 'ecommerce', Icon: ShoppingCart,label: 'Store',     color: '#071A2E' },
+                { tab: 'vouchers',  Icon: Tag,         label: 'Vouchers',  color: '#E11D48' },
+                { tab: 'articles',  Icon: Newspaper,   label: 'Articles',  color: '#071A2E' },
+                { tab: 'links',     Icon: ExternalLink,label: 'Links',     color: '#0D9488' },
               ] as const).map((item, i) => (
                 <motion.button
                   key={item.tab}
-                  className={styles.quickActionCard}
-                  onClick={() => setTab(item.tab as TabType)}
-                  whileTap={{ scale: 0.975 }}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.22 + i * 0.06 }}
-                >
-                  <div className={styles.qaIconWrap}>
-                    <item.Icon size={20} strokeWidth={1.75} />
-                  </div>
-                  <div className={styles.qaInfo}>
-                    <span className={styles.qaLabel}>{item.label}</span>
-                    <span className={styles.qaDesc}>{item.desc}</span>
-                  </div>
-                  <ChevronRight size={14} className={styles.qaArrow} />
-                </motion.button>
-              ))}
-            </div>
-
-            {/* ─ Secondary Actions Grid ─ */}
-            <div className={styles.secondaryActionsGrid}>
-              {([
-                { tab: 'finance',   Icon: DollarSign,  label: 'Finance' },
-                { tab: 'products',  Icon: Package,     label: 'Products' },
-                { tab: 'articles',  Icon: Newspaper,   label: 'Content' },
-                { tab: 'security',  Icon: Lock,        label: 'Settings' },
-              ] as const).map((item, i) => (
-                <motion.button
-                  key={item.tab}
-                  className={styles.secondaryActionCard}
+                  className={styles.navCard3x}
                   onClick={() => setTab(item.tab as TabType)}
                   whileTap={{ scale: 0.96 }}
                   initial={{ opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.46 + i * 0.06 }}
+                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.22 + i * 0.04 }}
                 >
-                  <div className={styles.saIconWrap}>
-                    <item.Icon size={18} strokeWidth={1.75} />
+                  <div className={styles.navIconBox} style={{ background: `${item.color}14`, color: item.color }}>
+                    <item.Icon size={22} strokeWidth={1.75} />
                   </div>
-                  <span className={styles.saLabel}>{item.label}</span>
+                  <span className={styles.navCardLabel}>{item.label}</span>
                 </motion.button>
               ))}
             </div>
