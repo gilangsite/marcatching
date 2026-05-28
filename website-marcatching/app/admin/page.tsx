@@ -232,7 +232,7 @@ function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
-  const [tab, setTab] = useState<TabType>('analytics')
+  const [tab, setTab] = useState<TabType>('menu')
 
   useEffect(() => {
     if (window.innerWidth <= 768) {
