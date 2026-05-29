@@ -23,17 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// Next.js static parameters generator for any pre-rendered slugs if needed
-export async function generateStaticParams() {
-  const { data: campaigns } = await supabaseAdmin
-    .from('campaigns')
-    .select('slug')
-    .eq('status', 'published')
 
-  return (campaigns || []).map((c) => ({
-    slug: c.slug,
-  }))
-}
 
 export default async function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params

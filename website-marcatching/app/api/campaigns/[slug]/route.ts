@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { supabaseAdmin } from '@/lib/supabaseClient'
 
 export async function GET(
@@ -42,6 +43,7 @@ export async function PATCH(
       .single()
 
     if (error) throw error
+    revalidatePath(`/${resolvedParams.slug}`)
     return NextResponse.json(data)
   } catch (error: any) {
     console.error('Error updating campaign:', error)
@@ -62,5 +64,6 @@ export async function DELETE(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  revalidatePath(`/${resolvedParams.slug}`)
   return NextResponse.json({ success: true })
 }
