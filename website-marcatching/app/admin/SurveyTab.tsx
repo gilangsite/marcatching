@@ -9,6 +9,7 @@ import {
   Printer, Download, FileText
 } from 'lucide-react'
 import styles from './admin.module.css'
+import { showAdminToast } from './page'
 
 // ─── Types ────────────────────────────────────────────────────
 export type QuestionType = 'short_answer' | 'long_answer' | 'dropdown' | 'checkbox' | 'radio' | 'rating'
@@ -365,6 +366,7 @@ export default function SurveyTab() {
     setSaving(false)
     setShowForm(false)
     fetchSurveys()
+    showAdminToast(editing ? 'Survey berhasil diperbarui' : 'Survey berhasil dibuat')
   }
 
   async function handleDelete(id: string) {

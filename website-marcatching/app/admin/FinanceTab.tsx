@@ -7,6 +7,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react'
 import styles from './admin.module.css'
+import { showAdminToast } from './page'
 
 // ─── Types ────────────────────────────────────────────────────
 export type FinanceType = 'income' | 'cost'
@@ -375,6 +376,7 @@ export default function FinanceTab() {
       if (result.status === 'success') {
         setModal({ open: false, type: 'income', editing: null })
         fetchData()
+        showAdminToast(modal.editing ? 'Transaksi diperbarui' : 'Transaksi berhasil dicatat')
       } else {
         alert('Apps Script Error: ' + (result.message || 'Unknown error'))
       }

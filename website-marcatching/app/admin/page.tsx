@@ -27,6 +27,40 @@ import RichTextEditor from '@/components/RichTextEditor'
 import SecurityTab from './SecurityTab'
 import SurveyTab from './SurveyTab'
 
+// ─── Admin Toast Event ────────────────────────────────────────
+export function showAdminToast(message: string = 'Updated Successfully') {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('show-admin-toast', { detail: { message } }))
+  }
+}
+
+function AdminToast() {
+  const [show, setShow] = useState(false)
+  const [msg, setMsg] = useState('')
+  useEffect(() => {
+    const handleShow = (e: Event) => {
+      const customEvent = e as CustomEvent
+      setMsg(customEvent.detail?.message || 'Updated Successfully')
+      setShow(true)
+      setTimeout(() => setShow(false), 2500)
+    }
+    window.addEventListener('show-admin-toast', handleShow)
+    return () => window.removeEventListener('show-admin-toast', handleShow)
+  }, [])
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div initial={{ opacity: 0, scale: 0.8, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: -20 }} style={{ position: 'fixed', bottom: 40, left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', color: '#0d3369', padding: '14px 24px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.15)', zIndex: 99999, fontWeight: 700, fontSize: '0.9rem' }}>
+          <div style={{ background: '#10b981', color: 'white', borderRadius: '50%', padding: 4, display: 'flex' }}>
+            <Check size={16} strokeWidth={3} />
+          </div>
+          {msg}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
 // ─── Icon map ────────────────────────────────────────────────
 const ICON_OPTIONS = [
   { value: 'Globe', label: 'Globe (Website)', Icon: Globe },
@@ -241,6 +275,15 @@ function AdminDashboardInner() {
     }
   }, [])
 
+  useEffect(() => {
+    if (showOtherTabs) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [showOtherTabs])
+
   const [analyticsSubView, setAnalyticsSubView] = useState<'website' | 'cashflow'>('website')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const contactMenuRef = useRef<HTMLTableSectionElement | null>(null)
@@ -405,7 +448,7 @@ function AdminDashboardInner() {
     const slug = prodCatName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
     if (editingProdCat) { await supabase.from('product_categories').update({ name: prodCatName.trim(), slug }).eq('id', editingProdCat.id) }
     else { await supabase.from('product_categories').insert({ name: prodCatName.trim(), slug, order_index: productCategories.length + 1 }) }
-    setProdCatSaving(false); setShowProdCatForm(false); setProdCatName(''); setEditingProdCat(null); fetchProductCategories()
+    setProdCatSaving(false); setShowProdCatForm(false); setProdCatName(''); setEditingProdCat(null); fetchProductCategories(); showAdminToast('Kategori berhasil disimpan')
   }
   async function deleteProdCat(cat: ProductCategory) {
     if (!confirm(`Hapus kategori "${cat.name}"?`)) return
@@ -425,7 +468,7 @@ function AdminDashboardInner() {
     const payload = { type: storeBlockType, content: finalContent, is_active: true, order_index: editingStoreBlock ? editingStoreBlock.order_index : storeBlocks.length + 1 }
     if (editingStoreBlock) { await supabase.from('store_page_blocks').update(payload).eq('id', editingStoreBlock.id) }
     else { await supabase.from('store_page_blocks').insert(payload) }
-    setStoreBlockSaving(false); setShowStoreBlockForm(false); setEditingStoreBlock(null); fetchStoreBlocks()
+    setStoreBlockSaving(false); setShowStoreBlockForm(false); setEditingStoreBlock(null); fetchStoreBlocks(); showAdminToast(editingStoreBlock ? 'Block diperbarui' : 'Block berhasil ditambahkan')
   }
   async function deleteStoreBlock(id: string) { if (!confirm('Hapus block ini?')) return; await supabase.from('store_page_blocks').delete().eq('id', id); fetchStoreBlocks() }
   async function handleStoreBlockReorder(newOrder: StorePageBlock[]) { setStoreBlocks(newOrder); await Promise.all(newOrder.map((b, i) => supabase.from('store_page_blocks').update({ order_index: i + 1 }).eq('id', b.id))) }
@@ -493,7 +536,7 @@ function AdminDashboardInner() {
     }
     setNavSaving(false)
     if (error) { setNavError('Terjadi kesalahan: ' + error.message) }
-    else { setShowNavForm(false); setEditingNavLink(null); fetchNavLinks() }
+    else { setShowNavForm(false); setEditingNavLink(null); fetchNavLinks(); showAdminToast('Navigation link disimpan') }
   }
 
   async function deleteNavLink(id: string) {
@@ -555,6 +598,7 @@ function AdminDashboardInner() {
     setShowMaterialForm(null)
     setMaterialSaving(false)
     fetchCourseMaterials(productId)
+    showAdminToast('Materi berhasil ditambahkan')
   }
 
   async function deleteMaterial(materialId: string, productId: string) {
@@ -834,6 +878,7 @@ function AdminDashboardInner() {
       const data = await res.json()
       if (!res.ok) { setArticleError(data.error || 'Gagal menyimpan artikel'); setArticleSaving(false); return }
       setShowArticleEditor(false); setEditingArticle(null); fetchArticles()
+      showAdminToast(editingArticle ? 'Artikel diperbarui' : 'Artikel berhasil diterbitkan')
     } catch { setArticleError('Terjadi kesalahan') }
     setArticleSaving(false)
   }
@@ -861,6 +906,7 @@ function AdminDashboardInner() {
     }
     setCatSaving(false); setShowCatForm(false); setCatFormName(''); setEditingCat(null)
     fetchArticleCategories()
+    showAdminToast('Kategori artikel disimpan')
   }
 
   async function deleteCat(cat: ArticleCategory) {
@@ -886,6 +932,7 @@ function AdminDashboardInner() {
       }
       setAuthorSaving(false); setShowAuthorForm(false); setAuthorFormName(''); setAuthorFormPhoto(''); setEditingAuthor(null)
       fetchArticleAuthors()
+      showAdminToast('Penulis berhasil disimpan')
     } catch (err: any) {
       alert(`Error: ${err.message}`)
       setAuthorSaving(false)
@@ -979,7 +1026,7 @@ function AdminDashboardInner() {
     let error
     if (editingLink) { ({ error } = await supabase.from('links').update(payload).eq('id', editingLink.id)) } else { ({ error } = await supabase.from('links').insert(payload)) }
     setLinkSaving(false)
-    if (error) { setLinkError('Terjadi kesalahan: ' + error.message) } else { setShowLinkForm(false); setEditingLink(null); fetchLinks() }
+    if (error) { setLinkError('Terjadi kesalahan: ' + error.message) } else { setShowLinkForm(false); setEditingLink(null); fetchLinks(); showAdminToast('Link berhasil disimpan') }
   }
 
   async function confirmCrop() {
@@ -1023,8 +1070,8 @@ function AdminDashboardInner() {
 
   async function saveContact(e: FormEvent) {
     e.preventDefault(); setContactSaving(true); setContactMsg('')
-    if (contact) { const { error } = await supabase.from('contact').update({ email: contactEmail }).eq('id', contact.id); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
-    else { const { error } = await supabase.from('contact').insert({ email: contactEmail }); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
+    if (contact) { const { error } = await supabase.from('contact').update({ email: contactEmail }).eq('id', contact.id); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
+    else { const { error } = await supabase.from('contact').insert({ email: contactEmail }); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
     setContactSaving(false)
   }
 
@@ -1079,7 +1126,7 @@ function AdminDashboardInner() {
       ({ error } = await supabase.from('products').insert(payload)) 
       if (!error) { await supabase.from('links').insert({ title: payload.name, url: '/product/' + payload.slug, icon: 'ShoppingBag', status: 'active', type: 'button', order_index: links.length + 1 }) }
     }
-    setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts(); fetchLinks() }
+    setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts(); fetchLinks(); showAdminToast(editingProduct ? 'Produk berhasil diperbarui' : 'Produk berhasil ditambahkan') }
   }
   async function deleteProduct(p: Product) { 
     if (!confirm(`Hapus produk "${p.name}"?`)) return; 
@@ -1131,7 +1178,7 @@ function AdminDashboardInner() {
     }
     let error
     if (editingVoucher) { ({ error } = await supabase.from('vouchers').update(payload).eq('id', editingVoucher.id)) } else { ({ error } = await supabase.from('vouchers').insert(payload)) }
-    setVoucherSaving(false); if (error) { setVoucherError('Error: ' + error.message) } else { setShowVoucherForm(false); fetchVouchers() }
+    setVoucherSaving(false); if (error) { setVoucherError('Error: ' + error.message) } else { setShowVoucherForm(false); fetchVouchers(); showAdminToast(editingVoucher ? 'Voucher berhasil diperbarui' : 'Voucher berhasil ditambahkan') }
   }
   async function deleteVoucher(id: string) { if (!confirm('Hapus voucher ini?')) return; await supabase.from('vouchers').delete().eq('id', id); fetchVouchers() }
   async function toggleVoucher(v: Voucher) { await supabase.from('vouchers').update({ is_active: !v.is_active }).eq('id', v.id); fetchVouchers() }
@@ -1197,11 +1244,13 @@ function AdminDashboardInner() {
     }
 
     fetchOrders()
+    showAdminToast(newStatus === 'confirmed' ? 'Order dikonfirmasi!' : 'Order dikembalikan ke pending')
   }
 
   // ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
+      <AdminToast />
       {/* Premium App Top Bar — mobile only */}
       <div className={styles.appTopBar}>
         <div className={styles.appTopBarLogo}>

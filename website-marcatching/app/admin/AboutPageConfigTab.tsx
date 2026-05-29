@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { showAdminToast } from './page'
 import { Plus, X, Check, Camera, Upload } from 'lucide-react'
 import Cropper from 'react-easy-crop'
 import styles from './admin.module.css'
@@ -123,7 +124,7 @@ export default function AboutPageConfigTab() {
         body: JSON.stringify(form)
       })
       const data = await res.json()
-      if (res.ok) setSuccessMsg('Konfigurasi berhasil disimpan!')
+      if (res.ok) { setSuccessMsg('Konfigurasi berhasil disimpan!'); showAdminToast('Konfigurasi About Page disimpan') }
       else setErrorMsg(data.error || 'Gagal menyimpan konfigurasi.')
     } catch (err: any) {
       setErrorMsg('Network error.')

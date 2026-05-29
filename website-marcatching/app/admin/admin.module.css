@@ -1735,19 +1735,19 @@
 @media (min-width: 769px) {
   .premiumDashboard {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
     align-items: start;
+    max-width: 1000px;
   }
   .growthHero, .trendCard {
     margin-bottom: 0 !important;
-    height: 100%;
   }
   .navGrid3x {
     grid-column: 1 / -1;
-    grid-template-columns: repeat(9, 1fr) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
   }
-  .sectionHeader, .signalFeed {
+  .sectionHeader, .signalFeed, .logoutDashBtn {
     grid-column: 1 / -1;
   }
 }
@@ -1979,6 +1979,17 @@
   text-align: center;
   transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), box-shadow 0.22s cubic-bezier(0.22,1,0.36,1);
   border: 1px solid rgba(7, 26, 46, 0.03);
+}
+
+.modalGrid3x {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (min-width: 769px) {
+  .modalGrid3x {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .navCard3x:hover {

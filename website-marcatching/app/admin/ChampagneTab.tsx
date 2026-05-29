@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabaseClient'
 import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 import RichTextEditor from '@/components/RichTextEditor'
+import { showAdminToast } from './page'
 
 export default function ChampagneTab({ products }: { products: Product[] }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
@@ -173,6 +174,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
       }
       setShowMetaForm(false)
       fetchCampaigns()
+      showAdminToast(editingMeta ? 'Campaign diperbarui' : 'Campaign berhasil dibuat')
     } catch (err: any) {
       setMetaError(err.message || 'Gagal menyimpan campaign')
     }
@@ -235,6 +237,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
     }
     await saveBlocks(updatedBlocks)
     setShowBlockForm(false)
+    showAdminToast(editingBlockId ? 'Block diperbarui' : 'Block berhasil ditambahkan')
   }
 
   async function deleteBlock(id: string) {
