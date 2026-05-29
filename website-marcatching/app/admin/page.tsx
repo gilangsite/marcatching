@@ -233,6 +233,7 @@ function AdminDashboardInner() {
   const searchParams = useSearchParams()
   type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
   const [tab, setTab] = useState<TabType>('menu')
+  const [showOtherTabs, setShowOtherTabs] = useState(false)
 
   useEffect(() => {
     if (window.innerWidth <= 768) {
@@ -1375,7 +1376,6 @@ function AdminDashboardInner() {
                 { tab: 'ecommerce', Icon: ShoppingCart,label: 'Store',     color: '#071A2E' },
                 { tab: 'vouchers',  Icon: Tag,         label: 'Vouchers',  color: '#E11D48' },
                 { tab: 'articles',  Icon: Newspaper,   label: 'Articles',  color: '#071A2E' },
-                { tab: 'links',     Icon: ExternalLink,label: 'Links',     color: '#0D9488' },
               ] as const).map((item, i) => (
                 <motion.button
                   key={item.tab}
@@ -1392,7 +1392,76 @@ function AdminDashboardInner() {
                   <span className={styles.navCardLabel}>{item.label}</span>
                 </motion.button>
               ))}
+              
+              {/* Others Button */}
+              <motion.button
+                className={styles.navCard3x}
+                onClick={() => setShowOtherTabs(true)}
+                whileTap={{ scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.22 + 8 * 0.04 }}
+              >
+                <div className={styles.navIconBox} style={{ background: `#64748b14`, color: '#64748b' }}>
+                  <LayoutGrid size={22} strokeWidth={1.75} />
+                </div>
+                <span className={styles.navCardLabel}>Others</span>
+              </motion.button>
             </div>
+
+            {/* Others Tabs Modal */}
+            <AnimatePresence>
+              {showOtherTabs && (
+                <motion.div 
+                  className={styles.cropModalOverlay}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowOtherTabs(false)}
+                  style={{ zIndex: 9999 }}
+                >
+                  <motion.div 
+                    className={styles.cropModalContent}
+                    initial={{ y: 50, opacity: 0, scale: 0.95 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    exit={{ y: 20, opacity: 0, scale: 0.95 }}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ padding: '24px', maxHeight: '80vh', overflowY: 'auto', background: '#f8fafc' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>Menu Lainnya</h3>
+                      <button onClick={() => setShowOtherTabs(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={24} /></button>
+                    </div>
+                    <div className={styles.navGrid3x}>
+                      {([
+                        { tab: 'links',     Icon: ExternalLink, label: 'Links',     color: '#0D9488' },
+                        { tab: 'navigation',Icon: Navigation,   label: 'Navigation',color: '#071A2E' },
+                        { tab: 'champagne', Icon: PartyPopper,  label: 'Champagne', color: '#071A2E' },
+                        { tab: 'aboutpage', Icon: FileText,     label: 'About Page',color: '#071A2E' },
+                        { tab: 'contact',   Icon: Mail,         label: 'Contact',   color: '#0D9488' },
+                        { tab: 'security',  Icon: Lock,         label: 'Keamanan',  color: '#071A2E' },
+                        { tab: 'survey',    Icon: ClipboardList,label: 'Survey',    color: '#071A2E' },
+                      ] as const).map((item) => (
+                        <motion.button
+                          key={item.tab}
+                          className={styles.navCard3x}
+                          onClick={() => {
+                            setTab(item.tab as TabType)
+                            setShowOtherTabs(false)
+                          }}
+                          whileTap={{ scale: 0.96 }}
+                        >
+                          <div className={styles.navIconBox} style={{ background: `${item.color}14`, color: item.color }}>
+                            <item.Icon size={22} strokeWidth={1.75} />
+                          </div>
+                          <span className={styles.navCardLabel}>{item.label}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* ─ Signals to Watch ─ */}
             <div className={styles.sectionHeader}>
