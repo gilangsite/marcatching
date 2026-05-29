@@ -1735,17 +1735,18 @@
 @media (min-width: 769px) {
   .premiumDashboard {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     align-items: start;
-    max-width: 1000px;
+    width: 100%;
+    max-width: none;
   }
   .growthHero, .trendCard {
     margin-bottom: 0 !important;
   }
   .navGrid3x {
     grid-column: 1 / -1;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
   }
   .sectionHeader, .signalFeed, .logoutDashBtn {
     grid-column: 1 / -1;
