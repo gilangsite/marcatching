@@ -8,6 +8,7 @@ import { SortDropdown, SortOption } from '@/components/prompt-library/SortDropdo
 import { PromptCard } from '@/components/prompt-library/PromptCard';
 import { PromptDetailDrawer } from '@/components/prompt-library/PromptDetailDrawer';
 import { HowToUsePromptLibrary } from '@/components/prompt-library/HowToUsePromptLibrary';
+import { HowToUseModal } from '@/components/prompt-library/HowToUseModal';
 import { promptLibrary, PromptCategory, PromptItem } from '@/src/data/promptLibrary';
 import styles from '@/components/prompt-library/PromptLibrary.module.css';
 
@@ -30,6 +31,7 @@ export default function PromptLibraryPage() {
   
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isHowToModalOpen, setIsHowToModalOpen] = useState(false);
 
   const handleOpenDrawer = (prompt: PromptItem) => {
     setSelectedPrompt(prompt);
@@ -75,6 +77,12 @@ export default function PromptLibraryPage() {
         <div className={styles.topBar}>
           <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <div className={styles.filterSortContainer}>
+            <button 
+              onClick={() => setIsHowToModalOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              How to Use This Prompt
+            </button>
             <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
           </div>
         </div>
@@ -104,6 +112,11 @@ export default function PromptLibraryPage() {
       </div>
 
       <HowToUsePromptLibrary />
+
+      <HowToUseModal 
+        isOpen={isHowToModalOpen} 
+        onClose={() => setIsHowToModalOpen(false)} 
+      />
 
       <PromptDetailDrawer 
         prompt={selectedPrompt} 
