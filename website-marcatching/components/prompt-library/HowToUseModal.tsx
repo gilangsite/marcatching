@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Settings, Sparkles } from 'lucide-react';
+import { X, FileText, Settings, Sparkles, Download } from 'lucide-react';
 import styles from './PromptLibrary.module.css';
 
 interface HowToUseModalProps {
@@ -64,7 +64,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
             <div style={{ padding: '32px' }}>
               <p style={{ color: '#94a3b8', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '32px' }}>
-                Prompt di Marcatching dirancang sebagai <strong>thinking system</strong> yang kuat. Untuk mendapatkan output terbaik, ikuti langkah wajib ini sebelum memasukkan prompt:
+                Mulai versi 1.2.0, Prompt Library ini terhubung dengan <strong>Marcatching Modular Skill System V2</strong>. Untuk hasil yang optimal, ikuti panduan berikut:
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -74,14 +74,40 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                     <FileText size={20} />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px' }}>1. Upload Dokumen Skill Marcatching</h3>
-                    <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                      Buka AI workspace kamu (ChatGPT, Claude, dsb). Sebelum melakukan apa-apa, kamu wajib <strong>mengunggah (upload) dua dokumen berikut</strong> secara berurutan:
-                      <ul style={{ marginTop: '8px', paddingLeft: '20px', color: '#cbd5e1' }}>
-                        <li style={{ marginBottom: '4px' }}><code>skill-marcatching.md</code> (sebagai orchestrator logika AI)</li>
-                        <li><code>skill.copywritting-marcatching.md</code> (sebagai panduan gaya penulisan final)</li>
-                      </ul>
-                    </p>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px' }}>1. Upload Skill Documents</h3>
+                    <div style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.95rem' }}>
+                      Buka AI workspace kamu. Kamu punya dua pilihan:
+                      <br/><br/>
+                      <strong>MODE A — Master File Mode:</strong><br/>
+                      Cukup upload 1 file: <code>marcatching-modular-skill-system-v2-master.md</code>
+                      <br/><br/>
+                      <strong>MODE B — Modular Mode:</strong><br/>
+                      Upload 4 file wajib: <code>skill-marcatching.md</code>, <code>marcatching-core.md</code>, <code>marcatching-copy-engine.md</code>, <code>marcatching-evaluator-engine.md</code>, lalu tambahkan modul spesifik sesuai instruksi prompt.
+                    </div>
+                    
+                    {/* Download Button */}
+                    <a 
+                      href="https://www.marcatching.com/product/master-skills-for-marketing-expert"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ 
+                        marginTop: '16px', 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: '8px',
+                        background: '#f8fafc',
+                        color: '#0f172a',
+                        fontWeight: 600,
+                        padding: '10px 20px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <Download size={18} />
+                      Download Skill Documents
+                    </a>
                   </div>
                 </div>
 
@@ -93,29 +119,42 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                   <div>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px' }}>2. Copy & Paste Prompt Utama</h3>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                      Pilih prompt dari <em>Library</em> ini yang sesuai dengan strategi kamu. Copy seluruh isi prompt tersebut (termasuk instruksi awalnya) dan tempelkan ke kolom chat AI yang sama dengan dokumen yang sudah kamu upload tadi.
+                      Pilih prompt dari <em>Library</em> yang sesuai strategi kamu. Copy seluruh isi prompt tersebut (termasuk instruksi awalnya) dan tempelkan ke kolom chat AI.
                     </p>
                   </div>
                 </div>
 
                 {/* Step 3 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a855f7' }}>
+                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
                     <Sparkles size={20} />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px' }}>3. Isi Placeholder Konteks</h3>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '8px' }}>3. PENTING: Isi Placeholder Konteks</h3>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                      Di dalam prompt, kamu akan melihat bagian <code>Konteks:</code> yang berisi variabel kosong seperti <code>Brand/Product:</code>, <code>Target Audience:</code>, dsb. 
-                      Isi bagian ini secara spesifik dengan <strong>kebutuhan brand atau perusahaan kamu</strong>. Jangan gunakan jawaban *generic*.
+                      Di dalam prompt, kamu akan melihat bagian <code>Konteks:</code> yang berisi variabel. 
                     </p>
+                    <div style={{ 
+                      background: 'rgba(239, 68, 68, 0.15)', 
+                      border: '1px solid rgba(239, 68, 68, 0.3)', 
+                      padding: '16px', 
+                      borderRadius: '8px',
+                      marginTop: '12px'
+                    }}>
+                      <strong style={{ color: '#fca5a5', display: 'block', marginBottom: '8px', fontSize: '1.05rem', letterSpacing: '0.5px' }}>
+                        ⚠️ WAJIB: HAPUS CONTOH TEXT DAN GANTI SESUAI KEBUTUHAN BRAND KAMU!
+                      </strong>
+                      <p style={{ color: '#fecaca', fontSize: '0.9rem', margin: 0, lineHeight: 1.5 }}>
+                        Jangan biarkan placeholder terisi dengan *contoh* dari kami atau kosong. Isi secara spesifik (misal: "Target Audience: Founder muda yang pusing mikirin cashflow") agar AI tidak menghasilkan output yang generic.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div style={{ marginTop: '40px', padding: '20px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 <p style={{ margin: 0, color: '#cbd5e1', fontSize: '0.9rem', lineHeight: 1.5, textAlign: 'center' }}>
-                  <strong>Ingat:</strong> Prompt ini tidak akan bekerja maksimal tanpa melampirkan kedua <em>Skill Document</em> dari Marcatching terlebih dahulu!
+                  <strong>Ingat:</strong> Prompt ini tidak akan bekerja maksimal tanpa <em>Skill Document</em> dari Marcatching!
                 </p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const markdown = fs.readFileSync('prompt-library/marcatching_emotional_prompt_library_bank_v1_1_updated.md', 'utf8');
+const markdown = fs.readFileSync('prompt-library/marcatching_emotional_prompt_library_bank_v1_2_modular_updated.md', 'utf8');
 
 const categoryMap = {
   'trust': { id: 'trust', label: 'Trust' },
