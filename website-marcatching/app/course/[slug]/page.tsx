@@ -408,9 +408,15 @@ export default function CourseDetailPage() {
                                   <FileText size={48} color="#94a3b8" style={{ marginBottom: 16 }} />
                                   <h3 style={{ color: '#f1f5f9', marginBottom: 8, fontSize: '1.2rem', fontWeight: 600 }}>{mat.title}.md</h3>
                                   <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file Markdown ini untuk diimpor ke workspace AI kamu.</p>
-                                  <a href={mat.content_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
-                                    <BookOpen size={16} /> Download File .md
-                                  </a>
+                                  {(() => {
+                                    const fileId = getDriveFileId(mat.content_url)
+                                    const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : mat.content_url
+                                    return (
+                                      <a href={downloadUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
+                                        <BookOpen size={16} /> Download File .md
+                                      </a>
+                                    )
+                                  })()}
                                 </div>
                               ) : (
                                 (() => {
