@@ -410,9 +410,9 @@ export default function CourseDetailPage() {
                                   <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file Markdown ini untuk diimpor ke workspace AI kamu.</p>
                                   {(() => {
                                     const fileId = getDriveFileId(mat.content_url)
-                                    const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : mat.content_url
+                                    const downloadUrl = fileId ? `/api/download?id=${fileId}&title=${encodeURIComponent(mat.title)}` : mat.content_url
                                     return (
-                                      <a href={downloadUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
+                                      <a href={downloadUrl} download={`${mat.title}.md`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
                                         <BookOpen size={16} /> Download File .md
                                       </a>
                                     )
