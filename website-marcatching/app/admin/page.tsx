@@ -2289,12 +2289,12 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                             >
                                               <GripVertical size={15} />
                                             </div>
-                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : <Video size={15} color="#dc2626" />}
+                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? '#f0fdf4' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : <Video size={15} color="#dc2626" />}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                               <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{mat.title}</div>
-                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : 'Video'}</div>
+                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : mat.type === 'md' ? 'MD' : 'Video'}</div>
                                             </div>
                                             <button
                                               onClick={() => deleteMaterial(mat.id, product.id)}
