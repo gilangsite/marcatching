@@ -363,7 +363,7 @@ function AdminDashboardInner() {
   const [courseLoading, setCourseLoading] = useState<Record<string, boolean>>({})
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null)
   const [showMaterialForm, setShowMaterialForm] = useState<string | null>(null) // product_id
-  const [materialForm, setMaterialForm] = useState({ title: '', type: 'video' as 'video' | 'pdf', content_url: '' })
+  const [materialForm, setMaterialForm] = useState({ title: '', type: 'video' as 'video' | 'pdf' | 'md', content_url: '' })
   const [materialSaving, setMaterialSaving] = useState(false)
   const [materialError, setMaterialError] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
@@ -617,11 +617,11 @@ function AdminDashboardInner() {
     await Promise.all(newOrder.map((m, idx) => supabase.from('course_materials').update({ order_index: idx + 1 }).eq('id', m.id)))
   }
 
-  async function handlePdfBatchUpload(e: React.ChangeEvent<HTMLInputElement>, productId: string) {
+  async function handleDocBatchUpload(e: React.ChangeEvent<HTMLInputElement>, productId: string) {
     const files = e.target.files; if (!files || files.length === 0) return
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
     setUploadingPdf(true)
-    const uploaded: { filename: string; url: string }[] = []
+    const uploaded: { filename: string; url: string; ext: string }[] = []
     for (let i = 0; i < files.length; i++) {
       const file = files[i]; const reader = new FileReader()
       await new Promise<void>((resolve) => {
@@ -630,19 +630,22 @@ function AdminDashboardInner() {
           try {
             const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'uploadPdf', filename: file.name, mimeType: file.type, base64 }) })
             const data = await res.json()
-            if (data.status === 'success') uploaded.push({ filename: file.name.replace('.pdf', ''), url: data.url })
+            if (data.status === 'success') {
+              const ext = file.name.toLowerCase().endsWith('.md') ? 'md' : 'pdf'
+              uploaded.push({ filename: file.name.replace(/\.(pdf|md)$/i, ''), url: data.url, ext })
+            }
             else alert('Gagal upload ' + file.name + ': ' + data.message)
           } catch { alert('Error upload ' + file.name) }
           resolve()
         }; reader.readAsDataURL(file)
       })
     }
-    // Auto-insert all uploaded PDFs as materials
+    // Auto-insert all uploaded docs as materials
     const existing = courseMaterials[productId] || []
     let baseIdx = existing.length + 1
-    for (const pdf of uploaded) {
+    for (const doc of uploaded) {
       await supabase.from('course_materials').insert({
-        product_id: productId, title: pdf.filename, type: 'pdf', content_url: pdf.url, order_index: baseIdx++
+        product_id: productId, title: doc.filename, type: doc.ext, content_url: doc.url, order_index: baseIdx++
       })
     }
     setUploadingPdf(false)
@@ -2305,14 +2308,14 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 {/* PDF batch upload */}
                                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#eff6ff', color: '#2563eb', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #93c5fd' }}>
                                   <Upload size={14} />
-                                  {uploadingPdf ? 'Mengupload PDF...' : 'Upload PDF (Batch)'}
+                                  {uploadingPdf ? 'Mengupload Dokumen...' : 'Upload Dokumen (.pdf, .md)'}
                                   <input
                                     type="file"
                                     multiple
-                                    accept="application/pdf"
+                                    accept=".pdf,.md"
                                     style={{ display: 'none' }}
                                     disabled={uploadingPdf}
-                                    onChange={(e) => handlePdfBatchUpload(e, product.id)}
+                                    onChange={(e) => handleDocBatchUpload(e, product.id)}
                                   />
                                 </label>
 

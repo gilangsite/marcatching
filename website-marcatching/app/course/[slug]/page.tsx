@@ -337,7 +337,7 @@ export default function CourseDetailPage() {
 
                             {/* Icon */}
                             <div className={`${styles.materialIconWrap} ${isDone ? styles.materialIconWrapDone : ''}`}>
-                              {mat.type === 'pdf'
+                              {mat.type === 'pdf' || mat.type === 'md'
                                 ? <FileText size={18} />
                                 : <Video size={18} />
                               }
@@ -349,7 +349,7 @@ export default function CourseDetailPage() {
                                 {mat.title}
                               </p>
                               <span className={styles.materialType}>
-                                {mat.type === 'pdf' ? 'PDF Dokumen' : 'Video YouTube'}
+                                {mat.type === 'pdf' ? 'PDF Dokumen' : mat.type === 'md' ? 'Markdown File' : 'Video YouTube'}
                               </span>
                             </div>
 
@@ -403,6 +403,15 @@ export default function CourseDetailPage() {
                                     </div>
                                   )
                                 })()
+                              ) : mat.type === 'md' ? (
+                                <div className={styles.pdfWrap} style={{ padding: '40px 20px', textAlign: 'center', background: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b' }}>
+                                  <FileText size={48} color="#94a3b8" style={{ marginBottom: 16 }} />
+                                  <h3 style={{ color: '#f1f5f9', marginBottom: 8, fontSize: '1.2rem', fontWeight: 600 }}>{mat.title}.md</h3>
+                                  <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file Markdown ini untuk diimpor ke workspace AI kamu.</p>
+                                  <a href={mat.content_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
+                                    <BookOpen size={16} /> Download File .md
+                                  </a>
+                                </div>
                               ) : (
                                 (() => {
                                   const fileId = getDriveFileId(mat.content_url)
