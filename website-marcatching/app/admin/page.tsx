@@ -2209,6 +2209,15 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                 <h1 className={styles.contentTitle}>E-Course</h1>
                 <p className={styles.contentDesc}>Kelola materi untuk setiap course / produk</p>
               </div>
+              <button 
+                className="btn btn-navy" 
+                onClick={() => {
+                  setTab('products');
+                  setTimeout(() => openAddProduct(), 100);
+                }}
+              >
+                <Plus size={16} /> Tambah Course
+              </button>
             </div>
 
             {productsLoading ? (
