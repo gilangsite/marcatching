@@ -9,22 +9,11 @@ import { PromptCard } from '@/components/prompt-library/PromptCard';
 import { PromptDetailDrawer } from '@/components/prompt-library/PromptDetailDrawer';
 import { HowToUsePromptLibrary } from '@/components/prompt-library/HowToUsePromptLibrary';
 import { HowToUseModal } from '@/components/prompt-library/HowToUseModal';
-import { promptLibrary, PromptCategory, PromptItem } from '@/src/data/promptLibrary';
+import { promptLibrary, PromptCategory, PromptItem, PromptRole } from '@/src/data/promptLibrary';
 import styles from '@/components/prompt-library/PromptLibrary.module.css';
 
-const CATEGORIES: { id: PromptCategory | 'all', label: string }[] = [
-  { id: 'all', label: 'All Prompts' },
-  { id: 'trust', label: 'Trust & Safety' },
-  { id: 'urgency', label: 'Ethical Urgency' },
-  { id: 'premium-perception', label: 'Premium Perception' },
-  { id: 'identity-signaling', label: 'Identity Signaling' },
-  { id: 'loss-aversion', label: 'Loss Aversion' },
-  { id: 'cognitive-ease', label: 'Cognitive Ease' },
-  { id: 'belonging', label: 'Belonging' },
-  { id: 'relief', label: 'Relief' },
-];
-
 export default function PromptLibraryPage() {
+  const [activeRole, setActiveRole] = useState<PromptRole>('digital-marketer');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<PromptCategory | 'all'>('all');
   const [sortBy, setSortBy] = useState<SortOption>('recommended');
@@ -42,9 +31,20 @@ export default function PromptLibraryPage() {
     setIsDrawerOpen(false);
   };
 
+  const categoriesForRole = useMemo(() => {
+    const rolePrompts = promptLibrary.filter(p => p.role === activeRole);
+    const uniqueCatLabels = Array.from(new Set(rolePrompts.map(p => p.categoryLabel)));
+    const dynamicCats = uniqueCatLabels.map(label => ({
+      id: rolePrompts.find(p => p.categoryLabel === label)?.category || label,
+      label
+    }));
+    return [{ id: 'all', label: 'All Prompts' }, ...dynamicCats];
+  }, [activeRole]);
+
   const filteredAndSortedPrompts = useMemo(() => {
     // Filter
     let result = promptLibrary.filter((prompt) => {
+      if (prompt.role !== activeRole) return false;
       const matchesCategory = activeCategory === 'all' || prompt.category === activeCategory;
       const matchesSearch = 
         prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -74,6 +74,47 @@ export default function PromptLibraryPage() {
       <HeroSection />
       
       <div className={styles.container}>
+        
+        {/* Role Selector UI */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.03)', padding: '6px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <button
+              onClick={() => { setActiveRole('digital-marketer'); setActiveCategory('all'); }}
+              style={{
+                padding: '12px 24px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRole === 'digital-marketer' ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
+                color: activeRole === 'digital-marketer' ? '#38bdf8' : '#94a3b8',
+                fontWeight: 600,
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: activeRole === 'digital-marketer' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              Digital Marketer
+            </button>
+            <button
+              onClick={() => { setActiveRole('content-creator'); setActiveCategory('all'); }}
+              style={{
+                padding: '12px 24px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRole === 'content-creator' ? 'rgba(167, 139, 250, 0.1)' : 'transparent',
+                color: activeRole === 'content-creator' ? '#a855f7' : '#94a3b8',
+                fontWeight: 600,
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: activeRole === 'content-creator' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              Content Creator
+            </button>
+          </div>
+        </div>
+
         <div className={styles.topBar}>
           <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <div className={styles.filterSortContainer}>
@@ -88,7 +129,7 @@ export default function PromptLibraryPage() {
         </div>
 
         <CategoryFilter 
-          categories={CATEGORIES} 
+          categories={categoriesForRole} 
           activeCategory={activeCategory} 
           setActiveCategory={setActiveCategory} 
         />
