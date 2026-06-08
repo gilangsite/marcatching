@@ -67,7 +67,7 @@ export default function PromptLibraryPage() {
     });
 
     return result;
-  }, [searchQuery, activeCategory, sortBy]);
+  }, [searchQuery, activeCategory, sortBy, activeRole]);
 
   return (
     <main>
