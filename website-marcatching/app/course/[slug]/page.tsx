@@ -337,7 +337,7 @@ export default function CourseDetailPage() {
 
                             {/* Icon */}
                             <div className={`${styles.materialIconWrap} ${isDone ? styles.materialIconWrapDone : ''}`}>
-                              {mat.type === 'pdf' || mat.type === 'md'
+                              {mat.type === 'pdf' || mat.type === 'md' || mat.type === 'zip'
                                 ? <FileText size={18} />
                                 : <Video size={18} />
                               }
@@ -349,7 +349,7 @@ export default function CourseDetailPage() {
                                 {mat.title}
                               </p>
                               <span className={styles.materialType}>
-                                {mat.type === 'pdf' ? 'PDF Dokumen' : mat.type === 'md' ? 'Markdown File' : 'Video YouTube'}
+                                {mat.type === 'pdf' ? 'PDF Dokumen' : mat.type === 'md' ? 'Markdown File' : mat.type === 'zip' ? 'ZIP File' : 'Video YouTube'}
                               </span>
                             </div>
 
@@ -414,6 +414,21 @@ export default function CourseDetailPage() {
                                     return (
                                       <a href={downloadUrl} download={`${mat.title}.md`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
                                         <BookOpen size={16} /> Download File .md
+                                      </a>
+                                    )
+                                  })()}
+                                </div>
+                              ) : mat.type === 'zip' ? (
+                                <div className={styles.pdfWrap} style={{ padding: '40px 20px', textAlign: 'center', background: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b' }}>
+                                  <FileText size={48} color="#a78bfa" style={{ marginBottom: 16 }} />
+                                  <h3 style={{ color: '#f1f5f9', marginBottom: 8, fontSize: '1.2rem', fontWeight: 600 }}>{mat.title}.zip</h3>
+                                  <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file ZIP ini dan ekstrak untuk menggunakan isinya.</p>
+                                  {(() => {
+                                    const fileId = getDriveFileId(mat.content_url)
+                                    const downloadUrl = fileId ? `/api/download?id=${fileId}&title=${encodeURIComponent(mat.title)}` : mat.content_url
+                                    return (
+                                      <a href={downloadUrl} download={`${mat.title}.zip`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#a78bfa', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(167, 139, 250, 0.25)' }}>
+                                        <BookOpen size={16} /> Download File .zip
                                       </a>
                                     )
                                   })()}

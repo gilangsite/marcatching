@@ -631,8 +631,8 @@ function AdminDashboardInner() {
             const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'uploadPdf', filename: file.name, mimeType: file.type, base64 }) })
             const data = await res.json()
             if (data.status === 'success') {
-              const ext = file.name.toLowerCase().endsWith('.md') ? 'md' : 'pdf'
-              uploaded.push({ filename: file.name.replace(/\.(pdf|md)$/i, ''), url: data.url, ext })
+              const ext = file.name.toLowerCase().endsWith('.md') ? 'md' : file.name.toLowerCase().endsWith('.zip') ? 'zip' : 'pdf'
+              uploaded.push({ filename: file.name.replace(/\.(pdf|md|zip)$/i, ''), url: data.url, ext })
             }
             else alert('Gagal upload ' + file.name + ': ' + data.message)
           } catch { alert('Error upload ' + file.name) }
@@ -2289,12 +2289,12 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                             >
                                               <GripVertical size={15} />
                                             </div>
-                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? '#f0fdf4' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : <Video size={15} color="#dc2626" />}
+                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? '#f0fdf4' : mat.type === 'zip' ? '#fdf4ff' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : mat.type === 'zip' ? <FileText size={15} color="#9333ea" /> : <Video size={15} color="#dc2626" />}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                               <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{mat.title}</div>
-                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : mat.type === 'md' ? 'MD' : 'Video'}</div>
+                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : mat.type === 'md' ? 'MD' : mat.type === 'zip' ? 'ZIP' : 'Video'}</div>
                                             </div>
                                             <button
                                               onClick={() => deleteMaterial(mat.id, product.id)}
@@ -2317,11 +2317,11 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 {/* PDF batch upload */}
                                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#eff6ff', color: '#2563eb', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #93c5fd' }}>
                                   <Upload size={14} />
-                                  {uploadingPdf ? 'Mengupload Dokumen...' : 'Upload Dokumen (.pdf, .md)'}
+                                  {uploadingPdf ? 'Mengupload Dokumen...' : 'Upload Dokumen (.pdf, .md, .zip)'}
                                   <input
                                     type="file"
                                     multiple
-                                    accept=".pdf,.md"
+                                    accept=".pdf,.md,.zip"
                                     style={{ display: 'none' }}
                                     disabled={uploadingPdf}
                                     onChange={(e) => handleDocBatchUpload(e, product.id)}

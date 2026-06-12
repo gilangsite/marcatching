@@ -157,7 +157,7 @@ export type CourseMaterial = {
   id: string
   product_id: string
   title: string
-  type: 'pdf' | 'video' | 'md'
+  type: 'pdf' | 'video' | 'md' | 'zip'
   content_url: string
   order_index: number
   created_at: string
