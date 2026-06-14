@@ -14,7 +14,7 @@ import {
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -268,6 +268,25 @@ function AdminDashboardInner() {
   type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
   const [tab, setTab] = useState<TabType>('menu')
   const [showOtherTabs, setShowOtherTabs] = useState(false)
+  const tabMeta: Record<TabType, { eyebrow: string; label: string }> = {
+    menu: { eyebrow: 'Marcatching OS', label: 'Intelligence Console' },
+    analytics: { eyebrow: 'Performance', label: 'Analytics' },
+    finance: { eyebrow: 'Revenue', label: 'Finance' },
+    links: { eyebrow: 'Distribution', label: 'Links & Buttons' },
+    navigation: { eyebrow: 'Site System', label: 'Navigation' },
+    ecommerce: { eyebrow: 'Storefront', label: 'E-Commerce' },
+    champagne: { eyebrow: 'Campaign', label: 'Champagne' },
+    articles: { eyebrow: 'Editorial', label: 'Articles' },
+    aboutpage: { eyebrow: 'Brand', label: 'About Page' },
+    products: { eyebrow: 'Offer Suite', label: 'Products' },
+    ecourse: { eyebrow: 'Learning', label: 'E-Course' },
+    vouchers: { eyebrow: 'Conversion', label: 'Vouchers' },
+    orders: { eyebrow: 'Sales Ops', label: 'Orders' },
+    contact: { eyebrow: 'Support', label: 'Contact Info' },
+    security: { eyebrow: 'Access', label: 'Keamanan' },
+    survey: { eyebrow: 'Research', label: 'Survey' },
+  }
+  const activeTabMeta = tabMeta[tab]
 
   useEffect(() => {
     if (window.innerWidth <= 768) {
@@ -784,7 +803,7 @@ function AdminDashboardInner() {
   // Read ?tab param from URL
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null
-    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','champagne','finance','security','survey'].includes(tabParam)) {
+    if (tabParam && ['links','contact','products','vouchers','orders','ecourse','analytics','articles','navigation','ecommerce','aboutpage','champagne','finance','security','survey'].includes(tabParam)) {
       setTab(tabParam)
     }
   }, [searchParams])
@@ -1254,19 +1273,23 @@ function AdminDashboardInner() {
   return (
     <div className={styles.page}>
       <AdminToast />
-      {/* Premium App Top Bar — mobile only */}
+      {/* Premium App Top Bar */}
       <div className={styles.appTopBar}>
         <div className={styles.appTopBarLogo}>
           <Image src="https://marcatching.com/logo-type-white.png" alt="Marcatching" width={116} height={28} className={styles.appTopBarLogoImg} unoptimized={true} priority />
         </div>
-        {tab === 'menu' && (
-          <div className={styles.appTopBarContext}>Intelligence</div>
-        )}
+        <div className={styles.appTopBarMeta}>
+          <span className={styles.appTopBarEyebrow}>{activeTabMeta.eyebrow}</span>
+          <strong className={styles.appTopBarTitle}>{activeTabMeta.label}</strong>
+        </div>
         <div className={styles.appTopBarActions}>
-          <button className={styles.appTopBarIconBtn} onClick={() => setTab('analytics')} aria-label="Analytics">
+          <button className={styles.appTopBarIconBtn} onClick={() => setTab('menu')} aria-label="Dashboard home" title="Dashboard home">
+            <LayoutGrid size={16} />
+          </button>
+          <button className={styles.appTopBarIconBtn} onClick={() => setTab('analytics')} aria-label="Analytics" title="Analytics">
             <BarChart3 size={16} />
           </button>
-          <button className={styles.appTopBarIconBtn} onClick={handleLogout} aria-label="Keluar">
+          <button className={styles.appTopBarIconBtn} onClick={handleLogout} aria-label="Keluar" title="Keluar">
             <UserCircle size={18} />
           </button>
         </div>
@@ -1348,7 +1371,9 @@ function AdminDashboardInner() {
               transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
             >
               <div className={styles.heroInner}>
-                <div className={styles.heroLabel}>Today&rsquo;s Growth Signal</div>
+                <div className={styles.heroLabel}>Marcatching Intelligence Console</div>
+                <h1 className={styles.heroTitle}>Decode the system behind the noise.</h1>
+                <p className={styles.heroCopy}>Satu layar untuk membaca atensi, konten, dan revenue pulse harian.</p>
                 {analyticsData ? (
                   <>
                     <div className={styles.heroMetrics}>
@@ -1420,19 +1445,21 @@ function AdminDashboardInner() {
             {/* ─ Unified Navigation Grid ─ */}
             <div className={styles.navGrid3x}>
               {([
-                { tab: 'analytics', Icon: BarChart3,   label: 'Analytics', color: '#071A2E' },
-                { tab: 'finance',   Icon: DollarSign,  label: 'Finance',   color: '#0D9488' },
-                { tab: 'orders',    Icon: ClipboardList,label: 'Orders',   color: '#071A2E' },
-                { tab: 'products',  Icon: Package,     label: 'Products',  color: '#071A2E' },
-                { tab: 'ecourse',   Icon: BookMarked,  label: 'E-Course',  color: '#0D9488' },
-                { tab: 'ecommerce', Icon: ShoppingCart,label: 'Store',     color: '#071A2E' },
-                { tab: 'vouchers',  Icon: Tag,         label: 'Vouchers',  color: '#E11D48' },
-                { tab: 'articles',  Icon: Newspaper,   label: 'Articles',  color: '#071A2E' },
+                { tab: 'analytics', Icon: BarChart3,    label: 'Analytics', desc: 'Traffic, CTR, source', color: '#0d3369' },
+                { tab: 'finance',   Icon: DollarSign,   label: 'Finance',   desc: 'Cashflow signal', color: '#1e40af' },
+                { tab: 'orders',    Icon: ClipboardList,label: 'Orders',    desc: 'Buyer follow-up', color: '#0d3369' },
+                { tab: 'products',  Icon: Package,      label: 'Products',  desc: 'Offer suite', color: '#0d3369' },
+                { tab: 'ecourse',   Icon: BookMarked,   label: 'E-Course',  desc: 'Learning assets', color: '#1e40af' },
+                { tab: 'ecommerce', Icon: ShoppingCart, label: 'Store',     desc: 'Storefront blocks', color: '#0d3369' },
+                { tab: 'vouchers',  Icon: Tag,          label: 'Vouchers',  desc: 'Conversion codes', color: '#1e40af' },
+                { tab: 'articles',  Icon: Newspaper,    label: 'Articles',  desc: 'Editorial engine', color: '#0d3369' },
               ] as const).map((item, i) => (
                 <motion.button
                   key={item.tab}
+                  type="button"
                   className={styles.navCard3x}
                   onClick={() => setTab(item.tab as TabType)}
+                  aria-label={`Buka ${item.label}`}
                   whileTap={{ scale: 0.96 }}
                   initial={{ opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -1442,13 +1469,16 @@ function AdminDashboardInner() {
                     <item.Icon size={22} strokeWidth={1.75} />
                   </div>
                   <span className={styles.navCardLabel}>{item.label}</span>
+                  <span className={styles.navCardDesc}>{item.desc}</span>
                 </motion.button>
               ))}
               
               {/* Others Button */}
               <motion.button
+                type="button"
                 className={styles.navCard3x}
                 onClick={() => setShowOtherTabs(true)}
+                aria-label="Buka menu lainnya"
                 whileTap={{ scale: 0.96 }}
                 initial={{ opacity: 0, scale: 0.94 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -1458,6 +1488,7 @@ function AdminDashboardInner() {
                   <LayoutGrid size={22} strokeWidth={1.75} />
                 </div>
                 <span className={styles.navCardLabel}>Others</span>
+                <span className={styles.navCardDesc}>More controls</span>
               </motion.button>
             </div>
 
@@ -1473,34 +1504,38 @@ function AdminDashboardInner() {
                   style={{ zIndex: 9999 }}
                 >
                   <motion.div 
-                    className={styles.cropModalContent}
+                    className={`${styles.cropModalContent} ${styles.otherTabsModal}`}
                     initial={{ y: 50, opacity: 0, scale: 0.95 }}
                     animate={{ y: 0, opacity: 1, scale: 1 }}
                     exit={{ y: 20, opacity: 0, scale: 0.95 }}
                     onClick={(e) => e.stopPropagation()}
-                    style={{ padding: '24px', maxHeight: '80vh', overflowY: 'auto', background: '#f8fafc' }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>Menu Lainnya</h3>
-                      <button onClick={() => setShowOtherTabs(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={24} /></button>
+                    <div className={styles.otherTabsModalHeader}>
+                      <div>
+                        <span className={styles.otherTabsModalEyebrow}>Control Surface</span>
+                        <h3 className={styles.otherTabsModalTitle}>Menu Lainnya</h3>
+                      </div>
+                      <button type="button" onClick={() => setShowOtherTabs(false)} className={styles.otherTabsCloseBtn} aria-label="Tutup menu lainnya"><X size={20} /></button>
                     </div>
-                    <div className={styles.navGrid3x}>
+                    <div className={`${styles.navGrid3x} ${styles.modalGrid3x}`}>
                       {([
-                        { tab: 'links',     Icon: ExternalLink, label: 'Links',     color: '#0D9488' },
-                        { tab: 'navigation',Icon: Navigation,   label: 'Navigation',color: '#071A2E' },
-                        { tab: 'champagne', Icon: PartyPopper,  label: 'Champagne', color: '#071A2E' },
-                        { tab: 'aboutpage', Icon: FileText,     label: 'About Page',color: '#071A2E' },
-                        { tab: 'contact',   Icon: Mail,         label: 'Contact',   color: '#0D9488' },
-                        { tab: 'security',  Icon: Lock,         label: 'Keamanan',  color: '#071A2E' },
-                        { tab: 'survey',    Icon: ClipboardList,label: 'Survey',    color: '#071A2E' },
+                        { tab: 'links',      Icon: ExternalLink, label: 'Links',      color: '#1e40af' },
+                        { tab: 'navigation', Icon: Navigation,   label: 'Navigation', color: '#0d3369' },
+                        { tab: 'champagne',  Icon: PartyPopper,  label: 'Champagne',  color: '#0d3369' },
+                        { tab: 'aboutpage',  Icon: FileText,     label: 'About Page', color: '#0d3369' },
+                        { tab: 'contact',    Icon: Mail,         label: 'Contact',    color: '#1e40af' },
+                        { tab: 'security',   Icon: Lock,         label: 'Keamanan',   color: '#0d3369' },
+                        { tab: 'survey',     Icon: ClipboardList,label: 'Survey',     color: '#0d3369' },
                       ] as const).map((item) => (
                         <motion.button
                           key={item.tab}
+                          type="button"
                           className={styles.navCard3x}
                           onClick={() => {
                             setTab(item.tab as TabType)
                             setShowOtherTabs(false)
                           }}
+                          aria-label={`Buka ${item.label}`}
                           whileTap={{ scale: 0.96 }}
                         >
                           <div className={styles.navIconBox} style={{ background: `${item.color}14`, color: item.color }}>
@@ -2059,15 +2094,15 @@ function AdminDashboardInner() {
           <div className={styles.tabContent} style={{ maxWidth: 1100 }}>
             <div className={styles.contentHeader}><div><h1 className={styles.contentTitle}>Orders</h1><p className={styles.contentDesc}>Semua pembelian yang masuk</p></div></div>
             {ordersLoading ? <div className={styles.loading}>Memuat...</div> : orders.length === 0 ? <div className={styles.emptyState}>Belum ada order.</div> : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-                  <thead><tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Tanggal</th>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Nama</th>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Product</th>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Total</th>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Status</th>
-                    <th style={{ padding: '10px 8px', color: '#64748b', fontWeight: 600 }}>Aksi</th>
+              <div className={styles.tableScroll}>
+                <table className={styles.ordersTable}>
+                  <thead><tr>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Product</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                   </tr></thead>
                   <tbody ref={contactMenuRef}>{orders.map(o => {
                     const waNum = formatWaNumber(o.whatsapp || '')
@@ -2121,47 +2156,40 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                     }
 
                     return (
-                    <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '10px 8px', whiteSpace: 'nowrap' }}>{new Date(o.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                      <td style={{ padding: '10px 8px' }}><div style={{ fontWeight: 600 }}>{o.full_name}</div><div style={{ color: '#94a3b8', fontSize: '0.78rem' }}>{o.email}</div></td>
-                      <td style={{ padding: '10px 8px' }}>
+                    <tr key={o.id}>
+                      <td className={styles.orderDate}>{new Date(o.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td><div className={styles.orderCustomer}>{o.full_name}</div><div className={styles.orderCustomerEmail}>{o.email}</div></td>
+                      <td>
                         <div>{o.product_name}</div>
                         {addons.length > 0 && addons.map((a, i) => (
-                          <div key={i} style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>+ {a.name}</div>
+                          <div key={i} className={styles.orderAddon}>+ {a.name}</div>
                         ))}
                       </td>
-                      <td style={{ padding: '10px 8px', fontWeight: 600 }}>Rp {formatRp(o.total_paid)}</td>
-                      <td style={{ padding: '10px 8px' }}>
+                      <td className={styles.orderTotal}>Rp {formatRp(o.total_paid)}</td>
+                      <td>
                         <button 
                           onClick={() => toggleOrderStatus(o)} 
-                          style={{ border: 'none', cursor: 'pointer', padding: '4px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600, background: o.status === 'confirmed' ? '#dcfce7' : '#fef3c7', color: o.status === 'confirmed' ? '#16a34a' : '#d97706', transition: 'all 0.2s', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          className={`${styles.orderStatusBtn} ${o.status === 'confirmed' ? styles.orderStatusConfirmed : styles.orderStatusPending}`}
                           title={`Ubah menjadi ${o.status === 'pending' ? 'Confirmed' : 'Pending'}`}
                         >
                           {o.status === 'confirmed' ? <Check size={12}/> : null}
                           {o.status.toUpperCase()}
                         </button>
                       </td>
-                      <td style={{ padding: '10px 8px', position: 'relative' }}>
-                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <td className={styles.orderActionCell}>
+                        <div className={styles.contactMenuWrap}>
                           <button
                             onClick={() => setContactMenuOrder(contactMenuOrder === o.id ? null : o.id)}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 12px', background: '#0d3369', color: '#fff', border: 'none', borderRadius: 8, fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                            className={styles.contactBuyerBtn}
                           >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <MessageSquare size={13} />
                             Contact Buyer
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            <ChevronDown size={12} />
                           </button>
 
                           {contactMenuOrder === o.id && (
-                            <div
-                              style={{
-                                position: 'absolute', top: '110%', right: 0, zIndex: 200,
-                                background: '#ffffff', border: '1px solid #e2e8f0',
-                                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.13)',
-                                minWidth: 210, overflow: 'hidden'
-                              }}
-                            >
-                              <div style={{ padding: '8px 12px', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #f1f5f9' }}>
+                            <div className={styles.contactMenu}>
+                              <div className={styles.contactMenuHeader}>
                                 WA: {o.whatsapp}
                               </div>
                               <a
@@ -2169,11 +2197,9 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => setContactMenuOrder(null)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 14px', textDecoration: 'none', color: '#16a34a', fontWeight: 700, fontSize: '0.82rem', borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
-                                onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf4')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                className={`${styles.contactMenuAction} ${styles.contactMenuSuccess}`}
                               >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <Check size={14} />
                                 Pembayaran Berhasil
                               </a>
                               <a
@@ -2181,11 +2207,9 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => setContactMenuOrder(null)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 14px', textDecoration: 'none', color: '#d97706', fontWeight: 700, fontSize: '0.82rem', transition: 'background 0.15s' }}
-                                onMouseEnter={e => (e.currentTarget.style.background = '#fffbeb')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                className={`${styles.contactMenuAction} ${styles.contactMenuPending}`}
                               >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <RefreshCw size={14} />
                                 Pembayaran Belum Berhasil
                               </a>
                             </div>
