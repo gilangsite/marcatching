@@ -51,6 +51,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
   useEffect(() => {
     async function fetchData() {
+      const query = new URLSearchParams(window.location.search)
+      const initialAddonIds = (query.get('addons') || '')
+        .split(',')
+        .map(id => id.trim())
+        .filter(Boolean)
+      const initialVoucher = query.get('voucher')?.trim().toUpperCase() || ''
+
       // Fetch main product
       const { data: prodData, error: prodError } = await supabase
         .from('products')
@@ -64,7 +71,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           router.replace(`/product/${slug}`)
           return
         }
-        setProduct(prodData as Product)
 
         // Fetch all other active products for add-on
         const { data: allProds } = await supabase
@@ -74,12 +80,30 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           .neq('slug', slug)
           .order('name', { ascending: true })
 
-        if (allProds) setAvailableProducts(allProds as Product[])
+        if (allProds) {
+          const addonProducts = allProds as Product[]
+          setAvailableProducts(addonProducts)
+
+          if (initialAddonIds.length > 0) {
+            setSelectedAddons(addonProducts
+              .filter(p => initialAddonIds.includes(p.id) && !p.is_coming_soon)
+              .map(p => ({
+                id: p.id,
+                name: p.name,
+                priceOriginal: p.price_before_discount,
+                priceDiscounted: p.price_after_discount,
+              }))
+            )
+          }
+        }
+
+        if (initialVoucher) setVoucherCode(initialVoucher)
+        setProduct(prodData as Product)
       }
       setLoading(false)
     }
     fetchData()
-  }, [slug])
+  }, [slug, router])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -168,28 +192,44 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     }
   }
 
-  // Validate voucher — pass total subtotal so percentage discount applies correctly
+  // Validate voucher per selected product, matching voucher product restrictions from admin.
   async function handleValidateVoucher() {
     if (!voucherCode.trim()) return
     setVoucherChecking(true)
     setVoucherMsg('')
 
     try {
-      const res = await fetch('/api/voucher/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim(), productPrice: subtotalBeforeVoucher, productId: product!.id }),
-      })
-      const data = await res.json()
+      const code = voucherCode.trim().toUpperCase()
+      const voucherTargets = [
+        { id: product!.id, name: product!.name, price: priceDiscounted },
+        ...selectedAddons.map(addon => ({ id: addon.id, name: addon.name, price: addon.priceDiscounted })),
+      ]
 
-      if (data.valid) {
+      const checks = await Promise.all(voucherTargets.map(async target => {
+        const res = await fetch('/api/voucher/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, productPrice: target.price, productId: target.id }),
+        })
+        const data = await res.json()
+        if (!data.valid || !data.discount_amount) return null
+        return {
+          productName: target.name,
+          discount: Math.min(target.price, Number(data.discount_amount) || 0),
+        }
+      }))
+
+      const validDiscounts = checks.filter((item): item is { productName: string; discount: number } => Boolean(item && item.discount > 0))
+      const totalVoucherDiscount = validDiscounts.reduce((sum, item) => sum + item.discount, 0)
+
+      if (totalVoucherDiscount > 0) {
         setVoucherValid(true)
-        setVoucherDiscount(data.discount_amount)
-        setVoucherMsg(data.message)
+        setVoucherDiscount(totalVoucherDiscount)
+        setVoucherMsg(`Voucher berhasil diterapkan ke ${validDiscounts.length} produk.`)
       } else {
         setVoucherValid(false)
         setVoucherDiscount(0)
-        setVoucherMsg(data.message)
+        setVoucherMsg('Voucher ini tidak berlaku untuk produk yang dipilih.')
       }
     } catch {
       setVoucherMsg('Gagal memvalidasi voucher')
@@ -317,7 +357,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
             {voucherDiscount > 0 && (
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Potongan Voucher</span>
-                <span style={{ color: '#16a34a', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
               </div>
             )}
             <div className={styles.priceRow}>
@@ -542,7 +582,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                   <span className={styles.breakdownLabel}>{product.name}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                     {priceOriginal > 0 && priceOriginal !== priceDiscounted && (
-                      <span style={{ textDecoration: 'line-through', color: '#dc2626', fontSize: '0.78rem' }}>{formatRupiah(priceOriginal)}</span>
+                      <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.78rem' }}>{formatRupiah(priceOriginal)}</span>
                     )}
                     <span className={styles.breakdownValue}>{formatRupiah(priceDiscounted)}</span>
                   </div>
@@ -554,7 +594,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                     <span className={styles.breakdownLabel} style={{ color: '#475569' }}>+ {addon.name}</span>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                       {addon.priceOriginal > 0 && addon.priceOriginal !== addon.priceDiscounted && (
-                        <span style={{ textDecoration: 'line-through', color: '#dc2626', fontSize: '0.78rem' }}>{formatRupiah(addon.priceOriginal)}</span>
+                        <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.78rem' }}>{formatRupiah(addon.priceOriginal)}</span>
                       )}
                       <span className={styles.breakdownValue}>{formatRupiah(addon.priceDiscounted)}</span>
                     </div>
@@ -564,7 +604,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 {voucherDiscount > 0 && (
                   <div className={styles.breakdownRow}>
                     <span className={styles.breakdownLabel}>Potongan Voucher</span>
-                    <span style={{ color: '#16a34a', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                    <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
                   </div>
                 )}
 

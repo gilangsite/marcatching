@@ -123,7 +123,7 @@
 
 .priceLabel { color: #64748b; }
 .priceValue { font-weight: 600; color: #1e293b; font-size: 0.88rem; }
-.priceStrike { text-decoration: line-through; color: #dc2626; font-weight: 500; font-size: 0.78rem; }
+.priceStrike { text-decoration: line-through; color: #94a3b8; font-weight: 500; font-size: 0.78rem; }
 .priceHighlight { color: #0d3369; font-weight: 800; font-size: 1.1rem; }
 
 .divider {
@@ -229,7 +229,7 @@
 .addonItemStrike {
   font-size: 0.72rem;
   text-decoration: line-through;
-  color: #dc2626;
+  color: #94a3b8;
 }
 
 .addonItemPrice {
@@ -244,9 +244,9 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  background: #f8fafc;
+  color: #0d3369;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   cursor: pointer;
   flex-shrink: 0;
@@ -255,9 +255,9 @@
 }
 
 .addonItemRemove:hover {
-  background: #dc2626;
+  background: #0d3369;
   color: #ffffff;
-  border-color: #dc2626;
+  border-color: #0d3369;
 }
 
 /* Dropdown trigger button */
@@ -407,7 +407,7 @@
 .addonOptionStrike {
   font-size: 0.72rem;
   text-decoration: line-through;
-  color: #dc2626;
+  color: #94a3b8;
 }
 
 .addonOptionPrice {
@@ -490,13 +490,13 @@
 }
 
 .voucherSuccess {
-  color: #16a34a;
-  background: #f0fdf4;
+  color: #0d3369;
+  background: #f8fafc;
 }
 
 .voucherError {
-  color: #dc2626;
-  background: #fef2f2;
+  color: #0d3369;
+  background: #f8fafc;
 }
 
 /* ── Form ──────────────────────────────────────────────────── */
@@ -540,9 +540,9 @@
 
 .formError {
   font-size: 0.82rem;
-  color: #dc2626;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  color: #0d3369;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 10px 14px;
 }
@@ -740,7 +740,7 @@
   gap: 10px;
   width: 100%;
   padding: 16px;
-  background: #16a34a;
+  background: #0d3369;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 700;
@@ -751,7 +751,7 @@
   transition: all 0.2s;
 }
 
-.payBtn:hover { background: #15803d; }
+.payBtn:hover { background: #0a2850; }
 .payBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Mobile ────────────────────────────────────────────────── */
