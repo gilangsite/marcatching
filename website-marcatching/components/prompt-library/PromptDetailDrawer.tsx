@@ -96,7 +96,7 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
         >
-          <CheckCircle2 size={20} color="var(--mc-accent)" />
+          <CheckCircle2 size={20} color="#ffffff" />
           Prompt copied to clipboard!
         </motion.div>
       )}

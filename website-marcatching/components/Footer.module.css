@@ -6,6 +6,19 @@
   background: var(--white);
 }
 
+.footerLight {
+  background: #ffffff;
+  border-top: 1px solid rgba(13, 51, 105, 0.10);
+}
+
+.footerLight .copy {
+  color: #64748b;
+}
+
+.footerLight .copy strong {
+  color: #0d3369;
+}
+
 .inner {
   max-width: 1100px;
   margin: 0 auto;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HeroSection } from '@/components/prompt-library/HeroSection';
 import { SearchBar } from '@/components/prompt-library/SearchBar';
 import { CategoryFilter } from '@/components/prompt-library/CategoryFilter';
@@ -10,9 +10,13 @@ import { PromptDetailDrawer } from '@/components/prompt-library/PromptDetailDraw
 import { HowToUsePromptLibrary } from '@/components/prompt-library/HowToUsePromptLibrary';
 import { HowToUseModal } from '@/components/prompt-library/HowToUseModal';
 import { promptLibrary, PromptCategory, PromptItem, PromptRole } from '@/src/data/promptLibrary';
+import { supabase, type NavLink } from '@/lib/supabaseClient';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import styles from '@/components/prompt-library/PromptLibrary.module.css';
 
 export default function PromptLibraryPage() {
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [activeRole, setActiveRole] = useState<PromptRole>('digital-marketer');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<PromptCategory | 'all'>('all');
@@ -21,6 +25,23 @@ export default function PromptLibraryPage() {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHowToModalOpen, setIsHowToModalOpen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase
+      .from('nav_links')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index')
+      .then(({ data }) => {
+        if (mounted) setNavLinks((data || []) as NavLink[]);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleOpenDrawer = (prompt: PromptItem) => {
     setSelectedPrompt(prompt);
@@ -43,7 +64,7 @@ export default function PromptLibraryPage() {
 
   const filteredAndSortedPrompts = useMemo(() => {
     // Filter
-    let result = promptLibrary.filter((prompt) => {
+    const result = promptLibrary.filter((prompt) => {
       if (prompt.role !== activeRole) return false;
       const matchesCategory = activeCategory === 'all' || prompt.category === activeCategory;
       const matchesSearch = 
@@ -70,100 +91,84 @@ export default function PromptLibraryPage() {
   }, [searchQuery, activeCategory, sortBy, activeRole]);
 
   return (
-    <main>
-      <HeroSection />
-      
-      <div className={styles.container}>
+    <>
+      <Navbar navLinks={navLinks} />
+
+      <main className={styles.main}>
+        <HeroSection />
         
-        {/* Role Selector UI */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.03)', padding: '6px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <button
-              onClick={() => { setActiveRole('digital-marketer'); setActiveCategory('all'); }}
-              style={{
-                padding: '12px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRole === 'digital-marketer' ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
-                color: activeRole === 'digital-marketer' ? '#38bdf8' : '#94a3b8',
-                fontWeight: 600,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: activeRole === 'digital-marketer' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
-              }}
-            >
-              Digital Marketer
-            </button>
-            <button
-              onClick={() => { setActiveRole('content-creator'); setActiveCategory('all'); }}
-              style={{
-                padding: '12px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRole === 'content-creator' ? 'rgba(167, 139, 250, 0.1)' : 'transparent',
-                color: activeRole === 'content-creator' ? '#a855f7' : '#94a3b8',
-                fontWeight: 600,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: activeRole === 'content-creator' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
-              }}
-            >
-              Content Creator
-            </button>
+        <div className={styles.container}>
+          
+          {/* Role Selector UI */}
+          <div className={styles.roleSelectorWrap}>
+            <div className={styles.roleSelector}>
+              <button
+                onClick={() => { setActiveRole('digital-marketer'); setActiveCategory('all'); }}
+                className={`${styles.roleButton} ${activeRole === 'digital-marketer' ? styles.roleButtonActive : ''}`}
+              >
+                Digital Marketer
+              </button>
+              <button
+                onClick={() => { setActiveRole('content-creator'); setActiveCategory('all'); }}
+                className={`${styles.roleButton} ${activeRole === 'content-creator' ? styles.roleButtonActive : ''}`}
+              >
+                Content Creator
+              </button>
+            </div>
           </div>
+
+          <div className={styles.topBar}>
+            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <div className={styles.filterSortContainer}>
+              <button 
+                onClick={() => setIsHowToModalOpen(true)}
+                className={styles.howToButton}
+              >
+                How to Use This Prompt
+              </button>
+              <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
+            </div>
+          </div>
+
+          <CategoryFilter 
+            categories={categoriesForRole} 
+            activeCategory={activeCategory} 
+            setActiveCategory={setActiveCategory} 
+          />
+
+          {filteredAndSortedPrompts.length > 0 ? (
+            <div className={styles.grid}>
+              {filteredAndSortedPrompts.map((prompt) => (
+                <PromptCard 
+                  key={prompt.id} 
+                  prompt={prompt} 
+                  onClick={handleOpenDrawer} 
+                />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyState}>
+              <h3>No prompts found</h3>
+              <p>Try adjusting your search or filter criteria.</p>
+            </div>
+          )}
         </div>
 
-        <div className={styles.topBar}>
-          <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          <div className={styles.filterSortContainer}>
-            <button 
-              onClick={() => setIsHowToModalOpen(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s' }}
-            >
-              How to Use This Prompt
-            </button>
-            <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
-          </div>
-        </div>
+        <HowToUsePromptLibrary />
 
-        <CategoryFilter 
-          categories={categoriesForRole} 
-          activeCategory={activeCategory} 
-          setActiveCategory={setActiveCategory} 
+        <HowToUseModal 
+          isOpen={isHowToModalOpen} 
+          onClose={() => setIsHowToModalOpen(false)} 
         />
 
-        {filteredAndSortedPrompts.length > 0 ? (
-          <div className={styles.grid}>
-            {filteredAndSortedPrompts.map((prompt) => (
-              <PromptCard 
-                key={prompt.id} 
-                prompt={prompt} 
-                onClick={handleOpenDrawer} 
-              />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <h3>No prompts found</h3>
-            <p>Try adjusting your search or filter criteria.</p>
-          </div>
-        )}
-      </div>
+        <PromptDetailDrawer 
+          prompt={selectedPrompt} 
+          isOpen={isDrawerOpen} 
+          onClose={handleCloseDrawer} 
+        />
+      </main>
 
-      <HowToUsePromptLibrary />
-
-      <HowToUseModal 
-        isOpen={isHowToModalOpen} 
-        onClose={() => setIsHowToModalOpen(false)} 
-      />
-
-      <PromptDetailDrawer 
-        prompt={selectedPrompt} 
-        isOpen={isDrawerOpen} 
-        onClose={handleCloseDrawer} 
-      />
-    </main>
+      <Footer />
+    </>
   );
 }

@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Package, FileText, Layers, Zap } from 'lucide-react';
-import styles from './PromptLibrary.module.css';
 
 interface HowToUseModalProps {
   isOpen: boolean;
@@ -42,7 +41,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             style={{ 
               position: 'relative', 
-              background: '#0D1118', 
+              background: '#111111', 
               border: '1px solid #1e293b', 
               borderRadius: '16px', 
               width: '100%', 
@@ -74,7 +73,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
                 {/* Step 1 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(56, 189, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.15)' }}>
+                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
                     <Package size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -84,7 +83,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem', marginBottom: '12px' }}>
                       Download Skill ZIP dari Marcatching, lalu install di Claude. Setelah aktif, panggil skill dengan mengetik:
                     </p>
-                    <div style={{ background: 'rgba(56, 189, 248, 0.06)', border: '1px solid rgba(56, 189, 248, 0.15)', borderRadius: '8px', padding: '12px 16px', fontFamily: 'monospace', fontSize: '0.9rem', color: '#38bdf8' }}>
+                    <div style={{ background: 'rgba(13, 51, 105, 0.30)', border: '1px solid rgba(255, 255, 255, 0.16)', borderRadius: '8px', padding: '12px 16px', fontFamily: 'monospace', fontSize: '0.9rem', color: '#ffffff' }}>
                       /marcatching-skill-main
                     </div>
 
@@ -116,7 +115,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
                 {/* Step 2 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(95, 183, 176, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5FB7B0', border: '1px solid rgba(95, 183, 176, 0.15)' }}>
+                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
                     <FileText size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -128,7 +127,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                       {['Brand Snapshot', 'Offer', 'Audience', 'Voice', 'Competitors', 'Proof', 'Usage Notes'].map(item => (
-                        <span key={item} style={{ background: 'rgba(95, 183, 176, 0.08)', border: '1px solid rgba(95, 183, 176, 0.2)', borderRadius: '6px', padding: '3px 10px', fontSize: '0.82rem', color: '#5FB7B0' }}>{item}</span>
+                        <span key={item} style={{ background: 'rgba(13, 51, 105, 0.30)', border: '1px solid rgba(255, 255, 255, 0.16)', borderRadius: '6px', padding: '3px 10px', fontSize: '0.82rem', color: '#ffffff' }}>{item}</span>
                       ))}
                     </div>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem' }}>
@@ -139,7 +138,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
                 {/* Step 3 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a855f7', border: '1px solid rgba(167, 139, 250, 0.15)' }}>
+                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
                     <Layers size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -155,8 +154,8 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                         { label: 'Option B — Same Conversation', desc: 'Upload atau paste brand-memory-profile.md di awal conversation. Berlaku untuk satu sesi.' },
                         { label: 'Option C — Local File', desc: 'Simpan file di lokal. Jika ada update brand, edit file lalu upload ulang ke project.' },
                       ].map((opt, i) => (
-                        <div key={i} style={{ background: 'rgba(167, 139, 250, 0.05)', border: '1px solid rgba(167, 139, 250, 0.12)', borderRadius: '8px', padding: '12px 14px' }}>
-                          <strong style={{ color: '#c084fc', fontSize: '0.88rem', display: 'block', marginBottom: '4px' }}>{opt.label}</strong>
+                        <div key={i} style={{ background: 'rgba(13, 51, 105, 0.24)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '12px 14px' }}>
+                          <strong style={{ color: '#ffffff', fontSize: '0.88rem', display: 'block', marginBottom: '4px' }}>{opt.label}</strong>
                           <span style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.5 }}>{opt.desc}</span>
                         </div>
                       ))}
@@ -166,7 +165,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
                 {/* Step 4 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(251, 191, 36, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b', border: '1px solid rgba(251, 191, 36, 0.15)' }}>
+                  <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
                     <Zap size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -177,7 +176,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                       Setiap sesi baru, gunakan format ini:
                     </p>
                     <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '14px 16px', fontFamily: 'monospace', fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.7 }}>
-                      <span style={{ color: '#38bdf8' }}>/marcatching-skill-main</span>
+                      <span style={{ color: '#ffffff' }}>/marcatching-skill-main</span>
                       <br /><br />
                       Gunakan Brand Memory Profile yang tersedia sebagai konteks utama.
                       <br /><br />
@@ -187,16 +186,16 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
                     {/* Important Warning */}
                     <div style={{ 
-                      background: 'rgba(239, 68, 68, 0.08)', 
-                      border: '1px solid rgba(239, 68, 68, 0.25)', 
+                      background: 'rgba(13, 51, 105, 0.28)', 
+                      border: '1px solid rgba(255, 255, 255, 0.14)', 
                       padding: '14px 16px', 
                       borderRadius: '8px',
                       marginTop: '12px'
                     }}>
-                      <strong style={{ color: '#fca5a5', display: 'block', marginBottom: '6px', fontSize: '0.88rem' }}>
-                        ⚠️ WAJIB: Isi Placeholder di Bagian Konteks!
+                      <strong style={{ color: '#ffffff', display: 'block', marginBottom: '6px', fontSize: '0.88rem' }}>
+                        WAJIB: Isi Placeholder di Bagian Konteks!
                       </strong>
-                      <p style={{ color: '#fecaca', fontSize: '0.85rem', margin: 0, lineHeight: 1.5 }}>
+                      <p style={{ color: '#cbd5e1', fontSize: '0.85rem', margin: 0, lineHeight: 1.5 }}>
                         Setiap prompt punya bagian <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Konteks:</code>. Hapus contoh teks dan isi dengan data brand kamu yang spesifik. Output yang generic adalah akibat dari konteks yang kosong.
                       </p>
                     </div>
@@ -207,15 +206,15 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
               {/* Setup Levels */}
               <div style={{ marginTop: '36px', padding: '20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <h4 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '14px', fontSize: '0.95rem' }}>💡 Struktur yang Benar</h4>
+                <h4 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '14px', fontSize: '0.95rem' }}>Struktur yang Benar</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                   {[
-                    { icon: '🧠', label: 'Skill ZIP', desc: 'Operating system AI' },
-                    { icon: '📋', label: 'Brand Memory', desc: 'Data brand kamu' },
-                    { icon: '⚡', label: 'Prompt Library', desc: 'Task templates' },
+                    { icon: '01', label: 'Skill ZIP', desc: 'Operating system AI' },
+                    { icon: '02', label: 'Brand Memory', desc: 'Data brand kamu' },
+                    { icon: '03', label: 'Prompt Library', desc: 'Task templates' },
                   ].map((item, i) => (
                     <div key={i} style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '1.4rem', marginBottom: '6px' }}>{item.icon}</div>
+                      <div style={{ fontSize: '0.82rem', marginBottom: '6px', color: '#ffffff', fontWeight: 700 }}>{item.icon}</div>
                       <div style={{ color: '#f1f5f9', fontWeight: 600, fontSize: '0.85rem', marginBottom: '4px' }}>{item.label}</div>
                       <div style={{ color: '#64748b', fontSize: '0.78rem' }}>{item.desc}</div>
                     </div>

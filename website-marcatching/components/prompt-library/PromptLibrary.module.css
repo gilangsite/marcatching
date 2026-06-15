@@ -1,49 +1,78 @@
+.main {
+  min-height: 100vh;
+  background: #000000;
+  color: #ffffff;
+  padding-bottom: 100px;
+}
+
 .heroSection {
   background: transparent;
-  color: #F4F4F5;
-  padding: 80px 24px 40px;
+  color: #ffffff;
+  padding: 100px 24px 60px;
   text-align: center;
   position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .heroSection::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 800px;
-  height: 400px;
-  background: radial-gradient(ellipse at top, rgba(95, 183, 176, 0.15), transparent 70%);
-  pointer-events: none;
-  z-index: -1;
+  content: none;
 }
 
 .heroTitle {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #F4F4F5;
-  letter-spacing: -0.02em;
+  color: #ffffff;
+  letter-spacing: 0;
 }
 
 .heroTitle span {
-  color: #5FB7B0;
+  color: #ffffff;
 }
 
 .heroSubtitle {
-  font-size: 1.125rem;
-  color: #A1A1AA;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px 80px;
+  padding: 40px 24px 80px;
+}
+
+.roleSelectorWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.roleSelector {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.roleButton {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.roleButtonActive {
+  background: #ffffff;
+  color: #000000;
 }
 
 .topBar {
@@ -72,7 +101,7 @@
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.4);
 }
 
 .searchInput {
@@ -80,26 +109,46 @@
   padding: 14px 16px 14px 48px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.10);
-  background: #0D1118;
-  color: #F4F4F5;
+  background: #111111;
+  color: #ffffff;
   font-size: 1rem;
   outline: none;
   transition: all 0.2s ease;
 }
 
 .searchInput:focus {
-  border-color: #5FB7B0;
-  box-shadow: 0 0 0 3px rgba(95, 183, 176, 0.15);
+  border-color: rgba(255,255,255,0.35);
+  box-shadow: 0 0 0 3px rgba(13, 51, 105, 0.25);
 }
 
 .searchInput::placeholder {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.45);
 }
 
 .filterSortContainer {
   display: flex;
   gap: 12px;
   align-items: center;
+}
+
+.howToButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(13, 51, 105, 0.34);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.16);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.howToButton:hover {
+  border-color: rgba(255,255,255,0.35);
 }
 
 .categoryList {
@@ -116,21 +165,21 @@
   font-weight: 500;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.03);
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.6);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .categoryBtn:hover {
   background: rgba(255,255,255,0.08);
-  color: #F4F4F5;
+  color: #ffffff;
   border-color: rgba(255,255,255,0.20);
 }
 
 .categoryBtnActive {
-  background: rgba(95, 183, 176, 0.15);
-  color: #5FB7B0;
-  border-color: #5FB7B0;
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
 .grid {
@@ -140,9 +189,9 @@
 }
 
 .card {
-  background: #0D1118;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
+  background: #111111;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
   padding: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -169,7 +218,7 @@
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  border-color: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .cardHeader {
@@ -182,19 +231,19 @@
 }
 
 .cardBadge {
-  background: rgba(95, 183, 176, 0.1);
-  color: #5FB7B0;
+  background: rgba(13, 51, 105, 0.48);
+  color: #ffffff;
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 1px solid rgba(95, 183, 176, 0.2);
+  border: 1px solid rgba(255,255,255,0.16);
 }
 
 .cardNumber {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.5);
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -202,7 +251,7 @@
 .cardTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #F4F4F5;
+  color: #ffffff;
   margin-bottom: 10px;
   line-height: 1.4;
   position: relative;
@@ -210,7 +259,7 @@
 }
 
 .cardDesc {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.55);
   font-size: 0.95rem;
   margin-bottom: 24px;
   flex-grow: 1;
@@ -230,7 +279,7 @@
 }
 
 .cardAction {
-  color: #5FB7B0;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.9rem;
   display: flex;
@@ -254,7 +303,7 @@
 
 .tag {
   font-size: 0.75rem;
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.55);
   background: rgba(255,255,255,0.05);
   padding: 4px 8px;
   border-radius: 6px;
@@ -276,7 +325,7 @@
   bottom: 0;
   width: 100%;
   max-width: 600px;
-  background: #030407;
+  background: #000000;
   border-left: 1px solid rgba(255,255,255,0.10);
   z-index: 101;
   display: flex;
@@ -291,18 +340,18 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: #0D1118;
+  background: #111111;
 }
 
 .drawerTitle {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #F4F4F5;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .closeBtn {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.6);
   padding: 8px;
   border-radius: 50%;
   transition: all 0.2s;
@@ -328,14 +377,14 @@
 .infoLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #5FB7B0;
+  color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 
 .infoText {
-  color: #F4F4F5;
+  color: #ffffff;
   font-size: 1.05rem;
   line-height: 1.6;
 }
@@ -350,7 +399,7 @@
 }
 
 .promptText {
-  color: #D4D4D4;
+  color: rgba(255,255,255,0.78);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.9rem;
   line-height: 1.7;
@@ -359,8 +408,8 @@
 }
 
 .copyBtn {
-  background: #5FB7B0;
-  color: #030407;
+  background: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
@@ -376,16 +425,16 @@
 }
 
 .copyBtn:hover {
-  background: #4EA59E;
-  box-shadow: 0 4px 12px rgba(95, 183, 176, 0.2);
+  background: #e5e5e5;
+  box-shadow: 0 4px 12px rgba(13, 51, 105, 0.28);
 }
 
 .select {
   padding: 12px 40px 12px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.10);
-  background: #0D1118;
-  color: #F4F4F5;
+  background: #111111;
+  color: #ffffff;
   font-size: 0.95rem;
   appearance: none;
   cursor: pointer;
@@ -395,7 +444,7 @@
 }
 
 .select:focus {
-  border-color: #5FB7B0;
+  border-color: rgba(255,255,255,0.35);
 }
 
 .selectWrapper {
@@ -407,7 +456,7 @@
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.45);
   pointer-events: none;
 }
 
@@ -415,22 +464,22 @@
   position: fixed;
   bottom: 32px;
   right: 32px;
-  background: #0D1118;
-  color: #F4F4F5;
+  background: #111111;
+  color: #ffffff;
   padding: 16px 24px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-  border: 1px solid rgba(95, 183, 176, 0.3);
+  border: 1px solid rgba(255,255,255,0.12);
   z-index: 1000;
   font-weight: 500;
 }
 
 .howToUse {
   background: transparent;
-  color: #F4F4F5;
+  color: #ffffff;
   padding: 80px 24px;
   margin-top: 40px;
   border-top: 1px solid rgba(255,255,255,0.06);
@@ -446,7 +495,8 @@
   font-weight: 700;
   text-align: center;
   margin-bottom: 64px;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
+  color: #ffffff;
 }
 
 .stepList {
@@ -460,16 +510,16 @@
   gap: 24px;
   align-items: flex-start;
   padding: 32px;
-  background: #0D1118;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.05);
+  background: #111111;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
 }
 
 .stepNumber {
   width: 48px;
   height: 48px;
-  background: rgba(95, 183, 176, 0.1);
-  color: #5FB7B0;
+  background: rgba(13, 51, 105, 0.48);
+  color: #ffffff;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -477,18 +527,18 @@
   font-size: 1.25rem;
   font-weight: 700;
   flex-shrink: 0;
-  border: 1px solid rgba(95, 183, 176, 0.2);
+  border: 1px solid rgba(255,255,255,0.16);
 }
 
 .stepContent h3 {
   font-size: 1.25rem;
   margin-bottom: 8px;
-  color: #F4F4F5;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .stepContent p {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.58);
   line-height: 1.6;
 }
 
@@ -496,19 +546,19 @@
   text-align: center;
   margin-top: 80px;
   padding: 64px 40px;
-  background: radial-gradient(ellipse at center, rgba(95, 183, 176, 0.08), transparent 70%);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #111111;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .ctaSection h2 {
   font-size: 2rem;
   margin-bottom: 16px;
-  color: #F4F4F5;
+  color: #ffffff;
 }
 
 .ctaSection p {
-  color: #A1A1AA;
+  color: rgba(255,255,255,0.58);
   margin-bottom: 40px;
   font-size: 1.1rem;
 }
@@ -517,8 +567,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #5FB7B0;
-  color: #030407;
+  background: #ffffff;
+  color: #000000;
   padding: 16px 32px;
   border-radius: 999px;
   font-weight: 600;
@@ -528,15 +578,60 @@
 
 .ctaBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(95, 183, 176, 0.25);
-  background: #4EA59E;
+  box-shadow: 0 8px 24px rgba(13, 51, 105, 0.30);
+  background: #e5e5e5;
 }
 
 .emptyState {
   text-align: center;
   padding: 80px 24px;
-  color: #A1A1AA;
-  background: #0D1118;
-  border-radius: 16px;
+  color: rgba(255,255,255,0.55);
+  background: #111111;
+  border-radius: 12px;
   border: 1px dashed rgba(255,255,255,0.1);
+}
+
+@media (max-width: 640px) {
+  .heroSection {
+    padding: 80px 20px 40px;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.95rem;
+  }
+
+  .container {
+    padding: 32px 20px 64px;
+  }
+
+  .roleSelector {
+    width: 100%;
+  }
+
+  .roleButton {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .filterSortContainer {
+    flex-wrap: wrap;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step {
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .howToUseTitle {
+    font-size: 2rem;
+  }
 }

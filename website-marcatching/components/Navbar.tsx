@@ -15,18 +15,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
   ShoppingBag, ExternalLink,
 }
 
-export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
+export default function Navbar({ navLinks = [], variant = 'dark' }: { navLinks?: NavLink[]; variant?: 'dark' | 'light' }) {
   const [isOpen, setIsOpen] = useState(false)
 
   // Filter to only active items
   const activeLinks = navLinks.filter(l => l.is_active)
+  const defaultLinkColor = variant === 'light' ? '#0d3369' : '#ffffff'
 
   return (
-    <nav className={styles.navbar}>
+    <nav className={`${styles.navbar} ${variant === 'light' ? styles.navbarLight : ''}`}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Image
-            src="/logo-type-white.png"
+            src={variant === 'light' ? '/logo-type-navy.png' : '/logo-type-white.png'}
             alt="Marcatching"
             width={140}
             height={36}
@@ -59,7 +60,7 @@ export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
                         href={link.url || '#'}
                         className={hasBtn ? styles.dropdownItemBtn : styles.dropdownItem}
                         style={{
-                          color: link.text_color || '#ffffff',
+                          color: link.text_color || defaultLinkColor,
                           ...(hasBtn ? { background: link.btn_color! } : {}),
                         }}
                         onClick={() => setIsOpen(false)}
@@ -78,7 +79,7 @@ export default function Navbar({ navLinks = [] }: { navLinks?: NavLink[] }) {
                       rel="noopener noreferrer"
                       className={hasBtn ? styles.dropdownItemBtn : styles.dropdownItem}
                       style={{
-                        color: link.text_color || '#ffffff',
+                        color: link.text_color || defaultLinkColor,
                         ...(hasBtn ? { background: link.btn_color! } : {}),
                       }}
                     >

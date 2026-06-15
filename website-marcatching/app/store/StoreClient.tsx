@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, type CSSProperties } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, X, ShoppingCart } from 'lucide-react'
+import { BadgePercent, CreditCard, PackageCheck, Search, ShoppingBag, ShoppingCart, X } from 'lucide-react'
 import type { NavLink, StorePageBlock, Product, ProductCategory } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -24,10 +24,15 @@ function formatRp(num: number) {
   return 'Rp ' + num.toLocaleString('id-ID')
 }
 
-function getYouTubeId(url: string): string | null {
-  const patterns = [/[?&]v=([^&]+)/, /youtu\.be\/([^?]+)/, /youtube\.com\/embed\/([^?]+)/]
-  for (const p of patterns) { const m = url.match(p); if (m?.[1]) return m[1] }
-  return null
+function getTextAlign(align: string | undefined): CSSProperties['textAlign'] {
+  if (align === 'center' || align === 'right' || align === 'left' || align === 'justify') return align
+  return 'left'
+}
+
+function getJustifyContent(align: string | undefined): CSSProperties['justifyContent'] {
+  if (align === 'left') return 'flex-start'
+  if (align === 'right') return 'flex-end'
+  return 'center'
 }
 
 // ── Block renderer: content types ────────────────────────────
@@ -38,12 +43,7 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
     return (
       <div className={styles.blockHeadline} style={{
         fontSize: sizeMap[c.size || 'h2'] || '1.5rem',
-        ...(c.color && c.color !== '#ffffff' && c.color !== '#0d3369' ? { 
-          color: c.color, 
-          WebkitTextFillColor: c.color,
-          background: 'none' 
-        } : {}),
-        textAlign: (c.align as any) || 'left',
+        textAlign: getTextAlign(c.align),
       }} dangerouslySetInnerHTML={{ __html: c.text || '' }} />
     )
   }
@@ -53,8 +53,8 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
         fontSize: c.font_size || '1rem',
         fontWeight: c.weight === 'bold' ? 700 : c.weight === 'semibold' ? 600 : 400,
         fontStyle: c.italic ? 'italic' : 'normal',
-        color: (c.color && c.color !== '#ffffff' && c.color !== 'rgba(255,255,255,0.85)') ? c.color : '#475569',
-        textAlign: (c.align as any) || 'left',
+        color: c.color === '#0d3369' ? '#0d3369' : '#475569',
+        textAlign: getTextAlign(c.align),
       }} dangerouslySetInnerHTML={{ __html: c.text || '' }} />
     )
   }
@@ -87,15 +87,15 @@ function ContentBlockRenderer({ block }: { block: StorePageBlock }) {
   }
   if (block.type === 'button' && c.btn_text) {
     return (
-      <div style={{ display: 'flex', justifyContent: (c.align as any) || 'center' }}>
+      <div style={{ display: 'flex', justifyContent: getJustifyContent(c.align) }}>
         <a
           href={c.btn_url || '#'}
           target="_blank"
           rel="noopener noreferrer"
           className={styles.blockBtn}
           style={{
-            background: (c.btn_color && c.btn_color !== '#ffffff') ? c.btn_color : '#0d3369',
-            color: (c.btn_text_color && c.btn_text_color !== '#000000') ? c.btn_text_color : '#ffffff'
+            background: '#0d3369',
+            color: '#ffffff'
           }}
         >
           {c.btn_text}
@@ -171,6 +171,7 @@ export default function StoreClient({
   categories: ProductCategory[]
 }) {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [discountOnly, setDiscountOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
@@ -193,10 +194,11 @@ export default function StoreClient({
     const p = productsById[block.content.product_id || '']
     if (!p) return false
     const matchCat = activeCategory === 'all' || p.category_id === activeCategory
+    const matchDiscount = !discountOnly || p.discount_percentage > 0
     const matchSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.sub_headline || '').toLowerCase().includes(search.toLowerCase())
-    return matchCat && matchSearch
+    return matchCat && matchDiscount && matchSearch
   }
 
   function handleSearch(e: React.FormEvent) {
@@ -209,11 +211,23 @@ export default function StoreClient({
     searchRef.current?.focus()
   }
 
-  const isFiltering = search || activeCategory !== 'all'
+  const firstAvailableProduct = productBlocks
+    .map(b => ({ block: b, product: productsById[b.content.product_id || ''] }))
+    .find(({ block, product }) => product && !product.is_coming_soon && block.content.store_status !== 'coming_soon')
+    ?.product
+  const discountCount = productBlocks.filter(b => {
+    const p = productsById[b.content.product_id || '']
+    return p && p.discount_percentage > 0
+  }).length
+  const checkoutCount = productBlocks.reduce((total, b) => {
+    const p = productsById[b.content.product_id || '']
+    return total + (p?.checkout_clicks ?? 0)
+  }, 0)
+  const isFiltering = search || activeCategory !== 'all' || discountOnly
 
   return (
     <>
-      <Navbar navLinks={navLinks} />
+      <Navbar navLinks={navLinks} variant="light" />
 
       <main className={styles.main}>
         {/* Category Filter Bar (only show if there are product blocks) */}
@@ -230,6 +244,52 @@ export default function StoreClient({
               </div>
             </div>
           </div>
+        )}
+
+        {productBlocks.length > 0 && (
+          <nav className={styles.shopNav} aria-label="Store shortcuts">
+            <button
+              type="button"
+              className={styles.shopNavItem}
+              onClick={() => {
+                setActiveCategory('all')
+                setDiscountOnly(false)
+                setSearch('')
+                setSearchInput('')
+              }}
+            >
+              <ShoppingBag size={18} />
+              <span>Produk</span>
+              <strong>{productBlocks.length}</strong>
+            </button>
+            <button
+              type="button"
+              className={`${styles.shopNavItem} ${discountOnly ? styles.shopNavItemActive : ''}`}
+              onClick={() => setDiscountOnly(v => !v)}
+            >
+              <BadgePercent size={18} />
+              <span>Diskon</span>
+              <strong>{discountCount}</strong>
+            </button>
+            <button type="button" className={styles.shopNavItem} onClick={() => searchRef.current?.focus()}>
+              <ShoppingCart size={18} />
+              <span>Keranjang</span>
+              <strong>{checkoutCount}</strong>
+            </button>
+            {firstAvailableProduct ? (
+              <Link className={styles.shopNavItem} href={`/product/${firstAvailableProduct.slug}`}>
+                <CreditCard size={18} />
+                <span>Checkout</span>
+                <strong>Start</strong>
+              </Link>
+            ) : (
+              <button type="button" className={styles.shopNavItem} onClick={() => searchRef.current?.focus()}>
+                <PackageCheck size={18} />
+                <span>Checkout</span>
+                <strong>Soon</strong>
+              </button>
+            )}
+          </nav>
         )}
 
         {/* Unified block + product rendering */}
@@ -270,26 +330,26 @@ export default function StoreClient({
               {/* Group consecutive product blocks into grids, content blocks render normally */}
               {(() => {
                 const rendered: React.ReactNode[] = []
+                let productGridRendered = false
                 let i = 0
                 while (i < blocks.length) {
                   const b = blocks[i]
                   if (!b.is_active || b.content.store_status === 'hidden') { i++; continue }
 
                   if (b.type === 'product') {
-                    // Collect consecutive product blocks for grid
-                    const group: StorePageBlock[] = []
-                    while (i < blocks.length && blocks[i].type === 'product' && blocks[i].is_active && blocks[i].content.store_status !== 'hidden') {
-                      group.push(blocks[i]); i++
-                    }
-                    rendered.push(
-                      <div key={`grid-${group[0].id}`} className={styles.grid}>
-                        {group.map(pb => {
+                    if (!productGridRendered) {
+                      productGridRendered = true
+                      rendered.push(
+                      <div key="products-grid" className={styles.grid}>
+                        {productBlocks.map(pb => {
                           const p = productsById[pb.content.product_id || '']
                           if (!p) return null
                           return <ProductCard key={pb.id} product={p} categories={categories} isComingSoon={pb.content.store_status === 'coming_soon' || !!p.is_coming_soon} />
                         })}
                       </div>
-                    )
+                      )
+                    }
+                    i++
                   } else {
                     rendered.push(<ContentBlockRenderer key={b.id} block={b} />)
                     i++
@@ -320,7 +380,7 @@ export default function StoreClient({
         </form>
       </div>
 
-      <Footer />
+      <Footer variant="light" />
     </>
   )
 }
