@@ -320,15 +320,15 @@ export default function SurveyTab() {
       })
       const data = await res.json()
       if (data.status === 'success' && data.url) { setImageUrl(data.url) }
-      else alert('Gagal upload gambar: ' + (data.message || 'Unknown error'))
-    } catch { alert('Error saat upload gambar') }
+      else showAdminToast('Gagal upload gambar: ' + (data.message || 'Unknown error'), 'error')
+    } catch { showAdminToast('Error saat upload gambar', 'error') }
     setUploadingImage(false)
     setShowCrop(false)
     setCropSrc('')
   }
 
   async function handleSave() {
-    if (!title.trim() || !slug.trim()) { alert('Judul dan slug wajib diisi'); return }
+    if (!title.trim() || !slug.trim()) { showAdminToast('Judul dan slug wajib diisi', 'error'); return }
     setSaving(true)
     const surveyPayload = { title, slug, description, image_url: imageUrl, image_aspect_ratio: aspectRatio, status }
 

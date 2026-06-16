@@ -472,8 +472,8 @@ export default function AboutPageConfigTab() {
                       updateItem(secIdx, itemIdx, 'content_image_url', data.url)
                     }
                     setCropData({ src: '' })
-                  } else alert('Gagal: ' + data.message)
-                } catch (err) { alert('Gagal mengupload gambar.') }
+                  } else showAdminToast('Gagal: ' + data.message, 'error')
+                } catch (err) { showAdminToast('Gagal mengupload gambar.', 'error') }
                 setUploadingImage(false)
               }} className="btn btn-navy">{uploadingImage ? 'Mengupload...' : 'Crop & Upload'}</button>
             </div>

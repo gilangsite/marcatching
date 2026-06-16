@@ -78,10 +78,10 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
         setCropData(null)
         if (imgInputRef.current) imgInputRef.current.value = ''
       } else {
-        alert('Gagal upload gambar: ' + data.message)
+        showAdminToast('Gagal upload gambar: ' + data.message, 'error')
       }
     } catch {
-      alert('Error upload gambar')
+      showAdminToast('Error upload gambar', 'error')
     }
     setUploadingImage(false)
   }

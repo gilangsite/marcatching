@@ -28,33 +28,108 @@ import SecurityTab from './SecurityTab'
 import SurveyTab from './SurveyTab'
 
 // ─── Admin Toast Event ────────────────────────────────────────
-export function showAdminToast(message: string = 'Updated Successfully') {
+type AdminToastType = 'success' | 'error'
+
+export function showAdminToast(message: string = 'Updated Successfully', type: AdminToastType = 'success') {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('show-admin-toast', { detail: { message } }))
+    window.dispatchEvent(new CustomEvent('show-admin-toast', { detail: { message, type } }))
   }
 }
 
 function AdminToast() {
-  const [show, setShow] = useState(false)
-  const [msg, setMsg] = useState('')
+  const [toast, setToast] = useState<{ message: string; type: AdminToastType } | null>(null)
+  const timerRef = useRef<number | null>(null)
+
   useEffect(() => {
     const handleShow = (e: Event) => {
       const customEvent = e as CustomEvent
-      setMsg(customEvent.detail?.message || 'Updated Successfully')
-      setShow(true)
-      setTimeout(() => setShow(false), 2500)
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+      setToast({
+        message: customEvent.detail?.message || 'Updated Successfully',
+        type: customEvent.detail?.type === 'error' ? 'error' : 'success',
+      })
+      timerRef.current = window.setTimeout(() => setToast(null), 1000)
     }
     window.addEventListener('show-admin-toast', handleShow)
-    return () => window.removeEventListener('show-admin-toast', handleShow)
+    return () => {
+      window.removeEventListener('show-admin-toast', handleShow)
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+    }
   }, [])
+
   return (
     <AnimatePresence>
-      {show && (
-        <motion.div initial={{ opacity: 0, scale: 0.8, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: -20 }} style={{ position: 'fixed', bottom: 40, left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', color: '#0d3369', padding: '14px 24px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.15)', zIndex: 99999, fontWeight: 700, fontSize: '0.9rem' }}>
-          <div style={{ background: '#10b981', color: 'white', borderRadius: '50%', padding: 4, display: 'flex' }}>
-            <Check size={16} strokeWidth={3} />
-          </div>
-          {msg}
+      {toast && (
+        <motion.div
+          className={styles.adminToastBackdrop}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          role="status"
+          aria-live="polite"
+        >
+          <motion.div
+            className={styles.adminToastCard}
+            initial={{ opacity: 0, scale: 0.84, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: -8 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <svg className={styles.adminToastIcon} viewBox="0 0 48 48" aria-hidden="true">
+              <motion.circle
+                cx="24"
+                cy="24"
+                r="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.28, ease: 'easeOut' }}
+              />
+              {toast.type === 'success' ? (
+                <motion.path
+                  d="M16 24.5l5.2 5.2L33 18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.3, ease: 'easeOut', delay: 0.18 }}
+                />
+              ) : (
+                <>
+                  <motion.path
+                    d="M18 18l12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.22, ease: 'easeOut', delay: 0.14 }}
+                  />
+                  <motion.path
+                    d="M30 18L18 30"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.22, ease: 'easeOut', delay: 0.2 }}
+                  />
+                </>
+              )}
+            </svg>
+            <div>
+              <div className={styles.adminToastTitle}>{toast.type === 'success' ? 'Berhasil' : 'Gagal'}</div>
+              <div className={styles.adminToastMessage}>{toast.message}</div>
+            </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
@@ -261,6 +336,209 @@ function PremiumSparkline({ data }: { data: { visitors: number }[] }) {
   )
 }
 
+type FinancePulseRecord = {
+  id?: string
+  date: string
+  nominal: number
+  category?: string
+  item?: string
+  type: 'income' | 'cost'
+}
+
+type FinancePulseApiRecord = {
+  id?: string
+  date?: string
+  nominal?: number | string
+  category?: string
+  item?: string
+}
+
+const ADMIN_NAVY = '#0d3369'
+const ADMIN_BLUE = '#1e40af'
+
+function normalizeFinancePulseRecord(record: FinancePulseApiRecord, type: FinancePulseRecord['type']): FinancePulseRecord {
+  return {
+    id: record.id,
+    date: record.date ?? '',
+    nominal: Number(record.nominal) || 0,
+    category: record.category,
+    item: record.item,
+    type,
+  }
+}
+
+function formatCompactRp(value: number) {
+  const abs = Math.abs(value)
+  if (abs >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`
+  if (abs >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
+  if (abs >= 1_000) return `${Math.round(value / 1_000)}K`
+  return `${Math.round(value)}`
+}
+
+function formatFullRp(value: number) {
+  return new Intl.NumberFormat('id-ID').format(Math.abs(Math.round(value)))
+}
+
+function financeDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+function HomeFinancePulse({
+  incomeRecords,
+  costRecords,
+  loading,
+  onOpenFinance,
+  onOpenCashflow,
+}: {
+  incomeRecords: FinancePulseRecord[]
+  costRecords: FinancePulseRecord[]
+  loading: boolean
+  onOpenFinance: () => void
+  onOpenCashflow: () => void
+}) {
+  const totalIncome = incomeRecords.reduce((sum, record) => sum + (Number(record.nominal) || 0), 0)
+  const totalCost = costRecords.reduce((sum, record) => sum + (Number(record.nominal) || 0), 0)
+  const net = totalIncome - totalCost
+  const totalMovement = totalIncome + totalCost
+  const incomeShare = totalMovement > 0 ? totalIncome / totalMovement : 0.62
+  const costShare = totalMovement > 0 ? totalCost / totalMovement : 0.38
+  const circumference = 2 * Math.PI * 58
+
+  const dailyBars = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    const key = financeDateKey(d)
+    const income = incomeRecords
+      .filter(record => record.date?.substring(0, 10) === key)
+      .reduce((sum, record) => sum + (Number(record.nominal) || 0), 0)
+    const cost = costRecords
+      .filter(record => record.date?.substring(0, 10) === key)
+      .reduce((sum, record) => sum + (Number(record.nominal) || 0), 0)
+    return {
+      key,
+      label: d.toLocaleDateString('id-ID', { day: '2-digit' }),
+      income,
+      cost,
+    }
+  })
+  const maxDaily = Math.max(...dailyBars.flatMap(day => [day.income, day.cost]), 1)
+  const recentRecords = [...incomeRecords, ...costRecords]
+    .sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime())
+    .slice(0, 3)
+
+  return (
+    <motion.div
+      className={styles.financePulseCard}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1], delay: 0.14 }}
+    >
+      <div className={styles.financePulseHeader}>
+        <div>
+          <span className={styles.financePulseEyebrow}>Finance Pulse</span>
+          <h2 className={styles.financePulseTitle}>Revenue rhythm in one glance.</h2>
+        </div>
+        <div className={styles.financePulseBadge}>{loading ? 'Syncing' : 'Live'}</div>
+      </div>
+
+      <div className={styles.financePulseBody}>
+        <div className={styles.financeDonutPanel} aria-label="Income and cost allocation chart">
+          <svg className={styles.financeDonut} viewBox="0 0 160 160" role="img">
+            <circle cx="80" cy="80" r="58" fill="none" stroke="rgba(13,51,105,0.12)" strokeWidth="18" />
+            <circle cx="80" cy="80" r="58" fill="none" stroke={ADMIN_NAVY} strokeWidth="18" strokeLinecap="round" />
+            <motion.circle
+              cx="80"
+              cy="80"
+              r="58"
+              fill="none"
+              stroke={ADMIN_BLUE}
+              strokeWidth="18"
+              strokeLinecap="round"
+              transform="rotate(-90 80 80)"
+              initial={{ strokeDasharray: `0 ${circumference}` }}
+              animate={{ strokeDasharray: `${circumference * incomeShare} ${circumference}` }}
+              transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <circle cx="80" cy="80" r="42" fill="#ffffff" />
+          </svg>
+          <div className={styles.financeDonutCenter}>
+            <span>Net</span>
+            <strong>{net >= 0 ? '+' : '-'}{formatCompactRp(Math.abs(net))}</strong>
+          </div>
+        </div>
+
+        <div className={styles.financePulseStats}>
+          <div className={styles.financePulseStat}>
+            <span>Income</span>
+            <strong>Rp {formatCompactRp(totalIncome)}</strong>
+          </div>
+          <div className={styles.financePulseStat}>
+            <span>Cost</span>
+            <strong>Rp {formatCompactRp(totalCost)}</strong>
+          </div>
+          <div className={styles.financePulseStat}>
+            <span>Allocation</span>
+            <strong>{Math.round(incomeShare * 100)} / {Math.round(costShare * 100)}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.financeBars} aria-label="Seven day finance movement">
+        {dailyBars.map((day, i) => {
+          const incomeHeight = Math.max(8, Math.round((day.income / maxDaily) * 78))
+          const costHeight = Math.max(8, Math.round((day.cost / maxDaily) * 78))
+          return (
+            <div className={styles.financeBarDay} key={day.key}>
+              <div className={styles.financeBarTrack}>
+                <motion.span
+                  className={styles.financeBarIncome}
+                  initial={{ height: 8 }}
+                  animate={{ height: incomeHeight }}
+                  transition={{ duration: 0.45, delay: 0.2 + i * 0.04 }}
+                  title={`Income Rp ${formatFullRp(day.income)}`}
+                />
+                <motion.span
+                  className={styles.financeBarCost}
+                  initial={{ height: 8 }}
+                  animate={{ height: costHeight }}
+                  transition={{ duration: 0.45, delay: 0.24 + i * 0.04 }}
+                  title={`Cost Rp ${formatFullRp(day.cost)}`}
+                />
+              </div>
+              <span>{day.label}</span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className={styles.financePulseFooter}>
+        <div className={styles.financePulseLedger}>
+          {recentRecords.length > 0 ? recentRecords.map(record => (
+            <div className={styles.financeLedgerRow} key={`${record.type}-${record.id ?? record.date}-${record.item ?? record.category}`}>
+              <span>{record.item || record.category || (record.type === 'income' ? 'Income' : 'Cost')}</span>
+              <strong>{record.type === 'income' ? '+' : '-'} Rp {formatCompactRp(Number(record.nominal) || 0)}</strong>
+            </div>
+          )) : (
+            <div className={styles.financeLedgerEmpty}>
+              {loading ? 'Mengambil data finance...' : 'Belum ada transaksi finance.'}
+            </div>
+          )}
+        </div>
+        <div className={styles.financePulseActions}>
+          <button type="button" onClick={onOpenFinance}>
+            <DollarSign size={15} />
+            Finance
+          </button>
+          <button type="button" onClick={onOpenCashflow}>
+            <BarChart3 size={15} />
+            Cashflow
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────
 function AdminDashboardInner() {
   const router = useRouter()
@@ -451,6 +729,10 @@ function AdminDashboardInner() {
   const [analyticsPreset, setAnalyticsPreset] = useState('30')
   const [analyticsStart, setAnalyticsStart] = useState('')
   const [analyticsEnd, setAnalyticsEnd] = useState('')
+  const [homeFinanceIncome, setHomeFinanceIncome] = useState<FinancePulseRecord[]>([])
+  const [homeFinanceCost, setHomeFinanceCost] = useState<FinancePulseRecord[]>([])
+  const [homeFinanceLoading, setHomeFinanceLoading] = useState(false)
+  const [homeFinanceLoaded, setHomeFinanceLoaded] = useState(false)
 
   // ── Fetch all ─────────────────────────────────────────────
   async function fetchLinks() { setLinksLoading(true); const { data } = await supabase.from('links').select('*').order('order_index'); setLinks(data ?? []); setLinksLoading(false) }
@@ -458,6 +740,24 @@ function AdminDashboardInner() {
   async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
   async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
   async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+  async function fetchHomeFinance() {
+    setHomeFinanceLoading(true)
+    try {
+      const [incomeRes, costRes] = await Promise.all([
+        fetch('/api/finance?type=income'),
+        fetch('/api/finance?type=cost'),
+      ])
+      const incomeJson = await incomeRes.json() as { rows?: FinancePulseApiRecord[] }
+      const costJson = await costRes.json() as { rows?: FinancePulseApiRecord[] }
+      setHomeFinanceIncome((incomeJson.rows ?? []).map(row => normalizeFinancePulseRecord(row, 'income')))
+      setHomeFinanceCost((costJson.rows ?? []).map(row => normalizeFinancePulseRecord(row, 'cost')))
+      setHomeFinanceLoaded(true)
+    } catch (err) {
+      console.error('Home finance fetch error:', err)
+    } finally {
+      setHomeFinanceLoading(false)
+    }
+  }
 
   // ── Product Categories CRUD ───────────────────────────────
   async function fetchProductCategories() { setProductCatLoading(true); const { data } = await supabase.from('product_categories').select('*').order('order_index'); setProductCategories(data ?? []); setProductCatLoading(false) }
@@ -653,8 +953,8 @@ function AdminDashboardInner() {
               const ext = file.name.toLowerCase().endsWith('.md') ? 'md' : file.name.toLowerCase().endsWith('.zip') ? 'zip' : 'pdf'
               uploaded.push({ filename: file.name.replace(/\.(pdf|md|zip)$/i, ''), url: data.url, ext })
             }
-            else alert('Gagal upload ' + file.name + ': ' + data.message)
-          } catch { alert('Error upload ' + file.name) }
+            else showAdminToast('Gagal upload ' + file.name + ': ' + data.message, 'error')
+          } catch { showAdminToast('Error upload ' + file.name, 'error') }
           resolve()
         }; reader.readAsDataURL(file)
       })
@@ -785,6 +1085,24 @@ function AdminDashboardInner() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
+
+  // Keep the home finance widget fresh without loading the full Finance tab.
+  useEffect(() => {
+    if (tab === 'menu' && !homeFinanceLoaded && !homeFinanceLoading) {
+      fetchHomeFinance()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
+  useEffect(() => {
+    const handleFinanceUpdated = () => {
+      setHomeFinanceLoaded(false)
+      fetchHomeFinance()
+    }
+    window.addEventListener('marcatching-finance-updated', handleFinanceUpdated)
+    return () => window.removeEventListener('marcatching-finance-updated', handleFinanceUpdated)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Supabase Realtime subscription for analytics
   useEffect(() => {
@@ -956,7 +1274,7 @@ function AdminDashboardInner() {
       fetchArticleAuthors()
       showAdminToast('Penulis berhasil disimpan')
     } catch (err: any) {
-      alert(`Error: ${err.message}`)
+      showAdminToast(`Error: ${err.message}`, 'error')
       setAuthorSaving(false)
     }
   }
@@ -975,7 +1293,7 @@ function AdminDashboardInner() {
       }
       fetchArticleAuthors()
     } catch (err: any) {
-      alert(`Error: ${err.message}`)
+      showAdminToast(`Error: ${err.message}`, 'error')
     }
   }
 
@@ -1013,8 +1331,8 @@ function AdminDashboardInner() {
         const url = data.url
         updateBlock(articleCropData.blockId, { url } as any)
         setArticleImageUrls(prev => [...prev, url])
-      } else { alert('Gagal upload gambar: ' + data.message) }
-    } catch { alert('Error upload gambar') }
+      } else { showAdminToast('Gagal upload gambar: ' + data.message, 'error') }
+    } catch { showAdminToast('Error upload gambar', 'error') }
     setUploadingArticleImage(false)
   }
 
@@ -1059,19 +1377,19 @@ function AdminDashboardInner() {
     if (cropData.target === 'poster') {
       setUploadingPoster(true)
       setCropData({ src: '', target: null })
-      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setPf(f => ({ ...f, image_url: data.url })) } else { alert('Gagal upload: ' + data.message) } } catch { alert('Error upload poster') }
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setPf(f => ({ ...f, image_url: data.url })) } else { showAdminToast('Gagal upload: ' + data.message, 'error') } } catch { showAdminToast('Error upload poster', 'error') }
       setUploadingPoster(false)
     } else if (cropData.target === 'carousel') {
       setUploadingImage(true)
       setCropData({ src: '', target: null })
       const newImages = [...(linkForm.image_data || [])]
-      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { newImages.push({ url: data.url, link: '' }) } else { alert("Gagal upload: " + data.message) } } catch { alert("Terjadi kesalahan saat upload gambar.") }
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { newImages.push({ url: data.url, link: '' }) } else { showAdminToast("Gagal upload: " + data.message, 'error') } } catch { showAdminToast("Terjadi kesalahan saat upload gambar.", 'error') }
       setLinkForm(f => ({ ...f, image_data: newImages }))
       setUploadingImage(false)
     } else if (cropData.target === 'author') {
       setUploadingAuthorPhoto(true)
       setCropData({ src: '', target: null })
-      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setAuthorFormPhoto(data.url) } else { alert('Gagal upload: ' + data.message) } } catch { alert('Error upload author photo') }
+      try { const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'upload', filename: cropData.filename, mimeType: cropData.mimeType, base64 }) }); const data = await res.json(); if (data.status === 'success') { setAuthorFormPhoto(data.url) } else { showAdminToast('Gagal upload: ' + data.message, 'error') } } catch { showAdminToast('Error upload author photo', 'error') }
       setUploadingAuthorPhoto(false)
     }
   }
@@ -1167,7 +1485,7 @@ function AdminDashboardInner() {
 
     const { error } = await supabase.from('products').delete().eq('id', p.id); 
     if (error) { 
-      alert('Gagal menghapus produk: ' + error.message); 
+      showAdminToast('Gagal menghapus produk: ' + error.message, 'error'); 
       return; 
     }
     
@@ -1254,11 +1572,11 @@ function AdminDashboardInner() {
         })
         const data = await emailRes.json()
         if (!data.success) {
-          alert('Warning: Gagal kirim email ke user - ' + (data.error || 'Unknown error'))
+          showAdminToast('Gagal kirim email ke user - ' + (data.error || 'Unknown error'), 'error')
         }
       } catch (err) {
         console.warn('Failed to send course email:', err)
-        alert('Gagal trigger email course. Cek koneksi.')
+        showAdminToast('Gagal trigger email course. Cek koneksi.', 'error')
       }
     } else {
       // When reverting to pending: remove course_access_emails to revoke access
@@ -1308,7 +1626,7 @@ function AdminDashboardInner() {
         </div>
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
-          <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }} style={tab === 'finance' ? {} : { background: 'rgba(16,185,129,0.12)', color: '#6ee7b7' }}><DollarSign size={18} /> Finance</button>
+          <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }} style={tab === 'finance' ? {} : { background: 'rgba(30,64,175,0.16)', color: '#ffffff' }}><DollarSign size={18} /> Finance</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
@@ -1414,33 +1732,16 @@ function AdminDashboardInner() {
               </div>
             </motion.div>
 
-            {/* ─ Daily Visitors Trend ─ */}
-            {analyticsData && analyticsData.dailyTrend.length > 0 && (
-              <motion.div
-                className={styles.trendCard}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1], delay: 0.14 }}
-              >
-                <div className={styles.trendCardHeader}>
-                  <div>
-                    <div className={styles.trendCardTitle}>Daily Visitors Trend</div>
-                    <div className={styles.trendCardSub}>30 Hari Terakhir</div>
-                  </div>
-                  <div className={styles.peakChip}>
-                    Peak: {Math.max(...analyticsData.dailyTrend.map(d => d.visitors))}
-                  </div>
-                </div>
-                <VisitorLineChart data={analyticsData.dailyTrend} />
-                <motion.button
-                  className={styles.fullAnalyticsBtn}
-                  onClick={() => setTab('analytics')}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Full Analytics
-                </motion.button>
-              </motion.div>
-            )}
+            <HomeFinancePulse
+              incomeRecords={homeFinanceIncome}
+              costRecords={homeFinanceCost}
+              loading={homeFinanceLoading}
+              onOpenFinance={() => setTab('finance')}
+              onOpenCashflow={() => {
+                setAnalyticsSubView('cashflow')
+                setTab('analytics')
+              }}
+            />
 
             {/* ─ Unified Navigation Grid ─ */}
             <div className={styles.navGrid3x}>
@@ -1484,7 +1785,7 @@ function AdminDashboardInner() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], delay: 0.22 + 8 * 0.04 }}
               >
-                <div className={styles.navIconBox} style={{ background: `#64748b14`, color: '#64748b' }}>
+                <div className={styles.navIconBox} style={{ background: `${ADMIN_BLUE}14`, color: ADMIN_BLUE }}>
                   <LayoutGrid size={22} strokeWidth={1.75} />
                 </div>
                 <span className={styles.navCardLabel}>Others</span>
@@ -1562,6 +1863,8 @@ function AdminDashboardInner() {
                   ? analyticsData.dailyTrend.reduce((a, b) => a.visitors > b.visitors ? a : b)
                   : null
                 const topPage = analyticsData.topPages?.[0]
+                const financeNet = homeFinanceIncome.reduce((s, r) => s + (Number(r.nominal) || 0), 0)
+                  - homeFinanceCost.reduce((s, r) => s + (Number(r.nominal) || 0), 0)
                 const signals = [
                   {
                     Icon: TrendingUp,
@@ -1569,25 +1872,25 @@ function AdminDashboardInner() {
                     value: peak
                       ? `Peak ${peak.visitors} visitors on ${peak.date.substring(5)}`
                       : `${analyticsData.kpi.uniqueVisitors} unique visitors this period`,
-                    accent: '#5FB7B0',
+                    accent: ADMIN_BLUE,
                   },
                   {
                     Icon: Eye,
                     label: 'Most Visited',
                     value: topPage ? topPage.path : 'No page data available',
-                    accent: '#B9A57A',
+                    accent: ADMIN_NAVY,
                   },
                   {
                     Icon: MousePointer,
                     label: 'Engagement Rate',
                     value: `${analyticsData.kpi.ctr}% CTR · ${analyticsData.kpi.totalClicks.toLocaleString()} total clicks`,
-                    accent: '#0C3552',
+                    accent: ADMIN_BLUE,
                   },
                   {
                     Icon: BarChart3,
                     label: 'Revenue Pulse',
-                    value: `${orders.length} orders tracked · ${analyticsData.kpi.totalPageViews.toLocaleString()} page views`,
-                    accent: '#071A2E',
+                    value: `${orders.length} orders tracked · ${financeNet >= 0 ? '+' : '-'} Rp ${formatCompactRp(Math.abs(financeNet))} net`,
+                    accent: ADMIN_NAVY,
                   },
                 ]
                 return signals.map((signal, i) => (

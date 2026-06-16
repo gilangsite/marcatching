@@ -5,12 +5,8 @@ import { RefreshCw, TrendingUp, TrendingDown, DollarSign, BarChart3 } from 'luci
 import styles from './admin.module.css'
 import type { FinanceRecord } from './FinanceTab'
 
-// ─── Colour palette (Monochromatic Navy/Blue) ────────────────
-const PALETTE = [
-  '#0d3369', '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd',
-  '#1e3a8a', '#2563eb', '#3b82f6', '#475569', '#64748b',
-  '#94a3b8', '#cbd5e1', '#e2e8f0', '#f1f5f9', '#f8fafc'
-]
+// ─── Marcatching admin palette ───────────────────────────────
+const PALETTE = ['#0d3369', '#1e40af']
 
 // ─── Format helpers ────────────────────────────────────────────
 function formatRp(n: number) {
@@ -55,8 +51,8 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
           <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.8" />
         </linearGradient>
         <linearGradient id="cfCostG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#cbd5e1" stopOpacity="0.7" />
+          <stop offset="0%" stopColor="#1e40af" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#1e40af" stopOpacity="0.72" />
         </linearGradient>
       </defs>
 
@@ -96,8 +92,8 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
       <g>
         <rect x={PAD.left} y={baseY + 30} width={10} height={10} rx="2" fill="#0d3369" />
         <text x={PAD.left + 14} y={baseY + 39} fontSize="10" fill="#0d3369" fontWeight="700">Income</text>
-        <rect x={PAD.left + 72} y={baseY + 30} width={10} height={10} rx="2" fill="#cbd5e1" />
-        <text x={PAD.left + 86} y={baseY + 39} fontSize="10" fill="#94a3b8" fontWeight="700">Cost</text>
+        <rect x={PAD.left + 72} y={baseY + 30} width={10} height={10} rx="2" fill="#1e40af" />
+        <text x={PAD.left + 86} y={baseY + 39} fontSize="10" fill="#1e40af" fontWeight="700">Cost</text>
       </g>
     </svg>
   )

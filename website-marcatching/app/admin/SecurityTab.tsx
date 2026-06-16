@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Lock, Eye, EyeOff, MonitorSmartphone, Clock, LogOut } from 'lucide-react'
 import styles from './admin.module.css'
+import { showAdminToast } from './page'
 
 export default function SecurityTab() {
   const [step, setStep] = useState<1 | 2>(1)
@@ -54,11 +55,11 @@ export default function SecurityTab() {
         // the now-invalid session and redirect to login
         window.location.replace('/admin')
       } else {
-        alert(data.message || 'Hard Exit gagal. Coba lagi.')
+        showAdminToast(data.message || 'Hard Exit gagal. Coba lagi.', 'error')
       }
     } catch (err) {
       console.error('Failed to hard exit:', err)
-      alert('Terjadi kesalahan saat Hard Exit.')
+      showAdminToast('Terjadi kesalahan saat Hard Exit.', 'error')
     }
   }
 

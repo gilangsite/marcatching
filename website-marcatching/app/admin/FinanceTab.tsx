@@ -376,12 +376,13 @@ export default function FinanceTab() {
       if (result.status === 'success') {
         setModal({ open: false, type: 'income', editing: null })
         fetchData()
+        window.dispatchEvent(new Event('marcatching-finance-updated'))
         showAdminToast(modal.editing ? 'Transaksi diperbarui' : 'Transaksi berhasil dicatat')
       } else {
-        alert('Apps Script Error: ' + (result.message || 'Unknown error'))
+        showAdminToast('Gagal menyimpan transaksi: ' + (result.message || 'Unknown error'), 'error')
       }
     } catch (err) {
-      alert('Network Error: ' + String(err))
+      showAdminToast('Network error: ' + String(err), 'error')
     }
     setSaving(false)
   }
@@ -395,6 +396,8 @@ export default function FinanceTab() {
       body: JSON.stringify({ sheetType: r.type, id: r.id }),
     })
     fetchData()
+    window.dispatchEvent(new Event('marcatching-finance-updated'))
+    showAdminToast('Transaksi dihapus')
   }
 
   // ── Config save ────────────────────
