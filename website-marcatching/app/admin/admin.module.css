@@ -2517,6 +2517,7 @@
   flex-direction: column;
   overflow: hidden;
   padding: 24px;
+  margin-bottom: 26px;
   border-radius: var(--admin-radius);
   background:
     linear-gradient(90deg, rgba(13, 51, 105, 0.035) 0 1px, transparent 1px 100%),
@@ -2697,7 +2698,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: end;
-  margin-top: 18px;
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(13, 51, 105, 0.1);
 }
 
 .financePulseLedger {
@@ -2737,7 +2740,7 @@
 
 .financePulseActions {
   display: flex;
-  gap: 8px;
+  gap: 14px;
 }
 
 .financePulseActions button {
@@ -2745,8 +2748,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 36px;
-  padding: 9px 12px;
+  min-height: 44px;
+  padding: 11px 18px;
   border-radius: var(--admin-radius);
   background: var(--admin-navy);
   color: #ffffff;

@@ -388,8 +388,9 @@ export default function StoreClient({
                 aria-haspopup="menu"
                 onClick={() => setShowCategoryMenu(prev => !prev)}
               >
-                Categories
-                <ChevronDown size={15} className={showCategoryMenu ? styles.categoryMenuChevronOpen : undefined} />
+                <PackageCheck size={15} className={styles.categoryMenuIcon} />
+                <span className={styles.categoryMenuLabel}>Categories</span>
+                <ChevronDown size={15} className={`${styles.categoryMenuChevron} ${showCategoryMenu ? styles.categoryMenuChevronOpen : ''}`} />
               </button>
               {showCategoryMenu && (
                 <div className={styles.categoryDropdown} role="menu" aria-label="Product categories">

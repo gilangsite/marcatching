@@ -226,6 +226,14 @@
   transition: transform 0.18s ease;
 }
 
+.categoryMenuIcon {
+  flex-shrink: 0;
+}
+
+.categoryMenuLabel {
+  display: inline-flex;
+}
+
 .categoryMenuChevronOpen {
   transform: rotate(180deg);
 }
@@ -406,7 +414,7 @@
   right: 12px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: #0d3369;
+  background: #1e40af;
   color: #ffffff;
   font-size: 0.72rem;
   font-weight: 700;
@@ -1009,19 +1017,25 @@
   .filterBar { padding: 0 16px; }
   .catPills { max-width: 100%; overflow-x: auto; padding-bottom: 2px; }
   .shopNav {
-    right: 64px;
-    gap: 4px;
+    right: 16px;
+    gap: 6px;
   }
   .categoryMenuBtn {
     height: 36px;
-    padding: 0 12px;
+    width: 36px;
+    padding: 0;
     font-size: 0.72rem;
-    gap: 5px;
+    gap: 0;
+    border-radius: 10px;
   }
-  .categoryMenuBtn svg { width: 13px; height: 13px; }
+  .categoryMenuLabel,
+  .categoryMenuChevron {
+    display: none;
+  }
+  .categoryMenuBtn svg { width: 16px; height: 16px; }
   .categoryDropdown {
-    left: 0;
-    right: auto;
+    left: auto;
+    right: 0;
     min-width: 160px;
   }
   .shopNavItem {
