@@ -237,11 +237,28 @@ export default function StoreClient({
     return map
   }, [products])
 
-  // Collect product blocks for category filter pills (only unique categories from visible products)
-  const productBlocks = useMemo(() =>
-    blocks.filter(b => b.type === 'product' && b.is_active && b.content.store_status !== 'hidden'),
-    [blocks]
-  )
+  // Product blocks can be curated manually, but active products without a block
+  // should still appear in Store so new admin products do not feel "missing".
+  const productBlocks = useMemo(() => {
+    const manualProductBlocks = blocks.filter(b => b.type === 'product')
+    const manualProductIds = new Set(manualProductBlocks.map(b => b.content.product_id).filter(Boolean))
+    const visibleManualBlocks = manualProductBlocks.filter(b => b.is_active && b.content.store_status !== 'hidden')
+    const autoProductBlocks: StorePageBlock[] = products
+      .filter(product => !manualProductIds.has(product.id))
+      .map((product, index) => ({
+        id: `auto-product-${product.id}`,
+        type: 'product',
+        content: {
+          product_id: product.id,
+          store_status: product.is_coming_soon ? 'coming_soon' : 'active',
+        },
+        order_index: blocks.length + index + 1,
+        is_active: true,
+        created_at: product.created_at,
+      }))
+
+    return [...visibleManualBlocks, ...autoProductBlocks]
+  }, [blocks, products])
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -483,7 +500,7 @@ export default function StoreClient({
 
         {/* Unified block + product rendering */}
         <div className={styles.pageBlocks}>
-          {blocks.length === 0 && (
+          {blocks.length === 0 && productBlocks.length === 0 && (
             <div className={styles.emptyState}>
               <p>Belum ada konten.</p>
             </div>
@@ -563,6 +580,27 @@ export default function StoreClient({
                     rendered.push(<ContentBlockRenderer key={b.id} block={b} />)
                     i++
                   }
+                }
+                if (!productGridRendered && productBlocks.length > 0) {
+                  rendered.push(
+                    <div key="products-grid" className={styles.grid}>
+                      {productBlocks.map(pb => {
+                        const p = productsById[pb.content.product_id || '']
+                        if (!p) return null
+                        return (
+                          <ProductCard
+                            key={pb.id}
+                            product={p}
+                            categories={categories}
+                            isComingSoon={pb.content.store_status === 'coming_soon' || !!p.is_coming_soon}
+                            voucherDiscount={getVoucherDiscount(p)}
+                            isInCart={cartIds.includes(p.id)}
+                            onAddToCart={handleAddToCart}
+                          />
+                        )
+                      })}
+                    </div>
+                  )
                 }
                 return rendered
               })()}
