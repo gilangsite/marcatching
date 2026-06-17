@@ -185,7 +185,7 @@
 .shopNav {
   position: fixed;
   top: calc(max(env(safe-area-inset-top), 8px) + 14px);
-  right: max(84px, calc((100vw - 1100px) / 2 + 84px));
+  right: max(24px, calc((100vw - 1100px) / 2 + 24px));
   z-index: 120;
   display: flex;
   align-items: center;
@@ -414,7 +414,7 @@
   right: 12px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: #1e40af;
+  background: #dc2626;
   color: #ffffff;
   font-size: 0.72rem;
   font-weight: 700;
