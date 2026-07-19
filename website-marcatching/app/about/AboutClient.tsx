@@ -396,6 +396,115 @@ function SystemPreview({ number }: { number: string }) {
   )
 }
 
+const SOCIAL_ACCOUNTS = [
+  { handle: '@olivia.m', initials: 'OM' },
+  { handle: '@jameswilson', initials: 'JW' },
+  { handle: '@sophie.lee', initials: 'SL' },
+  { handle: '@ethanbrown', initials: 'EB' },
+  { handle: '@amelia.king', initials: 'AK' },
+  { handle: '@noahscott', initials: 'NS' },
+] as const
+
+function DataMotionGraphic({ type }: { type: (typeof DATA_CHAPTERS)[number]['visual'] }) {
+  if (type === 'bars') {
+    return (
+      <div className={`${styles.dataVisual} ${styles.economyMotion}`} aria-hidden="true">
+        <div className={styles.motionToolbar}><span><BarChart3 /> Revenue projection</span><em>Live model</em></div>
+        <div className={styles.economySummary}>
+          <div><small>Digital economy</small><strong>$146B</strong></div>
+          <span><ArrowRight /> +24.8%</span>
+        </div>
+        <div className={styles.economyChart}>
+          <svg viewBox="0 0 420 118" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="economy-area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#8cc6ff" stopOpacity=".34" />
+                <stop offset="1" stopColor="#8cc6ff" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path className={styles.economyArea} d="M8 101 C54 98 62 83 103 86 S164 70 197 73 S247 51 282 55 S336 34 412 16 L412 116 L8 116 Z" />
+            <path className={styles.economyLine} d="M8 101 C54 98 62 83 103 86 S164 70 197 73 S247 51 282 55 S336 34 412 16" />
+            <circle className={styles.economyPulseDot} cx="412" cy="16" r="4" />
+          </svg>
+          <div className={styles.economyBars}>
+            {[24, 32, 29, 46, 41, 58, 54, 72, 82].map((height, index) => (
+              <i key={height} style={{ '--bar-height': `${height}%`, '--bar-index': index } as CSSProperties} />
+            ))}
+          </div>
+          <div className={styles.chartAxis}><span>2021</span><span>2023</span><span>2025</span></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === 'network') {
+    return (
+      <div className={`${styles.dataVisual} ${styles.networkMotion}`} aria-hidden="true">
+        <div className={styles.motionToolbar}><span><Network /> Audience network</span><em>Indonesia</em></div>
+        <div className={styles.networkStage}>
+          <div className={styles.networkRadar}><i /><i /><i /></div>
+          <div className={styles.networkCenter}><span><Network /></span><strong>212M</strong><small>connected users</small></div>
+          <div className={styles.profileCloud}>
+            {SOCIAL_ACCOUNTS.map((account, index) => (
+              <div className={styles.profileChip} key={account.handle} style={{ '--profile-index': index } as CSSProperties}>
+                <i>{account.initials}</i><span>{account.handle}</span><b />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={styles.networkTicker}><span>Active now</span><i /><strong>+18,420</strong><em>in the last minute</em></div>
+      </div>
+    )
+  }
+
+  if (type === 'rings') {
+    return (
+      <div className={`${styles.dataVisual} ${styles.aiMotion}`} aria-hidden="true">
+        <div className={styles.motionToolbar}><span><BrainCircuit /> AI workbench</span><em>Optimizing</em></div>
+        <div className={styles.aiProcess}>
+          <div className={styles.taskQueue}>
+            {[
+              ['01', 'Write script'],
+              ['02', 'Analyze data'],
+              ['03', 'Build report'],
+            ].map(([number, label], index) => (
+              <span key={number} style={{ '--task-index': index } as CSSProperties}><i>{number}</i><b>{label}</b><Check /></span>
+            ))}
+          </div>
+          <div className={styles.aiStream}><i /><i /><i /></div>
+          <div className={styles.aiCore}><span /><span /><Bot /><small>AI</small></div>
+          <div className={styles.aiResult}><small>Speed</small><strong>10×</strong><span>faster</span></div>
+        </div>
+        <div className={styles.aiProgress}>
+          {['Scripting', 'Research', 'Formatting'].map((label, index) => (
+            <div key={label} style={{ '--progress-index': index } as CSSProperties}><span>{label}</span><i><b /></i><Check /></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`${styles.dataVisual} ${styles.efficiencyMotion}`} aria-hidden="true">
+      <div className={styles.motionToolbar}><span><Workflow /> Performance optimizer</span><em>AI enabled</em></div>
+      <div className={styles.efficiencyMetrics}>
+        <div className={styles.costCard}><span><CircleDollarSign /> Operating cost</span><strong>$50K</strong><small><ArrowDown /> 50% lower</small></div>
+        <div className={styles.outputCard}><span><Sparkles /> Team output</span><strong>150%</strong><small><ArrowRight /> 1.5× higher</small></div>
+      </div>
+      <div className={styles.efficiencyStage}>
+        <div className={styles.efficiencyLegend}><span>Before AI</span><span>AI workflow</span></div>
+        <div className={styles.efficiencyColumns}>
+          <div><i className={styles.beforeCost} /><b>Cost</b><em>$100K</em></div>
+          <div><i className={styles.afterCost} /><b>Cost</b><em>$50K</em></div>
+          <div><i className={styles.beforeOutput} /><b>Output</b><em>100%</em></div>
+          <div><i className={styles.afterOutput} /><b>Output</b><em>150%</em></div>
+        </div>
+        <div className={styles.optimizationSweep}><span>Efficiency +50%</span></div>
+      </div>
+    </div>
+  )
+}
+
 export default function AboutClient({ navLinks, config, resolvedSections = [] }: AboutClientProps) {
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
@@ -482,9 +591,7 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
                   <div className={styles.dataIndex}>{String(index + 1).padStart(2, '0')} / 04</div>
                   <div className={styles.dataNumber}><AnimatedCounter value={chapter.value} prefix={chapter.prefix} suffix={chapter.suffix} /></div>
                   <div className={styles.dataCopy}><h3>{chapter.label}</h3><p>{chapter.source}</p></div>
-                  <div className={`${styles.dataVisual} ${styles[`visual_${chapter.visual}`]}`} aria-hidden="true">
-                    {Array.from({ length: 24 }, (_, visualIndex) => <span key={visualIndex} style={{ '--i': visualIndex + 1 } as CSSProperties} />)}
-                  </div>
+                  <DataMotionGraphic type={chapter.visual} />
                 </article>
               ))}
             </div>

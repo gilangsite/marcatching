@@ -3754,7 +3754,16 @@
 
 .page [style*='background: rgb(248, 250, 252)'],
 .page [style*='background: #f8fafc'],
-.page [style*='background: white'] {
+.page [style*='background: white'],
+.page [style*='background: #ffffff'],
+.page [style*='background:#ffffff'],
+.page [style*='background: rgb(255, 255, 255)'],
+.page [style*='background: #f1f5f9'],
+.page [style*='background:#f1f5f9'],
+.page [style*='background: rgb(241, 245, 249)'],
+.page [style*='background: #e2e8f0'],
+.page [style*='background:#e2e8f0'],
+.page [style*='background: rgb(226, 232, 240)'] {
   background: rgba(255, 255, 255, 0.035) !important;
   border-color: var(--admin-line) !important;
 }
@@ -3816,4 +3825,84 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Legacy inline-color contrast guard ─────────────────────
+   Several older tabs still set light-theme colors inline. The dark OS layer
+   intentionally remaps their surfaces, so these scoped important rules keep
+   every legacy label, KPI, chart legend and table cell readable. */
+.page [style*='color: #0d3369'],
+.page [style*='color:#0d3369'],
+.page [style*='color: rgb(13, 51, 105)'],
+.page [style*='color: #0f172a'],
+.page [style*='color:#0f172a'],
+.page [style*='color: rgb(15, 23, 42)'],
+.page [style*='color: #1e293b'],
+.page [style*='color:#1e293b'],
+.page [style*='color: rgb(30, 41, 59)'],
+.page [style*='color: #334155'],
+.page [style*='color:#334155'],
+.page [style*='color: rgb(51, 65, 85)'],
+.page [style*='color: #475569'],
+.page [style*='color:#475569'],
+.page [style*='color: rgb(71, 85, 105)'],
+.page [style*='color: #374151'],
+.page [style*='color:#374151'],
+.page [style*='color: rgb(55, 65, 81)'],
+.page [style*='color: #111827'],
+.page [style*='color:#111827'],
+.page [style*='color: rgb(17, 24, 39)'] {
+  color: var(--admin-text) !important;
+}
+
+.page [style*='color: #64748b'],
+.page [style*='color:#64748b'],
+.page [style*='color: rgb(100, 116, 139)'],
+.page [style*='color: #6b7280'],
+.page [style*='color:#6b7280'],
+.page [style*='color: rgb(107, 114, 128)'],
+.page [style*='color: #94a3b8'],
+.page [style*='color:#94a3b8'],
+.page [style*='color: rgb(148, 163, 184)'],
+.page [style*='color: #637180'],
+.page [style*='color:#637180'],
+.page [style*='color: rgb(99, 113, 128)'] {
+  color: #aebdca !important;
+}
+
+.page svg[color='#0d3369'],
+.page svg[color='#0f172a'],
+.page svg[color='#1e293b'],
+.page svg[color='#334155'],
+.page svg[color='#475569'] {
+  color: #dceeff !important;
+  stroke: #dceeff !important;
+}
+
+.page svg[color='#64748b'],
+.page svg[color='#94a3b8'],
+.page svg[color='#cbd5e1'] {
+  color: #aebdca !important;
+  stroke: #aebdca !important;
+}
+
+.page :global(.label),
+.page label,
+.page small,
+.page input::placeholder,
+.page textarea::placeholder {
+  color: #aebdca !important;
+}
+
+.page input:disabled,
+.page textarea:disabled,
+.page select:disabled {
+  opacity: 1;
+  color: #9eabb7 !important;
+}
+
+/* Printed reports remain intentionally light. */
+.printArea,
+.printArea * {
+  color: #111827 !important;
 }

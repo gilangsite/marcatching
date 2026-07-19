@@ -144,6 +144,15 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const addonTotal = selectedAddons.reduce((sum, a) => sum + a.priceDiscounted, 0)
   const subtotalBeforeVoucher = priceDiscounted + addonTotal
   const totalPaid = Math.max(0, subtotalBeforeVoucher - voucherDiscount)
+  const productDiscount = Math.max(0, priceOriginal - priceDiscounted)
+  const addonDiscount = selectedAddons.reduce(
+    (sum, addon) => sum + Math.max(0, addon.priceOriginal - addon.priceDiscounted),
+    0,
+  )
+  const totalSavings = productDiscount + addonDiscount + voucherDiscount
+  const productDiscountPercent = priceOriginal > 0
+    ? Math.round((productDiscount / priceOriginal) * 100)
+    : 0
 
   // Build poster URL
   let posterUrl = product.image_url || ''
@@ -339,6 +348,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
               </div>
             </div>
 
+            {productDiscount > 0 && (
+              <div className={styles.discountHighlight}>
+                <span className={styles.discountBadge}>Hemat {productDiscountPercent}%</span>
+                <span className={styles.discountAmount}>{formatRupiah(productDiscount)}</span>
+              </div>
+            )}
+
             {/* Add-on rows */}
             {selectedAddons.map(addon => (
               <div key={addon.id} className={styles.summaryProductRow}>
@@ -357,11 +373,17 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
             {voucherDiscount > 0 && (
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Potongan Voucher</span>
-                <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                <span className={styles.voucherDiscountAmount}>-{formatRupiah(voucherDiscount)}</span>
+              </div>
+            )}
+            {totalSavings > 0 && (
+              <div className={styles.savingsRow}>
+                <span>Total Hemat</span>
+                <strong>{formatRupiah(totalSavings)}</strong>
               </div>
             )}
             <div className={styles.priceRow}>
-              <span className={styles.priceLabel} style={{ fontWeight: 700, color: '#f3f7fb' }}>Total Bayar</span>
+              <span className={styles.totalLabel}>Total Bayar</span>
               <span className={styles.priceHighlight}>{formatRupiah(totalPaid)}</span>
             </div>
           </div>
@@ -604,7 +626,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 {voucherDiscount > 0 && (
                   <div className={styles.breakdownRow}>
                     <span className={styles.breakdownLabel}>Potongan Voucher</span>
-                    <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                    <span className={styles.voucherDiscountAmount}>-{formatRupiah(voucherDiscount)}</span>
                   </div>
                 )}
 

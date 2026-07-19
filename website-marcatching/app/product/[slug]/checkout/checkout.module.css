@@ -126,6 +126,63 @@
 .priceStrike { text-decoration: line-through; color: #94a3b8; font-weight: 500; font-size: 0.78rem; }
 .priceHighlight { color: #0d3369; font-weight: 800; font-size: 1.1rem; }
 
+.totalLabel {
+  color: #f3f7fb;
+  font-weight: 800;
+}
+
+.discountHighlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(121, 214, 174, 0.28);
+  border-radius: 10px;
+  background: rgba(121, 214, 174, 0.1);
+}
+
+.discountBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #06130d;
+  background: #9de0c1;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.discountAmount,
+.voucherDiscountAmount {
+  color: #9de0c1;
+  font-weight: 850;
+}
+
+.savingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+  padding: 9px 12px;
+  border-radius: 9px;
+  color: #d8f5e7;
+  background: rgba(121, 214, 174, 0.075);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.savingsRow strong {
+  color: #9de0c1;
+  font-weight: 900;
+}
+
 .divider {
   height: 1px;
   background: #e2e8f0;
@@ -480,7 +537,12 @@
 }
 
 .voucherBtn:hover { background: #0a2850; }
-.voucherBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.voucherBtn:disabled {
+  opacity: 1;
+  color: #07111a;
+  background: #9eabb7;
+  cursor: not-allowed;
+}
 
 .voucherMsg {
   font-size: 0.82rem;
@@ -554,7 +616,7 @@
   right: 0;
   width: 50%;
   padding: 16px 48px;
-  background: rgba(255, 255, 255, 0.85);
+  background: #ffffff;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid #e2e8f0;
@@ -586,7 +648,9 @@
 }
 
 .ctaButton:disabled {
-  opacity: 0.6;
+  opacity: 1;
+  color: #07111a;
+  background: #9eabb7;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -752,7 +816,12 @@
 }
 
 .payBtn:hover { background: #0a2850; }
-.payBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.payBtn:disabled {
+  opacity: 1;
+  color: #07111a;
+  background: #9eabb7;
+  cursor: not-allowed;
+}
 
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
@@ -931,7 +1000,7 @@
 }
 
 .fixedCTA {
-  background: rgba(3, 5, 8, 0.86);
+  background: rgba(3, 5, 8, 0.97);
   border-color: rgba(184, 214, 242, 0.12);
   backdrop-filter: blur(20px) saturate(125%);
   -webkit-backdrop-filter: blur(20px) saturate(125%);
