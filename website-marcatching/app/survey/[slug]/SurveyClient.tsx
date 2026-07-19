@@ -13,9 +13,11 @@ interface Survey {
   survey_questions: SurveyQuestion[]
 }
 
-const BLK = "#111111"
+const BLK = '#f3f7fb'
+const ACCENT = '#8cc6ff'
 
 const css = `
+@keyframes spin { to { transform:rotate(360deg); } }
 @keyframes zoomIn {
   from { opacity:0; transform:scale(0.93) translateY(14px); }
   to   { opacity:1; transform:scale(1) translateY(0); }
@@ -33,33 +35,44 @@ const css = `
 .sv-fade  { animation: fadeUp 0.4s cubic-bezier(.22,.68,0,1.2) both; }
 .sv-pop   { animation: popIn 0.5s cubic-bezier(.22,.68,0,1.2) both; }
 .sv-inp {
-  width:100%; padding:13px 16px; border:1.5px solid #e2e8f0; border-radius:10px;
+  width:100%; padding:13px 16px; border:1px solid rgba(184,214,242,.16); border-radius:12px;
   font-size:0.95rem; font-family:var(--font); outline:none; box-sizing:border-box;
-  transition:border-color .18s, box-shadow .18s; background:#fff; color:#0f172a;
+  transition:border-color .18s, box-shadow .18s; background:rgba(3,7,11,.78); color:#f3f7fb;
 }
-.sv-inp:focus { border-color:#111111; box-shadow:0 0 0 3px rgba(0,0,0,.06); }
+.sv-inp::placeholder { color:#52606e; }
+.sv-inp:focus { border-color:rgba(140,198,255,.56); box-shadow:0 0 0 3px rgba(140,198,255,.09); }
 .sv-opt {
-  display:flex; align-items:center; gap:12px; padding:12px 16px; border:1.5px solid #e2e8f0;
-  border-radius:10px; cursor:pointer; transition:all .15s; background:#fff; margin-bottom:8px;
-  font-family:var(--font); font-size:0.95rem; font-weight:600; color:#0f172a; user-select:none;
+  display:flex; align-items:center; gap:12px; padding:12px 16px; border:1px solid rgba(184,214,242,.14);
+  border-radius:12px; cursor:pointer; transition:all .15s; background:rgba(255,255,255,.025); margin-bottom:8px;
+  font-family:var(--font); font-size:0.95rem; font-weight:600; color:#dce6ef; user-select:none;
 }
-.sv-opt.sel { border-color:#111111; background:#f5f5f5; }
+.sv-opt:hover { border-color:rgba(140,198,255,.26); background:rgba(140,198,255,.045); }
+.sv-opt.sel { border-color:rgba(140,198,255,.54); background:rgba(140,198,255,.09); color:#f3f7fb; }
 .sv-btn {
   display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 28px;
-  border:none; border-radius:12px; cursor:pointer; font-family:var(--font); font-weight:800;
+  border:none; border-radius:999px; cursor:pointer; font-family:var(--font); font-weight:800;
   font-size:1rem; transition:all .2s; letter-spacing:-0.01em;
 }
-.sv-btn-navy { background:#111111; color:#fff; box-shadow:0 6px 20px rgba(0,0,0,.18); }
-.sv-btn-navy:hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(0,0,0,.24); }
-.sv-btn-ghost { background:#f1f5f9; color:#475569; }
-.sv-btn-ghost:hover { background:#e2e8f0; }
+.sv-btn-navy { background:#dceeff; color:#04101a; box-shadow:0 12px 30px rgba(140,198,255,.12); }
+.sv-btn-navy:hover { transform:translateY(-1px); background:#f3f8fd; box-shadow:0 16px 38px rgba(140,198,255,.17); }
+.sv-btn-ghost { background:rgba(255,255,255,.035); color:#a9b4c0; border:1px solid rgba(184,214,242,.14); }
+.sv-btn-ghost:hover { background:rgba(255,255,255,.065); color:#f3f7fb; }
 .sv-btn:disabled { opacity:.55; cursor:not-allowed; transform:none !important; }
 .sv-card {
-  background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border-radius:24px; box-shadow:0 8px 48px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
-  border:1px solid rgba(200,200,200,.4);
+  background:linear-gradient(145deg,rgba(255,255,255,.03),transparent 48%),rgba(8,13,19,.9);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-radius:22px; box-shadow:0 26px 80px rgba(0,0,0,.34);
+  border:1px solid rgba(184,214,242,.14);
 }
-body { background: #f5f5f7 !important; }
+body { background:#030508 !important; color:#f3f7fb; }
+@media(max-width:640px){
+  .sv-card{border-radius:18px!important;padding:26px 18px!important;}
+  .sv-btn{padding:13px 18px;font-size:.92rem;min-width:0!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .sv-zoom,.sv-fade,.sv-pop{animation:none!important;}
+  .sv-btn,.sv-opt{transition-duration:.01ms!important;}
+}
 `
 
 export default function SurveyClient({ slug }: { slug: string }) {
@@ -83,13 +96,13 @@ export default function SurveyClient({ slug }: { slug: string }) {
       .catch(() => setLoading(false))
   }, [slug])
 
-  const BG = 'linear-gradient(160deg,#f5f5f7 0%,#ffffff 60%)'
+  const BG = 'radial-gradient(circle at 50% -10%,rgba(140,198,255,.10),transparent 34rem),linear-gradient(180deg,#030508,#05080c)'
   const NAVBAR_H = 64
 
   function NavBar() {
     return (
-      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(255,255,255,0.85)',backdropFilter:'blur(18px) saturate(180%)',WebkitBackdropFilter:'blur(18px) saturate(180%)',borderBottom:'1px solid rgba(0,0,0,.08)',height:NAVBAR_H,display:'flex',alignItems:'center',paddingLeft:24,paddingRight:24}}>
-        <img src="https://www.marcatching.com/logo-type-black.png" alt="Marcatching" style={{height:28,objectFit:'contain'}} />
+      <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'rgba(3,5,8,.78)',backdropFilter:'blur(20px) saturate(125%)',WebkitBackdropFilter:'blur(20px) saturate(125%)',borderBottom:'1px solid rgba(184,214,242,.12)',height:NAVBAR_H,display:'flex',alignItems:'center',paddingLeft:24,paddingRight:24}}>
+        <img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style={{height:26,objectFit:'contain'}} />
       </nav>
     )
   }
@@ -98,8 +111,8 @@ export default function SurveyClient({ slug }: { slug: string }) {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)'}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-fade" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
-        <div style={{width:36,height:36,borderRadius:'50%',border:'3px solid #e2e8f0',borderTopColor:BLK,animation:'spin 0.8s linear infinite'}}/>
-        <span style={{color:'#64748b',fontSize:'0.9rem',fontWeight:600}}>Memuat survey…</span>
+        <div style={{width:36,height:36,borderRadius:'50%',border:'3px solid rgba(184,214,242,.14)',borderTopColor:ACCENT,animation:'spin 0.8s linear infinite'}}/>
+        <span style={{color:'#8e9baa',fontSize:'0.9rem',fontWeight:600}}>Memuat survey…</span>
       </div>
     </div>
   )
@@ -108,9 +121,9 @@ export default function SurveyClient({ slug }: { slug: string }) {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)'}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:400}}>
-        <Search size={40} color="#cbd5e1" style={{marginBottom:16}}/>
+        <Search size={40} color="#637180" style={{marginBottom:16}}/>
         <h2 style={{color:BLK,fontWeight:800,margin:'0 0 8px'}}>Survey tidak ditemukan</h2>
-        <p style={{color:'#94a3b8',margin:0,fontSize:'0.9rem'}}>URL survey tidak valid atau sudah dihapus.</p>
+        <p style={{color:'#8e9baa',margin:0,fontSize:'0.9rem'}}>URL survey tidak valid atau sudah dihapus.</p>
       </div>
     </div>
   )
@@ -119,10 +132,10 @@ export default function SurveyClient({ slug }: { slug: string }) {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:BG,fontFamily:'var(--font)',padding:24}}>
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <div className="sv-card sv-fade" style={{padding:'48px 40px',textAlign:'center',maxWidth:440,width:'100%'}}>
-        <ClipboardList size={40} color="#cbd5e1" style={{marginBottom:16}}/>
+        <ClipboardList size={40} color="#637180" style={{marginBottom:16}}/>
         <h2 style={{color:BLK,fontWeight:900,fontSize:'1.4rem',margin:'0 0 12px'}}>{survey.title}</h2>
-        <p style={{color:'#64748b',fontSize:'0.95rem',lineHeight:1.7,margin:'0 0 28px'}}>Survey ini telah ditutup. Terima kasih atas antusiasmu!</p>
-        <div style={{fontSize:'0.82rem',color:'#94a3b8',fontWeight:700}}>— Marcatching</div>
+        <p style={{color:'#8e9baa',fontSize:'0.95rem',lineHeight:1.7,margin:'0 0 28px'}}>Survey ini telah ditutup. Terima kasih atas antusiasmu!</p>
+        <div style={{fontSize:'0.82rem',color:'#637180',fontWeight:700}}>— Marcatching</div>
       </div>
     </div>
   )
@@ -160,7 +173,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
           )}
           <h1 className="sv-fade" style={{fontSize:'2rem',fontWeight:900,color:BLK,marginBottom:14,lineHeight:1.2,animationDelay:'.05s'}}>{survey.title}</h1>
           {survey.description && (
-            <div className="sv-fade" style={{color:'#475569',lineHeight:1.8,fontSize:'0.97rem',marginBottom:32,animationDelay:'.1s'}} dangerouslySetInnerHTML={{__html:survey.description}}/>
+            <div className="sv-fade" style={{color:'#a9b4c0',lineHeight:1.8,fontSize:'0.97rem',marginBottom:32,animationDelay:'.1s'}} dangerouslySetInnerHTML={{__html:survey.description}}/>
           )}
           {biodataQs.length > 0 && (
             <div className="sv-card sv-fade" style={{padding:28,marginBottom:24,animationDelay:'.15s'}}>
@@ -170,7 +183,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
               <div style={{display:'flex',flexDirection:'column',gap:14}}>
                 {biodataQs.map(q => (
                   <div key={q.id}>
-                    <label style={{display:'block',fontSize:'0.83rem',fontWeight:700,color:'#475569',marginBottom:6}}>
+                    <label style={{display:'block',fontSize:'0.83rem',fontWeight:700,color:'#a9b4c0',marginBottom:6}}>
                       {q.label}{q.is_required && <span style={{color:'#ef4444'}}> *</span>}
                     </label>
                     {(q.type==='short_answer'||!q.type) && (
@@ -187,7 +200,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
                     )}
                     {q.type==='radio' && q.options.map((o,i)=>(
                       <label key={i} className={`sv-opt${biodataAnswers[q.id]===o?' sel':''}`} onClick={()=>setBiodataAnswers(p=>({...p,[q.id]:o}))}>
-                        <input type="radio" style={{accentColor:BLK}} checked={biodataAnswers[q.id]===o} readOnly/><span>{o}</span>
+                        <input type="radio" style={{accentColor:ACCENT}} checked={biodataAnswers[q.id]===o} readOnly/><span>{o}</span>
                       </label>
                     ))}
                   </div>
@@ -196,7 +209,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
               {biodataError && <p style={{color:'#ef4444',fontSize:'0.82rem',marginTop:12,fontWeight:600}}>{biodataError}</p>}
             </div>
           )}
-          <div className="sv-fade" style={{textAlign:'center',color:'#94a3b8',fontSize:'0.8rem',marginBottom:20,animationDelay:'.2s'}}>
+          <div className="sv-fade" style={{textAlign:'center',color:'#637180',fontSize:'0.8rem',marginBottom:20,animationDelay:'.2s'}}>
             {surveyQs.length} pertanyaan · Dijawab satu per satu
           </div>
           <button className="sv-btn sv-btn-navy sv-fade" style={{width:'100%',animationDelay:'.25s'}} onClick={validateAndStart}>
@@ -231,15 +244,15 @@ export default function SurveyClient({ slug }: { slug: string }) {
         <div style={{width:'100%',maxWidth:620,marginBottom:20}}>
           <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
             <span style={{color:BLK,fontSize:'0.78rem',fontWeight:700}}>{survey.title}</span>
-            <span style={{color:'#94a3b8',fontSize:'0.78rem',fontWeight:700}}>{currentQ+1} / {total}</span>
+            <span style={{color:'#637180',fontSize:'0.78rem',fontWeight:700}}>{currentQ+1} / {total}</span>
           </div>
-          <div style={{height:5,background:'#e2e8f0',borderRadius:99,overflow:'hidden'}}>
-            <div style={{height:'100%',width:`${((currentQ+1)/total)*100}%`,background:BLK,borderRadius:99,transition:'width .4s ease'}}/>
+          <div style={{height:5,background:'rgba(184,214,242,.12)',borderRadius:99,overflow:'hidden'}}>
+            <div style={{height:'100%',width:`${((currentQ+1)/total)*100}%`,background:ACCENT,borderRadius:99,transition:'width .4s ease'}}/>
           </div>
         </div>
 
         <div key={animKey} className="sv-card sv-zoom" style={{width:'100%',maxWidth:620,padding:'40px 36px',minHeight:300}}>
-          <p style={{fontSize:'0.72rem',fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.12em',margin:'0 0 10px'}}>Pertanyaan {currentQ+1}</p>
+          <p style={{fontSize:'0.72rem',fontWeight:800,color:'#637180',textTransform:'uppercase',letterSpacing:'.12em',margin:'0 0 10px'}}>Pertanyaan {currentQ+1}</p>
           <h2 style={{fontSize:'1.18rem',fontWeight:800,color:BLK,margin:'0 0 28px',lineHeight:1.45}}>
             {q.label}{q.is_required&&<span style={{color:'#ef4444'}}> *</span>}
           </h2>
@@ -254,14 +267,14 @@ export default function SurveyClient({ slug }: { slug: string }) {
           )}
           {q.type==='radio' && q.options.map((o,i)=>(
             <label key={i} className={`sv-opt${cur===o?' sel':''}`} onClick={()=>setAns(o)}>
-              <input type="radio" style={{accentColor:BLK}} checked={cur===o} readOnly/><span>{o}</span>
+              <input type="radio" style={{accentColor:ACCENT}} checked={cur===o} readOnly/><span>{o}</span>
             </label>
           ))}
           {q.type==='checkbox' && q.options.map((o,i)=>{
             const chk=Array.isArray(cur)&&cur.includes(o)
             return (
               <label key={i} className={`sv-opt${chk?' sel':''}`} onClick={()=>{const p=Array.isArray(cur)?cur:[];setAns(chk?p.filter((x:string)=>x!==o):[...p,o])}}>
-                <input type="checkbox" style={{accentColor:BLK}} checked={chk} readOnly/><span>{o}</span>
+                <input type="checkbox" style={{accentColor:ACCENT}} checked={chk} readOnly/><span>{o}</span>
               </label>
             )
           })}
@@ -296,17 +309,17 @@ export default function SurveyClient({ slug }: { slug: string }) {
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-zoom" style={{padding:'48px 40px',maxWidth:520,width:'100%',textAlign:'center'}}>
-        <div style={{width:64,height:64,borderRadius:'50%',background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
+        <div style={{width:64,height:64,borderRadius:'50%',background:'rgba(140,198,255,.09)',border:'1px solid rgba(140,198,255,.16)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px'}}>
           <Shield size={28} color={BLK}/>
         </div>
         <h2 style={{color:BLK,fontWeight:900,fontSize:'1.3rem',margin:'0 0 16px'}}>Persetujuan Data</h2>
-        <p style={{color:'#475569',lineHeight:1.8,fontSize:'0.93rem',margin:'0 0 28px',textAlign:'left'}}>
+        <p style={{color:'#a9b4c0',lineHeight:1.8,fontSize:'0.93rem',margin:'0 0 28px',textAlign:'left'}}>
           Dengan mengisi survey ini, kamu menyetujui bahwa data yang telah kamu berikan akan disimpan dan digunakan oleh tim Marcatching sebagai bahan analisis internal.<br/><br/>
           Marcatching berkomitmen untuk <strong>tidak menyebarkan atau memperjualbelikan</strong> data pribadimu kepada pihak manapun.
         </p>
-        <label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',padding:'16px 18px',background:'#f8f8f8',borderRadius:14,border:`1.5px solid ${consentChecked?BLK:'#e2e8f0'}`,marginBottom:28,textAlign:'left',transition:'border-color .18s'}}>
-          <input type="checkbox" checked={consentChecked} onChange={e=>setConsentChecked(e.target.checked)} style={{accentColor:BLK,marginTop:2,flexShrink:0,width:18,height:18}}/>
-          <span style={{fontSize:'0.88rem',color:'#0f172a',fontWeight:600,lineHeight:1.6}}>Saya memahami dan menyetujui bahwa data saya akan disimpan dan digunakan oleh Marcatching.</span>
+        <label style={{display:'flex',alignItems:'flex-start',gap:12,cursor:'pointer',padding:'16px 18px',background:'rgba(255,255,255,.03)',borderRadius:14,border:`1px solid ${consentChecked?ACCENT:'rgba(184,214,242,.14)'}`,marginBottom:28,textAlign:'left',transition:'border-color .18s'}}>
+          <input type="checkbox" checked={consentChecked} onChange={e=>setConsentChecked(e.target.checked)} style={{accentColor:ACCENT,marginTop:2,flexShrink:0,width:18,height:18}}/>
+          <span style={{fontSize:'0.88rem',color:'#dce6ef',fontWeight:600,lineHeight:1.6}}>Saya memahami dan menyetujui bahwa data saya akan disimpan dan digunakan oleh Marcatching.</span>
         </label>
         {submitError && <p style={{color:'#ef4444',fontSize:'0.82rem',marginBottom:14,fontWeight:600}}>{submitError}</p>}
         <button className="sv-btn sv-btn-navy" style={{width:'100%'}} disabled={submitting||!consentChecked} onClick={async()=>{
@@ -323,7 +336,7 @@ export default function SurveyClient({ slug }: { slug: string }) {
         }}>
           {submitting?'Mengirim…':<><Check size={18}/> Kirim Survey</>}
         </button>
-        <button onClick={()=>setPhase('questions')} style={{marginTop:14,background:'none',border:'none',color:'#94a3b8',fontSize:'0.82rem',cursor:'pointer',fontFamily:'var(--font)',fontWeight:600}}>← Kembali</button>
+        <button onClick={()=>setPhase('questions')} style={{marginTop:14,background:'none',border:'none',color:'#8e9baa',fontSize:'0.82rem',cursor:'pointer',fontFamily:'var(--font)',fontWeight:600}}>← Kembali</button>
       </div>
     </div>
   )
@@ -340,19 +353,19 @@ export default function SurveyClient({ slug }: { slug: string }) {
       <style dangerouslySetInnerHTML={{__html:css}}/>
       <NavBar/>
       <div className="sv-card sv-pop" style={{padding:'56px 44px',maxWidth:520,width:'100%',textAlign:'center'}}>
-        <div style={{width:72,height:72,borderRadius:'50%',background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px'}}>
-          <CheckCircle2 size={34} color={BLK}/>
+        <div style={{width:72,height:72,borderRadius:'50%',background:'rgba(121,214,174,.09)',border:'1px solid rgba(121,214,174,.18)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px'}}>
+          <CheckCircle2 size={34} color="#9de0c1"/>
         </div>
         <h1 style={{color:BLK,fontWeight:900,fontSize:'1.55rem',margin:'0 0 10px',lineHeight:1.3}}>
           Terima kasih{firstName?`, ${firstName}`:''}!
         </h1>
-        <p style={{color:'#475569',fontSize:'0.97rem',lineHeight:1.8,margin:'0 0 32px'}}>
+        <p style={{color:'#a9b4c0',fontSize:'0.97rem',lineHeight:1.8,margin:'0 0 32px'}}>
           Partisipasimu dalam survey <strong style={{color:BLK}}>"{survey.title}"</strong> sangat berarti bagi kami.<br/><br/>
           Tim Marcatching akan segera menghubungimu secara personal untuk menindaklanjuti hasil survey ini.
         </p>
-        <div style={{height:1,background:'linear-gradient(90deg,transparent,#e2e8f0,transparent)',margin:'0 0 28px'}}/>
+        <div style={{height:1,background:'linear-gradient(90deg,transparent,rgba(184,214,242,.16),transparent)',margin:'0 0 28px'}}/>
         <p style={{fontSize:'0.95rem',fontWeight:800,color:BLK,letterSpacing:'-0.02em',margin:'0 0 24px'}}>— Marcatching</p>
-        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'#f5f5f5',border:'1px solid #e2e8f0',borderRadius:12,color:BLK,fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:'var(--font)'}}>
+        <a href="https://marcatching.com" style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 28px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(184,214,242,.16)',borderRadius:999,color:BLK,fontWeight:700,fontSize:'0.88rem',textDecoration:'none',transition:'all .18s',fontFamily:'var(--font)'}}>
           Kembali ke Marcatching.com
         </a>
       </div>

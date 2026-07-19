@@ -184,11 +184,14 @@ export default function CourseDashboardPage() {
       <main className={styles.content}>
         {/* Greeting */}
         <div className={styles.greetingSection}>
-          <p className={styles.greetingLabel}>Marcatching E-Course</p>
-          <h1 className={styles.greetingName}>Halo, {userName}!</h1>
-          <p className={styles.greetingSubtitle}>
-            Berikut adalah course yang kamu miliki. Selamat belajar!
-          </p>
+          <div className={styles.greetingCopy}>
+            <h1 className={styles.greetingName}>
+              Halo, <span className={styles.greetingNameAccent}>{userName || 'Builder'}</span>.
+            </h1>
+            <p className={styles.greetingSubtitle}>
+              Satu workspace untuk mengubah insight menjadi skill yang bisa langsung kamu pakai.
+            </p>
+          </div>
         </div>
 
         {/* Course List */}
@@ -233,7 +236,7 @@ export default function CourseDashboardPage() {
                     <img
                       src={
                         course.image_url.includes('drive.google.com/uc')
-                          ? course.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w1200-h900'
+                          ? course.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w900-h1500'
                           : course.image_url
                       }
                       alt={course.name}

@@ -635,3 +635,76 @@
     font-size: 2rem;
   }
 }
+
+/* Marcatching rebrand alignment */
+.main {
+  background:
+    radial-gradient(circle at 50% -8%, rgba(140, 198, 255, 0.08), transparent 34rem),
+    #030508;
+  color: #f3f7fb;
+}
+
+.heroSection {
+  border-color: rgba(184, 214, 242, 0.1);
+}
+
+.heroTitle,
+.cardTitle,
+.drawerTitle,
+.howToUseTitle,
+.stepContent h3,
+.ctaSection h2 {
+  color: #f3f7fb;
+}
+
+.heroSubtitle,
+.cardDesc,
+.stepContent p,
+.ctaSection p {
+  color: #8e9baa;
+}
+
+.roleSelector,
+.searchInput,
+.select,
+.card,
+.step,
+.ctaSection,
+.emptyState,
+.drawerHeader {
+  background: rgba(8, 13, 19, 0.9);
+  border-color: rgba(184, 214, 242, 0.13);
+}
+
+.card:hover {
+  border-color: rgba(140, 198, 255, 0.28);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.36);
+}
+
+.roleButtonActive,
+.categoryBtnActive,
+.copyBtn,
+.ctaBtn {
+  color: #04101a;
+  background: #dceeff;
+  border-color: #dceeff;
+}
+
+.howToButton,
+.cardBadge,
+.stepNumber {
+  color: #b8dcff;
+  background: rgba(140, 198, 255, 0.09);
+  border-color: rgba(140, 198, 255, 0.2);
+}
+
+.searchInput:focus,
+.select:focus {
+  border-color: rgba(140, 198, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(140, 198, 255, 0.09);
+}
+
+.drawerContent {
+  background: #030508;
+  border-color: rgba(184, 214, 242, 0.13);
+}

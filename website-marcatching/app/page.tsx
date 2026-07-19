@@ -2,6 +2,14 @@ import { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
 import type { NavLink } from '@/lib/supabaseClient'
 import AboutClient from './about/AboutClient'
+import type {
+  ArticleCardData,
+  ExperienceConfig,
+  ProductCardData,
+  ResolvedEcosystemItem,
+  ResolvedEcosystemSection,
+  SurveyCardData,
+} from './about/experience-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,22 +24,21 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  // Fetch Navigation Links
-  const { data: navLinksRes } = await supabase
-    .from('nav_links')
-    .select('*')
-    .eq('is_active', true)
-    .order('order_index')
+  const [{ data: navLinksRes }, { data: configRes }] = await Promise.all([
+    supabase
+      .from('nav_links')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index'),
+    supabase
+      .from('about_config')
+      .select('*')
+      .limit(1)
+      .single(),
+  ])
   const navLinks: NavLink[] = navLinksRes || []
 
-  // Fetch About Page Config
-  const { data: configRes } = await supabase
-    .from('about_config')
-    .select('*')
-    .limit(1)
-    .single()
-
-  const defaultConfig = {
+  const defaultConfig: ExperienceConfig = {
     contact_email: 'gilang@marcatching.com',
     cta_text: 'Marcatching Store',
     cta_url: '/store',
@@ -58,14 +65,16 @@ export default async function HomePage() {
     ecosystem_sections: []
   }
 
-  const config = configRes || defaultConfig
+  const config: ExperienceConfig = {
+    ...defaultConfig,
+    ...((configRes ?? {}) as Partial<ExperienceConfig>),
+  }
 
-  // Resolve dynamic ecosystem sections
   const sections = config.ecosystem_sections || []
-  const resolvedSections = []
+  const resolvedSections: ResolvedEcosystemSection[] = []
 
   for (const section of sections) {
-    const resolvedItems = []
+    const resolvedItems: ResolvedEcosystemItem[] = []
     for (const item of section.items || []) {
       if (item.type === 'article' && item.ref_id) {
         const { data: article } = await supabase
@@ -73,21 +82,21 @@ export default async function HomePage() {
           .select('*, article_categories(name, slug), article_authors(name, photo_url)')
           .eq('id', item.ref_id)
           .single()
-        if (article) resolvedItems.push({ ...item, data: article })
+        if (article) resolvedItems.push({ ...item, data: article as ArticleCardData })
       } else if (item.type === 'product' && item.ref_id) {
         const { data: product } = await supabase
           .from('products')
           .select('*')
           .eq('id', item.ref_id)
           .single()
-        if (product) resolvedItems.push({ ...item, data: product })
+        if (product) resolvedItems.push({ ...item, data: product as ProductCardData })
       } else if (item.type === 'survey' && item.ref_id) {
         const { data: survey } = await supabase
           .from('surveys')
           .select('*')
           .eq('id', item.ref_id)
           .single()
-        if (survey) resolvedItems.push({ ...item, data: survey })
+        if (survey) resolvedItems.push({ ...item, data: survey as SurveyCardData })
       } else if (item.type === 'content') {
         resolvedItems.push(item)
       }
@@ -103,4 +112,3 @@ export default async function HomePage() {
     />
   )
 }
-

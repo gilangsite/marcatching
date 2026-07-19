@@ -7,7 +7,7 @@ export default function TextBlock({ link }: { link: Link }) {
     <div 
       className={styles.textBlock} 
       style={{
-        color: link.text_color || '#1A1A1A',
+        color: link.text_color || '#a9b4c0',
         fontSize: link.text_size || '1rem',
         textAlign: (link.text_align as any) || 'center',
         fontWeight: link.text_bold ? 'bold' : 'normal',

@@ -90,7 +90,7 @@ function QuestionEditor({
   const needsOptions = ['dropdown', 'checkbox', 'radio'].includes(q.type)
 
   return (
-    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px', marginBottom: 12 }}>
+    <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(184,214,242,.13)', borderRadius: 14, padding: '16px 20px', marginBottom: 12 }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         {/* Reorder */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingTop: 8 }}>
@@ -115,7 +115,7 @@ function QuestionEditor({
               onChange={e => onChange({ ...q, label: e.target.value })}
             />
             {/* Required toggle */}
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '0.8rem', fontWeight: 600, color: q.is_required ? '#0d3369' : '#94a3b8' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '0.8rem', fontWeight: 600, color: q.is_required ? '#b8dcff' : '#637180' }}>
               <input type="checkbox" checked={q.is_required} onChange={e => onChange({ ...q, is_required: e.target.checked })} style={{ accentColor: '#0d3369' }} />
               Wajib *
             </label>
@@ -396,16 +396,16 @@ export default function SurveyTab() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid #e2e8f0', width: '100%', paddingBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid rgba(184,214,242,.13)', width: '100%', paddingBottom: 10 }}>
           <button
             onClick={() => setActiveTab('manage')}
-            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'manage' ? 800 : 500, color: activeTab === 'manage' ? '#0d3369' : '#64748b', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'manage' ? '2px solid #0d3369' : '2px solid transparent' }}
+            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'manage' ? 800 : 500, color: activeTab === 'manage' ? '#f3f7fb' : '#637180', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'manage' ? '2px solid #8cc6ff' : '2px solid transparent' }}
           >
             Kelola Survey
           </button>
           <button
             onClick={() => setActiveTab('results')}
-            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'results' ? 800 : 500, color: activeTab === 'results' ? '#0d3369' : '#64748b', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'results' ? '2px solid #0d3369' : '2px solid transparent' }}
+            style={{ background: 'none', border: 'none', fontSize: '0.95rem', fontWeight: activeTab === 'results' ? 800 : 500, color: activeTab === 'results' ? '#f3f7fb' : '#637180', cursor: 'pointer', paddingBottom: 6, borderBottom: activeTab === 'results' ? '2px solid #8cc6ff' : '2px solid transparent' }}
           >
             Hasil Survey
           </button>
@@ -444,9 +444,9 @@ export default function SurveyTab() {
       {/* Main Content */}
       {activeTab === 'manage' ? (
         showForm ? (
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 28 }}>
+        <div style={{ background: 'rgba(8,13,19,.88)', border: '1px solid rgba(184,214,242,.13)', borderRadius: 18, padding: 28 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0d3369' }}>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f3f7fb' }}>
               {editing ? 'Edit Survey' : 'Buat Survey Baru'}
             </h2>
             <button className={styles.closeBtn} onClick={() => setShowForm(false)}><X size={18} /></button>
@@ -461,7 +461,7 @@ export default function SurveyTab() {
             <div className="form-group">
               <label className="label">Slug (URL) *</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>marcatching.com/survey/</span>
+                <span style={{ fontSize: '0.8rem', color: '#637180', whiteSpace: 'nowrap' }}>marcatching.com/survey/</span>
                 <input className="input" value={slug} onChange={e => setSlug(slugify(e.target.value))} placeholder="nama-survey" />
               </div>
             </div>
@@ -469,9 +469,9 @@ export default function SurveyTab() {
 
           {/* Status */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0d3369' }}>Status Survey:</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#a9b4c0' }}>Status Survey:</label>
             <button onClick={() => setStatus(s => s === 'active' ? 'inactive' : 'active')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, background: status === 'active' ? '#dcfce7' : '#f1f5f9', border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem', color: status === 'active' ? '#16a34a' : '#94a3b8' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: status === 'active' ? 'rgba(121,214,174,.1)' : 'rgba(255,255,255,.04)', border: '1px solid rgba(184,214,242,.12)', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem', color: status === 'active' ? '#9de0c1' : '#637180' }}>
               {status === 'active' ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
               {status === 'active' ? 'Active' : 'Inactive'}
             </button>
@@ -515,15 +515,15 @@ export default function SurveyTab() {
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0d3369' }}>Pertanyaan Biodata ({biodataQs.length})</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Ditampilkan di awal survey untuk collect data diri</p>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#f3f7fb' }}>Pertanyaan Biodata ({biodataQs.length})</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#637180' }}>Ditampilkan di awal survey untuk collect data diri</p>
               </div>
               <button className="btn btn-ghost" style={{ padding: '7px 14px', fontSize: '0.82rem' }} onClick={() => addQuestion('biodata')}>
                 <Plus size={14} /> Tambah
               </button>
             </div>
             {biodataQs.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '20px 0', color: '#94a3b8', fontSize: '0.82rem', border: '1.5px dashed #e2e8f0', borderRadius: 10 }}>
+              <div style={{ textAlign: 'center', padding: '20px 0', color: '#637180', fontSize: '0.82rem', border: '1px dashed rgba(184,214,242,.18)', borderRadius: 12 }}>
                 Belum ada pertanyaan biodata.
               </div>
             )}
@@ -539,24 +539,24 @@ export default function SurveyTab() {
 
           {/* divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Pertanyaan Survey</span>
-            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+            <div style={{ flex: 1, height: 1, background: 'rgba(184,214,242,.13)' }} />
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#637180', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Pertanyaan Survey</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(184,214,242,.13)' }} />
           </div>
 
           {/* ── SURVEY QUESTIONS ── */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0d3369' }}>Pertanyaan Survey ({questions.length})</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Pertanyaan utama yang akan dijawab satu per satu</p>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#f3f7fb' }}>Pertanyaan Survey ({questions.length})</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#637180' }}>Pertanyaan utama yang akan dijawab satu per satu</p>
               </div>
               <button className="btn btn-ghost" style={{ padding: '7px 14px', fontSize: '0.82rem' }} onClick={() => addQuestion('survey')}>
                 <Plus size={14} /> Tambah
               </button>
             </div>
             {questions.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '20px 0', color: '#94a3b8', fontSize: '0.82rem', border: '1.5px dashed #e2e8f0', borderRadius: 10 }}>
+              <div style={{ textAlign: 'center', padding: '20px 0', color: '#637180', fontSize: '0.82rem', border: '1px dashed rgba(184,214,242,.18)', borderRadius: 12 }}>
                 Belum ada pertanyaan survey.
               </div>
             )}
@@ -571,10 +571,10 @@ export default function SurveyTab() {
           </div>
 
           {/* Action Bar (Sticky Bottom) */}
-          <div style={{ position: 'sticky', bottom: -28, left: 0, right: 0, background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '16px 28px', margin: '20px -28px -28px -28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, boxShadow: '0 -8px 30px rgba(0,0,0,0.06)', borderRadius: '0 0 16px 16px' }}>
+          <div style={{ position: 'sticky', bottom: -28, left: 0, right: 0, background: 'rgba(6,10,15,.94)', borderTop: '1px solid rgba(184,214,242,.13)', padding: '16px 28px', margin: '20px -28px -28px -28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, boxShadow: '0 -12px 36px rgba(0,0,0,.24)', borderRadius: '0 0 16px 16px', backdropFilter: 'blur(18px)' }}>
             <div style={{ display: 'flex', gap: 12 }}>
-               <button className="btn btn-ghost" style={{ background: '#f8fafc', color: '#0d3369', border: '1px solid #e2e8f0', fontWeight: 700 }} onClick={() => addQuestion('biodata')}><Plus size={16}/> Tambah Biodata</button>
-               <button className="btn btn-navy" style={{ background: '#3b82f6', border: 'none', fontWeight: 700 }} onClick={() => addQuestion('survey')}><Plus size={16}/> Tambah Pertanyaan</button>
+               <button className="btn btn-ghost" style={{ fontWeight: 700 }} onClick={() => addQuestion('biodata')}><Plus size={16}/> Tambah Biodata</button>
+               <button className="btn btn-navy" style={{ fontWeight: 700 }} onClick={() => addQuestion('survey')}><Plus size={16}/> Tambah Pertanyaan</button>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <button className="btn btn-ghost" onClick={() => setShowForm(false)}>Batal</button>
@@ -591,24 +591,24 @@ export default function SurveyTab() {
             <div className={styles.loading}>Memuat data survey...</div>
           ) : surveys.length === 0 ? (
             <div className={styles.emptyState}>
-              <p style={{ margin: 0, fontWeight: 700, color: '#0d3369' }}>Belum ada survey.</p>
-              <p style={{ margin: '8px 0 0', color: '#94a3b8', fontSize: '0.88rem' }}>Klik "Buat Survey" untuk membuat survey pertama kamu.</p>
+              <p style={{ margin: 0, fontWeight: 700, color: '#f3f7fb' }}>Belum ada survey.</p>
+              <p style={{ margin: '8px 0 0', color: '#637180', fontSize: '0.88rem' }}>Klik "Buat Survey" untuk membuat survey pertama kamu.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {surveys.map(s => (
-                <div key={s.id} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div key={s.id} style={{ background: 'rgba(8,13,19,.88)', border: '1px solid rgba(184,214,242,.13)', borderRadius: 14, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
                   {s.image_url && (
                     <img src={s.image_url} alt={s.title} style={{ width: 64, height: 48, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid #e2e8f0' }} />
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0d3369' }}>{s.title}</span>
+                      <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#f3f7fb' }}>{s.title}</span>
                       <span style={{ padding: '2px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 700, background: s.status === 'active' ? '#dcfce7' : '#f1f5f9', color: s.status === 'active' ? '#16a34a' : '#94a3b8' }}>
                         {s.status === 'active' ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#637180' }}>
                       marcatching.com/survey/{s.slug} · {s.survey_questions?.length ?? 0} pertanyaan
                     </div>
                   </div>
@@ -631,7 +631,7 @@ export default function SurveyTab() {
         /* Results View */
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#0d3369' }}>Pilih Survey:</label>
+            <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#a9b4c0' }}>Pilih Survey:</label>
             <select className="select" value={resultsSurveyTitle} onChange={e => setResultsSurveyTitle(e.target.value)} style={{ width: 240 }}>
               <option value="">-- Pilih Survey --</option>
               {surveys.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}

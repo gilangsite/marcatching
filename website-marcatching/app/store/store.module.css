@@ -1086,3 +1086,254 @@
 @media (max-width: 400px) {
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Marcatching rebrand alignment */
+.main {
+  color-scheme: dark;
+  color: #f3f7fb;
+  background:
+    radial-gradient(circle at 50% -8%, rgba(140, 198, 255, 0.09), transparent 34rem),
+    #030508;
+}
+
+.hero {
+  border-color: rgba(184, 214, 242, 0.1);
+}
+
+.heroTag,
+.blockCaption,
+.cardSub,
+.cardCheckouts,
+.emptyState,
+.sheetEyebrow,
+.sheetProductRow span,
+.cartInfo span,
+.cartSummary span {
+  color: #8e9baa;
+}
+
+.heroTitle,
+.blockHeadline,
+.cardName,
+.cardPriceActual,
+.sheetTitle,
+.sheetProductRow strong,
+.sheetProductRow p,
+.cartInfo strong,
+.cartPrice strong,
+.cartSummary strong {
+  color: #f3f7fb;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+}
+
+.heroDesc {
+  color: #8e9baa;
+}
+
+.filterBar,
+.bottomSearchBar {
+  background: rgba(3, 5, 8, 0.84);
+  border-color: rgba(184, 214, 242, 0.11);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+}
+
+.catPill,
+.categoryMenuBtn,
+.shopNavItem,
+.cardDetailBtn,
+.clearSearch,
+.sheetClose,
+.cartRemove {
+  color: #b8c5d1;
+  background: rgba(8, 13, 19, 0.86);
+  border-color: rgba(184, 214, 242, 0.14);
+  box-shadow: none;
+}
+
+.catPill:hover,
+.catPillActive,
+.categoryMenuBtn:hover,
+.categoryMenuBtnActive,
+.shopNavItem:hover,
+.shopNavItemActive {
+  color: #f3f7fb;
+  background: rgba(140, 198, 255, 0.09);
+  border-color: rgba(140, 198, 255, 0.28);
+  box-shadow: none;
+}
+
+.catPillActive {
+  color: #04101a;
+  background: #dceeff;
+  border-color: #dceeff;
+}
+
+.categoryDropdown,
+.storeSheet {
+  color: #f3f7fb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 48%),
+    #080d13;
+  border-color: rgba(184, 214, 242, 0.14);
+  box-shadow: 0 28px 82px rgba(0, 0, 0, 0.46);
+}
+
+.categoryDropdownItem {
+  color: #b9c6d1;
+}
+
+.categoryDropdownItem:hover,
+.categoryDropdownItemActive {
+  color: #f3f7fb;
+  background: rgba(140, 198, 255, 0.08);
+}
+
+.shopNavItem strong {
+  color: #04101a;
+  background: #dceeff;
+  border-color: #030508;
+}
+
+.card {
+  color: #f3f7fb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.032), transparent 48%),
+    rgba(8, 13, 19, 0.9);
+  border-color: rgba(184, 214, 242, 0.13);
+  border-radius: 16px;
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.22);
+}
+
+.card:hover {
+  border-color: rgba(140, 198, 255, 0.3);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.36);
+}
+
+.cardThumb,
+.cardThumbPlaceholder,
+.cartThumb {
+  background: #060a0f;
+}
+
+.cardThumbPlaceholder span {
+  color: rgba(140, 198, 255, 0.16);
+}
+
+.cardCatBadge {
+  color: #dceeff;
+  background: rgba(3, 7, 11, 0.76);
+  border-color: rgba(184, 214, 242, 0.15);
+}
+
+.cardFooter,
+.cartSummary {
+  border-color: rgba(184, 214, 242, 0.11);
+}
+
+.cardCartBtn,
+.voucherSheetBtn,
+.cartCheckoutBtn,
+.bottomSearchBtn {
+  color: #04101a;
+  background: #dceeff;
+  border-color: #dceeff;
+  border-radius: 999px;
+}
+
+.cardCartBtn:hover,
+.voucherSheetBtn:hover,
+.cartCheckoutBtn:hover,
+.bottomSearchBtn:hover {
+  background: #f3f8fd;
+}
+
+.comingSoonOverlay {
+  background: rgba(3, 5, 8, 0.7);
+}
+
+.comingSoonBadge {
+  color: #dceeff;
+  background: rgba(140, 198, 255, 0.09);
+  border-color: rgba(140, 198, 255, 0.28);
+}
+
+.skeletonCard {
+  background: linear-gradient(90deg, #080d13 25%, #101a25 50%, #080d13 75%);
+  background-size: 200% 100%;
+}
+
+.sheetOverlay {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.voucherSheetInput,
+.bottomSearchForm {
+  color: #f3f7fb;
+  background: rgba(3, 7, 11, 0.78);
+  border-color: rgba(184, 214, 242, 0.15);
+}
+
+.voucherSheetInput:focus {
+  border-color: rgba(140, 198, 255, 0.54);
+}
+
+.sheetMessage,
+.appliedVoucherBox,
+.sheetProductRow,
+.cartRow,
+.cartEmpty {
+  color: #dce6ef;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(184, 214, 242, 0.13);
+}
+
+.sheetProductRowActive {
+  background: rgba(140, 198, 255, 0.07);
+  border-color: rgba(140, 198, 255, 0.27);
+}
+
+.appliedVoucherBox strong,
+.appliedVoucherBox button,
+.cartEmpty {
+  color: #b8dcff;
+}
+
+.cartSummary {
+  background: rgba(8, 13, 19, 0.94);
+}
+
+.bottomSearchInput {
+  color: #f3f7fb;
+}
+
+.bottomSearchInput::placeholder,
+.bottomSearchIcon {
+  color: #637180;
+}
+
+.bottomSearchClear {
+  color: #8e9baa;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 640px) {
+  .main { padding-bottom: 106px; }
+  .hero { padding: 64px 18px 36px; }
+  .grid { gap: 10px; }
+  .card { border-radius: 14px; }
+  .cardBody { padding: 12px 10px; }
+  .cardName { font-size: 0.82rem; }
+  .cardPriceActual { font-size: 0.88rem; }
+  .cardActions { gap: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardThumbImg,
+  .blockBtn { transition-duration: 0.01ms !important; }
+  .skeletonCard { animation: none; }
+}

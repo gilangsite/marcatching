@@ -17,6 +17,24 @@ export default function PWARegister() {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
 
+    // Service worker menyimpan HTML lama berdasarkan origin. Di localhost ini
+    // bisa membuat chunk CSS dari Next dev tidak cocok dengan halaman terbaru.
+    // Lepaskan semua worker dan cache PWA saat development agar reload lokal
+    // selalu menggunakan aset yang baru dibuat Turbopack.
+    if (process.env.NODE_ENV === 'development') {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => registration.unregister())
+      })
+      if ('caches' in window) {
+        caches.keys().then((keys) => {
+          keys
+            .filter((key) => key.startsWith('marcatching-'))
+            .forEach((key) => caches.delete(key))
+        })
+      }
+      return
+    }
+
     let refreshing = false
 
     async function registerSW() {

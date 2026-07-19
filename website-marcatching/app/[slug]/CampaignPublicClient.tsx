@@ -68,6 +68,16 @@ const PAGE_STYLES = `
   transform: translateY(-6px) !important;
   box-shadow: 0 20px 56px rgba(0,0,0,0.1) !important;
 }
+
+@media (max-width: 640px) {
+  .camp-btn { padding: 15px 20px !important; font-size: .94rem !important; border-radius: 999px !important; }
+  .camp-card { border-radius: 16px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .camp-btn, .camp-card { transition-duration: .01ms !important; }
+  .camp-btn:hover, .camp-card:hover { transform: none !important; }
+}
 `
 
 // ── Subtle sparkle background ─────────────────────────────────
@@ -75,23 +85,23 @@ function SparkleBackground({ theme }: { theme: 'black' | 'white' }) {
   if (theme === 'black') {
     // Dark: subtle blue/indigo orbs, very low opacity
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#050911' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#030508' }}>
         <div style={{
           position: 'absolute', width: 600, height: 600,
           borderRadius: '50%', top: '-10%', left: '-15%',
-          background: 'radial-gradient(circle, rgba(13,51,105,0.35) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(140,198,255,0.13) 0%, transparent 70%)',
           filter: 'blur(60px)', animation: 'orbDrift1 18s ease-in-out infinite',
         }} />
         <div style={{
           position: 'absolute', width: 500, height: 500,
           borderRadius: '50%', bottom: '5%', right: '-10%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(112,166,218,0.08) 0%, transparent 70%)',
           filter: 'blur(80px)', animation: 'orbDrift2 22s ease-in-out infinite',
         }} />
         <div style={{
           position: 'absolute', width: 350, height: 350,
           borderRadius: '50%', top: '40%', left: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(140,198,255,0.055) 0%, transparent 70%)',
           filter: 'blur(60px)', animation: 'orbDrift3 15s ease-in-out infinite',
         }} />
       </div>
@@ -99,23 +109,23 @@ function SparkleBackground({ theme }: { theme: 'black' | 'white' }) {
   }
   // Light: pure white bg with barely-visible soft color orbs drifting
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#ffffff' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden', background: '#f3f6f9' }}>
       <div style={{
         position: 'absolute', width: 700, height: 700,
         borderRadius: '50%', top: '-20%', left: '-20%',
-        background: 'radial-gradient(circle, rgba(219,234,254,0.55) 0%, transparent 65%)',
+        background: 'radial-gradient(circle, rgba(140,198,255,0.18) 0%, transparent 65%)',
         filter: 'blur(80px)', animation: 'orbDrift1 20s ease-in-out infinite',
       }} />
       <div style={{
         position: 'absolute', width: 500, height: 500,
         borderRadius: '50%', bottom: '0%', right: '-15%',
-        background: 'radial-gradient(circle, rgba(254,243,199,0.45) 0%, transparent 65%)',
+        background: 'radial-gradient(circle, rgba(184,214,242,0.15) 0%, transparent 65%)',
         filter: 'blur(90px)', animation: 'orbDrift2 25s ease-in-out infinite',
       }} />
       <div style={{
         position: 'absolute', width: 400, height: 400,
         borderRadius: '50%', top: '50%', left: '55%',
-        background: 'radial-gradient(circle, rgba(237,233,254,0.35) 0%, transparent 65%)',
+        background: 'radial-gradient(circle, rgba(140,198,255,0.08) 0%, transparent 65%)',
         filter: 'blur(70px)', animation: 'orbDrift3 17s ease-in-out infinite',
       }} />
     </div>
@@ -133,8 +143,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
       h3: 'clamp(1.2rem, 4vw, 1.7rem)',
       sub: '1.1rem'
     }
-    // Use the user-set color, fall back to theme default
-    const textColor = c.color || (theme === 'black' ? '#ffffff' : '#0f172a')
+    const textColor = theme === 'black' ? '#f3f7fb' : '#101827'
     // Elegant text-shadow under/below — subtle, not colored
     const shadowColor = theme === 'black' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)'
     return (
@@ -155,7 +164,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
   }
 
   if (block.type === 'text') {
-    const textColor = c.color || (theme === 'black' ? '#d1d5db' : '#374151')
+    const textColor = theme === 'black' ? '#a9b4c0' : '#52606e'
     return (
       <div style={{
         fontSize: c.font_size || '1.05rem',
@@ -242,10 +251,10 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
 
   if (block.type === 'button' && c.btn_text) {
     const defaultBg = theme === 'black'
-      ? 'linear-gradient(135deg, #0d3369 0%, #1d4ed8 100%)'
-      : 'linear-gradient(135deg, #0d3369 0%, #1d4ed8 100%)'
-    const bg = (c.btn_color && c.btn_color !== '#ffffff') ? c.btn_color : defaultBg
-    const textCol = (c.btn_text_color && c.btn_text_color !== '#000000') ? c.btn_text_color : '#ffffff'
+      ? '#dceeff'
+      : '#07111b'
+    const bg = defaultBg
+    const textCol = theme === 'black' ? '#04101a' : '#ffffff'
     return (
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
         <a
@@ -259,7 +268,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             justifyContent: 'center',
             width: '100%',
             padding: '18px 32px',
-            borderRadius: 14,
+            borderRadius: 999,
             fontWeight: 800,
             fontSize: '1.05rem',
             letterSpacing: '0.01em',
@@ -295,10 +304,10 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
         borderRadius: 20,
         overflow: 'hidden',
         background: theme === 'black'
-          ? 'linear-gradient(145deg, #111827, #1a2336)'
+              ? 'linear-gradient(145deg, #0c131c, #080d13)'
           : '#ffffff',
         border: theme === 'black'
-          ? '1px solid rgba(255,255,255,0.06)'
+          ? '1px solid rgba(184,214,242,0.13)'
           : '1px solid rgba(0,0,0,0.06)',
         textDecoration: 'none',
         color: 'inherit',
@@ -310,7 +319,7 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
         width: '100%',
       }}
     >
-      <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: theme === 'black' ? '#1f2937' : '#f8fafc' }}>
+      <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: theme === 'black' ? '#060a0f' : '#e9eef3' }}>
         {thumb
           ? (
             <Image
@@ -340,10 +349,10 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
             {product.price_before_discount > product.price_after_discount && (
               <span style={{ fontSize: '0.72rem', color: theme === 'black' ? '#6b7280' : '#94a3b8', textDecoration: 'line-through' }}>{formatRp(product.price_before_discount)}</span>
             )}
-            <span style={{ fontSize: '1.1rem', fontWeight: 800, color: theme === 'black' ? '#38bdf8' : '#0d3369' }}>{formatRp(product.price_after_discount)}</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 800, color: theme === 'black' ? '#b8dcff' : '#071a2e' }}>{formatRp(product.price_after_discount)}</span>
           </div>
           {(product.checkout_clicks ?? 0) > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: theme === 'black' ? 'rgba(56,189,248,0.1)' : '#eff6ff', color: theme === 'black' ? '#38bdf8' : '#0d3369', padding: '5px 10px', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: theme === 'black' ? 'rgba(140,198,255,.09)' : '#e6eef6', color: theme === 'black' ? '#b8dcff' : '#071a2e', padding: '5px 10px', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700 }}>
               <ShoppingCart size={11} />
               <span>{product.checkout_clicks}</span>
             </div>
@@ -362,7 +371,10 @@ export default function CampaignPublicClient({ campaign, products, navLinks }: {
     return map
   }, [products])
 
-  const { theme, blocks } = campaign
+  const blocks = campaign.blocks
+  // Public campaign pages follow the same dark Marcatching surface.
+  // The saved campaign configuration remains untouched in the backend.
+  const theme: 'black' | 'white' = 'black'
 
   return (
     <>
@@ -377,7 +389,7 @@ export default function CampaignPublicClient({ campaign, products, navLinks }: {
           color: theme === 'black' ? '#f9fafb' : '#0f172a',
           padding: 'calc(76px + env(safe-area-inset-top, 12px)) 24px 100px',
         }}>
-          <div style={{ maxWidth: 520, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ maxWidth: 620, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {(!blocks || blocks.length === 0) && (
               <div style={{ textAlign: 'center', padding: '60px 0', color: theme === 'black' ? '#6b7280' : '#94a3b8', fontFamily: "'DM Sans', sans-serif" }}>
                 Campaign ini belum memiliki konten.

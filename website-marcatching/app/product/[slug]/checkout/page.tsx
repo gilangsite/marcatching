@@ -120,7 +120,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   if (loading) {
     return (
       <div className={styles.checkoutPage}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#8e9baa' }}>
           Memuat...
         </div>
       </div>
@@ -130,9 +130,9 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   if (!product) {
     return (
       <div className={styles.checkoutPage}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b', gap: 16, padding: 24 }}>
-          <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0d3369' }}>Produk tidak ditemukan</p>
-          <Link href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</Link>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#8e9baa', gap: 16, padding: 24 }}>
+          <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f3f7fb' }}>Produk tidak ditemukan</p>
+          <Link href="/" style={{ color: '#b8dcff', textDecoration: 'underline' }}>Kembali ke beranda</Link>
         </div>
       </div>
     )
@@ -144,6 +144,15 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const addonTotal = selectedAddons.reduce((sum, a) => sum + a.priceDiscounted, 0)
   const subtotalBeforeVoucher = priceDiscounted + addonTotal
   const totalPaid = Math.max(0, subtotalBeforeVoucher - voucherDiscount)
+  const productDiscount = Math.max(0, priceOriginal - priceDiscounted)
+  const addonDiscount = selectedAddons.reduce(
+    (sum, addon) => sum + Math.max(0, addon.priceOriginal - addon.priceDiscounted),
+    0,
+  )
+  const totalSavings = productDiscount + addonDiscount + voucherDiscount
+  const productDiscountPercent = priceOriginal > 0
+    ? Math.round((productDiscount / priceOriginal) * 100)
+    : 0
 
   // Build poster URL
   let posterUrl = product.image_url || ''
@@ -308,7 +317,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           {posterUrl ? (
             <img src={posterUrl} alt={product.name} className={styles.posterImage} loading="lazy" />
           ) : (
-            <div style={{ width: '100%', height: '100%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+            <div style={{ width: '100%', height: '100%', background: '#060a0f', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#637180' }}>
               No Image
             </div>
           )}
@@ -339,6 +348,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
               </div>
             </div>
 
+            {productDiscount > 0 && (
+              <div className={styles.discountHighlight}>
+                <span className={styles.discountBadge}>Hemat {productDiscountPercent}%</span>
+                <span className={styles.discountAmount}>{formatRupiah(productDiscount)}</span>
+              </div>
+            )}
+
             {/* Add-on rows */}
             {selectedAddons.map(addon => (
               <div key={addon.id} className={styles.summaryProductRow}>
@@ -357,11 +373,17 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
             {voucherDiscount > 0 && (
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Potongan Voucher</span>
-                <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                <span className={styles.voucherDiscountAmount}>-{formatRupiah(voucherDiscount)}</span>
+              </div>
+            )}
+            {totalSavings > 0 && (
+              <div className={styles.savingsRow}>
+                <span>Total Hemat</span>
+                <strong>{formatRupiah(totalSavings)}</strong>
               </div>
             )}
             <div className={styles.priceRow}>
-              <span className={styles.priceLabel} style={{ fontWeight: 700, color: '#0d3369' }}>Total Bayar</span>
+              <span className={styles.totalLabel}>Total Bayar</span>
               <span className={styles.priceHighlight}>{formatRupiah(totalPaid)}</span>
             </div>
           </div>
@@ -591,7 +613,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 {/* Add-ons */}
                 {selectedAddons.map(addon => (
                   <div key={addon.id} className={styles.breakdownRow}>
-                    <span className={styles.breakdownLabel} style={{ color: '#475569' }}>+ {addon.name}</span>
+                    <span className={styles.breakdownLabel} style={{ color: '#a9b4c0' }}>+ {addon.name}</span>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                       {addon.priceOriginal > 0 && addon.priceOriginal !== addon.priceDiscounted && (
                         <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.78rem' }}>{formatRupiah(addon.priceOriginal)}</span>
@@ -604,7 +626,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 {voucherDiscount > 0 && (
                   <div className={styles.breakdownRow}>
                     <span className={styles.breakdownLabel}>Potongan Voucher</span>
-                    <span style={{ color: '#0d3369', fontWeight: 600 }}>-{formatRupiah(voucherDiscount)}</span>
+                    <span className={styles.voucherDiscountAmount}>-{formatRupiah(voucherDiscount)}</span>
                   </div>
                 )}
 

@@ -295,3 +295,135 @@
     gap: 12px;
   }
 }
+
+/* Marcatching rebrand alignment */
+.main {
+  color: #f3f7fb;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(140, 198, 255, 0.09), transparent 34rem),
+    #030508;
+}
+
+.hero {
+  min-height: auto;
+  padding: 132px 0 72px;
+}
+
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  background:
+    linear-gradient(90deg, rgba(184, 214, 242, 0.022) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(184, 214, 242, 0.022) 0 1px, transparent 1px 100%);
+  background-size: 54px 54px;
+  filter: none;
+  animation: none;
+}
+
+.heroContent {
+  max-width: 640px;
+}
+
+.homeLogoWrap {
+  width: min(72vw, 320px);
+  margin-bottom: 14px;
+}
+
+.homeTagline {
+  max-width: 26rem;
+  margin-bottom: 36px;
+  color: #8e9baa;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.linksList {
+  gap: 12px;
+}
+
+.emptyState {
+  color: #637180;
+}
+
+.contactSection {
+  position: relative;
+  padding: 48px 0 88px;
+  background: transparent;
+}
+
+.contactCard {
+  gap: 18px;
+  padding: 28px;
+  color: #f3f7fb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 48%),
+    rgba(8, 13, 19, 0.84);
+  border: 1px solid rgba(184, 214, 242, 0.13);
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+}
+
+.contactIcon {
+  background: rgba(140, 198, 255, 0.08);
+  color: #b8dcff;
+  border: 1px solid rgba(140, 198, 255, 0.13);
+}
+
+.contactTitle,
+.productCardName {
+  color: #f3f7fb;
+}
+
+.contactDesc,
+.productCardSub {
+  color: #8e9baa;
+  text-align: left;
+}
+
+.emailLink {
+  color: #b8dcff;
+}
+
+.emailLink:hover {
+  color: #e2f1ff;
+}
+
+.productCard {
+  color: #f3f7fb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 48%),
+    rgba(8, 13, 19, 0.88);
+  border: 1px solid rgba(184, 214, 242, 0.13);
+  border-radius: 18px;
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.26);
+}
+
+.productCard:hover {
+  border-color: rgba(140, 198, 255, 0.3);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38);
+}
+
+.productPoster {
+  background: #060a0f;
+}
+
+.productDiscountBadge {
+  background: rgba(255, 139, 139, 0.92);
+  color: #180707;
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 118px 0 58px; }
+  .heroContent { padding-inline: 16px; }
+  .homeLogoWrap { width: min(68vw, 260px); }
+  .homeTagline { margin-bottom: 30px; font-size: 0.92rem; }
+  .contactSection { padding: 34px 0 68px; }
+  .contactCard { padding: 22px 18px; border-radius: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .productCard,
+  .emailLink { transition-duration: 0.01ms !important; }
+}

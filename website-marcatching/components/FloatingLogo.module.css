@@ -6,8 +6,11 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--white);
-  box-shadow: var(--shadow-float);
+  background: rgba(8, 13, 19, 0.84);
+  border: 1px solid rgba(184, 214, 242, 0.14);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +19,7 @@
 
 .floating:hover {
   transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 16px 48px rgba(13, 51, 105, 0.22), 0 4px 16px rgba(13, 51, 105, 0.12);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.46), 0 0 0 1px rgba(140, 198, 255, 0.16);
 }
 
 @media (max-width: 640px) {
