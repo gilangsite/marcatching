@@ -1679,17 +1679,6 @@
   background: rgba(0, 0, 0, 0.06);
   margin: 24px 16px;
 }
-.mobileMenuBottomFade {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to top, rgba(245,243,238,1) 0%, rgba(245,243,238,0) 100%);
-  pointer-events: none;
-  z-index: 80;
-}
-
 /* ============================================================
    PREMIUM DASHBOARD — Marcatching Intelligence UI v2
    ============================================================ */
@@ -3905,4 +3894,198 @@
 .printArea,
 .printArea * {
   color: #111827 !important;
+}
+
+/* ── Homepage-blue action system ───────────────────────────
+   The homepage accent is #8cc6ff. Use the exact same fill for every
+   high-emphasis admin action and the rounded link/type controls. The dark ink
+   reaches strong contrast on that light-blue surface. */
+.page {
+  --admin-action-blue: #8cc6ff;
+  --admin-action-ink: #06101a;
+}
+
+.page :global(.btn-navy),
+.fullAnalyticsBtn,
+.contactBuyerBtn,
+.financePulseActions button,
+.analyticsRefreshBtn {
+  color: var(--admin-action-ink) !important;
+  background: var(--admin-action-blue) !important;
+  border-color: var(--admin-action-blue) !important;
+  box-shadow: 0 12px 30px rgba(140, 198, 255, 0.18) !important;
+}
+
+.page :global(.btn-navy) *,
+.fullAnalyticsBtn *,
+.contactBuyerBtn *,
+.financePulseActions button *,
+.analyticsRefreshBtn * {
+  color: var(--admin-action-ink) !important;
+  stroke: currentColor;
+}
+
+.page :global(.btn-navy):hover,
+.fullAnalyticsBtn:hover,
+.contactBuyerBtn:hover,
+.financePulseActions button:hover,
+.analyticsRefreshBtn:hover {
+  color: var(--admin-action-ink) !important;
+  background: var(--admin-action-blue) !important;
+  border-color: var(--admin-action-blue) !important;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.linkTypeBadge,
+.typeBtnActive {
+  color: var(--admin-action-ink) !important;
+  background: var(--admin-action-blue) !important;
+  border-color: var(--admin-action-blue) !important;
+}
+
+.linkTypeBadge *,
+.typeBtnActive * {
+  color: var(--admin-action-ink) !important;
+  stroke: currentColor;
+}
+
+/* A few legacy upload/actions are authored inline rather than with classes. */
+.page button[style*='background: #dbeafe'],
+.page button[style*='background:#dbeafe'],
+.page button[style*='background: #eff6ff'],
+.page button[style*='background:#eff6ff'],
+.page label[style*='background: #dbeafe'],
+.page label[style*='background:#dbeafe'],
+.page label[style*='background: #eff6ff'],
+.page label[style*='background:#eff6ff'] {
+  color: var(--admin-action-ink) !important;
+  background: var(--admin-action-blue) !important;
+  border-color: var(--admin-action-blue) !important;
+}
+
+.page button[style*='background: #dbeafe'] *,
+.page button[style*='background:#dbeafe'] *,
+.page button[style*='background: #eff6ff'] *,
+.page button[style*='background:#eff6ff'] *,
+.page label[style*='background: #dbeafe'] *,
+.page label[style*='background:#dbeafe'] *,
+.page label[style*='background: #eff6ff'] *,
+.page label[style*='background:#eff6ff'] * {
+  color: var(--admin-action-ink) !important;
+  stroke: currentColor;
+}
+
+/* ── Final dashboard text contrast lock ─────────────────────
+   Admin UI is now a dark surface throughout. Legacy tabs still inherit navy
+   and charcoal text from their former light theme, often through deeply nested
+   elements. Keep every piece of interface copy white regardless of nesting or
+   an older inline declaration. Rich-text editing and printable reports retain
+   their own authored/light-document colors below. */
+.page :where(
+  div,
+  section,
+  article,
+  header,
+  footer,
+  nav,
+  aside,
+  main,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  label,
+  small,
+  strong,
+  b,
+  em,
+  li,
+  td,
+  th,
+  button,
+  a,
+  legend,
+  summary,
+  output
+):not([contenteditable='true']) {
+  color: #ffffff !important;
+}
+
+.page input:not([type='color']),
+.page textarea,
+.page select,
+.page option {
+  color: #ffffff !important;
+}
+
+.page input::placeholder,
+.page textarea::placeholder {
+  color: rgba(255, 255, 255, 0.66) !important;
+}
+
+/* Preserve semantic meaning while keeping status colors bright on dark UI. */
+.page .statusActive,
+.page .success,
+.page .successMsg,
+.page .financeBadgePaid,
+.page [style*='color: #16a34a'],
+.page [style*='color:#16a34a'],
+.page [style*='color: rgb(22, 163, 74)'] {
+  color: #9de0c1 !important;
+}
+
+.page .statusSoon,
+.page .financeBadgePending,
+.page [style*='color: #b45309'],
+.page [style*='color:#b45309'],
+.page [style*='color: #92400e'],
+.page [style*='color:#92400e'] {
+  color: #ffd58f !important;
+}
+
+.page .error,
+.page .formError,
+.page .financeBadgeOverdue,
+.page [style*='color: #dc2626'],
+.page [style*='color:#dc2626'],
+.page [style*='color: #ef4444'],
+.page [style*='color:#ef4444'] {
+  color: #ffaaaa !important;
+}
+
+/* Printed reports intentionally remain dark text on white paper. */
+.printArea,
+.printArea * {
+  color: #111827 !important;
+}
+
+/* Branded actions use dark ink on the homepage-blue fill. */
+.page :global(.btn-navy),
+.page :global(.btn-navy) *,
+.fullAnalyticsBtn,
+.fullAnalyticsBtn *,
+.contactBuyerBtn,
+.contactBuyerBtn *,
+.financePulseActions button,
+.financePulseActions button *,
+.analyticsRefreshBtn,
+.analyticsRefreshBtn *,
+.linkTypeBadge,
+.linkTypeBadge *,
+.typeBtnActive,
+.typeBtnActive *,
+.page button[style*='background: #dbeafe'],
+.page button[style*='background:#dbeafe'],
+.page button[style*='background: #eff6ff'],
+.page button[style*='background:#eff6ff'],
+.page label[style*='background: #dbeafe'],
+.page label[style*='background:#dbeafe'],
+.page label[style*='background: #eff6ff'],
+.page label[style*='background:#eff6ff'] {
+  color: var(--admin-action-ink) !important;
 }
