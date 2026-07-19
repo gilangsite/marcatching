@@ -3,18 +3,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--off-white);
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at 20% 8%, rgba(140, 198, 255, 0.1), transparent 30rem),
+    radial-gradient(circle at 82% 92%, rgba(99, 148, 194, 0.07), transparent 26rem),
+    #030508;
   padding: 24px;
 }
 
 .card {
   width: 100%;
   max-width: 420px;
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  background: rgba(8, 13, 19, 0.88);
+  border: 1px solid rgba(184, 214, 242, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.42);
   padding: 44px 40px;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(140, 198, 255, 0.42), transparent);
 }
 
 .logoWrap {
@@ -29,15 +45,15 @@
 }
 
 .title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #f3f7fb;
   margin-bottom: 6px;
 }
 
 .subtitle {
   font-size: 0.88rem;
-  color: var(--text-secondary);
+  color: #8e9baa;
 }
 
 .form {
@@ -48,12 +64,69 @@
 
 .error {
   font-size: 0.85rem;
-  color: #dc2626;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  color: #ffaaaa;
+  background: rgba(255, 139, 139, 0.075);
+  border: 1px solid rgba(255, 139, 139, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
   text-align: center;
+}
+
+.success {
+  color: #9de0c1;
+  background: rgba(121, 214, 174, 0.075);
+  border: 1px solid rgba(121, 214, 174, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.page :global(.form-group) {
+  gap: 8px;
+}
+
+.page :global(.label) {
+  color: #a9b4c0;
+  letter-spacing: 0.08em;
+}
+
+.page :global(.input) {
+  color: #f3f7fb;
+  background: rgba(3, 7, 11, 0.78);
+  border-color: rgba(184, 214, 242, 0.16);
+  border-radius: 12px;
+}
+
+.page :global(.input):focus {
+  border-color: rgba(140, 198, 255, 0.56);
+  box-shadow: 0 0 0 3px rgba(140, 198, 255, 0.09);
+}
+
+.page :global(.input)::placeholder {
+  color: #52606e;
+}
+
+.page :global(.btn-navy) {
+  color: #04101a;
+  background: #dceeff;
+  border-color: #dceeff;
+}
+
+.page :global(.btn-navy):hover {
+  color: #02070b;
+  background: #f3f8fd;
+  border-color: #f3f8fd;
+}
+
+.page :global(.btn-outline) {
+  color: #c8d3de;
+  border-color: rgba(184, 214, 242, 0.18);
+}
+
+.page :global(.btn-outline):hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .submitBtn {
@@ -69,4 +142,9 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+@media (max-width: 540px) {
+  .page { padding: 16px; }
+  .card { padding: 36px 22px; border-radius: 20px; }
 }

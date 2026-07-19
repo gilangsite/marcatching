@@ -116,8 +116,8 @@ export default function AdminLoginPage() {
             </div>
           )}
 
-          {error && <p className={styles.error} style={{ color: '#ef4444', background: '#fef2f2', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>{error}</p>}
-          {successMsg && <p className={styles.success} style={{ color: '#10b981', background: '#ecfdf5', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>{successMsg}</p>}
+          {error && <p className={styles.error}>{error}</p>}
+          {successMsg && <p className={styles.success}>{successMsg}</p>}
 
           <button
             type="submit"

@@ -21,11 +21,11 @@
   height: 6px;
 }
 .carouselScrollArea::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 4px;
 }
 .carouselScrollArea::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(184, 214, 242, 0.18);
   border-radius: 4px;
 }
 
@@ -40,10 +40,11 @@
   flex: 0 0 100%;
   scroll-snap-align: center;
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  background: var(--gray-100, #f1f1f1);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.28);
+  background: #080d13;
+  border: 1px solid rgba(184, 214, 242, 0.12);
 }
 
 .imageItem img {
@@ -58,10 +59,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(8, 13, 19, 0.84);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: var(--navy, #0d3369);
+  border: 1px solid rgba(184, 214, 242, 0.16);
+  color: #dceeff;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -70,12 +71,12 @@
   justify-content: center;
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.34);
   transition: all 0.2s ease;
 }
 
 .navBtn:hover {
-  background: white;
+  background: #0d151f;
   transform: translateY(-50%) scale(1.05);
 }
 

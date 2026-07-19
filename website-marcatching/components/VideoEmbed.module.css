@@ -1,11 +1,12 @@
 .videoContainer {
   width: 100%;
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.28);
   margin: 16px 0;
-  background: var(--gray-100, #f1f1f1);
+  background: #080d13;
+  border: 1px solid rgba(184, 214, 242, 0.12);
   display: flex;
   justify-content: center;
 }
@@ -25,7 +26,7 @@
 .fallbackLinkWrap {
   padding: 24px;
   text-align: center;
-  background: var(--navy, #0d3369);
+  background: #080d13;
   width: 100%;
 }
 
@@ -35,11 +36,11 @@
   font-weight: 500;
   display: inline-block;
   padding: 8px 16px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 8px;
+  border: 1px solid rgba(184, 214, 242, 0.2);
+  border-radius: 999px;
   transition: background 0.2s;
 }
 
 .fallbackLink:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(140, 198, 255, 0.08);
 }

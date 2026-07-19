@@ -19,6 +19,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [descOpen, setDescOpen] = useState(false)
+  const [posterError, setPosterError] = useState(false)
 
   useEffect(() => {
     async function fetchProduct() {
@@ -41,7 +42,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     return (
       <div className={styles.productPage}>
         <div className={styles.notFound}>
-          <p style={{ color: '#64748b' }}>Memuat...</p>
+          <p style={{ color: '#8e9baa' }}>Memuat...</p>
         </div>
       </div>
     )
@@ -78,11 +79,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       <div className={styles.splitLayout}>
         {/* Left: Poster */}
         <div className={styles.posterSide}>
-          {posterUrl ? (
-            <img src={posterUrl} alt={product.name} className={styles.posterImage} loading="lazy" />
+          {posterUrl && !posterError ? (
+            <img src={posterUrl} alt={product.name} className={styles.posterImage} loading="lazy" onError={() => setPosterError(true)} />
           ) : (
-            <div style={{ width: '100%', height: '100%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.2rem' }}>
-              No Image
+            <div className={styles.posterPlaceholder}>
+              <span>Marcatching</span>
+              <small>Product preview</small>
             </div>
           )}
         </div>

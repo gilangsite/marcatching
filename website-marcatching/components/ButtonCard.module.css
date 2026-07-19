@@ -13,23 +13,26 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 22px;
-  background: #ffffff;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-lg);
+  min-height: 76px;
+  padding: 16px 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 48%),
+    rgba(8, 13, 19, 0.88) !important;
+  border: 1px solid rgba(184, 214, 242, 0.13);
+  border-radius: 16px;
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
 }
 
 .wrapper:not([aria-disabled='true']):hover .card {
-  border-color: #3b82f6;
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
+  border-color: rgba(140, 198, 255, 0.32);
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.32);
   transform: translateY(-2px);
 }
 
 .card.disabled {
-  background: #ffffff;
-  border-color: transparent;
+  background: rgba(8, 13, 19, 0.72) !important;
+  border-color: rgba(184, 214, 242, 0.09);
   opacity: 0.6;
 }
 
@@ -40,15 +43,15 @@
   width: 44px;
   height: 44px;
   min-width: 44px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(140, 198, 255, 0.075);
   border-radius: 12px;
-  color: #000000;
+  color: #a9d3f8 !important;
   transition: background 0.22s ease, color 0.22s ease;
 }
 
 .wrapper:not([aria-disabled='true']):hover .iconWrap {
-  background: #000000;
-  color: #ffffff;
+  background: rgba(140, 198, 255, 0.14);
+  color: #dceeff !important;
 }
 
 .textWrap {
@@ -61,7 +64,7 @@
 .title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #000000;
+  color: #f3f7fb !important;
 }
 
 .badge {
@@ -69,8 +72,9 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #1e293b;
-  background: #f1f5f9;
+  color: #aebdca;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(184, 214, 242, 0.1);
   border-radius: 999px;
   padding: 3px 9px;
 }
@@ -78,11 +82,17 @@
 .arrow {
   display: flex;
   align-items: center;
-  color: #000000;
+  color: #758493 !important;
   transition: color 0.22s ease, transform 0.22s ease;
 }
 
 .wrapper:not([aria-disabled='true']):hover .arrow {
-  color: #3b82f6;
+  color: #b8dcff !important;
   transform: translateX(2px);
+}
+
+@media (max-width: 640px) {
+  .card { min-height: 68px; padding: 14px 15px; gap: 13px; }
+  .iconWrap { width: 40px; height: 40px; min-width: 40px; }
+  .title { font-size: 0.9rem; }
 }

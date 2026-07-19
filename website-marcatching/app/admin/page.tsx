@@ -48,7 +48,7 @@ function AdminToast() {
         message: customEvent.detail?.message || 'Updated Successfully',
         type: customEvent.detail?.type === 'error' ? 'error' : 'success',
       })
-      timerRef.current = window.setTimeout(() => setToast(null), 1000)
+      timerRef.current = window.setTimeout(() => setToast(null), 1800)
     }
     window.addEventListener('show-admin-toast', handleShow)
     return () => {
@@ -1410,8 +1410,8 @@ function AdminDashboardInner() {
 
   async function saveContact(e: FormEvent) {
     e.preventDefault(); setContactSaving(true); setContactMsg('')
-    if (contact) { const { error } = await supabase.from('contact').update({ email: contactEmail }).eq('id', contact.id); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
-    else { const { error } = await supabase.from('contact').insert({ email: contactEmail }); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? '❌ Error: ' + error.message : '✓ Email berhasil disimpan.'); fetchContact() }
+    if (contact) { const { error } = await supabase.from('contact').update({ email: contactEmail }).eq('id', contact.id); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? 'Error: ' + error.message : 'Email berhasil disimpan.'); fetchContact() }
+    else { const { error } = await supabase.from('contact').insert({ email: contactEmail }); if (!error) showAdminToast('Email berhasil disimpan'); setContactMsg(error ? 'Error: ' + error.message : 'Email berhasil disimpan.'); fetchContact() }
     setContactSaving(false)
   }
 

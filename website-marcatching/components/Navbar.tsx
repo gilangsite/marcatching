@@ -16,7 +16,7 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Image
-            src={variant === 'light' ? '/logo-type-navy.png' : '/logo-type-white.png'}
+            src="/logo-type-white.png"
             alt="Marcatching"
             width={140}
             height={36}

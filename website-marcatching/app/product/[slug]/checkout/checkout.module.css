@@ -778,3 +778,189 @@
     padding: 14px 20px;
   }
 }
+
+/* Marcatching rebrand alignment */
+.checkoutPage {
+  color-scheme: dark;
+  color: #f3f7fb;
+  background:
+    radial-gradient(circle at 80% 0%, rgba(140, 198, 255, 0.08), transparent 30rem),
+    #030508;
+}
+
+.posterSide {
+  background: #060a0f;
+  border-right: 1px solid rgba(184, 214, 242, 0.1);
+}
+
+.checkoutTitle,
+.summaryProductName,
+.priceValue,
+.priceHighlight,
+.addonTitle,
+.addonItemName,
+.addonItemPrice,
+.addonOptionName,
+.addonOptionPrice,
+.modalTitle,
+.bankAccount,
+.breakdownValue,
+.breakdownTotalLabel,
+.breakdownTotalValue {
+  color: #f3f7fb;
+}
+
+.checkoutSubtitle,
+.backBtn,
+.productSummaryLabel,
+.summaryAddonName,
+.priceLabel,
+.addonSubtitle,
+.modalSubtitle,
+.bankName,
+.breakdownLabel,
+.paymentNote {
+  color: #8e9baa;
+}
+
+.productSummary,
+.addonSection,
+.addonItem,
+.addonDropdownPanel,
+.modalCard,
+.bankInfo {
+  color: #f3f7fb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 48%),
+    rgba(8, 13, 19, 0.9);
+  border-color: rgba(184, 214, 242, 0.14);
+  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
+}
+
+.divider,
+.breakdownRow,
+.addonDropdownOption,
+.addonSearchWrap {
+  border-color: rgba(184, 214, 242, 0.1);
+}
+
+.addonIconWrap,
+.addonOptionAdd {
+  color: #04101a;
+  background: #dceeff;
+}
+
+.addonItemRemove,
+.addonDropdownTrigger {
+  color: #b8c5d1;
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(184, 214, 242, 0.15);
+}
+
+.addonDropdownTrigger:hover,
+.addonItemRemove:hover {
+  color: #f3f7fb;
+  background: rgba(140, 198, 255, 0.08);
+  border-color: rgba(140, 198, 255, 0.28);
+}
+
+.addonSearchWrap {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.addonSearchInput,
+.voucherInput,
+.formInput,
+.formSelect {
+  color: #f3f7fb;
+  background: rgba(3, 7, 11, 0.78);
+  border-color: rgba(184, 214, 242, 0.16);
+  border-radius: 12px;
+}
+
+.addonSearchInput:focus,
+.voucherInput:focus,
+.formInput:focus,
+.formSelect:focus {
+  border-color: rgba(140, 198, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(140, 198, 255, 0.09);
+}
+
+.formInput::placeholder,
+.addonSearchInput::placeholder {
+  color: #52606e;
+}
+
+.addonDropdownOption:hover {
+  background: rgba(140, 198, 255, 0.07);
+}
+
+.voucherLabel,
+.formLabel {
+  color: #a9b4c0;
+}
+
+.voucherBtn,
+.ctaButton,
+.copyBtn,
+.payBtn {
+  color: #04101a;
+  background: #dceeff;
+  border-radius: 999px;
+}
+
+.voucherBtn:hover,
+.ctaButton:hover,
+.copyBtn:hover,
+.payBtn:hover {
+  color: #02070b;
+  background: #f3f8fd;
+  box-shadow: 0 14px 36px rgba(140, 198, 255, 0.14);
+}
+
+.voucherSuccess {
+  color: #9de0c1;
+  background: rgba(121, 214, 174, 0.075);
+}
+
+.voucherError,
+.formError {
+  color: #ffaaaa;
+  background: rgba(255, 139, 139, 0.075);
+  border-color: rgba(255, 139, 139, 0.2);
+}
+
+.fixedCTA {
+  background: rgba(3, 5, 8, 0.86);
+  border-color: rgba(184, 214, 242, 0.12);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+}
+
+.modalOverlay {
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.breakdownTotal {
+  border-color: rgba(140, 198, 255, 0.32);
+}
+
+@media (max-width: 768px) {
+  .contentSide { padding: 24px 16px 146px; }
+  .productSummary,
+  .addonSection { padding: 18px 15px; }
+  .voucherInputWrap { flex-direction: column; }
+  .voucherBtn { width: 100%; }
+  .fixedCTA { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
+  .modalOverlay { padding: 12px; }
+  .modalCard { max-height: calc(100svh - 24px); border-radius: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .addonItem,
+  .addonDropdownPanel { animation: none; }
+  .ctaButton,
+  .payBtn { transition-duration: 0.01ms; }
+}
