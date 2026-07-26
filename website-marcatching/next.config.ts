@@ -1,6 +1,12 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Next.js dev server only trusts the "localhost" origin by default.
+  // Local subdomains (course./page./inside.localhost:3000) need to be
+  // allow-listed here or proxy.ts sees hostname="localhost" and the
+  // subdomain rewrite logic never triggers.
+  allowedDevOrigins: ['*.localhost'],
+
   images: {
     remotePatterns: [
       {

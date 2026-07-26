@@ -1932,7 +1932,6 @@ function AdminDashboardInner() {
             </motion.button>
 
             <div style={{ height: 'calc(env(safe-area-inset-bottom, 12px) + 24px)' }} />
-            <div className={styles.mobileMenuBottomFade} />
           </motion.div>
         )}
 

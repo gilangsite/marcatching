@@ -3,40 +3,58 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
+import CourseShell from './CourseShell'
 import styles from './course.module.css'
 
 export default function CourseLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [checking, setChecking] = useState(true)
+  const isLoginPage = pathname === '/login' || pathname === '/course/login'
+  const [checking, setChecking] = useState(!isLoginPage)
 
   useEffect(() => {
     // Don't guard the login page itself
-    if (pathname === '/login') {
-      setChecking(false)
+    if (isLoginPage) {
       return
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
+    let active = true
+    const fallbackTimer = window.setTimeout(() => {
+      if (active) router.replace('/login')
+    }, 8000)
+
+    void supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!active) return
+        window.clearTimeout(fallbackTimer)
+        if (!session) {
+          router.replace('/login')
+        } else {
+          setChecking(false)
+        }
+      })
+      .catch(() => {
+        if (!active) return
+        window.clearTimeout(fallbackTimer)
         router.replace('/login')
-      } else {
-        setChecking(false)
-      }
-    })
+      })
 
     // Listen for auth state changes (e.g. logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && pathname !== '/login') {
+      if (!session && !isLoginPage) {
         router.replace('/login')
       }
     })
 
-    return () => subscription.unsubscribe()
-  }, [pathname, router])
+    return () => {
+      active = false
+      window.clearTimeout(fallbackTimer)
+      subscription.unsubscribe()
+    }
+  }, [isLoginPage, router])
 
   // Show nothing while checking auth (prevents flash)
-  if (checking && pathname !== '/login') {
+  if (checking && !isLoginPage) {
     return (
       <div className={styles.gateLoading}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -47,5 +65,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
     )
   }
 
-  return <>{children}</>
+  if (isLoginPage) return <>{children}</>
+
+  return <CourseShell>{children}</CourseShell>
 }

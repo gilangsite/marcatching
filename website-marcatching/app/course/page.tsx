@@ -1,14 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
-  BookOpen, LogOut, Menu, GraduationCap, ChevronRight
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  Compass,
+  GraduationCap,
+  Layers3,
+  Play,
+  Sparkles,
+  Target,
+  TrendingUp,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import type { Product, CourseMaterial } from '@/lib/supabaseClient'
+import type { CourseMaterial, Product } from '@/lib/supabaseClient'
 import styles from './course.module.css'
 
 type EnrolledCourse = Product & {
@@ -16,66 +26,79 @@ type EnrolledCourse = Product & {
   completedCount: number
 }
 
+function displayNameFromEmail(email: string) {
+  const prefix = email.split('@')[0] || 'Builder'
+  return prefix
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
+function imageUrl(url: string) {
+  return url.includes('drive.google.com/uc')
+    ? `${url.replace(/uc\?export=view&id=/, 'thumbnail?id=')}&sz=w900-h1500`
+    : url
+}
+
 export default function CourseDashboardPage() {
   const router = useRouter()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [userName, setUserName] = useState('')
-  const [userEmail, setUserEmail] = useState('')
   const [courses, setCourses] = useState<EnrolledCourse[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadDashboard()
+    void loadDashboard()
+    // This initial request should only run once when the member opens the dashboard.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function loadDashboard() {
     setLoading(true)
 
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/login'); return }
-
-    const email = user.email || ''
-    setUserEmail(email)
-    // Use display name from email prefix, capitalize
-    const namePart = email.split('@')[0]
-    setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1))
-
-    // Get enrollments for this user by their registered email
-    const { data: enrollments } = await supabase
-      .from('course_access_emails')
-      .select('product_id')
-      .eq('email', email.toLowerCase().trim())
-
-    if (!enrollments || enrollments.length === 0) {
-      setLoading(false)
-      setCourses([])
+    if (!user) {
+      router.replace('/login')
       return
     }
 
-    const productIds = enrollments.map((e) => e.product_id)
+    const email = (user.email || '').toLowerCase().trim()
+    setUserName(displayNameFromEmail(email))
 
-    // Get products
+    const { data: enrollments } = await supabase
+      .from('course_access_emails')
+      .select('product_id')
+      .eq('email', email)
+
+    if (!enrollments?.length) {
+      setCourses([])
+      setLoading(false)
+      return
+    }
+
+    const productIds = [...new Set(enrollments.map(item => item.product_id))]
     const { data: products } = await supabase
       .from('products')
       .select('*')
       .in('id', productIds)
 
-    if (!products) { setLoading(false); return }
+    if (!products) {
+      setLoading(false)
+      return
+    }
 
-    // For each product, get materials & user's completed materials
-    const enriched: EnrolledCourse[] = await Promise.all(
-      products.map(async (product) => {
+    const enriched = await Promise.all(
+      products.map(async product => {
         const { data: materials } = await supabase
           .from('course_materials')
           .select('*')
           .eq('product_id', product.id)
           .order('order_index')
 
-        const materialIds = (materials || []).map((m) => m.id)
+        const materialIds = (materials || []).map(material => material.id)
         let completedCount = 0
 
-        if (materialIds.length > 0) {
+        if (materialIds.length) {
           const { data: progress } = await supabase
             .from('learning_progress')
             .select('material_id')
@@ -93,182 +116,162 @@ export default function CourseDashboardPage() {
     setLoading(false)
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
+  const totals = useMemo(() => {
+    const materials = courses.reduce((sum, course) => sum + course.materials.length, 0)
+    const completed = courses.reduce((sum, course) => sum + course.completedCount, 0)
+    const percentage = materials ? Math.round((completed / materials) * 100) : 0
+    return { materials, completed, percentage }
+  }, [courses])
+
+  const continueCourse = useMemo(() => {
+    return courses.find(course => course.completedCount < course.materials.length) || courses[0] || null
+  }, [courses])
+
+  const continuePercentage = continueCourse?.materials.length
+    ? Math.round((continueCourse.completedCount / continueCourse.materials.length) * 100)
+    : 0
 
   return (
-    <div className={styles.page}>
-      {/* Mobile Header */}
-      <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}>
-          <Menu size={22} color="#ffffff" />
-        </button>
-        <Image
-          src="https://marcatching.com/logo-type-white.png"
-          alt="Marcatching"
-          width={110}
-          height={26}
-          className={styles.mobileHeaderLogo}
-          unoptimized={true}
-        />
-      </div>
-
-      {/* Overlay */}
-      <div
-        className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`}
-        onClick={() => setIsSidebarOpen(false)}
-      />
-
-      {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarLogoDesktop}>
-          <Image
-            src="https://marcatching.com/logo-type-white.png"
-            alt="Marcatching"
-            width={140}
-            height={32}
-            style={{ objectFit: 'contain' }}
-            unoptimized={true}
-          />
+    <div className={styles.dashboardPage}>
+      <header className={styles.pageHeader}>
+        <div>
+          <span className={styles.eyebrow}><Compass size={14} /> Learning home</span>
+          <h1>Selamat datang, {userName || 'Builder'}.</h1>
+          <p>Satu tempat untuk melanjutkan materi, melihat progress, dan mengubah insight menjadi sistem.</p>
         </div>
-        <div className={styles.sidebarLogo}>
-          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(false)}>
-            <Menu size={22} color="rgba(255,255,255,0.8)" />
-          </button>
-          <Image
-            src="https://marcatching.com/logo-type-white.png"
-            alt="Marcatching"
-            width={100}
-            height={24}
-            style={{ objectFit: 'contain' }}
-            unoptimized={true}
-          />
-        </div>
+        <Link href="/workspace" className={styles.secondaryButton}>
+          <Sparkles size={16} /> Buka Creator Workspace
+        </Link>
+      </header>
 
-        <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '0 0 8px' }} />
+      <section className={styles.statsGrid} aria-label="Ringkasan progress">
+        <article className={styles.statCard}>
+          <span className={styles.statIcon}><Layers3 size={18} /></span>
+          <div><small>Course aktif</small><strong>{loading ? '—' : courses.length}</strong></div>
+        </article>
+        <article className={styles.statCard}>
+          <span className={styles.statIcon}><CheckCircle2 size={18} /></span>
+          <div><small>Materi selesai</small><strong>{loading ? '—' : `${totals.completed}/${totals.materials}`}</strong></div>
+        </article>
+        <article className={styles.statCard}>
+          <span className={styles.statIcon}><TrendingUp size={18} /></span>
+          <div><small>Overall progress</small><strong>{loading ? '—' : `${totals.percentage}%`}</strong></div>
+        </article>
+      </section>
 
-        {/* User info */}
-        <div style={{ padding: '12px 16px 16px' }}>
-          <div style={{
-            background: 'rgba(255,255,255,0.08)',
-            borderRadius: 10,
-            padding: '12px 14px',
-          }}>
-            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Akun</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff', marginBottom: 1 }}>{userName}</div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', wordBreak: 'break-all' }}>{userEmail}</div>
+      {!loading && continueCourse && (
+        <section className={styles.continueCard}>
+          <div className={styles.continueVisual}>
+            {continueCourse.image_url ? (
+              // Product cover URLs are administered content and can use providers outside Next Image allowlists.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={imageUrl(continueCourse.image_url)} alt="" />
+            ) : (
+              <GraduationCap size={44} />
+            )}
+            <span><Play size={14} fill="currentColor" /> Continue learning</span>
           </div>
-        </div>
+          <div className={styles.continueCopy}>
+            <span className={styles.cardKicker}>Next best action</span>
+            <h2>{continueCourse.name}</h2>
+            <p>{continueCourse.sub_headline || 'Lanjutkan dari materi yang belum selesai.'}</p>
+            <div className={styles.continueMeta}>
+              <span><BookOpen size={14} /> {continueCourse.materials.length} materi</span>
+              <span><Clock3 size={14} /> {continueCourse.materials.length - continueCourse.completedCount} tersisa</span>
+            </div>
+            <div className={styles.progressTrack} aria-label={`${continuePercentage}% selesai`}>
+              <span style={{ width: `${continuePercentage}%` }} />
+            </div>
+            <div className={styles.continueFooter}>
+              <small>{continuePercentage}% selesai</small>
+              <Link href={`/${continueCourse.slug}`} className={styles.primaryButton}>
+                Lanjutkan course <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
-        <nav className={styles.sidenav}>
-          <Link
-            href="/"
-            className={`${styles.navItem} ${styles.navItemActive}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <BookOpen size={17} /> My Courses
+      <section className={styles.workspaceBanner}>
+        <div className={styles.workspaceBannerCopy}>
+          <span className={styles.cardKicker}><Sparkles size={13} /> New operating layer</span>
+          <h2>Course member sekarang punya Creator Revenue Workspace.</h2>
+          <p>
+            Strukturkan Audience OS, Revenue Thesis, tiga Content IP, conversion path, eksperimen,
+            dan scorecard dalam satu alur kerja.
+          </p>
+          <Link href="/workspace" className={styles.primaryButton}>
+            Masuk ke workspace <ArrowRight size={16} />
           </Link>
-        </nav>
-
-        <hr style={{ borderColor: 'rgba(255,255,255,0.08)', margin: '0 16px 12px' }} />
-        <div style={{ paddingBottom: 24, padding: '0 12px 24px' }}>
-          <button onClick={handleLogout} className={styles.navItem} style={{ color: '#f87171', width: '100%' }}>
-            <LogOut size={17} /> Keluar
-          </button>
         </div>
-      </aside>
-
-      {/* Main */}
-      <main className={styles.content}>
-        {/* Greeting */}
-        <div className={styles.greetingSection}>
-          <div className={styles.greetingCopy}>
-            <h1 className={styles.greetingName}>
-              Halo, <span className={styles.greetingNameAccent}>{userName || 'Builder'}</span>.
-            </h1>
-            <p className={styles.greetingSubtitle}>
-              Satu workspace untuk mengubah insight menjadi skill yang bisa langsung kamu pakai.
-            </p>
+        <div className={styles.workspaceBlueprint} aria-hidden="true">
+          <div className={styles.blueprintTop}><span /> Creator Revenue OS <b>Day 7 / 21</b></div>
+          <div className={styles.blueprintBody}>
+            <div className={styles.blueprintScore}><strong>52%</strong><span>System installed</span></div>
+            <div className={styles.blueprintLine}><i style={{ width: '52%' }} /></div>
+            <div className={styles.blueprintModules}>
+              <span className={styles.blueprintDone}>Audience OS <CheckCircle2 size={13} /></span>
+              <span className={styles.blueprintDone}>Revenue Thesis <CheckCircle2 size={13} /></span>
+              <span className={styles.blueprintActive}>Content IP <Target size={13} /></span>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Course List */}
+      <section className={styles.courseSection}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Course Saya</h2>
-          <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-            {courses.length} course
-          </span>
+          <div>
+            <span className={styles.cardKicker}>Your library</span>
+            <h2>Course saya</h2>
+          </div>
+          <span>{courses.length} course</span>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>
-            <GraduationCap size={20} /> Memuat course kamu...
+          <div className={styles.loadingState}>
+            <span className={styles.loader} />
+            Menyiapkan learning space...
           </div>
         ) : courses.length === 0 ? (
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
-              <GraduationCap size={28} />
-            </div>
-            <h3 className={styles.emptyTitle}>Belum ada course</h3>
-            <p className={styles.emptyDesc}>
-              Course kamu akan muncul di sini setelah pembayaran dikonfirmasi oleh admin Marcatching.
-              Jika sudah dikonfirmasi namun course belum muncul, coba logout dan login kembali.
+            <span><GraduationCap size={27} /></span>
+            <h3>Course belum muncul.</h3>
+            <p>
+              Akses akan tampil setelah pembayaran dikonfirmasi. Jika sudah melakukan pembayaran,
+              hubungi tim Marcatching menggunakan email checkout.
             </p>
+            <a href="mailto:gilang@marcatching.com" className={styles.secondaryButton}>Hubungi support</a>
           </div>
         ) : (
           <div className={styles.courseGrid}>
-            {courses.map((course) => {
+            {courses.map(course => {
               const total = course.materials.length
               const done = course.completedCount
-              const pct = total > 0 ? Math.round((done / total) * 100) : 0
-              const isComplete = total > 0 && done === total
+              const percentage = total ? Math.round((done / total) * 100) : 0
+              const complete = total > 0 && done === total
 
               return (
-                <Link
-                  key={course.id}
-                  href={`/${course.slug}`}
-                  className={styles.courseCard}
-                  id={`course-card-${course.slug}`}
-                >
-                  {course.image_url ? (
-                    <img
-                      src={
-                        course.image_url.includes('drive.google.com/uc')
-                          ? course.image_url.replace(/uc\?export=view&id=/, 'thumbnail?id=') + '&sz=w900-h1500'
-                          : course.image_url
-                      }
-                      alt={course.name}
-                      className={styles.courseCardImage}
-                    />
-                  ) : (
-                    <div className={styles.courseCardImagePlaceholder}>
-                      <GraduationCap size={40} />
-                    </div>
-                  )}
+                <Link key={course.id} href={`/${course.slug}`} className={styles.courseCard}>
+                  <div className={styles.courseCover}>
+                    {course.image_url ? (
+                      // Product cover URLs are administered content and can use providers outside Next Image allowlists.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl(course.image_url)} alt={course.name} />
+                    ) : (
+                      <GraduationCap size={38} />
+                    )}
+                    <span className={complete ? styles.statusComplete : styles.statusActive}>
+                      {complete ? 'Completed' : 'In progress'}
+                    </span>
+                  </div>
                   <div className={styles.courseCardBody}>
-                    {isComplete && (
-                      <span className={`${styles.badge} ${styles.badgeGreen}`} style={{ marginBottom: 8 }}>
-                        ✓ Selesai
-                      </span>
-                    )}
-                    <h3 className={styles.courseCardTitle}>{course.name}</h3>
-                    {course.sub_headline && (
-                      <p className={styles.courseCardSub}>{course.sub_headline}</p>
-                    )}
-                    <p className={styles.courseCardMeta}>
-                      {total} materi · {done} selesai
-                    </p>
-                    <div className={styles.progressBar}>
-                      <div
-                        className={`${styles.progressFill} ${isComplete ? styles.progressFillGreen : ''}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span className={styles.progressLabel}>{pct}% selesai</span>
-                      <ChevronRight size={16} color="#94a3b8" />
+                    <span className={styles.cardKicker}>{total} learning assets</span>
+                    <h3>{course.name}</h3>
+                    <p>{course.sub_headline || 'Materi praktis untuk membangun marketing system.'}</p>
+                    <div className={styles.progressTrack}><span style={{ width: `${percentage}%` }} /></div>
+                    <div className={styles.courseCardFooter}>
+                      <small>{done}/{total} selesai · {percentage}%</small>
+                      <ChevronRight size={16} />
                     </div>
                   </div>
                 </Link>
@@ -276,7 +279,7 @@ export default function CourseDashboardPage() {
             })}
           </div>
         )}
-      </main>
+      </section>
     </div>
   )
 }

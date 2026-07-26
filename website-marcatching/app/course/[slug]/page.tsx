@@ -1,15 +1,28 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import Image from 'next/image'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
 import {
-  ArrowLeft, BookOpen, FileText, Video, CheckCircle2,
-  Circle, ChevronDown, ChevronUp, LogOut, Menu, GraduationCap
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Circle,
+  Download,
+  Expand,
+  FileArchive,
+  FileText,
+  GraduationCap,
+  Play,
+  Video,
+  X,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { Product, CourseMaterial } from '@/lib/supabaseClient'
+import type { CourseMaterial, Product } from '@/lib/supabaseClient'
 import styles from '../course.module.css'
 
 function getYoutubeId(url: string): string | null {
@@ -19,19 +32,31 @@ function getYoutubeId(url: string): string | null {
     /youtube\.com\/embed\/([^?\s]+)/,
     /youtube\.com\/shorts\/([^?\s]+)/,
   ]
-  for (const p of patterns) {
-    const m = url.match(p)
-    if (m) return m[1]
+  for (const pattern of patterns) {
+    const match = url.match(pattern)
+    if (match) return match[1]
   }
   return null
 }
 
 function getDriveFileId(url: string): string | null {
-  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/)
-  if (m) return m[1]
-  const m2 = url.match(/id=([a-zA-Z0-9_-]+)/)
-  if (m2) return m2[1]
-  return null
+  const pathMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/)
+  if (pathMatch) return pathMatch[1]
+  const queryMatch = url.match(/id=([a-zA-Z0-9_-]+)/)
+  return queryMatch?.[1] || null
+}
+
+function materialLabel(type: CourseMaterial['type']) {
+  if (type === 'pdf') return 'PDF document'
+  if (type === 'md') return 'Markdown file'
+  if (type === 'zip') return 'Resource pack'
+  return 'Video lesson'
+}
+
+function MaterialIcon({ type }: { type: CourseMaterial['type'] }) {
+  if (type === 'video') return <Video size={18} />
+  if (type === 'zip') return <FileArchive size={18} />
+  return <FileText size={18} />
 }
 
 export default function CourseDetailPage() {
@@ -39,9 +64,6 @@ export default function CourseDetailPage() {
   const params = useParams()
   const slug = params?.slug as string
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [userName, setUserName] = useState('')
-  const [userEmail, setUserEmail] = useState('')
   const [userId, setUserId] = useState('')
   const [product, setProduct] = useState<Product | null>(null)
   const [materials, setMaterials] = useState<CourseMaterial[]>([])
@@ -51,36 +73,36 @@ export default function CourseDetailPage() {
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [notEnrolled, setNotEnrolled] = useState(false)
   const [fullScreenPdfUrl, setFullScreenPdfUrl] = useState<string | null>(null)
-  const [fullScreenTitle, setFullScreenTitle] = useState<string>('')
+  const [fullScreenTitle, setFullScreenTitle] = useState('')
 
   const loadCourse = useCallback(async () => {
-    setLoading(true)
-
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/login'); return }
+    if (!user) {
+      router.replace('/login')
+      return
+    }
 
     setUserId(user.id)
-    const email = user.email || ''
-    setUserEmail(email)
-    const namePart = email.split('@')[0]
-    setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1))
+    const email = (user.email || '').toLowerCase().trim()
 
-    // Get product by slug
-    const { data: prod } = await supabase
+    const { data: course } = await supabase
       .from('products')
       .select('*')
       .eq('slug', slug)
       .single()
 
-    if (!prod) { setLoading(false); return }
-    setProduct(prod)
+    if (!course) {
+      setLoading(false)
+      return
+    }
 
-    // Check enrollment
+    setProduct(course)
+
     const { data: enrollment } = await supabase
       .from('course_access_emails')
       .select('id')
-      .eq('email', email.toLowerCase().trim())
-      .eq('product_id', prod.id)
+      .eq('email', email)
+      .eq('product_id', course.id)
       .maybeSingle()
 
     if (!enrollment) {
@@ -89,423 +111,283 @@ export default function CourseDetailPage() {
       return
     }
 
-    // Get materials
-    const { data: mats } = await supabase
+    const { data: courseMaterials } = await supabase
       .from('course_materials')
       .select('*')
-      .eq('product_id', prod.id)
+      .eq('product_id', course.id)
       .order('order_index')
 
-    setMaterials(mats || [])
+    const nextMaterials = courseMaterials || []
+    setMaterials(nextMaterials)
 
-    // Get completed materials
-    if (mats && mats.length > 0) {
+    if (nextMaterials.length) {
       const { data: progress } = await supabase
         .from('learning_progress')
         .select('material_id')
         .eq('user_id', user.id)
-        .in('material_id', mats.map(m => m.id))
+        .in('material_id', nextMaterials.map(material => material.id))
 
-      setCompletedIds(new Set(progress?.map(p => p.material_id) || []))
+      setCompletedIds(new Set(progress?.map(item => item.material_id) || []))
     }
 
     setLoading(false)
-  }, [slug, router])
+  }, [router, slug])
 
-  useEffect(() => { loadCourse() }, [loadCourse])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void loadCourse()
+    })
+  }, [loadCourse])
+
+  const total = materials.length
+  const done = completedIds.size
+  const percentage = total ? Math.round((done / total) * 100) : 0
+  const complete = total > 0 && done === total
+  const nextMaterial = useMemo(
+    () => materials.find(material => !completedIds.has(material.id)) || materials[0] || null,
+    [completedIds, materials]
+  )
 
   async function toggleComplete(materialId: string) {
     if (togglingId) return
     setTogglingId(materialId)
+    const wasCompleted = completedIds.has(materialId)
 
-    const isDone = completedIds.has(materialId)
-
-    if (isDone) {
-      // Unmark
+    if (wasCompleted) {
       await supabase
         .from('learning_progress')
         .delete()
         .eq('user_id', userId)
         .eq('material_id', materialId)
 
-      setCompletedIds(prev => {
-        const next = new Set(prev)
+      setCompletedIds(current => {
+        const next = new Set(current)
         next.delete(materialId)
         return next
       })
     } else {
-      // Mark complete
       await supabase
         .from('learning_progress')
         .upsert({ user_id: userId, material_id: materialId }, { onConflict: 'user_id,material_id' })
 
-      setCompletedIds(prev => new Set([...prev, materialId]))
+      setCompletedIds(current => new Set([...current, materialId]))
     }
 
     setTogglingId(null)
   }
 
-  function toggleViewer(materialId: string) {
-    setOpenMaterial(prev => prev === materialId ? null : materialId)
+  function openNextMaterial() {
+    if (!nextMaterial) return
+    setOpenMaterial(nextMaterial.id)
+    window.setTimeout(() => {
+      document.getElementById(`material-${nextMaterial.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 30)
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push('/login')
+  if (loading) {
+    return (
+      <div className={styles.courseState}>
+        <span className={styles.loader} />
+        <p>Menyiapkan course...</p>
+      </div>
+    )
   }
 
-  const total = materials.length
-  const done = completedIds.size
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0
-  const isComplete = total > 0 && done === total
+  if (notEnrolled) {
+    return (
+      <div className={styles.courseState}>
+        <span><GraduationCap size={29} /></span>
+        <h1>Akses course tidak ditemukan.</h1>
+        <p>Akun ini belum memiliki akses ke course tersebut.</p>
+        <Link href="/" className={styles.secondaryButton}>Kembali ke Learning Home</Link>
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className={styles.courseState}>
+        <h1>Course tidak ditemukan.</h1>
+        <Link href="/" className={styles.secondaryButton}>Kembali ke Learning Home</Link>
+      </div>
+    )
+  }
 
   return (
-    <div className={styles.page}>
-      {/* Mobile Header */}
-      <div className={styles.mobileHeader}>
-        <button className={styles.hamburgerBtn} onClick={() => setIsSidebarOpen(true)}>
-          <Menu size={22} color="#ffffff" />
-        </button>
-        <Image
-          src="https://marcatching.com/logo-type-white.png"
-          alt="Marcatching"
-          width={110}
-          height={26}
-          className={styles.mobileHeaderLogo}
-          unoptimized={true}
-        />
-      </div>
+    <div className={styles.courseDetailPage}>
+      <Link href="/" className={styles.backLink}><ArrowLeft size={15} /> Learning Home</Link>
 
-      {/* Overlay */}
-      <div
-        className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ''}`}
-        onClick={() => setIsSidebarOpen(false)}
-      />
-
-      {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarLogoDesktop}>
-          <Image
-            src="https://marcatching.com/logo-type-white.png"
-            alt="Marcatching"
-            width={140}
-            height={32}
-            style={{ objectFit: 'contain' }}
-            unoptimized={true}
-          />
-        </div>
-        <div className={styles.sidebarLogo}>
-          <button className={styles.hamburgerBtnSidebar} onClick={() => setIsSidebarOpen(false)}>
-            <Menu size={22} color="rgba(255,255,255,0.8)" />
-          </button>
-          <Image
-            src="https://marcatching.com/logo-type-white.png"
-            alt="Marcatching"
-            width={100}
-            height={24}
-            style={{ objectFit: 'contain' }}
-            unoptimized={true}
-          />
-        </div>
-
-        <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '0 0 8px' }} />
-
-        {/* User info */}
-        <div style={{ padding: '12px 16px 16px' }}>
-          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: '12px 14px' }}>
-            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Akun</div>
-            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff', marginBottom: 1 }}>{userName}</div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', wordBreak: 'break-all' }}>{userEmail}</div>
+      <header className={styles.courseHero}>
+        <div className={styles.courseHeroCopy}>
+          <span className={styles.eyebrow}><GraduationCap size={14} /> Marcatching course</span>
+          <h1>{product.name}</h1>
+          <p>{product.sub_headline || 'Materi praktis untuk membangun marketing system yang bisa dieksekusi.'}</p>
+          <div className={styles.courseHeroMeta}>
+            <span><BookOpen size={14} /> {total} learning assets</span>
+            <span><CheckCircle2 size={14} /> {done} completed</span>
           </div>
-        </div>
-
-        <nav className={styles.sidenav}>
-          <Link href="/" className={styles.navItem} onClick={() => setIsSidebarOpen(false)}>
-            <BookOpen size={17} /> My Courses
-          </Link>
-        </nav>
-
-        <hr style={{ borderColor: 'rgba(255,255,255,0.08)', margin: '0 16px 12px' }} />
-        <div style={{ padding: '0 12px 24px' }}>
-          <button onClick={handleLogout} className={styles.navItem} style={{ color: '#f87171', width: '100%' }}>
-            <LogOut size={17} /> Keluar
-          </button>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <main className={styles.content}>
-        <div className={styles.courseDetailPage}>
-          {/* Back */}
-          <Link href="/" className={styles.backBtn}>
-            <ArrowLeft size={15} /> Kembali ke My Courses
-          </Link>
-
-          {loading ? (
-            <div className={styles.loading}><GraduationCap size={20} /> Memuat course...</div>
-          ) : notEnrolled ? (
-            <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}><GraduationCap size={28} /></div>
-              <h3 className={styles.emptyTitle}>Akses Tidak Ditemukan</h3>
-              <p className={styles.emptyDesc}>Kamu tidak memiliki akses ke course ini. Silakan kembali ke halaman My Courses.</p>
-            </div>
-          ) : !product ? (
-            <div className={styles.emptyState}>
-              <h3 className={styles.emptyTitle}>Course tidak ditemukan.</h3>
-            </div>
-          ) : (
-            <>
-              {/* Course Header */}
-              <div className={styles.courseDetailHeader}>
-                <h1 className={styles.courseDetailTitle}>{product.name}</h1>
-                {product.sub_headline && (
-                  <p className={styles.courseDetailSub}>{product.sub_headline}</p>
-                )}
-
-                {total === 0 ? (
-                  <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>
-                    Materi sedang disiapkan. Cek kembali nanti ya!
-                  </p>
-                ) : (
-                  <>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                      <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-                        {done} dari {total} materi selesai
-                      </span>
-                      {isComplete && (
-                        <span className={`${styles.badge} ${styles.badgeGreen}`}>✓ Course Selesai!</span>
-                      )}
-                    </div>
-                    <div className={styles.courseDetailProgress}>
-                      <div className={styles.courseDetailProgressBar}>
-                        <div
-                          className={styles.courseDetailProgressFill}
-                          style={{
-                            width: `${pct}%`,
-                            background: isComplete
-                              ? 'linear-gradient(90deg, #16a34a, #22c55e)'
-                              : 'linear-gradient(90deg, #111111, #374151)'
-                          }}
-                        />
-                      </div>
-                      <span className={styles.courseDetailProgressLabel}>{pct}%</span>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Materials */}
-              {materials.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyIcon}><BookOpen size={28} /></div>
-                  <h3 className={styles.emptyTitle}>Materi Belum Tersedia</h3>
-                  <p className={styles.emptyDesc}>Admin sedang menyiapkan materi untuk course ini. Silakan cek kembali nanti.</p>
-                </div>
-              ) : (
-                <div>
-                  <h2 className={styles.sectionTitle} style={{ marginBottom: 14 }}>
-                    Daftar Materi ({total})
-                  </h2>
-                  <div className={styles.materialsList}>
-                    {materials.map((mat, idx) => {
-                      const isDone = completedIds.has(mat.id)
-                      const isOpen = openMaterial === mat.id
-
-                      return (
-                        <div
-                          key={mat.id}
-                          id={`material-${mat.id}`}
-                          className={`${styles.materialCard} ${isDone ? styles.materialCardDone : ''}`}
-                        >
-                          <div className={styles.materialCardHeader}>
-                            {/* Index */}
-                            <div style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: '50%',
-                              background: isDone ? '#dcfce7' : '#f1f5f9',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: isDone ? '#16a34a' : '#64748b',
-                              flexShrink: 0
-                            }}>
-                              {isDone ? '✓' : idx + 1}
-                            </div>
-
-                            {/* Icon */}
-                            <div className={`${styles.materialIconWrap} ${isDone ? styles.materialIconWrapDone : ''}`}>
-                              {mat.type === 'pdf' || mat.type === 'md' || mat.type === 'zip'
-                                ? <FileText size={18} />
-                                : <Video size={18} />
-                              }
-                            </div>
-
-                            {/* Info */}
-                            <div className={styles.materialInfo}>
-                              <p className={`${styles.materialTitle} ${isDone ? styles.materialTitleDone : ''}`}>
-                                {mat.title}
-                              </p>
-                              <span className={styles.materialType}>
-                                {mat.type === 'pdf' ? 'PDF Dokumen' : mat.type === 'md' ? 'Markdown File' : mat.type === 'zip' ? 'ZIP File' : 'Video YouTube'}
-                              </span>
-                            </div>
-
-                            {/* Actions */}
-                            <div className={styles.materialActions}>
-                              {/* Tandai Selesai button */}
-                              <button
-                                className={`${styles.completeBtn} ${isDone ? styles.completeBtnDone : ''}`}
-                                onClick={(e) => { e.stopPropagation(); toggleComplete(mat.id) }}
-                                disabled={togglingId === mat.id}
-                                title={isDone ? 'Tandai belum selesai' : 'Tandai selesai'}
-                              >
-                                {isDone
-                                  ? <><CheckCircle2 size={14} /> Selesai</>
-                                  : <><Circle size={14} /> Tandai Selesai</>
-                                }
-                              </button>
-
-                              {/* Open/close viewer */}
-                              <button
-                                className={styles.openBtn}
-                                onClick={() => toggleViewer(mat.id)}
-                              >
-                                {isOpen
-                                  ? <><ChevronUp size={14} /> Tutup</>
-                                  : <><ChevronDown size={14} /> Buka</>
-                                }
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Viewer Panel */}
-                          {isOpen && (
-                            <div className={styles.viewerPanel}>
-                              {mat.type === 'video' ? (
-                                (() => {
-                                  const ytId = getYoutubeId(mat.content_url)
-                                  if (!ytId) return (
-                                    <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
-                                      URL video tidak valid. Hubungi admin.
-                                    </p>
-                                  )
-                                  return (
-                                    <div className={styles.youtubeWrap}>
-                                      <iframe
-                                        src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&color=white`}
-                                        title={mat.title}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                      />
-                                    </div>
-                                  )
-                                })()
-                              ) : mat.type === 'md' ? (
-                                <div className={styles.pdfWrap} style={{ padding: '40px 20px', textAlign: 'center', background: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b' }}>
-                                  <FileText size={48} color="#94a3b8" style={{ marginBottom: 16 }} />
-                                  <h3 style={{ color: '#f1f5f9', marginBottom: 8, fontSize: '1.2rem', fontWeight: 600 }}>{mat.title}.md</h3>
-                                  <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file Markdown ini untuk diimpor ke workspace AI kamu.</p>
-                                  {(() => {
-                                    const fileId = getDriveFileId(mat.content_url)
-                                    const downloadUrl = fileId ? `/api/download?id=${fileId}&title=${encodeURIComponent(mat.title)}` : mat.content_url
-                                    return (
-                                      <a href={downloadUrl} download={`${mat.title}.md`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#38bdf8', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)' }}>
-                                        <BookOpen size={16} /> Download File .md
-                                      </a>
-                                    )
-                                  })()}
-                                </div>
-                              ) : mat.type === 'zip' ? (
-                                <div className={styles.pdfWrap} style={{ padding: '40px 20px', textAlign: 'center', background: '#0f172a', borderRadius: '12px', border: '1px solid #1e293b' }}>
-                                  <FileText size={48} color="#a78bfa" style={{ marginBottom: 16 }} />
-                                  <h3 style={{ color: '#f1f5f9', marginBottom: 8, fontSize: '1.2rem', fontWeight: 600 }}>{mat.title}.zip</h3>
-                                  <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 24 }}>Unduh file ZIP ini dan ekstrak untuk menggunakan isinya.</p>
-                                  {(() => {
-                                    const fileId = getDriveFileId(mat.content_url)
-                                    const downloadUrl = fileId ? `/api/download?id=${fileId}&title=${encodeURIComponent(mat.title)}` : mat.content_url
-                                    return (
-                                      <a href={downloadUrl} download={`${mat.title}.zip`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#a78bfa', color: '#0f172a', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(167, 139, 250, 0.25)' }}>
-                                        <BookOpen size={16} /> Download File .zip
-                                      </a>
-                                    )
-                                  })()}
-                                </div>
-                              ) : (
-                                (() => {
-                                  const fileId = getDriveFileId(mat.content_url)
-                                  const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : mat.content_url
-
-                                  return (
-                                    <div className={styles.pdfWrap} style={{ position: 'relative' }}>
-                                      <iframe
-                                        src={embedUrl}
-                                        title={mat.title}
-                                        allow="autoplay"
-                                        allowFullScreen
-                                        style={{ width: '100%', height: '100%', border: 'none' }}
-                                      />
-                                      {/* Overlay to block Google Drive "Pop-out" button in top-right corner */}
-                                      <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', zIndex: 9, background: 'transparent' }} />
-                                      
-                                      <div style={{ position: 'absolute', bottom: '16px', right: '16px', zIndex: 10 }}>
-                                        <button 
-                                          onClick={() => {
-                                            setFullScreenPdfUrl(embedUrl);
-                                            setFullScreenTitle(mat.title);
-                                          }}
-                                          className={styles.openBtn}
-                                          style={{ background: '#0ea5e9', fontSize: '0.75rem', padding: '8px 14px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}
-                                        >
-                                          <BookOpen size={14} /> Full Screen
-                                        </button>
-                                      </div>
-                                    </div>
-                                  )
-                                })()
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-            </>
+          {nextMaterial && !complete && (
+            <button type="button" className={styles.primaryButton} onClick={openNextMaterial}>
+              <Play size={15} fill="currentColor" /> Lanjutkan materi
+            </button>
           )}
         </div>
-      </main>
 
-      {/* FULLSCREEN PDF OVERLAY (E-BOOK MODE) */}
-      {fullScreenPdfUrl && (
-        <div className={styles.pdfOverlay}>
-          <div className={styles.pdfOverlayHeader}>
-            <div className={styles.pdfOverlayTitle}>
-              <BookOpen size={20} color="#38bdf8" />
-              <h2>{fullScreenTitle}</h2>
-            </div>
-            <button 
-              className={styles.pdfOverlayClose}
-              onClick={() => setFullScreenPdfUrl(null)}
-            >
-              <ArrowLeft size={16} />
-              <span>Kembali</span>
-            </button>
+        <div className={styles.courseHeroProgress}>
+          <div style={{ '--course-progress': `${percentage * 3.6}deg` } as React.CSSProperties}>
+            <strong>{percentage}%</strong>
+            <span>completed</span>
           </div>
-          <div className={styles.pdfOverlayBody} style={{ position: 'relative' }}>
-            <iframe
-              src={fullScreenPdfUrl}
-              title={fullScreenTitle}
-              className={styles.pdfOverlayIframe}
-            />
-            {/* Overlay to block Google Drive "Pop-out" button in top-right corner */}
-            <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', zIndex: 9, background: 'transparent' }} />
+          <p>{complete ? 'Course completed. Great work.' : `${total - done} materi tersisa`}</p>
+        </div>
+      </header>
+
+      <section className={styles.lessonSection}>
+        <div className={styles.sectionHeader}>
+          <div><span className={styles.cardKicker}>Learning path</span><h2>Daftar materi</h2></div>
+          <span>{done}/{total} selesai</span>
+        </div>
+
+        {materials.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span><BookOpen size={27} /></span>
+            <h3>Materi sedang disiapkan.</h3>
+            <p>Tim Marcatching sedang menyusun learning assets untuk course ini.</p>
+          </div>
+        ) : (
+          <div className={styles.lessonList}>
+            {materials.map((material, index) => {
+              const isDone = completedIds.has(material.id)
+              const isOpen = openMaterial === material.id
+
+              return (
+                <article
+                  key={material.id}
+                  id={`material-${material.id}`}
+                  className={`${styles.lessonCard} ${isDone ? styles.lessonCardDone : ''}`}
+                >
+                  <div className={styles.lessonHeader}>
+                    <span className={styles.lessonIndex}>{isDone ? <Check size={14} /> : String(index + 1).padStart(2, '0')}</span>
+                    <span className={styles.lessonIcon}><MaterialIcon type={material.type} /></span>
+                    <div className={styles.lessonCopy}>
+                      <small>{materialLabel(material.type)}</small>
+                      <h3>{material.title}</h3>
+                    </div>
+                    <div className={styles.lessonActions}>
+                      <button
+                        type="button"
+                        className={`${styles.completeButton} ${isDone ? styles.completeButtonDone : ''}`}
+                        onClick={() => toggleComplete(material.id)}
+                        disabled={togglingId === material.id}
+                      >
+                        {isDone ? <CheckCircle2 size={14} /> : <Circle size={14} />}
+                        <span>{isDone ? 'Selesai' : 'Tandai selesai'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.openButton}
+                        onClick={() => setOpenMaterial(current => current === material.id ? null : material.id)}
+                        aria-expanded={isOpen}
+                      >
+                        {isOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                        <span>{isOpen ? 'Tutup' : 'Buka'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <div className={styles.viewerPanel}>
+                      <MaterialViewer
+                        material={material}
+                        onFullScreen={(url, title) => {
+                          setFullScreenPdfUrl(url)
+                          setFullScreenTitle(title)
+                        }}
+                      />
+                    </div>
+                  )}
+                </article>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      {fullScreenPdfUrl && (
+        <div className={styles.pdfOverlay} role="dialog" aria-modal="true" aria-label={fullScreenTitle}>
+          <header>
+            <div><BookOpen size={18} /><h2>{fullScreenTitle}</h2></div>
+            <button type="button" onClick={() => setFullScreenPdfUrl(null)}><X size={17} /> Tutup</button>
+          </header>
+          <div className={styles.pdfOverlayBody}>
+            <iframe src={fullScreenPdfUrl} title={fullScreenTitle} />
+            <span aria-hidden="true" />
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function MaterialViewer({
+  material,
+  onFullScreen,
+}: {
+  material: CourseMaterial
+  onFullScreen: (url: string, title: string) => void
+}) {
+  if (material.type === 'video') {
+    const youtubeId = getYoutubeId(material.content_url)
+    if (!youtubeId) return <p className={styles.viewerError}>URL video belum valid. Hubungi tim Marcatching.</p>
+
+    return (
+      <div className={styles.videoViewer}>
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&color=white`}
+          title={material.title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    )
+  }
+
+  if (material.type === 'md' || material.type === 'zip') {
+    const fileId = getDriveFileId(material.content_url)
+    const downloadUrl = fileId
+      ? `/api/download?id=${fileId}&title=${encodeURIComponent(material.title)}`
+      : material.content_url
+    const extension = material.type === 'md' ? '.md' : '.zip'
+
+    return (
+      <div className={styles.downloadViewer}>
+        <span>{material.type === 'zip' ? <FileArchive size={33} /> : <FileText size={33} />}</span>
+        <small>{material.type === 'zip' ? 'Resource pack' : 'AI workspace file'}</small>
+        <h3>{material.title}{extension}</h3>
+        <p>
+          {material.type === 'zip'
+            ? 'Unduh lalu ekstrak file untuk menggunakan seluruh resource.'
+            : 'Unduh file Markdown untuk diimpor ke workspace AI pilihanmu.'}
+        </p>
+        <a href={downloadUrl} download={`${material.title}${extension}`}>
+          <Download size={16} /> Download {extension} <ArrowRight size={15} />
+        </a>
+      </div>
+    )
+  }
+
+  const fileId = getDriveFileId(material.content_url)
+  const embedUrl = fileId
+    ? `https://drive.google.com/file/d/${fileId}/preview`
+    : material.content_url
+
+  return (
+    <div className={styles.pdfViewer}>
+      <iframe src={embedUrl} title={material.title} allow="autoplay" allowFullScreen />
+      <span aria-hidden="true" />
+      <button type="button" onClick={() => onFullScreen(embedUrl, material.title)}>
+        <Expand size={14} /> Full screen
+      </button>
     </div>
   )
 }

@@ -3,11 +3,23 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jimbydkqlputlvpcspjv.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 'sb_publishable_rF4yCw9hMldmrawKp3tALg_Y0zO7MAD'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const createMarcatchingClient = () => createClient(supabaseUrl, supabaseAnonKey)
+type MarcatchingSupabaseClient = ReturnType<typeof createMarcatchingClient>
 
-// Service role client for admin server-side operations (uses service role key if available)
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+const globalForSupabase = globalThis as typeof globalThis & {
+  marcatchingSupabase?: MarcatchingSupabaseClient
+}
+
+// Reuse one browser auth client across Next.js development hot reloads.
+// Creating a fresh GoTrue client on every refresh can make getSession race
+// against another instance using the same local-storage key.
+export const supabase =
+  globalForSupabase.marcatchingSupabase ??
+  createMarcatchingClient()
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForSupabase.marcatchingSupabase = supabase
+}
 
 export type Link = {
   id: string

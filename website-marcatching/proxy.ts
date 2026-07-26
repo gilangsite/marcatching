@@ -45,7 +45,11 @@ async function isValidSession(sessionToken: string): Promise<boolean> {
 export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone()
   const { pathname } = url
-  const hostname = req.headers.get('host') || ''
+  // `nextUrl.hostname` isn't reliable for the App Router in this Next.js
+  // version (it reflects the dev server's bind host, not the actual
+  // request). Derive the hostname from the Host header instead, stripping
+  // the port so local redirects don't end up as course.localhost:3000:3000.
+  const hostname = (req.headers.get('host') || req.nextUrl.hostname).split(':')[0]
 
   let effectivePath = pathname
 
