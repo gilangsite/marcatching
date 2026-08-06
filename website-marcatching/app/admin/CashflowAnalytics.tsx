@@ -6,7 +6,7 @@ import styles from './admin.module.css'
 import type { FinanceRecord } from './FinanceTab'
 
 // ─── Marcatching admin palette ───────────────────────────────
-const PALETTE = ['#0d3369', '#1e40af']
+const PALETTE = ['#8cc6ff', '#e6c889']
 
 // ─── Format helpers ────────────────────────────────────────────
 function formatRp(n: number) {
@@ -47,12 +47,12 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
       <defs>
         <linearGradient id="cfIncomeG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0d3369" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0.8" />
+          <stop offset="0%" stopColor="#8cc6ff" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#8cc6ff" stopOpacity="0.65" />
         </linearGradient>
         <linearGradient id="cfCostG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1e40af" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#1e40af" stopOpacity="0.72" />
+          <stop offset="0%" stopColor="#e6c889" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#e6c889" stopOpacity="0.65" />
         </linearGradient>
       </defs>
 
@@ -60,9 +60,9 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
       {yTicks.map((t, i) => (
         <g key={i}>
           <line x1={PAD.left} y1={t.y} x2={W - PAD.right} y2={t.y}
-            stroke={i === 0 ? '#cbd5e1' : '#f1f5f9'} strokeWidth={i === 0 ? 1 : 1} />
+            stroke={i === 0 ? 'rgba(184,214,242,0.16)' : 'rgba(184,214,242,0.07)'} strokeWidth={i === 0 ? 1 : 1} />
           <text x={PAD.left - 8} y={parseFloat(t.y) + 4} textAnchor="end"
-            fontSize="10" fill="#94a3b8" fontWeight="500">{t.label}</text>
+            fontSize="10" fill="#8e9baa" fontWeight="500">{t.label}</text>
         </g>
       ))}
 
@@ -83,17 +83,17 @@ function CashflowBarChart({ data }: { data: { month: string; income: number; cos
               <title>Cost: Rp {formatRpFull(d.cost)}</title>
             </rect>
             {/* X label */}
-            <text x={gx + barW + 2} y={baseY + 16} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">{d.month}</text>
+            <text x={gx + barW + 2} y={baseY + 16} textAnchor="middle" fontSize="9" fill="#8e9baa" fontWeight="600">{d.month}</text>
           </g>
         )
       })}
 
       {/* Legend */}
       <g>
-        <rect x={PAD.left} y={baseY + 30} width={10} height={10} rx="2" fill="#0d3369" />
-        <text x={PAD.left + 14} y={baseY + 39} fontSize="10" fill="#0d3369" fontWeight="700">Income</text>
-        <rect x={PAD.left + 72} y={baseY + 30} width={10} height={10} rx="2" fill="#1e40af" />
-        <text x={PAD.left + 86} y={baseY + 39} fontSize="10" fill="#1e40af" fontWeight="700">Cost</text>
+        <rect x={PAD.left} y={baseY + 30} width={10} height={10} rx="2" fill="#8cc6ff" />
+        <text x={PAD.left + 14} y={baseY + 39} fontSize="10" fill="#c8def5" fontWeight="700">Income</text>
+        <rect x={PAD.left + 72} y={baseY + 30} width={10} height={10} rx="2" fill="#e6c889" />
+        <text x={PAD.left + 86} y={baseY + 39} fontSize="10" fill="#e6c889" fontWeight="700">Cost</text>
       </g>
     </svg>
   )
@@ -133,14 +133,14 @@ function CashflowPieChart({ data, label }: {
     <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: SIZE, height: SIZE, flexShrink: 0 }}>
         {slices.map((s, i) => (
-          <path key={i} d={s.path} fill={s.color} stroke="#ffffff" strokeWidth="2">
+          <path key={i} d={s.path} fill={s.color} stroke="#0a1119" strokeWidth="2">
             <title>{s.name}: {s.pct}% — Rp {formatRpFull(s.value)}</title>
           </path>
         ))}
         {/* Centre hole */}
-        <circle cx={cx} cy={cy} r={r * 0.45} fill="#ffffff" />
-        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="9" fill="#94a3b8" fontWeight="600">TOTAL</text>
-        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="11" fill="#0d3369" fontWeight="900">
+        <circle cx={cx} cy={cy} r={r * 0.45} fill="#0a1119" />
+        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="9" fill="#8e9baa" fontWeight="600">TOTAL</text>
+        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="11" fill="#f3f7fb" fontWeight="900">
           {formatRp(total)}
         </text>
       </svg>
@@ -394,7 +394,7 @@ export default function CashflowAnalytics({
               : `Terjadi defisit anggaran sebesar Rp ${formatRpFull(Math.abs(net))} pada periode ini.`}
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 240, padding: 24, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 240, paddingLeft: 24, borderLeft: '1px solid rgba(255,255,255,0.15)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
             <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>Total Income</span>
             <span style={{ fontSize: '0.88rem', color: '#ffffff', fontWeight: 800 }}>Rp {formatRpFull(totalIncome)}</span>

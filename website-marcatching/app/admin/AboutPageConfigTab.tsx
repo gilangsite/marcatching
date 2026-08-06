@@ -321,7 +321,7 @@ export default function AboutPageConfigTab() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingLeft: 16, borderLeft: '2px solid #e2e8f0' }}>
                 {section.items.map((item: any, itemIdx: number) => (
-                  <div key={item.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 16 }}>
+                  <div key={item.id} style={{ paddingBottom: 16, borderBottom: itemIdx < section.items.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                       <select 
                         className="input" 
@@ -449,7 +449,7 @@ export default function AboutPageConfigTab() {
                 onCropComplete={onCropComplete}
               />
             </div>
-            <div style={{ padding: '20px', display: 'flex', gap: 10, justifyContent: 'flex-end', background: '#fff' }}>
+            <div style={{ padding: '20px', display: 'flex', gap: 10, justifyContent: 'flex-end', background: '#ffffff' }}>
               <button disabled={uploadingImage} onClick={async () => {
                 if (!croppedAreaPixels) return
                 setUploadingImage(true)

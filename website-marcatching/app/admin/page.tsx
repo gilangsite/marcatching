@@ -274,31 +274,31 @@ function VisitorLineChart({ data }: {
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
       <defs>
         <linearGradient id="visGradNavy" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#071A2E" stopOpacity="0.14" />
-          <stop offset="65%" stopColor="#071A2E" stopOpacity="0.03" />
-          <stop offset="100%" stopColor="#071A2E" stopOpacity="0" />
+          <stop offset="0%" stopColor="#8cc6ff" stopOpacity="0.28" />
+          <stop offset="65%" stopColor="#8cc6ff" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#8cc6ff" stopOpacity="0" />
         </linearGradient>
       </defs>
       {yTicks.map((t, i) => (
         <g key={i}>
           <line x1={PAD.left} y1={t.y} x2={W - PAD.right} y2={t.y}
-            stroke={i === 0 ? 'rgba(7,26,46,0.12)' : 'rgba(7,26,46,0.05)'} strokeWidth="1" />
+            stroke={i === 0 ? 'rgba(184,214,242,0.16)' : 'rgba(184,214,242,0.07)'} strokeWidth="1" />
           <text x={PAD.left - 6} y={parseFloat(t.y) + 4} textAnchor="end"
-            fontSize="10" fill="#C8D2DD">{t.label}</text>
+            fontSize="10" fill="#8e9baa">{t.label}</text>
         </g>
       ))}
       <path d={areaPath} fill="url(#visGradNavy)" />
-      <path d={linePath} fill="none" stroke="#071A2E" strokeWidth="2"
+      <path d={linePath} fill="none" stroke="#8cc6ff" strokeWidth="2.25"
         strokeLinecap="round" strokeLinejoin="round" />
       {showDots && pts.map((p, i) => (
         <circle key={i} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3"
-          fill="#071A2E" stroke="#F5F3EE" strokeWidth="1.5">
+          fill="#8cc6ff" stroke="#0a1119" strokeWidth="1.5">
           <title>{`${p.date}: ${p.visitors} visitors · ${p.views} views · ${p.clicks} clicks`}</title>
         </circle>
       ))}
       {pts.map((p, i) => lblSet.has(i) ? (
         <text key={i} x={p.x.toFixed(1)} y={H - 4} textAnchor="middle"
-          fontSize="10" fill="#C8D2DD">{data[i].date.substring(5)}</text>
+          fontSize="10" fill="#8e9baa">{data[i].date.substring(5)}</text>
       ) : null)}
     </svg>
   )
@@ -427,17 +427,9 @@ function HomeFinancePulse({
     .slice(0, 3)
 
   return (
-    <motion.div
-      className={styles.financePulseCard}
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1], delay: 0.14 }}
-    >
+    <div className={styles.overviewSection}>
       <div className={styles.financePulseHeader}>
-        <div>
-          <span className={styles.financePulseEyebrow}>Finance Pulse</span>
-          <h2 className={styles.financePulseTitle}>Revenue rhythm in one glance.</h2>
-        </div>
+        <span className={styles.financePulseEyebrow}>Finance Pulse</span>
         <div className={styles.financePulseBadge}>{loading ? 'Syncing' : 'Live'}</div>
       </div>
 
@@ -459,7 +451,7 @@ function HomeFinancePulse({
               animate={{ strokeDasharray: `${circumference * incomeShare} ${circumference}` }}
               transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
             />
-            <circle cx="80" cy="80" r="42" fill="#ffffff" />
+            <circle cx="80" cy="80" r="42" fill="#0a1119" />
           </svg>
           <div className={styles.financeDonutCenter}>
             <span>Net</span>
@@ -535,7 +527,7 @@ function HomeFinancePulse({
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -1626,7 +1618,7 @@ function AdminDashboardInner() {
         </div>
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
-          <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }} style={tab === 'finance' ? {} : { background: 'rgba(30,64,175,0.16)', color: '#ffffff' }}><DollarSign size={18} /> Finance</button>
+          <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }}><DollarSign size={18} /> Finance</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
@@ -1681,17 +1673,15 @@ function AdminDashboardInner() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* ─ Growth Signal Hero ─ */}
+            {/* ─ Unified Overview: Analytics + Finance in one card ─ */}
             <motion.div
-              className={styles.growthHero}
+              className={styles.overviewCard}
               initial={{ opacity: 0, y: 18, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
             >
-              <div className={styles.heroInner}>
-                <div className={styles.heroLabel}>Marcatching Intelligence Console</div>
-                <h1 className={styles.heroTitle}>Decode the system behind the noise.</h1>
-                <p className={styles.heroCopy}>Satu layar untuk membaca atensi, konten, dan revenue pulse harian.</p>
+              <div className={styles.overviewSection}>
+                <div className={styles.heroLabel}>Overview</div>
                 {analyticsData ? (
                   <>
                     <div className={styles.heroMetrics}>
@@ -1730,18 +1720,20 @@ function AdminDashboardInner() {
                   <div className={styles.heroLoading}>Fetching intelligence signals&hellip;</div>
                 )}
               </div>
-            </motion.div>
 
-            <HomeFinancePulse
-              incomeRecords={homeFinanceIncome}
-              costRecords={homeFinanceCost}
-              loading={homeFinanceLoading}
-              onOpenFinance={() => setTab('finance')}
-              onOpenCashflow={() => {
-                setAnalyticsSubView('cashflow')
-                setTab('analytics')
-              }}
-            />
+              <div className={styles.overviewDivider} />
+
+              <HomeFinancePulse
+                incomeRecords={homeFinanceIncome}
+                costRecords={homeFinanceCost}
+                loading={homeFinanceLoading}
+                onOpenFinance={() => setTab('finance')}
+                onOpenCashflow={() => {
+                  setAnalyticsSubView('cashflow')
+                  setTab('analytics')
+                }}
+              />
+            </motion.div>
 
             {/* ─ Unified Navigation Grid ─ */}
             <div className={styles.navGrid3x}>
@@ -2144,8 +2136,8 @@ function AdminDashboardInner() {
                       const t = e.target.value as StorePageBlock['type']
                       setStoreBlockType(t)
                       setStoreBlockContent(
-                        t === 'headline' ? { text: '', size: 'h2', color: '#ffffff', align: 'left' } :
-                        t === 'text' ? { text: '', color: 'rgba(255,255,255,0.85)', font_size: '1rem', align: 'left' } :
+                        t === 'headline' ? { text: '', size: 'h2', color: '#0d3369', align: 'left' } :
+                        t === 'text' ? { text: '', color: '#475569', font_size: '1rem', align: 'left' } :
                         t === 'image' ? { url: '', aspect_ratio: '16:9', caption: '' } :
                         t === 'video' ? { video_url: '', caption: '' } :
                         t === 'product' ? { product_id: '', store_status: 'active' } :
@@ -2169,13 +2161,13 @@ function AdminDashboardInner() {
                           onChange={html => setStoreBlockContent(c => ({ ...c, text: html }))}
                           placeholder="Tulis teks... pilih untuk format"
                           minHeight={storeBlockType === 'text' ? 100 : 60}
-                          style={{ fontSize: storeBlockContent.font_size || (storeBlockType === 'headline' ? '1.5rem' : '1rem'), color: storeBlockContent.color || '#ffffff', textAlign: storeBlockContent.align as any || 'left' }}
+                          style={{ fontSize: storeBlockContent.font_size || (storeBlockType === 'headline' ? '1.5rem' : '1rem'), color: storeBlockContent.color || '#0d3369', textAlign: storeBlockContent.align as any || 'left' }}
                         />
                         <p style={{ fontSize:'0.75rem', color:'#94a3b8', margin:'4px 0 0' }}>Select teks untuk bold, italic, warna, ukuran per kata</p>
                       </div>
                       {storeBlockType === 'headline' && <div className="form-group"><label className="label">Ukuran</label><select className="select" value={storeBlockContent.size || 'h2'} onChange={e => setStoreBlockContent(c => ({ ...c, size: e.target.value }))}><option value="hero">Hero (2.5rem)</option><option value="h1">H1 (2rem)</option><option value="h2">H2 (1.5rem)</option><option value="h3">H3 (1.25rem)</option><option value="sub">Sub (1rem)</option></select></div>}
                       {storeBlockType === 'text' && <div className="form-group"><label className="label">Font Size Default</label><input className="input" placeholder="1rem" value={storeBlockContent.font_size || ''} onChange={e => setStoreBlockContent(c => ({ ...c, font_size: e.target.value }))} /></div>}
-                      <div className="form-group"><label className="label">Warna Teks Default</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#ffffff'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
+                      <div className="form-group"><label className="label">Warna Teks Default</label><div className={styles.colorInputWrap}><input type="color" className={styles.colorPicker} value={storeBlockContent.color || '#0d3369'} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /><input type="text" className="input" style={{ flex: 1 }} value={storeBlockContent.color || ''} onChange={e => setStoreBlockContent(c => ({ ...c, color: e.target.value }))} /></div></div>
                       <div className="form-group"><label className="label">Alignment</label><select className="select" value={storeBlockContent.align || 'left'} onChange={e => setStoreBlockContent(c => ({ ...c, align: e.target.value }))}><option value="left">Kiri</option><option value="center">Tengah</option><option value="right">Kanan</option><option value="justify">Rata Kanan-Kiri</option></select></div>
                     </div>
                   )}
@@ -2608,14 +2600,14 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                           initial={false}
                                           style={{ listStyle: 'none' }}
                                         >
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 4px', borderBottom: '1px solid #f1f5f9' }}>
                                             <div
                                               onPointerDown={(e) => dragControls.start(e)}
                                               style={{ cursor: 'grab', display: 'flex', alignItems: 'center', color: '#94a3b8', touchAction: 'none' }}
                                             >
                                               <GripVertical size={15} />
                                             </div>
-                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? '#f0fdf4' : mat.type === 'zip' ? '#fdf4ff' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? 'rgba(157,224,193,0.16)' : mat.type === 'zip' ? 'rgba(216,180,254,0.16)' : 'rgba(255,213,143,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                               {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : mat.type === 'zip' ? <FileText size={15} color="#9333ea" /> : <Video size={15} color="#dc2626" />}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -2657,7 +2649,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                                 {/* Add video button */}
                                 <button
                                   onClick={() => { setShowMaterialForm(showMaterialForm === product.id ? null : product.id); setMaterialForm({ title: '', type: 'video', content_url: '' }); setMaterialError('') }}
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#fef3c7', color: '#92400e', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #fcd34d', outline: 'none' }}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255,213,143,0.16)', color: '#ffd58f', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed rgba(255,213,143,0.4)', outline: 'none' }}
                                 >
                                   <Video size={14} /> Tambah Video
                                 </button>
@@ -2665,7 +2657,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
 
                               {/* Video form */}
                               {showMaterialForm === product.id && (
-                                <form onSubmit={(e) => saveMaterial(e, product.id)} style={{ background: '#f8fafc', borderRadius: 10, padding: '16px', border: '1px solid #e2e8f0' }}>
+                                <form onSubmit={(e) => saveMaterial(e, product.id)} style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
                                   <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#374151', marginBottom: 12 }}>Tambah Materi Video YouTube</div>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                     <div>
@@ -3282,7 +3274,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                       <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                         {articleCategories.length === 0 && <div style={{ color:'#94a3b8', fontSize:'0.85rem' }}>Belum ada kategori.</div>}
                         {articleCategories.map(cat => (
-                          <div key={cat.id} className={styles.linkRow} style={{ padding:'10px 16px' }}>
+                          <div key={cat.id} className={styles.linkRow} style={{ padding:'10px 16px', background:'transparent', border:'none', borderRadius:0, boxShadow:'none', borderBottom:'1px solid #f1f5f9' }}>
                             {editingCat?.id === cat.id ? (
                               <input className="input" style={{ flex:1, padding:'6px 10px' }} value={catFormName} autoFocus
                                 onChange={e => setCatFormName(e.target.value)}
@@ -3329,7 +3321,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                     </div>
                     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
                       {articleAuthors.map(author => (
-                        <div key={author.id} className={styles.linkRow} style={{ padding:'10px 16px' }}>
+                        <div key={author.id} className={styles.linkRow} style={{ padding:'10px 16px', background:'transparent', border:'none', borderRadius:0, boxShadow:'none', borderBottom:'1px solid #f1f5f9' }}>
                           {author.photo_url && (
                             <img src={author.photo_url.includes('drive.google.com/uc') ? author.photo_url.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w100-h100' : author.photo_url}
                               alt={author.name} style={{ width:36, height:36, borderRadius:'50%', objectFit:'cover', flexShrink:0, border:'2px solid #e2e8f0' }} />
@@ -3400,15 +3392,15 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                   <div className={styles.linksList}>
                     {articles.map(a => (
                       <div key={a.id} className={styles.linkRow}>
-                        <div className={styles.linkIcon} style={{ background: a.status==='published' ? '#dcfce7' : a.status==='unpublished' ? '#fef3c7' : '#f1f5f9' }}>
-                          <Newspaper size={18} color={a.status==='published' ? '#16a34a' : a.status==='unpublished' ? '#b45309' : '#64748b'}/>
+                        <div className={styles.linkIcon} style={{ background: a.status==='published' ? 'rgba(157,224,193,0.16)' : a.status==='unpublished' ? 'rgba(255,213,143,0.16)' : 'rgba(255,255,255,0.06)' }}>
+                          <Newspaper size={18} color={a.status==='published' ? '#9de0c1' : a.status==='unpublished' ? '#ffd58f' : '#aebdca'}/>
                         </div>
                         <div className={styles.linkInfo} style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
                             <span className={styles.linkTitle}>{a.title}</span>
                             <span style={{ fontSize:'0.68rem', fontWeight:700, borderRadius:999, padding:'2px 8px',
-                              background: a.status==='published' ? '#dcfce7' : a.status==='unpublished' ? '#fef3c7' : '#f1f5f9',
-                              color: a.status==='published' ? '#16a34a' : a.status==='unpublished' ? '#b45309' : '#64748b'
+                              background: a.status==='published' ? 'rgba(157,224,193,0.16)' : a.status==='unpublished' ? 'rgba(255,213,143,0.16)' : 'rgba(255,255,255,0.06)',
+                              color: a.status==='published' ? '#9de0c1' : a.status==='unpublished' ? '#ffd58f' : '#aebdca'
                             }}>{a.status.toUpperCase()}</span>
                           </div>
                           <span className={styles.linkUrl}>
@@ -3479,7 +3471,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                 </div>
 
                 {/* Content Blocks */}
-                <div className={styles.formCard} style={{ marginTop:16 }}>
+                <div style={{ marginTop:16 }}>
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
                     <h3 className={styles.formTitle}>Konten Artikel</h3>
                   </div>
@@ -3657,7 +3649,7 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                               const p = products.find(pr => pr.id === block.product_id)
                               if (!p) return null
                               return (
-                                <div style={{ marginTop:8, padding:'10px 14px', background:'#f8fafc', borderRadius:8, border:'1px solid #e2e8f0', display:'flex', alignItems:'center', gap:12 }}>
+                                <div style={{ marginTop:8, paddingTop:10, borderTop:'1px solid #e2e8f0', display:'flex', alignItems:'center', gap:12 }}>
                                   {p.image_url && <img src={p.image_url.includes('drive.google.com/uc')?p.image_url.replace(/uc\?export=view&id=/,'thumbnail?id=')+'&sz=w200-h250':p.image_url} style={{ width:44, height:55, objectFit:'cover', borderRadius:6, border:'1px solid #e2e8f0' }} alt=""/>}
                                   <div>
                                     <div style={{ fontWeight:700, fontSize:'0.88rem', color:'#0f172a' }}>{p.name}</div>

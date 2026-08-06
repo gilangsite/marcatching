@@ -129,8 +129,8 @@ export default function SecurityTab() {
           Setelah berhasil, <strong>semua device yang sedang login akan otomatis dikeluarkan</strong>.
         </p>
 
-        {error && <div style={{ color: '#ef4444', background: '#fef2f2', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{error}</div>}
-        {msg && <div style={{ color: '#10b981', background: '#ecfdf5', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{msg}</div>}
+        {error && <div style={{ color: '#ffaaaa', background: 'rgba(255,170,170,0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{error}</div>}
+        {msg && <div style={{ color: '#9de0c1', background: 'rgba(157,224,193,0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px' }}>{msg}</div>}
 
         {step === 1 ? (
           <button

@@ -285,7 +285,7 @@ export default function ChampagneTab({ products }: { products: Product[] }) {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {(['headline', 'text', 'button', 'image', 'video', 'product'] as const).map(t => (
                     <button type="button" key={t} onClick={() => { setBlockType(t); setBlockContent({}) }}
-                      style={{ padding: '8px 14px', borderRadius: 8, border: blockType === t ? '2px solid #0d3369' : '1px solid #e2e8f0', background: blockType === t ? '#eff6ff' : '#fff', color: blockType === t ? '#0d3369' : '#64748b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
+                      style={{ padding: '8px 14px', borderRadius: 8, border: blockType === t ? '2px solid #0d3369' : '1px solid #e2e8f0', background: blockType === t ? '#eff6ff' : '#ffffff', color: blockType === t ? '#0d3369' : '#64748b', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}>
                       {t === 'video' ? 'Online Video' : t.charAt(0).toUpperCase() + t.slice(1)}
                     </button>
                   ))}

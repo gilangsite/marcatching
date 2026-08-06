@@ -90,7 +90,7 @@ function QuestionEditor({
   const needsOptions = ['dropdown', 'checkbox', 'radio'].includes(q.type)
 
   return (
-    <div style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(184,214,242,.13)', borderRadius: 14, padding: '16px 20px', marginBottom: 12 }}>
+    <div style={{ borderTop: isFirst ? 'none' : '1px solid rgba(184,214,242,.13)', padding: '16px 4px', marginBottom: 4 }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         {/* Reorder */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingTop: 8 }}>
@@ -604,7 +604,7 @@ export default function SurveyTab() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                       <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#f3f7fb' }}>{s.title}</span>
-                      <span style={{ padding: '2px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 700, background: s.status === 'active' ? '#dcfce7' : '#f1f5f9', color: s.status === 'active' ? '#16a34a' : '#94a3b8' }}>
+                      <span style={{ padding: '2px 10px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 700, background: s.status === 'active' ? 'rgba(157,224,193,0.16)' : 'rgba(255,255,255,0.06)', color: s.status === 'active' ? '#9de0c1' : '#aebdca' }}>
                         {s.status === 'active' ? 'Active' : 'Inactive'}
                       </span>
                     </div>
@@ -685,7 +685,7 @@ export default function SurveyTab() {
         <div className={styles.cropModalOverlay} style={{ padding: '20px 0', zIndex: 9999 }}>
           <div className={styles.cropModalContent} style={{ maxWidth: 800, width: '90%', height: '90vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
             {/* Header Modal */}
-            <div className={`${styles.cropModalHeader} ${styles.noPrint}`} style={{ flexShrink: 0, background: '#fff' }}>
+            <div className={`${styles.cropModalHeader} ${styles.noPrint}`} style={{ flexShrink: 0, background: '#ffffff' }}>
               <h3 className={styles.cropModalTitle}>Preview Dokumen Survey</h3>
               <button className={styles.closeBtn} onClick={() => setSelectedResponse(null)}><X size={18} /></button>
             </div>

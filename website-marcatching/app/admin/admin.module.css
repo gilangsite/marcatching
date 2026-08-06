@@ -1534,7 +1534,7 @@
 
 /* ── Survey Print Styles ─────────────────────────────────── */
 @media print {
-  body * {
+  .page :global(*) {
     visibility: hidden;
   }
   .printArea, .printArea * {
@@ -1555,13 +1555,8 @@
     overflow: visible !important;
     page-break-after: auto;
   }
-  html, body {
-    height: auto !important;
-    overflow: visible !important;
-    background: white !important;
-  }
   /* Force all modal wrappers to expand and not cut off the print area */
-  .cropModalOverlay, .cropModalContent, :global(div[style*="90vh"]), :global(div[style*="overflow"]) {
+  .cropModalOverlay, .cropModalContent, .page :global(div[style*="90vh"]), .page :global(div[style*="overflow"]) {
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
@@ -1787,9 +1782,31 @@
     grid-column: 1 / -1;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
   }
-  .sectionHeader, .signalFeed, .logoutDashBtn {
+  .sectionHeader, .signalFeed, .logoutDashBtn, .overviewCard {
     grid-column: 1 / -1;
   }
+}
+
+/* ── Unified Overview Card (single box: metrics + finance pulse) ── */
+.overviewCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid rgba(184, 214, 242, 0.13);
+  background: rgba(8, 13, 19, 0.88);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.overviewSection {
+  padding: 22px 20px;
+}
+
+.overviewDivider {
+  height: 1px;
+  background: rgba(184, 214, 242, 0.13);
+  margin: 0 20px;
 }
 
 /* ── Growth Signal Hero Card ─────────────────────────────── */
@@ -3251,7 +3268,7 @@
     #030508 !important;
 }
 
-.content {
+.page .content {
   color: var(--admin-text) !important;
   background:
     linear-gradient(90deg, rgba(184, 214, 242, 0.024) 0 1px, transparent 1px 100%),
@@ -3260,7 +3277,7 @@
   background-size: 56px 56px !important;
 }
 
-.appTopBar {
+.page .appTopBar {
   background: rgba(3, 5, 8, 0.72) !important;
   border-bottom: 1px solid var(--admin-line) !important;
   box-shadow: none !important;
@@ -3268,51 +3285,51 @@
   -webkit-backdrop-filter: blur(22px) saturate(125%);
 }
 
-.appTopBarEyebrow,
-.financePulseEyebrow,
-.otherTabsModalEyebrow {
+.page .appTopBarEyebrow,
+.page .financePulseEyebrow,
+.page .otherTabsModalEyebrow {
   color: var(--admin-accent, #8cc6ff) !important;
 }
 
-.appTopBarTitle,
-.contentTitle,
-.formTitle,
-.sectionTitle,
-.trendCardTitle,
-.analyticsMiniChartTitle,
-.analyticsTableTitle,
-.financePulseTitle,
-.financeDonutCenter,
-.financeDonutCenter strong,
-.financeLedgerRow strong,
-.navCardLabel,
-.otherTabsModalTitle,
-.orderDate,
-.orderCustomer,
-.orderTotal,
-.cropModalTitle {
+.page .appTopBarTitle,
+.page .contentTitle,
+.page .formTitle,
+.page .sectionTitle,
+.page .trendCardTitle,
+.page .analyticsMiniChartTitle,
+.page .analyticsTableTitle,
+.page .financePulseTitle,
+.page .financeDonutCenter,
+.page .financeDonutCenter strong,
+.page .financeLedgerRow strong,
+.page .navCardLabel,
+.page .otherTabsModalTitle,
+.page .orderDate,
+.page .orderCustomer,
+.page .orderTotal,
+.page .cropModalTitle {
   color: var(--admin-text) !important;
 }
 
-.contentTitle {
+.page .contentTitle {
   font-size: clamp(1.7rem, 3vw, 2.35rem);
   line-height: 1.08;
   font-weight: 820;
 }
 
-.contentDesc,
-.trendCardSub,
-.analyticsMiniChartSub,
-.navCardDesc,
-.financeLedgerEmpty,
-.financePulseStat span,
-.financeBarDay > span,
-.orderCustomerEmail,
-.orderAddon {
+.page .contentDesc,
+.page .trendCardSub,
+.page .analyticsMiniChartSub,
+.page .navCardDesc,
+.page .financeLedgerEmpty,
+.page .financePulseStat span,
+.page .financeBarDay > span,
+.page .orderCustomerEmail,
+.page .orderAddon {
   color: var(--admin-muted) !important;
 }
 
-.sidebar {
+.page .sidebar {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 30%),
     #05080c !important;
@@ -3320,68 +3337,68 @@
   box-shadow: none !important;
 }
 
-.sidebarLogoDesktop,
-.sidebarBottom {
+.page .sidebarLogoDesktop,
+.page .sidebarBottom {
   background: transparent !important;
   border-color: var(--admin-line) !important;
 }
 
-.navItem {
+.page .navItem {
   color: rgba(224, 235, 245, 0.62) !important;
   border: 1px solid transparent;
 }
 
-.navItem:hover {
+.page .navItem:hover {
   color: var(--admin-text) !important;
   background: rgba(255, 255, 255, 0.045) !important;
   border-color: rgba(184, 214, 242, 0.08);
 }
 
-.navActive {
+.page .navActive {
   color: var(--admin-text) !important;
   background: rgba(140, 198, 255, 0.09) !important;
   border-color: rgba(140, 198, 255, 0.18) !important;
   box-shadow: inset 3px 0 0 #8cc6ff !important;
 }
 
-.appTopBarIconBtn,
-.otherTabsCloseBtn,
-.closeBtn,
-.logoutDashBtn {
+.page .appTopBarIconBtn,
+.page .otherTabsCloseBtn,
+.page .closeBtn,
+.page .logoutDashBtn {
   color: var(--admin-text) !important;
   background: rgba(255, 255, 255, 0.035) !important;
   border: 1px solid var(--admin-line) !important;
   box-shadow: none !important;
 }
 
-.appTopBarIconBtn:hover,
-.otherTabsCloseBtn:hover,
-.closeBtn:hover,
-.logoutDashBtn:hover {
+.page .appTopBarIconBtn:hover,
+.page .otherTabsCloseBtn:hover,
+.page .closeBtn:hover,
+.page .logoutDashBtn:hover {
   color: #ffffff !important;
   background: rgba(140, 198, 255, 0.09) !important;
   border-color: rgba(140, 198, 255, 0.24) !important;
 }
 
-.formCard,
-.linkRow,
-.analyticsKpiCard,
-.analyticsMiniChart,
-.analyticsTableCard,
-.analyticsTopPagesCard,
-.financeKpiCard,
-.cashflowChartWrap,
-.trendCard,
-.financePulseCard,
-.signalCard,
-.navCard3x,
-.mobileMenuAnalyticsChart,
-.articleBlockWrap,
-.card,
-.emptyState,
-.tableScroll,
-.otherTabsModal,
-.cropModalContent {
+.page .formCard,
+.page .linkRow,
+.page .analyticsKpiCard,
+.page .analyticsMiniChart,
+.page .analyticsTableCard,
+.page .analyticsTopPagesCard,
+.page .financeKpiCard,
+.page .cashflowChartWrap,
+.page .trendCard,
+.page .financePulseCard,
+.page .signalCard,
+.page .navCard3x,
+.page .mobileMenuAnalyticsChart,
+.page .articleBlockWrap,
+.page .card,
+.page .emptyState,
+.page .tableScroll,
+.page .otherTabsModal,
+.page .cropModalContent {
   color: var(--admin-text) !important;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.028), transparent 45%),
@@ -3391,25 +3408,25 @@
   box-shadow: var(--admin-shadow) !important;
 }
 
-.formCard,
-.analyticsTableCard,
-.cashflowChartWrap,
-.otherTabsModal {
+.page .formCard,
+.page .analyticsTableCard,
+.page .cashflowChartWrap,
+.page .otherTabsModal {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
-.linkRow:hover,
-.navCard3x:hover,
-.analyticsKpiCard:hover,
-.financeKpiCard:hover,
-.articleBlockWrap:hover {
+.page .linkRow:hover,
+.page .navCard3x:hover,
+.page .analyticsKpiCard:hover,
+.page .financeKpiCard:hover,
+.page .articleBlockWrap:hover {
   border-color: rgba(140, 198, 255, 0.25) !important;
   box-shadow: var(--admin-shadow-hover) !important;
   transform: translateY(-2px);
 }
 
-.growthHero {
+.page .growthHero {
   background:
     radial-gradient(circle at 86% 18%, rgba(140, 198, 255, 0.18), transparent 18rem),
     linear-gradient(145deg, rgba(17, 28, 40, 0.96), rgba(5, 9, 14, 0.98)) !important;
@@ -3418,26 +3435,26 @@
   box-shadow: 0 34px 90px rgba(0, 0, 0, 0.38) !important;
 }
 
-.growthHero::before {
+.page .growthHero::before {
   background:
     linear-gradient(90deg, rgba(184, 214, 242, 0.045) 0 1px, transparent 1px 100%),
     linear-gradient(180deg, rgba(184, 214, 242, 0.035) 0 1px, transparent 1px 100%) !important;
   background-size: 38px 38px !important;
 }
 
-.heroTitle,
-.heroMetricValue {
+.page .heroTitle,
+.page .heroMetricValue {
   color: #f7fbff !important;
 }
 
-.heroCopy,
-.heroInsight,
-.heroMetricLabel,
-.heroLabel {
+.page .heroCopy,
+.page .heroInsight,
+.page .heroMetricLabel,
+.page .heroLabel {
   color: rgba(222, 235, 246, 0.62) !important;
 }
 
-.financePulseCard {
+.page .financePulseCard {
   background:
     linear-gradient(90deg, rgba(184, 214, 242, 0.025) 0 1px, transparent 1px 100%),
     linear-gradient(180deg, rgba(184, 214, 242, 0.025) 0 1px, transparent 1px 100%),
@@ -3445,33 +3462,51 @@
   background-size: 34px 34px !important;
 }
 
-.financePulseStat,
-.signalIconWrap,
-.navIconBox,
-.linkIcon,
-.analyticsKpiIcon,
-.appIconWrap,
-.articleBlockInner {
+.page .financePulseStat,
+.page .signalIconWrap,
+.page .navIconBox,
+.page .linkIcon,
+.page .analyticsKpiIcon,
+.page .appIconWrap,
+.page .articleBlockInner {
   color: #a9d3f8 !important;
   background: rgba(140, 198, 255, 0.075) !important;
   border-color: rgba(140, 198, 255, 0.12) !important;
 }
 
-.financePulseBadge,
-.peakChip,
-.sectionBadge,
-.statusActive,
-.orderStatusConfirmed {
+.page .financePulseBadge,
+.page .peakChip,
+.page .sectionBadge,
+.page .statusActive,
+.page .orderStatusConfirmed {
   color: #9de0c1 !important;
   background: rgba(121, 214, 174, 0.1) !important;
   border: 1px solid rgba(121, 214, 174, 0.2) !important;
 }
 
-.statusSoon,
-.orderStatusPending {
+.page .statusSoon,
+.page .orderStatusPending {
   color: #e6c889 !important;
   background: rgba(230, 200, 137, 0.09) !important;
   border: 1px solid rgba(230, 200, 137, 0.2) !important;
+}
+
+.page .kpiUp,
+.page .kpiUpLarge {
+  color: #a9d3f8 !important;
+  background: rgba(140, 198, 255, 0.1) !important;
+  border-color: rgba(140, 198, 255, 0.2) !important;
+}
+
+.page .kpiDown,
+.page .kpiDownLarge {
+  color: #ffaaaa !important;
+  background: rgba(255, 170, 170, 0.1) !important;
+  border-color: rgba(255, 170, 170, 0.2) !important;
+}
+
+.page .kpiVs {
+  color: #8e9baa !important;
 }
 
 .page :global(.input),
@@ -3513,9 +3548,9 @@
 }
 
 .page :global(.btn-navy),
-.fullAnalyticsBtn,
-.contactBuyerBtn,
-.financePulseActions button {
+.page .fullAnalyticsBtn,
+.page .contactBuyerBtn,
+.page .financePulseActions button {
   color: #04101a !important;
   background: #dceeff !important;
   border-color: #dceeff !important;
@@ -3523,9 +3558,9 @@
 }
 
 .page :global(.btn-navy):hover,
-.fullAnalyticsBtn:hover,
-.contactBuyerBtn:hover,
-.financePulseActions button:hover {
+.page .fullAnalyticsBtn:hover,
+.page .contactBuyerBtn:hover,
+.page .financePulseActions button:hover {
   color: #02070b !important;
   background: #f3f8fd !important;
   border-color: #f3f8fd !important;
@@ -3546,138 +3581,138 @@
   border-color: rgba(140, 198, 255, 0.28) !important;
 }
 
-.addMenuDropdown,
-.contactMenu {
+.page .addMenuDropdown,
+.page .contactMenu {
   color: var(--admin-text) !important;
   background: #0a1017 !important;
   border: 1px solid var(--admin-line-strong) !important;
   box-shadow: 0 22px 64px rgba(0, 0, 0, 0.48) !important;
 }
 
-.addMenuDropdown button,
-.contactMenuAction,
-.contactMenuHeader {
+.page .addMenuDropdown button,
+.page .contactMenuAction,
+.page .contactMenuHeader {
   color: #cbd6e0 !important;
   border-color: var(--admin-line) !important;
 }
 
-.addMenuDropdown button:hover,
-.contactMenuAction:hover {
+.page .addMenuDropdown button:hover,
+.page .contactMenuAction:hover {
   color: #ffffff !important;
   background: rgba(140, 198, 255, 0.08) !important;
 }
 
-.tableScroll,
-.ordersTable,
-.analyticsTable,
-.financeTable {
+.page .tableScroll,
+.page .ordersTable,
+.page .analyticsTable,
+.page .financeTable {
   color: var(--admin-text) !important;
   background: rgba(6, 10, 15, 0.72) !important;
   border-color: var(--admin-line) !important;
 }
 
-.tableScroll .ordersTable th,
-.ordersTable th,
-.analyticsTable th,
-.financeTable th,
-.financeTable thead th {
+.page .tableScroll .ordersTable th,
+.page .ordersTable th,
+.page .analyticsTable th,
+.page .financeTable th,
+.page .financeTable thead th {
   color: #aebdca !important;
   background: rgba(255, 255, 255, 0.035) !important;
   border-color: var(--admin-line) !important;
 }
 
-.tableScroll .ordersTable td,
-.ordersTable td,
-.analyticsTable td,
-.financeTable td {
+.page .tableScroll .ordersTable td,
+.page .ordersTable td,
+.page .analyticsTable td,
+.page .financeTable td {
   color: #d9e3ec !important;
   background: transparent !important;
   border-color: var(--admin-line) !important;
 }
 
-.ordersTable tr:hover,
-.analyticsTable tbody tr:hover,
-.financeTable tbody tr:hover {
+.page .ordersTable tr:hover,
+.page .analyticsTable tbody tr:hover,
+.page .financeTable tbody tr:hover {
   background: rgba(140, 198, 255, 0.035) !important;
 }
 
-.cropModalOverlay {
+.page .cropModalOverlay {
   background: rgba(0, 0, 0, 0.72) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
-.cropModalHeader,
-.cropModalActions,
-.formActions,
-.fixedActions,
-.ecommerceAddFixed {
+.page .cropModalHeader,
+.page .cropModalActions,
+.page .formActions,
+.page .fixedActions,
+.page .ecommerceAddFixed {
   background: rgba(6, 10, 15, 0.88) !important;
   border-color: var(--admin-line) !important;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
-.formActions {
+.page .formActions {
   background: transparent !important;
 }
 
-.uploadArea {
+.page .uploadArea {
   color: #a9b4c0 !important;
   background: rgba(140, 198, 255, 0.035) !important;
   border-color: rgba(140, 198, 255, 0.2) !important;
 }
 
-.uploadArea:hover {
+.page .uploadArea:hover {
   color: #d8ebfc !important;
   background: rgba(140, 198, 255, 0.07) !important;
   border-color: rgba(140, 198, 255, 0.38) !important;
 }
 
-.editBtn,
-.deleteBtn,
-.articleBlockCtrlBtn,
-.articleBlockDelBtn {
+.page .editBtn,
+.page .deleteBtn,
+.page .articleBlockCtrlBtn,
+.page .articleBlockDelBtn {
   color: #b6c4d1 !important;
   background: rgba(255, 255, 255, 0.035) !important;
   border: 1px solid var(--admin-line) !important;
 }
 
-.editBtn:hover,
-.articleBlockCtrlBtn:hover:not(:disabled) {
+.page .editBtn:hover,
+.page .articleBlockCtrlBtn:hover:not(:disabled) {
   color: #b8dcff !important;
   background: rgba(140, 198, 255, 0.09) !important;
   border-color: rgba(140, 198, 255, 0.24) !important;
 }
 
-.deleteBtn:hover,
-.articleBlockDelBtn:hover {
+.page .deleteBtn:hover,
+.page .articleBlockDelBtn:hover {
   color: #ffaaaa !important;
   background: rgba(255, 139, 139, 0.08) !important;
   border-color: rgba(255, 139, 139, 0.22) !important;
 }
 
-.formError,
-.error {
+.page .formError,
+.page .error {
   color: #ffaaaa !important;
   background: rgba(255, 139, 139, 0.075) !important;
   border-color: rgba(255, 139, 139, 0.2) !important;
 }
 
-.successMsg,
-.success {
+.page .successMsg,
+.page .success {
   color: #9de0c1 !important;
   background: rgba(121, 214, 174, 0.075) !important;
   border-color: rgba(121, 214, 174, 0.2) !important;
 }
 
-.adminToastBackdrop {
+.page .adminToastBackdrop {
   background: rgba(0, 0, 0, 0.5) !important;
   backdrop-filter: blur(12px) saturate(115%);
   -webkit-backdrop-filter: blur(12px) saturate(115%);
 }
 
-.adminToastCard {
+.page .adminToastCard {
   position: relative;
   flex-direction: column;
   justify-content: center;
@@ -3695,7 +3730,7 @@
   box-shadow: 0 34px 100px rgba(0, 0, 0, 0.56) !important;
 }
 
-.adminToastCard::after {
+.page .adminToastCard::after {
   content: '';
   position: absolute;
   inset: 10px;
@@ -3704,7 +3739,7 @@
   border-radius: 17px;
 }
 
-.adminToastIcon {
+.page .adminToastIcon {
   width: 68px;
   height: 68px;
   flex: 0 0 68px;
@@ -3712,20 +3747,20 @@
   filter: drop-shadow(0 0 18px rgba(121, 214, 174, 0.2));
 }
 
-.adminToastTitle {
+.page .adminToastTitle {
   color: #f3f7fb !important;
   font-size: 0.72rem;
   letter-spacing: 0.12em !important;
 }
 
-.adminToastMessage {
+.page .adminToastMessage {
   max-width: 270px;
   color: #9eabb7 !important;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.bottomNav {
+.page .bottomNav {
   background: rgba(4, 7, 11, 0.9) !important;
   border-top: 1px solid var(--admin-line) !important;
   box-shadow: 0 -14px 36px rgba(0, 0, 0, 0.28) !important;
@@ -3733,11 +3768,11 @@
   -webkit-backdrop-filter: blur(22px) saturate(125%);
 }
 
-.bottomNavItem {
+.page .bottomNavItem {
   color: #687684 !important;
 }
 
-.bottomNavItemActive {
+.page .bottomNavItemActive {
   color: #dceeff !important;
 }
 
@@ -3757,8 +3792,8 @@
   border-color: var(--admin-line) !important;
 }
 
-.financeKpiCard[style],
-.cashflowResultCard {
+.page .financeKpiCard[style],
+.page .cashflowResultCard {
   color: var(--admin-text) !important;
   background:
     radial-gradient(circle at 90% 0%, rgba(140, 198, 255, 0.13), transparent 16rem),
@@ -3776,29 +3811,29 @@
 }
 
 @media (max-width: 768px) {
-  .appTopBar {
+  .page .appTopBar {
     background: rgba(3, 5, 8, 0.88) !important;
     border-bottom: 1px solid var(--admin-line) !important;
     box-shadow: none !important;
   }
 
-  .content {
+  .page .content {
     padding-inline: 16px !important;
   }
 
-  .formCard,
-  .analyticsTableCard,
-  .cashflowChartWrap,
-  .trendCard,
-  .financePulseCard {
+  .page .formCard,
+  .page .analyticsTableCard,
+  .page .cashflowChartWrap,
+  .page .trendCard,
+  .page .financePulseCard {
     padding: 20px 16px !important;
   }
 
-  .contentHeader {
+  .page .contentHeader {
     margin-bottom: 22px;
   }
 
-  .adminToastCard {
+  .page .adminToastCard {
     width: min(326px, calc(100vw - 32px));
     min-height: 204px;
     padding: 26px 22px;
@@ -3906,10 +3941,10 @@
 }
 
 .page :global(.btn-navy),
-.fullAnalyticsBtn,
-.contactBuyerBtn,
-.financePulseActions button,
-.analyticsRefreshBtn {
+.page .fullAnalyticsBtn,
+.page .contactBuyerBtn,
+.page .financePulseActions button,
+.page .analyticsRefreshBtn {
   color: var(--admin-action-ink) !important;
   background: var(--admin-action-blue) !important;
   border-color: var(--admin-action-blue) !important;
@@ -3917,19 +3952,19 @@
 }
 
 .page :global(.btn-navy) *,
-.fullAnalyticsBtn *,
-.contactBuyerBtn *,
-.financePulseActions button *,
-.analyticsRefreshBtn * {
+.page .fullAnalyticsBtn *,
+.page .contactBuyerBtn *,
+.page .financePulseActions button *,
+.page .analyticsRefreshBtn * {
   color: var(--admin-action-ink) !important;
   stroke: currentColor;
 }
 
 .page :global(.btn-navy):hover,
-.fullAnalyticsBtn:hover,
-.contactBuyerBtn:hover,
-.financePulseActions button:hover,
-.analyticsRefreshBtn:hover {
+.page .fullAnalyticsBtn:hover,
+.page .contactBuyerBtn:hover,
+.page .financePulseActions button:hover,
+.page .analyticsRefreshBtn:hover {
   color: var(--admin-action-ink) !important;
   background: var(--admin-action-blue) !important;
   border-color: var(--admin-action-blue) !important;
@@ -3937,15 +3972,15 @@
   transform: translateY(-1px);
 }
 
-.linkTypeBadge,
-.typeBtnActive {
+.page .linkTypeBadge,
+.page .typeBtnActive {
   color: var(--admin-action-ink) !important;
   background: var(--admin-action-blue) !important;
   border-color: var(--admin-action-blue) !important;
 }
 
-.linkTypeBadge *,
-.typeBtnActive * {
+.page .linkTypeBadge *,
+.page .typeBtnActive * {
   color: var(--admin-action-ink) !important;
   stroke: currentColor;
 }
@@ -4067,18 +4102,18 @@
 /* Branded actions use dark ink on the homepage-blue fill. */
 .page :global(.btn-navy),
 .page :global(.btn-navy) *,
-.fullAnalyticsBtn,
-.fullAnalyticsBtn *,
-.contactBuyerBtn,
-.contactBuyerBtn *,
-.financePulseActions button,
-.financePulseActions button *,
-.analyticsRefreshBtn,
-.analyticsRefreshBtn *,
-.linkTypeBadge,
-.linkTypeBadge *,
-.typeBtnActive,
-.typeBtnActive *,
+.page .fullAnalyticsBtn,
+.page .fullAnalyticsBtn *,
+.page .contactBuyerBtn,
+.page .contactBuyerBtn *,
+.page .financePulseActions button,
+.page .financePulseActions button *,
+.page .analyticsRefreshBtn,
+.page .analyticsRefreshBtn *,
+.page .linkTypeBadge,
+.page .linkTypeBadge *,
+.page .typeBtnActive,
+.page .typeBtnActive *,
 .page button[style*='background: #dbeafe'],
 .page button[style*='background:#dbeafe'],
 .page button[style*='background: #eff6ff'],
