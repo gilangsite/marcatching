@@ -65,7 +65,7 @@ export async function sendCourseAccessEmail(input: {
   }
 }
 
-export async function recordCheckout(input: {
+export type CheckoutNotificationInput = {
   orderId: string
   productName: string
   fullName: string
@@ -79,7 +79,9 @@ export async function recordCheckout(input: {
   addonItems: AddonItem[]
   voucherDiscount: number
   totalPaid: number
-}) {
+}
+
+function checkoutNotificationPayload(input: CheckoutNotificationInput) {
   const addonTotal = input.addonItems.reduce((sum, item) => sum + item.priceDiscounted, 0)
   const allProducts = [
     { name: input.productName, priceOriginal: input.priceOriginal, priceDiscounted: input.priceDiscounted },
@@ -90,8 +92,7 @@ export async function recordCheckout(input: {
     })),
   ]
 
-  await postToAppsScript({
-    action: 'checkout',
+  return {
     orderId: input.orderId,
     productName: input.productName,
     fullName: input.fullName,
@@ -107,6 +108,32 @@ export async function recordCheckout(input: {
     allProducts,
     voucherDiscount: input.voucherDiscount,
     totalPaid: input.totalPaid,
+  }
+}
+
+export async function recordCheckout(input: CheckoutNotificationInput) {
+  await postToAppsScript({
+    action: 'checkout',
+    ...checkoutNotificationPayload(input),
     status: 'pending',
   })
+}
+
+export async function notifyPaidCheckout(input: CheckoutNotificationInput) {
+  const responseText = await postToAppsScript({
+    action: 'paymentPaid',
+    ...checkoutNotificationPayload(input),
+    status: 'paid',
+  })
+
+  let result: { status?: string; message?: string }
+  try {
+    result = JSON.parse(responseText) as { status?: string; message?: string }
+  } catch {
+    throw new Error('Apps Script returned an invalid paid-order response')
+  }
+
+  if (result.status !== 'success') {
+    throw new Error(result.message || 'Paid-order admin notification failed')
+  }
 }

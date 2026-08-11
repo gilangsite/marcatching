@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { sendCourseAccessEmail } from '@/lib/courseEmail'
+import { notifyPaidCheckout, sendCourseAccessEmail } from '@/lib/courseEmail'
 import type { AddonItem, Product, Voucher } from '@/lib/supabaseClient'
 
 export class CommerceError extends Error {
@@ -217,6 +217,54 @@ export async function fulfillOrder(orderId: string) {
       .eq('id', order.id)
     throw error
   }
+}
+
+type PaidNotifiableOrder = {
+  id: string
+  product_name: string
+  full_name: string
+  email: string
+  whatsapp: string
+  background: string
+  referral_source: string
+  voucher_code: string | null
+  price_original: number
+  price_discounted: number
+  addon_items: AddonItem[] | null
+  voucher_discount: number
+  total_paid: number
+  status: string
+  payment_status: string
+}
+
+export async function notifyPaidOrder(orderId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('orders')
+    .select('id, product_name, full_name, email, whatsapp, background, referral_source, voucher_code, price_original, price_discounted, addon_items, voucher_discount, total_paid, status, payment_status')
+    .eq('id', orderId)
+    .single()
+
+  if (error || !data) throw new CommerceError('Order tidak ditemukan', 404)
+  const order = data as PaidNotifiableOrder
+  if (order.status !== 'confirmed' || order.payment_status !== 'paid') {
+    throw new CommerceError('Order belum memiliki pembayaran terverifikasi')
+  }
+
+  await notifyPaidCheckout({
+    orderId: order.id,
+    productName: order.product_name,
+    fullName: order.full_name,
+    email: order.email,
+    whatsapp: order.whatsapp,
+    background: order.background,
+    referralSource: order.referral_source,
+    voucherCode: order.voucher_code,
+    priceOriginal: Number(order.price_original) || 0,
+    priceDiscounted: Number(order.price_discounted) || 0,
+    addonItems: Array.isArray(order.addon_items) ? order.addon_items : [],
+    voucherDiscount: Number(order.voucher_discount) || 0,
+    totalPaid: Number(order.total_paid) || 0,
+  })
 }
 
 export async function revokeOrderAccess(orderId: string) {

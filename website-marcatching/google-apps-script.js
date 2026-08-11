@@ -64,9 +64,10 @@ function doPost(e) {
     
     // Route based on action type
     console.log('Action received:', data.action);
-    console.log('Payload:', rawData);
     if (data.action === 'checkout') {
       return handleCheckout(data);
+    } else if (data.action === 'paymentPaid') {
+      return handlePaymentPaid(data);
     } else if (data.action === 'upload') {
       return handleImageUpload(data);
     } else if (data.action === 'uploadPdf') {
@@ -483,28 +484,45 @@ function sendAdminNotificationEmail(data) {
     });
   } catch (e) {
     Logger.log('Admin Email error: ' + e.toString());
+    throw e;
   }
 }
 
-// ─── CHECKOUT: Save to Sheet + Send Both Emails ─────────────
-function handleCheckout(data) {
-  // 1. Save to Google Sheets
+// ─── CHECKOUT: Save to Sheet + Send Pending Email ───────────
+var CHECKOUT_STATUS_COLUMN = 16;
+var CHECKOUT_ADMIN_NOTIFIED_COLUMN = 17;
+
+function getCheckoutSheet() {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
-  
+
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
       'Timestamp', 'Order ID', 'Produk Utama', 'Add-On Products', 'Full Name', 'Email',
       'WhatsApp', 'Background', 'Referral Source', 'Voucher Code',
       'Harga Utama', 'Add-On Total', 'Subtotal', 'Voucher Discount',
-      'Total Bayar', 'Status'
+      'Total Bayar', 'Status', 'Admin Notified At'
     ]);
+  } else if (!sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue()) {
+    sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue('Admin Notified At');
   }
-  
+
+  return sheet;
+}
+
+function findCheckoutRow(sheet, orderId) {
+  if (!orderId || sheet.getLastRow() < 2) return 0;
+  var orderIds = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues();
+  for (var i = 0; i < orderIds.length; i++) {
+    if (String(orderIds[i][0]) === String(orderId)) return i + 2;
+  }
+  return 0;
+}
+
+function saveCheckoutRow(sheet, data, status) {
   var addons = data.addonItems || [];
   var addonNames = addons.map(function(a) { return a.name; }).join(', ') || '-';
   var subtotal = (data.priceDiscounted || 0) + (data.addonTotal || 0);
-
-  sheet.appendRow([
+  var rowValues = [
     new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
     data.orderId || '-',
     data.productName || '-',
@@ -520,10 +538,25 @@ function handleCheckout(data) {
     formatRupiah(subtotal),
     formatRupiah(data.voucherDiscount || 0),
     formatRupiah(data.totalPaid || 0),
-    data.status || 'pending'
-  ]);
-  
-  // 2. Send Confirmation Email to buyer (pembayaran sedang dikonfirmasi)
+    status || data.status || 'pending'
+  ];
+  var existingRow = findCheckoutRow(sheet, data.orderId);
+
+  if (existingRow) {
+    sheet.getRange(existingRow, 1, 1, CHECKOUT_STATUS_COLUMN).setValues([rowValues]);
+    return existingRow;
+  }
+
+  sheet.appendRow(rowValues.concat(['']));
+  return sheet.getLastRow();
+}
+
+function handleCheckout(data) {
+  var sheet = getCheckoutSheet();
+  saveCheckoutRow(sheet, data, data.status || 'pending');
+
+  // Buyer may receive the pending-payment email, but the admin purchase
+  // notification is intentionally deferred until paymentPaid.
   if (data.email) {
     try {
       sendConfirmationEmail(data);
@@ -532,17 +565,52 @@ function handleCheckout(data) {
     }
   }
 
-  // 3. Send Notification Email to Admin
-  try {
-    sendAdminNotificationEmail(data);
-  } catch (adminErr) {
-    Logger.log('Admin Email error: ' + adminErr.toString());
-  }
-  
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
-    message: 'Checkout data saved and email sent'
+    message: 'Checkout data saved and pending email sent'
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── PAID ORDER: Update Sheet + Notify Admin Once ───────────
+function handlePaymentPaid(data) {
+  var orderId = String(data.orderId || '').trim();
+  if (!orderId) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: 'Order ID is required'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    var sheet = getCheckoutSheet();
+    var rowNumber = findCheckoutRow(sheet, orderId);
+    if (!rowNumber) rowNumber = saveCheckoutRow(sheet, data, 'paid');
+
+    sheet.getRange(rowNumber, CHECKOUT_STATUS_COLUMN).setValue('paid');
+    var notifiedAt = sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue();
+    if (notifiedAt) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'success', message: 'Admin notification already sent', duplicate: true
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    sendAdminNotificationEmail(data);
+    sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue(
+      new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+    );
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success', message: 'Paid order recorded and admin notified'
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 // ─── CONFIRMATION EMAIL (to buyer, saat checkout) ────────────

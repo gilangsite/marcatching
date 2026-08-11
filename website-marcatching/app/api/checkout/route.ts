@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import { calculateCart, CommerceError, fulfillOrder } from '@/lib/commerce'
+import { calculateCart, CommerceError, fulfillOrder, notifyPaidOrder } from '@/lib/commerce'
 import { recordCheckout } from '@/lib/courseEmail'
 import { createSnapTransaction, type MidtransItem } from '@/lib/midtrans'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
@@ -124,6 +124,12 @@ export async function POST(req: NextRequest) {
         await fulfillOrder(orderId)
       } catch {
         console.error('Free order fulfillment failed')
+      }
+
+      try {
+        await notifyPaidOrder(orderId)
+      } catch {
+        console.error('Free order admin notification failed')
       }
 
       return NextResponse.json({

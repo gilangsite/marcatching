@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fulfillOrder } from '@/lib/commerce'
+import { fulfillOrder, notifyPaidOrder } from '@/lib/commerce'
 import { normalizeMidtransStatus, verifyMidtransSignature } from '@/lib/midtrans'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
 
     if (!verifyMidtransSignature({ orderId, statusCode, grossAmount, signatureKey })) {
       return NextResponse.json({ message: 'Invalid signature' }, { status: 401 })
+    }
+
+    if (orderId.startsWith('payment_notif_test_')) {
+      return NextResponse.json({ received: true, test: true })
     }
 
     const { data: order, error: orderError } = await supabaseAdmin
@@ -74,6 +78,12 @@ export async function POST(req: NextRequest) {
       } catch {
         console.error('Paid order fulfillment failed')
         return NextResponse.json({ message: 'Fulfillment failed' }, { status: 500 })
+      }
+      try {
+        await notifyPaidOrder(order.id)
+      } catch {
+        console.error('Paid order admin notification failed')
+        return NextResponse.json({ message: 'Admin notification failed' }, { status: 500 })
       }
     }
 

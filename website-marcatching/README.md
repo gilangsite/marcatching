@@ -35,6 +35,7 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
 - Payment Notification URL: `https://www.marcatching.com/api/payments/midtrans/notification`
 - Finish, Unfinish, dan Error URL: `https://www.marcatching.com/payment/status`
 - Checkout menggunakan Snap Popup. Status paid hanya berasal dari webhook Midtrans yang signature dan nominalnya valid.
+- Google Apps Script mencatat checkout pending, tetapi email admin `Pembelian Baru` hanya dikirim melalui action `paymentPaid` setelah webhook memverifikasi pembayaran. Setelah mengubah `google-apps-script.js`, deploy versi baru pada Web App Apps Script yang sama sebelum men-deploy kode website.
 
 ## Menjalankan secara Lokal
 
