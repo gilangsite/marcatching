@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -11,6 +12,96 @@ import styles from './checkout.module.css'
 
 function formatRupiah(num: number): string {
   return 'Rp ' + num.toLocaleString('id-ID')
+}
+
+function CustomSelect({
+  value, onChange, options, placeholder, ariaLabel,
+}: {
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+  placeholder: string
+  ariaLabel: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [pos, setPos] = useState<{ left: number; width: number; top?: number; bottom?: number }>({ left: 0, width: 0 })
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function updatePosition() {
+      const el = triggerRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const estimatedHeight = Math.min(260, options.length * 45 + 8)
+      const spaceBelow = window.innerHeight - rect.bottom
+      const openUp = spaceBelow < estimatedHeight + 12 && rect.top > estimatedHeight
+      setPos({
+        left: rect.left,
+        width: rect.width,
+        top: openUp ? undefined : rect.bottom + 6,
+        bottom: openUp ? window.innerHeight - rect.top + 6 : undefined,
+      })
+    }
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [open, options.length])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node
+      if (wrapRef.current?.contains(target)) return
+      if (panelRef.current?.contains(target)) return
+      setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const selected = options.find(o => o.value === value)
+
+  return (
+    <div className={styles.customSelectWrap} ref={wrapRef}>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={ariaLabel}
+        className={`${styles.customSelectTrigger} ${open ? styles.customSelectTriggerOpen : ''}`}
+        onClick={() => setOpen(prev => !prev)}
+      >
+        <span className={selected ? undefined : styles.customSelectPlaceholder}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <ChevronDown size={16} className={`${styles.customSelectChevron} ${open ? styles.customSelectChevronOpen : ''}`} />
+      </button>
+      {open && createPortal(
+        <div
+          ref={panelRef}
+          className={styles.customSelectPanel}
+          style={{ position: 'fixed', left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom }}
+        >
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`${styles.customSelectOption} ${opt.value === value ? styles.customSelectOptionActive : ''}`}
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </div>
+  )
 }
 
 export default function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -120,7 +211,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   if (loading) {
     return (
       <div className={styles.checkoutPage}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#8e9baa' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b' }}>
           Memuat...
         </div>
       </div>
@@ -130,9 +221,9 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   if (!product) {
     return (
       <div className={styles.checkoutPage}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#8e9baa', gap: 16, padding: 24 }}>
-          <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f3f7fb' }}>Produk tidak ditemukan</p>
-          <Link href="/" style={{ color: '#b8dcff', textDecoration: 'underline' }}>Kembali ke beranda</Link>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#64748b', gap: 16, padding: 24 }}>
+          <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0d3369' }}>Produk tidak ditemukan</p>
+          <Link href="/" style={{ color: '#0d3369', textDecoration: 'underline' }}>Kembali ke beranda</Link>
         </div>
       </div>
     )
@@ -317,7 +408,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           {posterUrl ? (
             <img src={posterUrl} alt={product.name} className={styles.posterImage} loading="lazy" />
           ) : (
-            <div style={{ width: '100%', height: '100%', background: '#060a0f', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#637180' }}>
+            <div style={{ width: '100%', height: '100%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
               No Image
             </div>
           )}
@@ -539,14 +630,19 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Background *</label>
-              <select className={styles.formSelect} value={background} onChange={e => setBackground(e.target.value)}>
-                <option value="">Pilih background kamu</option>
-                <option value="Siswa/Mahasiswa">Siswa/Mahasiswa</option>
-                <option value="Content Creator/KOL">Content Creator/KOL</option>
-                <option value="Entrepreneur">Entrepreneur</option>
-                <option value="Employee">Employee</option>
-                <option value="Other">Other</option>
-              </select>
+              <CustomSelect
+                ariaLabel="Background"
+                value={background}
+                onChange={setBackground}
+                placeholder="Pilih background kamu"
+                options={[
+                  { value: 'Siswa/Mahasiswa', label: 'Siswa/Mahasiswa' },
+                  { value: 'Content Creator/KOL', label: 'Content Creator/KOL' },
+                  { value: 'Entrepreneur', label: 'Entrepreneur' },
+                  { value: 'Employee', label: 'Employee' },
+                  { value: 'Other', label: 'Other' },
+                ]}
+              />
               {background === 'Other' && (
                 <input className={styles.formInput} placeholder="Ketik background kamu" value={backgroundOther} onChange={e => setBackgroundOther(e.target.value)} style={{ marginTop: 8 }} />
               )}
@@ -554,12 +650,17 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Tau Product ini dari Mana? *</label>
-              <select className={styles.formSelect} value={referralSource} onChange={e => setReferralSource(e.target.value)}>
-                <option value="">Pilih sumber</option>
-                <option value="TikTok">TikTok</option>
-                <option value="Instagram">Instagram</option>
-                <option value="Referral">Referral</option>
-              </select>
+              <CustomSelect
+                ariaLabel="Sumber informasi produk"
+                value={referralSource}
+                onChange={setReferralSource}
+                placeholder="Pilih sumber"
+                options={[
+                  { value: 'TikTok', label: 'TikTok' },
+                  { value: 'Instagram', label: 'Instagram' },
+                  { value: 'Referral', label: 'Referral' },
+                ]}
+              />
               {referralSource === 'Referral' && (
                 <input className={styles.formInput} placeholder="Ketik nama yang mereferensikan" value={referralName} onChange={e => setReferralName(e.target.value)} style={{ marginTop: 8 }} />
               )}

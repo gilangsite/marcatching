@@ -44,9 +44,9 @@ Audit ini memetakan seluruh surface yang dikelola dari admin ke sistem visual ba
 | `page.marcatching.com` | Rebalanced logo scale, dark link cards, branded contact/product surfaces, refined buttons and text |
 | `/{campaign-slug}` | Dark Marcatching campaign surface, branded headline/body/action defaults, responsive 620px content rail |
 | `/survey/{slug}` | Dark landing/questions/consent/thank-you flow, branded progress and selection states, mobile-safe actions |
-| `/store` | Dark commerce system, mobile 2-column cards, branded sheets, cart, voucher, search, and filters |
-| `/product/{slug}` | Dark split layout, branded feature/detail/CTA treatment, graceful poster fallback |
-| `/product/{slug}/checkout` | Dark checkout form, add-on picker, voucher, transfer modal, and mobile fixed CTA |
+| `/store` | ~~Dark commerce system~~ — **reverted to Light theme 2026-08-11 per explicit user request** (white bg, navy/black text for contrast). Icons, red discount badges, and coming-soon blur retained. See `MARCATCHING_GUIDELINES.md` rule #6. |
+| `/product/{slug}` | ~~Dark split layout~~ — **reverted to Light theme 2026-08-11**, same as `/store`. |
+| `/product/{slug}/checkout` | ~~Dark checkout form~~ — **reverted to Light theme 2026-08-11**. Also gained a custom `CustomSelect` dropdown (portal + fixed positioning) replacing native `<select>` — see `MARCATCHING_GUIDELINES.md` rule #9. |
 | `/article` and `/article/{slug}` | Existing dark editorial system retained and aligned through the shared navbar/footer |
 | `/course`, `/course/{slug}`, `/course/login` | Existing dark learning console retained; shared palette and responsive behavior verified |
 | `/prompt-library` | Dark prompt cards, filters, drawer, steps, and CTA aligned to the new accent system |

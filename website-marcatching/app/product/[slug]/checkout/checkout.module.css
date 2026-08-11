@@ -127,7 +127,7 @@
 .priceHighlight { color: #0d3369; font-weight: 800; font-size: 1.1rem; }
 
 .totalLabel {
-  color: #f3f7fb;
+  color: #0d3369;
   font-weight: 800;
 }
 
@@ -160,7 +160,7 @@
 
 .discountAmount,
 .voucherDiscountAmount {
-  color: #9de0c1;
+  color: #0d3369;
   font-weight: 850;
 }
 
@@ -172,14 +172,14 @@
   margin: 8px 0;
   padding: 9px 12px;
   border-radius: 9px;
-  color: #d8f5e7;
-  background: rgba(121, 214, 174, 0.075);
+  color: #166534;
+  background: rgba(121, 214, 174, 0.18);
   font-size: 0.82rem;
   font-weight: 700;
 }
 
 .savingsRow strong {
-  color: #9de0c1;
+  color: #166534;
   font-weight: 900;
 }
 
@@ -488,6 +488,90 @@
 
 .addonDropdownOption:hover .addonOptionAdd {
   background: #0a2850;
+}
+
+/* ── Custom Select (replaces native <select>) ─────────────── */
+.customSelectWrap {
+  position: relative;
+}
+
+.customSelectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  color: #1a1a1a;
+  font-size: 16px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  text-align: left;
+}
+
+.customSelectTrigger:hover,
+.customSelectTriggerOpen {
+  border-color: #0d3369;
+}
+
+.customSelectPlaceholder {
+  color: #94a3b8;
+}
+
+.customSelectChevron {
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: #94a3b8;
+  transition: transform 0.2s;
+}
+
+.customSelectChevronOpen {
+  transform: rotate(180deg);
+}
+
+.customSelectPanel {
+  max-height: 260px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(13, 51, 105, 0.16);
+  z-index: 300;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+.customSelectOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f8fafc;
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  transition: background 0.15s;
+}
+
+.customSelectOption:last-child {
+  border-bottom: none;
+}
+
+.customSelectOption:hover {
+  background: #eff6ff;
+}
+
+.customSelectOptionActive {
+  color: #0d3369;
+  background: #f8fafc;
 }
 
 /* ── Voucher ───────────────────────────────────────────────── */
@@ -848,188 +932,3 @@
   }
 }
 
-/* Marcatching rebrand alignment */
-.checkoutPage {
-  color-scheme: dark;
-  color: #f3f7fb;
-  background:
-    radial-gradient(circle at 80% 0%, rgba(140, 198, 255, 0.08), transparent 30rem),
-    #030508;
-}
-
-.posterSide {
-  background: #060a0f;
-  border-right: 1px solid rgba(184, 214, 242, 0.1);
-}
-
-.checkoutTitle,
-.summaryProductName,
-.priceValue,
-.priceHighlight,
-.addonTitle,
-.addonItemName,
-.addonItemPrice,
-.addonOptionName,
-.addonOptionPrice,
-.modalTitle,
-.bankAccount,
-.breakdownValue,
-.breakdownTotalLabel,
-.breakdownTotalValue {
-  color: #f3f7fb;
-}
-
-.checkoutSubtitle,
-.backBtn,
-.productSummaryLabel,
-.summaryAddonName,
-.priceLabel,
-.addonSubtitle,
-.modalSubtitle,
-.bankName,
-.breakdownLabel,
-.paymentNote {
-  color: #8e9baa;
-}
-
-.productSummary,
-.addonSection,
-.addonItem,
-.addonDropdownPanel,
-.modalCard,
-.bankInfo {
-  color: #f3f7fb;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 48%),
-    rgba(8, 13, 19, 0.9);
-  border-color: rgba(184, 214, 242, 0.14);
-  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
-}
-
-.divider,
-.breakdownRow,
-.addonDropdownOption,
-.addonSearchWrap {
-  border-color: rgba(184, 214, 242, 0.1);
-}
-
-.addonIconWrap,
-.addonOptionAdd {
-  color: #04101a;
-  background: #dceeff;
-}
-
-.addonItemRemove,
-.addonDropdownTrigger {
-  color: #b8c5d1;
-  background: rgba(255, 255, 255, 0.035);
-  border-color: rgba(184, 214, 242, 0.15);
-}
-
-.addonDropdownTrigger:hover,
-.addonItemRemove:hover {
-  color: #f3f7fb;
-  background: rgba(140, 198, 255, 0.08);
-  border-color: rgba(140, 198, 255, 0.28);
-}
-
-.addonSearchWrap {
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.addonSearchInput,
-.voucherInput,
-.formInput,
-.formSelect {
-  color: #f3f7fb;
-  background: rgba(3, 7, 11, 0.78);
-  border-color: rgba(184, 214, 242, 0.16);
-  border-radius: 12px;
-}
-
-.addonSearchInput:focus,
-.voucherInput:focus,
-.formInput:focus,
-.formSelect:focus {
-  border-color: rgba(140, 198, 255, 0.55);
-  box-shadow: 0 0 0 3px rgba(140, 198, 255, 0.09);
-}
-
-.formInput::placeholder,
-.addonSearchInput::placeholder {
-  color: #52606e;
-}
-
-.addonDropdownOption:hover {
-  background: rgba(140, 198, 255, 0.07);
-}
-
-.voucherLabel,
-.formLabel {
-  color: #a9b4c0;
-}
-
-.voucherBtn,
-.ctaButton,
-.copyBtn,
-.payBtn {
-  color: #04101a;
-  background: #dceeff;
-  border-radius: 999px;
-}
-
-.voucherBtn:hover,
-.ctaButton:hover,
-.copyBtn:hover,
-.payBtn:hover {
-  color: #02070b;
-  background: #f3f8fd;
-  box-shadow: 0 14px 36px rgba(140, 198, 255, 0.14);
-}
-
-.voucherSuccess {
-  color: #9de0c1;
-  background: rgba(121, 214, 174, 0.075);
-}
-
-.voucherError,
-.formError {
-  color: #ffaaaa;
-  background: rgba(255, 139, 139, 0.075);
-  border-color: rgba(255, 139, 139, 0.2);
-}
-
-.fixedCTA {
-  background: rgba(3, 5, 8, 0.97);
-  border-color: rgba(184, 214, 242, 0.12);
-  backdrop-filter: blur(20px) saturate(125%);
-  -webkit-backdrop-filter: blur(20px) saturate(125%);
-}
-
-.modalOverlay {
-  background: rgba(0, 0, 0, 0.68);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.breakdownTotal {
-  border-color: rgba(140, 198, 255, 0.32);
-}
-
-@media (max-width: 768px) {
-  .contentSide { padding: 24px 16px 146px; }
-  .productSummary,
-  .addonSection { padding: 18px 15px; }
-  .voucherInputWrap { flex-direction: column; }
-  .voucherBtn { width: 100%; }
-  .fixedCTA { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
-  .modalOverlay { padding: 12px; }
-  .modalCard { max-height: calc(100svh - 24px); border-radius: 18px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .addonItem,
-  .addonDropdownPanel { animation: none; }
-  .ctaButton,
-  .payBtn { transition-duration: 0.01ms; }
-}

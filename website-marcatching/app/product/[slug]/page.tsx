@@ -42,7 +42,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     return (
       <div className={styles.productPage}>
         <div className={styles.notFound}>
-          <p style={{ color: '#8e9baa' }}>Memuat...</p>
+          <p style={{ color: '#64748b' }}>Memuat...</p>
         </div>
       </div>
     )
