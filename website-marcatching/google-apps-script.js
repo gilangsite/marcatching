@@ -51,6 +51,19 @@ function formatRupiah(num) {
   return 'Rp ' + result;
 }
 
+function formatJakartaDateTime(date) {
+  return Utilities.formatDate(date || new Date(), 'Asia/Jakarta', "dd/MM/yyyy HH:mm 'WIB'");
+}
+
+function escapeEmailHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Google Sheets ID for Finance tracking (income + cost sheets)
 var FINANCE_SPREADSHEET_ID = '1TvV_dii3oNwrxUTv_B0Mx7H-mLYk0LeHpAWglyyBGl8';
 
@@ -491,6 +504,7 @@ function sendAdminNotificationEmail(data) {
 // ─── CHECKOUT: Save to Sheet + Send Pending Email ───────────
 var CHECKOUT_STATUS_COLUMN = 16;
 var CHECKOUT_ADMIN_NOTIFIED_COLUMN = 17;
+var CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN = 18;
 
 function getCheckoutSheet() {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
@@ -500,10 +514,15 @@ function getCheckoutSheet() {
       'Timestamp', 'Order ID', 'Produk Utama', 'Add-On Products', 'Full Name', 'Email',
       'WhatsApp', 'Background', 'Referral Source', 'Voucher Code',
       'Harga Utama', 'Add-On Total', 'Subtotal', 'Voucher Discount',
-      'Total Bayar', 'Status', 'Admin Notified At'
+      'Total Bayar', 'Status', 'Admin Notified At', 'Buyer Paid Notified At'
     ]);
-  } else if (!sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue()) {
-    sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue('Admin Notified At');
+  } else {
+    if (!sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue()) {
+      sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue('Admin Notified At');
+    }
+    if (!sheet.getRange(1, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).getValue()) {
+      sheet.getRange(1, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).setValue('Buyer Paid Notified At');
+    }
   }
 
   return sheet;
@@ -547,7 +566,7 @@ function saveCheckoutRow(sheet, data, status) {
     return existingRow;
   }
 
-  sheet.appendRow(rowValues.concat(['']));
+  sheet.appendRow(rowValues.concat(['', '']));
   return sheet.getLastRow();
 }
 
@@ -589,17 +608,23 @@ function handlePaymentPaid(data) {
     if (!rowNumber) rowNumber = saveCheckoutRow(sheet, data, 'paid');
 
     sheet.getRange(rowNumber, CHECKOUT_STATUS_COLUMN).setValue('paid');
-    var notifiedAt = sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue();
-    if (notifiedAt) {
+    var adminNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue();
+    var buyerPaidNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).getValue();
+    if (adminNotifiedAt && buyerPaidNotifiedAt) {
       return ContentService.createTextOutput(JSON.stringify({
-        status: 'success', message: 'Admin notification already sent', duplicate: true
+        status: 'success', message: 'Paid-order notifications already sent', duplicate: true
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    sendAdminNotificationEmail(data);
-    sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue(
-      new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
-    );
+    if (!buyerPaidNotifiedAt) {
+      sendPaymentSuccessEmail(data);
+      sheet.getRange(rowNumber, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).setValue(formatJakartaDateTime(new Date()));
+    }
+
+    if (!adminNotifiedAt) {
+      sendAdminNotificationEmail(data);
+      sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue(formatJakartaDateTime(new Date()));
+    }
 
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success', message: 'Paid order recorded and admin notified'
@@ -611,6 +636,105 @@ function handlePaymentPaid(data) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// ─── PAYMENT SUCCESS EMAIL (to buyer, after verified payment) ─
+function sendPaymentSuccessEmail(data) {
+  if (!data.email) throw new Error('Buyer email is required');
+
+  var allProducts;
+  if (data.allProducts && data.allProducts.length > 0) {
+    allProducts = data.allProducts;
+  } else {
+    allProducts = [{
+      name: data.productName || '-',
+      priceOriginal: data.priceOriginal || 0,
+      priceDiscounted: data.priceDiscounted || 0
+    }];
+    var addons = data.addonItems || [];
+    for (var i = 0; i < addons.length; i++) {
+      allProducts.push({
+        name: addons[i].name || '-',
+        priceOriginal: addons[i].priceOriginal || 0,
+        priceDiscounted: addons[i].priceDiscounted || 0
+      });
+    }
+  }
+
+  var productNames = allProducts.map(function(product) { return product.name || '-'; });
+  var productRowsHtml = allProducts.map(function(product) {
+    var originalPrice = Number(product.priceOriginal || 0);
+    var paidPrice = Number(product.priceDiscounted || 0);
+    var originalPriceHtml = originalPrice > 0 && originalPrice !== paidPrice
+      ? '<span style="display:block;color:#dc2626;text-decoration:line-through;font-size:11px;margin-bottom:2px;">' + formatRupiah(originalPrice) + '</span>'
+      : '';
+
+    return '<tr>' +
+      '<td style="padding:12px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;font-weight:700;">' + escapeEmailHtml(product.name || '-') + '</td>' +
+      '<td style="padding:12px 0;border-bottom:1px solid #e2e8f0;text-align:right;white-space:nowrap;">' +
+        originalPriceHtml +
+        '<span style="color:#0d3369;font-size:14px;font-weight:800;">' + formatRupiah(paidPrice) + '</span>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  var voucherRow = data.voucherCode
+    ? '<tr>' +
+        '<td style="padding:12px 0;border-bottom:1px solid #e2e8f0;color:#166534;font-size:13px;font-weight:700;">Voucher ' + escapeEmailHtml(data.voucherCode) + '</td>' +
+        '<td style="padding:12px 0;border-bottom:1px solid #e2e8f0;text-align:right;color:#166534;font-size:13px;font-weight:800;">-' + formatRupiah(data.voucherDiscount || 0) + '</td>' +
+      '</tr>'
+    : '';
+  var paidAt = formatJakartaDateTime(new Date());
+  var fullName = data.fullName || 'Pelanggan Marcatching';
+  var subject = 'Pembelian Berhasil — ' + productNames.join(' + ');
+
+  var htmlBody = '<!DOCTYPE html>' +
+  '<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>' +
+  '<body style="margin:0;padding:0;background:#f8fafc;font-family:\'DM Sans\',\'Helvetica Neue\',Arial,sans-serif;color:#0f172a;">' +
+    '<div style="max-width:600px;margin:32px auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;box-shadow:0 8px 32px rgba(13,51,105,0.10);">' +
+      '<div style="background:#0d3369;padding:34px 28px;text-align:center;">' +
+        '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:30px;margin:0 auto 16px;display:block;">' +
+        '<h1 style="margin:0;color:#ffffff;font-size:22px;line-height:1.25;font-weight:800;">Pembelian Berhasil</h1>' +
+        '<p style="margin:8px 0 0;color:rgba(255,255,255,0.78);font-size:13px;">Pembayaran sudah terverifikasi oleh Midtrans</p>' +
+      '</div>' +
+
+      '<div style="padding:32px 28px;">' +
+        '<p style="margin:0 0 8px;color:#0f172a;font-size:16px;">Halo <strong>' + escapeEmailHtml(fullName) + '</strong>,</p>' +
+        '<p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.7;">Terima kasih. Pembayaranmu sudah berhasil dan detail pembelian berikut telah tercatat di sistem Marcatching.</p>' +
+
+        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 22px;margin-bottom:22px;">' +
+          '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">' +
+            productRowsHtml +
+            voucherRow +
+            '<tr>' +
+              '<td style="padding:16px 0 4px;color:#0d3369;font-size:15px;font-weight:800;">Total Pembayaran</td>' +
+              '<td style="padding:16px 0 4px;text-align:right;color:#0d3369;font-size:18px;font-weight:900;">' + formatRupiah(data.totalPaid || 0) + '</td>' +
+            '</tr>' +
+          '</table>' +
+        '</div>' +
+
+        '<div style="border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:14px 0;margin-bottom:24px;">' +
+          '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:13px;">' +
+            '<tr><td style="padding:5px 0;color:#64748b;">Tanggal pembayaran</td><td style="padding:5px 0;text-align:right;color:#0f172a;font-weight:700;">' + paidAt + '</td></tr>' +
+            '<tr><td style="padding:5px 0;color:#64748b;">Order ID</td><td style="padding:5px 0;text-align:right;color:#0f172a;font-weight:700;word-break:break-all;">' + escapeEmailHtml(data.orderId || '-') + '</td></tr>' +
+          '</table>' +
+        '</div>' +
+
+        '<p style="margin:0;color:#64748b;font-size:13px;line-height:1.7;">Email aktivasi akses course akan dikirim secara terpisah ke alamat email ini. Simpan email ini sebagai bukti pembelian.</p>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 28px;text-align:center;">' +
+        '<p style="margin:0;color:#94a3b8;font-size:12px;">&copy; ' + new Date().getFullYear() + ' Marcatching. All rights reserved.</p>' +
+      '</div>' +
+    '</div>' +
+  '</body></html>';
+
+  MailApp.sendEmail({
+    to: data.email,
+    name: 'Marcatching',
+    subject: subject,
+    htmlBody: htmlBody
+  });
 }
 
 // ─── CONFIRMATION EMAIL (to buyer, saat checkout) ────────────
