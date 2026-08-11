@@ -427,7 +427,7 @@ export default function FinanceTab() {
       <div className={styles.contentHeader}>
         <div>
           <h1 className={styles.contentTitle}>Finance</h1>
-          <p className={styles.contentDesc}>Laporan pencatatan keuangan bisnis Marcatching</p>
+          <p className={styles.contentDesc}>Laporan keuangan Marcatching dengan penjualan Midtrans tercatat otomatis</p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <a

@@ -233,6 +233,10 @@ type PaidNotifiableOrder = {
   addon_items: AddonItem[] | null
   voucher_discount: number
   total_paid: number
+  paid_at: string | null
+  payment_type: string | null
+  midtrans_order_id: string | null
+  midtrans_transaction_id: string | null
   status: string
   payment_status: string
 }
@@ -240,7 +244,7 @@ type PaidNotifiableOrder = {
 export async function notifyPaidOrder(orderId: string) {
   const { data, error } = await supabaseAdmin
     .from('orders')
-    .select('id, product_name, full_name, email, whatsapp, background, referral_source, voucher_code, price_original, price_discounted, addon_items, voucher_discount, total_paid, status, payment_status')
+    .select('id, product_name, full_name, email, whatsapp, background, referral_source, voucher_code, price_original, price_discounted, addon_items, voucher_discount, total_paid, paid_at, payment_type, midtrans_order_id, midtrans_transaction_id, status, payment_status')
     .eq('id', orderId)
     .single()
 
@@ -264,6 +268,10 @@ export async function notifyPaidOrder(orderId: string) {
     addonItems: Array.isArray(order.addon_items) ? order.addon_items : [],
     voucherDiscount: Number(order.voucher_discount) || 0,
     totalPaid: Number(order.total_paid) || 0,
+    paidAt: order.paid_at,
+    paymentType: order.payment_type,
+    midtransOrderId: order.midtrans_order_id,
+    midtransTransactionId: order.midtrans_transaction_id,
   })
 }
 

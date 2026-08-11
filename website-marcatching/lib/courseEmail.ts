@@ -79,6 +79,10 @@ export type CheckoutNotificationInput = {
   addonItems: AddonItem[]
   voucherDiscount: number
   totalPaid: number
+  paidAt?: string | null
+  paymentType?: string | null
+  midtransOrderId?: string | null
+  midtransTransactionId?: string | null
 }
 
 function checkoutNotificationPayload(input: CheckoutNotificationInput) {
@@ -108,6 +112,10 @@ function checkoutNotificationPayload(input: CheckoutNotificationInput) {
     allProducts,
     voucherDiscount: input.voucherDiscount,
     totalPaid: input.totalPaid,
+    paidAt: input.paidAt || '',
+    paymentType: input.paymentType || '',
+    midtransOrderId: input.midtransOrderId || '',
+    midtransTransactionId: input.midtransTransactionId || '',
   }
 }
 
@@ -120,10 +128,14 @@ export async function recordCheckout(input: CheckoutNotificationInput) {
 }
 
 export async function notifyPaidCheckout(input: CheckoutNotificationInput) {
+  const paymentSecret = process.env.APPS_SCRIPT_PAYMENT_SECRET
+  if (!paymentSecret) throw new Error('Apps Script payment secret is not configured')
+
   const responseText = await postToAppsScript({
     action: 'paymentPaid',
     ...checkoutNotificationPayload(input),
     status: 'paid',
+    paymentSecret,
   })
 
   let result: { status?: string; message?: string }

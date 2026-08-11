@@ -64,6 +64,11 @@ function escapeEmailHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function safeSheetText(value) {
+  var text = String(value == null ? '' : value);
+  return /^[=+\-@]/.test(text) ? "'" + text : text;
+}
+
 // Google Sheets ID for Finance tracking (income + cost sheets)
 var FINANCE_SPREADSHEET_ID = '1TvV_dii3oNwrxUTv_B0Mx7H-mLYk0LeHpAWglyyBGl8';
 
@@ -592,6 +597,13 @@ function handleCheckout(data) {
 
 // ─── PAID ORDER: Update Sheet + Notify Admin Once ───────────
 function handlePaymentPaid(data) {
+  var expectedSecret = PropertiesService.getScriptProperties().getProperty('PAYMENT_WEBHOOK_SECRET');
+  if (!expectedSecret || !data.paymentSecret || String(data.paymentSecret) !== String(expectedSecret)) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: 'Unauthorized paid-order notification'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
   var orderId = String(data.orderId || '').trim();
   if (!orderId) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -610,11 +622,7 @@ function handlePaymentPaid(data) {
     sheet.getRange(rowNumber, CHECKOUT_STATUS_COLUMN).setValue('paid');
     var adminNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue();
     var buyerPaidNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).getValue();
-    if (adminNotifiedAt && buyerPaidNotifiedAt) {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: 'success', message: 'Paid-order notifications already sent', duplicate: true
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
+    var duplicateNotifications = Boolean(adminNotifiedAt && buyerPaidNotifiedAt);
 
     if (!buyerPaidNotifiedAt) {
       sendPaymentSuccessEmail(data);
@@ -626,8 +634,13 @@ function handlePaymentPaid(data) {
       sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).setValue(formatJakartaDateTime(new Date()));
     }
 
+    var financeResult = recordPaidOrderIncome(data);
+
     return ContentService.createTextOutput(JSON.stringify({
-      status: 'success', message: 'Paid order recorded and admin notified'
+      status: 'success',
+      message: 'Paid order notifications and finance sync completed',
+      duplicate: duplicateNotifications && financeResult.duplicate,
+      finance: financeResult
     })).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -848,6 +861,66 @@ function getFinanceSheet(sheetType) {
     sheet.setFrozenRows(1);
   }
   return sheet;
+}
+
+// ─── AUTO INCOME FROM VERIFIED MIDTRANS PAYMENT ─────────────
+function recordPaidOrderIncome(data) {
+  var nominal = Number(data.totalPaid) || 0;
+  if (nominal <= 0) {
+    return { status: 'skipped', reason: 'zero_total', duplicate: false };
+  }
+
+  var orderReference = String(data.midtransOrderId || data.orderId || '').trim();
+  if (!orderReference) throw new Error('Paid order reference is required for finance sync');
+
+  var sheet = getFinanceSheet('income');
+  var financeId = 'MIDTRANS-' + orderReference;
+  var existingRow = 0;
+  if (sheet.getLastRow() > 1) {
+    var financeIds = sheet.getRange(2, 8, sheet.getLastRow() - 1, 1).getValues();
+    for (var i = 0; i < financeIds.length; i++) {
+      if (String(financeIds[i][0]) === financeId) {
+        existingRow = i + 2;
+        break;
+      }
+    }
+  }
+
+  var paidDate = new Date(data.paidAt || new Date());
+  if (isNaN(paidDate.getTime())) paidDate = new Date();
+  var dateValue = Utilities.formatDate(paidDate, 'Asia/Jakarta', 'yyyy-MM-dd');
+  var allProducts = data.allProducts && data.allProducts.length > 0
+    ? data.allProducts
+    : [{ name: data.productName || 'Produk Marcatching' }];
+  var itemValue = allProducts.map(function(product) {
+    return safeSheetText(product.name || 'Produk Marcatching');
+  }).join(' + ');
+
+  var detailParts = [
+    'Order ' + orderReference,
+    'Customer ' + String(data.fullName || '-'),
+    'Payment ' + String(data.paymentType || 'Midtrans')
+  ];
+  if (data.midtransTransactionId) detailParts.push('Transaction ' + String(data.midtransTransactionId));
+  if (data.voucherCode) detailParts.push('Voucher ' + String(data.voucherCode));
+
+  var rowValues = [[
+    dateValue,
+    nominal,
+    'Product Sales',
+    itemValue,
+    detailParts.join(' | '),
+    'Midtrans',
+    'Paid'
+  ]];
+
+  if (existingRow) {
+    sheet.getRange(existingRow, 1, 1, 7).setValues(rowValues);
+    return { status: 'success', id: financeId, duplicate: true };
+  }
+
+  sheet.appendRow(rowValues[0].concat([financeId]));
+  return { status: 'success', id: financeId, duplicate: false };
 }
 
 // ─── READ all rows ───────────────────────────────────────────

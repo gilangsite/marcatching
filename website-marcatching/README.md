@@ -24,6 +24,7 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
    MIDTRANS_SERVER_KEY=your_midtrans_server_key
    NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=your_midtrans_client_key
    NEXT_PUBLIC_MIDTRANS_ENV=sandbox
+   APPS_SCRIPT_PAYMENT_SECRET=your_random_payment_webhook_secret
    ```
 
 5. Untuk payment, jalankan `supabase/midtrans_payment_migration.sql` secara manual melalui Supabase SQL Editor setelah melakukan review.
@@ -36,6 +37,8 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
 - Finish, Unfinish, dan Error URL: `https://www.marcatching.com/payment/status`
 - Checkout menggunakan Snap Popup. Status paid hanya berasal dari webhook Midtrans yang signature dan nominalnya valid.
 - Google Apps Script mencatat checkout pending. Setelah webhook memverifikasi pembayaran, action `paymentPaid` mengirim receipt `Pembelian Berhasil` ke pembeli dan email `Pembelian Baru` ke admin, masing-masing satu kali. Email aktivasi course tetap dikirim terpisah. Setelah mengubah `google-apps-script.js`, deploy versi baru pada Web App Apps Script yang sama.
+- Action `paymentPaid` juga mencatat transaksi berbayar ke sheet Finance `income` sebagai `Product Sales` dengan billing `Midtrans`. ID income memakai Midtrans order ID sehingga retry webhook memperbarui baris yang sama dan tidak membuat duplikat.
+- `APPS_SCRIPT_PAYMENT_SECRET` wajib disimpan sebagai environment variable server-only di Vercel. Simpan nilai yang sama pada Google Apps Script melalui **Project Settings → Script Properties** dengan nama `PAYMENT_WEBHOOK_SECRET`; nilai ini melindungi email paid dan Finance income dari request palsu.
 
 ## Menjalankan secara Lokal
 
@@ -69,6 +72,7 @@ Proyek ini sudah dikonfigurasi dan siap di-deploy langsung ke Vercel:
    - `MIDTRANS_SERVER_KEY`
    - `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`
    - `NEXT_PUBLIC_MIDTRANS_ENV`
+   - `APPS_SCRIPT_PAYMENT_SECRET`
 4. Deploy! Next.js App Router API Routes dan Middleware akan di-handle secara otomatis oleh Vercel.
 
 ## Tumpukan Teknologi
