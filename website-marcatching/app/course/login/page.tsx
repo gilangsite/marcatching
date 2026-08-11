@@ -64,19 +64,23 @@ export default function CourseLoginPage() {
 
     setLoading(true)
 
-    const { data: accessData, error: accessError } = await supabase
-      .from('course_access_emails')
-      .select('id')
-      .eq('email', normalizedEmail)
-      .limit(1)
-
-    if (accessError) {
+    let eligible = false
+    try {
+      const accessResponse = await fetch('/api/course-access/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail }),
+      })
+      const accessData = await accessResponse.json() as { eligible?: boolean }
+      if (!accessResponse.ok) throw new Error('Access validation failed')
+      eligible = accessData.eligible === true
+    } catch {
       setError('Kami belum dapat memeriksa aksesmu. Coba lagi beberapa saat.')
       setLoading(false)
       return
     }
 
-    if (!accessData?.length) {
+    if (!eligible) {
       setError('Akses belum ditemukan. Gunakan email yang sama dengan email checkout atau hubungi tim Marcatching.')
       setLoading(false)
       return

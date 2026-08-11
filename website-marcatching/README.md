@@ -18,9 +18,23 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    ADMIN_USERNAME=admin
    ADMIN_PASSWORD=marcatching2024
+   MIDTRANS_SERVER_KEY=your_midtrans_server_key
+   NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=your_midtrans_client_key
+   NEXT_PUBLIC_MIDTRANS_ENV=sandbox
    ```
+
+5. Untuk payment, jalankan `supabase/midtrans_payment_migration.sql` secara manual melalui Supabase SQL Editor setelah melakukan review.
+
+## Konfigurasi Midtrans
+
+- Gunakan `NEXT_PUBLIC_MIDTRANS_ENV=sandbox` untuk Sandbox dan `production` saat go-live.
+- Server Key hanya boleh disimpan sebagai `MIDTRANS_SERVER_KEY` di environment server.
+- Payment Notification URL: `https://www.marcatching.com/api/payments/midtrans/notification`
+- Finish, Unfinish, dan Error URL: `https://www.marcatching.com/payment/status`
+- Checkout menggunakan Snap Popup. Status paid hanya berasal dari webhook Midtrans yang signature dan nominalnya valid.
 
 ## Menjalankan secara Lokal
 
@@ -45,11 +59,15 @@ Proyek ini sudah dikonfigurasi dan siap di-deploy langsung ke Vercel:
 
 1. Push repository ke GitHub.
 2. Buat proyek baru di Vercel dan hubungkan ke repository.
-3. Tambahkan 4 Environment Variables di dashboard Vercel:
+3. Tambahkan Environment Variables berikut di dashboard Vercel:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
    - `ADMIN_USERNAME`
    - `ADMIN_PASSWORD`
+   - `MIDTRANS_SERVER_KEY`
+   - `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`
+   - `NEXT_PUBLIC_MIDTRANS_ENV`
 4. Deploy! Next.js App Router API Routes dan Middleware akan di-handle secara otomatis oleh Vercel.
 
 ## Tumpukan Teknologi

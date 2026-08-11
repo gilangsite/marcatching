@@ -314,37 +314,37 @@ export default function StoreClient({
     setVoucherChecking(true)
     setVoucherMsg('')
 
-    const checks = await Promise.all(productBlocks.map(async block => {
-      const product = productsById[block.content.product_id || '']
-      if (!product) return null
-      try {
-        const res = await fetch('/api/voucher/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code,
-            productPrice: product.price_after_discount,
-            productId: product.id,
-          }),
-        })
-        const data = await res.json()
-        if (!data.valid || !data.discount_amount) return null
-        return { productId: product.id, discount: Math.min(product.price_after_discount, Number(data.discount_amount) || 0) }
-      } catch {
-        return null
+    const productIds = productBlocks
+      .map(block => ({ block, product: productsById[block.content.product_id || ''] }))
+      .filter(({ block, product }) => product && !product.is_coming_soon && block.content.store_status !== 'coming_soon')
+      .map(({ product }) => product!.id)
+      .filter((id): id is string => Boolean(id))
+
+    try {
+      const res = await fetch('/api/voucher/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, productIds }),
+      })
+      const data = await res.json() as {
+        valid?: boolean
+        discounts?: Record<string, number>
+        eligibleProductCount?: number
+        message?: string
       }
-    }))
+      const discounts = Object.fromEntries(
+        Object.entries(data.discounts || {}).filter(([, discount]) => Number(discount) > 0)
+      )
+      const eligibleCount = data.eligibleProductCount || Object.keys(discounts).length
 
-    const discounts = checks.reduce<Record<string, number>>((acc, item) => {
-      if (item && item.discount > 0) acc[item.productId] = item.discount
-      return acc
-    }, {})
-
-    const eligibleCount = Object.keys(discounts).length
-    if (eligibleCount > 0) {
-      setAppliedVoucher({ code, discounts })
-      setVoucherMsg(`Voucher ${code} aktif untuk ${eligibleCount} produk.`)
-    } else {
+      if (data.valid && eligibleCount > 0) {
+        setAppliedVoucher({ code, discounts })
+        setVoucherMsg(`Voucher ${code} aktif untuk ${eligibleCount} produk.`)
+      } else {
+        setAppliedVoucher(null)
+        setVoucherMsg(data.message || 'Kode voucher tidak valid atau tidak berlaku untuk produk di store ini.')
+      }
+    } catch {
       setAppliedVoucher(null)
       setVoucherMsg('Kode voucher tidak valid atau tidak berlaku untuk produk di store ini.')
     }

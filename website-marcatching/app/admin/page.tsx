@@ -189,6 +189,24 @@ function cleanUrl(url: string | null | undefined): string {
   return 'https://' + finalUrl
 }
 
+async function fetchCommerceResource<T>(resource: 'products' | 'vouchers' | 'orders'): Promise<T[]> {
+  const response = await fetch(`/api/admin/commerce?resource=${resource}`, { cache: 'no-store' })
+  const result = await response.json() as { data?: T[]; message?: string }
+  if (!response.ok) throw new Error(result.message || `Gagal memuat ${resource}`)
+  return result.data || []
+}
+
+async function mutateCommerce(payload: Record<string, unknown>) {
+  const response = await fetch('/api/admin/commerce', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const result = await response.json() as { success?: boolean; message?: string; warning?: string }
+  if (!response.ok) throw new Error(result.message || 'Operasi commerce gagal')
+  return result
+}
+
 // ─── Sortable Item ─────────────────────────────────────────
 function SortableLinkItem({ link, onEdit, onDelete }: { link: Link, onEdit: (l: Link) => void, onDelete: (id: string) => void }) {
   const controls = useDragControls()
@@ -729,9 +747,24 @@ function AdminDashboardInner() {
   // ── Fetch all ─────────────────────────────────────────────
   async function fetchLinks() { setLinksLoading(true); const { data } = await supabase.from('links').select('*').order('order_index'); setLinks(data ?? []); setLinksLoading(false) }
   async function fetchContact() { setContactLoading(true); const { data } = await supabase.from('contact').select('*').limit(1).single(); setContact(data); setContactEmail(data?.email ?? ''); setContactLoading(false) }
-  async function fetchProducts() { setProductsLoading(true); const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false }); setProducts(data ?? []); setProductsLoading(false) }
-  async function fetchVouchers() { setVouchersLoading(true); const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false }); setVouchers(data ?? []); setVouchersLoading(false) }
-  async function fetchOrders() { setOrdersLoading(true); const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false }); setOrders(data ?? []); setOrdersLoading(false) }
+  async function fetchProducts() {
+    setProductsLoading(true)
+    try { setProducts(await fetchCommerceResource<Product>('products')) }
+    catch { showAdminToast('Gagal memuat products', 'error') }
+    finally { setProductsLoading(false) }
+  }
+  async function fetchVouchers() {
+    setVouchersLoading(true)
+    try { setVouchers(await fetchCommerceResource<Voucher>('vouchers')) }
+    catch { showAdminToast('Gagal memuat vouchers', 'error') }
+    finally { setVouchersLoading(false) }
+  }
+  async function fetchOrders() {
+    setOrdersLoading(true)
+    try { setOrders(await fetchCommerceResource<Order>('orders')) }
+    catch { showAdminToast('Gagal memuat orders', 'error') }
+    finally { setOrdersLoading(false) }
+  }
   async function fetchHomeFinance() {
     setHomeFinanceLoading(true)
     try {
@@ -1451,14 +1484,20 @@ function AdminDashboardInner() {
     e.preventDefault(); if (!pf.name) { setProductError('Nama product wajib diisi'); return }
     setProductSaving(true); setProductError('')
     const payload = { name: pf.name, slug: slugify(pf.name), sub_headline: pf.sub_headline || null, description: pf.description || null, image_url: pf.image_url || null, price_before_discount: parseRp(pf.price_before), price_after_discount: parseRp(pf.price_after), discount_percentage: parseInt(pf.discount) || 0, features: pf.features, is_active: pf.is_active, is_coming_soon: pf.is_coming_soon, category_id: pf.category_id || null }
-    let error
-    if (editingProduct) { 
-      ({ error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)) 
-    } else { 
-      ({ error } = await supabase.from('products').insert(payload)) 
-      if (!error) { await supabase.from('links').insert({ title: payload.name, url: '/product/' + payload.slug, icon: 'ShoppingBag', status: 'active', type: 'button', order_index: links.length + 1 }) }
+    try {
+      await mutateCommerce({
+        action: 'save_product',
+        id: editingProduct?.id || null,
+        product: payload,
+      })
+      setShowProductForm(false)
+      await Promise.all([fetchProducts(), fetchLinks()])
+      showAdminToast(editingProduct ? 'Produk berhasil diperbarui' : 'Produk berhasil ditambahkan')
+    } catch (error) {
+      setProductError('Error: ' + (error instanceof Error ? error.message : 'Gagal menyimpan produk'))
+    } finally {
+      setProductSaving(false)
     }
-    setProductSaving(false); if (error) { setProductError('Error: ' + error.message) } else { setShowProductForm(false); fetchProducts(); fetchLinks(); showAdminToast(editingProduct ? 'Produk berhasil diperbarui' : 'Produk berhasil ditambahkan') }
   }
   async function deleteProduct(p: Product) { 
     if (!confirm(`Hapus produk "${p.name}"?`)) return; 
@@ -1469,20 +1508,12 @@ function AdminDashboardInner() {
       fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'deleteFile', url: p.image_url }) }).catch(()=>null)
     }
     
-    // Putuskan relasi dari table orders agar tidak error foreign key constraint
-    await supabase.from('orders').update({ product_id: null }).eq('product_id', p.id);
-    
-    // Hapus link button yang otomatis terbuat 
-    await supabase.from('links').delete().eq('url', `/product/${p.slug}`);
-
-    const { error } = await supabase.from('products').delete().eq('id', p.id); 
-    if (error) { 
-      showAdminToast('Gagal menghapus produk: ' + error.message, 'error'); 
-      return; 
+    try {
+      await mutateCommerce({ action: 'delete_product', id: p.id })
+      await Promise.all([fetchProducts(), fetchLinks()])
+    } catch (error) {
+      showAdminToast('Gagal menghapus produk: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error')
     }
-    
-    fetchProducts();
-    fetchLinks();
   }
 
   // ── Voucher CRUD ────────────────────────────────────────────
@@ -1508,75 +1539,36 @@ function AdminDashboardInner() {
       is_active: vf.is_active,
       applicable_products: vf.applicable_products && vf.applicable_products.length > 0 ? vf.applicable_products : null
     }
-    let error
-    if (editingVoucher) { ({ error } = await supabase.from('vouchers').update(payload).eq('id', editingVoucher.id)) } else { ({ error } = await supabase.from('vouchers').insert(payload)) }
-    setVoucherSaving(false); if (error) { setVoucherError('Error: ' + error.message) } else { setShowVoucherForm(false); fetchVouchers(); showAdminToast(editingVoucher ? 'Voucher berhasil diperbarui' : 'Voucher berhasil ditambahkan') }
+    try {
+      await mutateCommerce({ action: 'save_voucher', id: editingVoucher?.id || null, voucher: payload })
+      setShowVoucherForm(false)
+      await fetchVouchers()
+      showAdminToast(editingVoucher ? 'Voucher berhasil diperbarui' : 'Voucher berhasil ditambahkan')
+    } catch (error) {
+      setVoucherError('Error: ' + (error instanceof Error ? error.message : 'Gagal menyimpan voucher'))
+    } finally {
+      setVoucherSaving(false)
+    }
   }
-  async function deleteVoucher(id: string) { if (!confirm('Hapus voucher ini?')) return; await supabase.from('vouchers').delete().eq('id', id); fetchVouchers() }
-  async function toggleVoucher(v: Voucher) { await supabase.from('vouchers').update({ is_active: !v.is_active }).eq('id', v.id); fetchVouchers() }
+  async function deleteVoucher(id: string) {
+    if (!confirm('Hapus voucher ini?')) return
+    try { await mutateCommerce({ action: 'delete_voucher', id }); await fetchVouchers() }
+    catch (error) { showAdminToast(error instanceof Error ? error.message : 'Gagal menghapus voucher', 'error') }
+  }
+  async function toggleVoucher(v: Voucher) {
+    try { await mutateCommerce({ action: 'toggle_voucher', id: v.id, isActive: !v.is_active }); await fetchVouchers() }
+    catch (error) { showAdminToast(error instanceof Error ? error.message : 'Gagal mengubah voucher', 'error') }
+  }
 
   async function toggleOrderStatus(order: Order) {
     const newStatus = order.status === 'pending' ? 'confirmed' : 'pending'
-    await supabase.from('orders').update({ status: newStatus }).eq('id', order.id)
-
-    // When confirming an order: add to course_access_emails + send course access email
-    if (newStatus === 'confirmed') {
-      // Add main product to course_access_emails
-      if (order.product_id) {
-        await supabase.from('course_access_emails').upsert({
-          email: order.email.toLowerCase().trim(),
-          product_id: order.product_id,
-          order_id: order.id
-        }, { onConflict: 'email,product_id' })
-      }
-
-      // Add addons to course_access_emails
-      const addons = Array.isArray(order.addon_items) ? order.addon_items : []
-      for (const addon of addons) {
-        if (addon.id) {
-          await supabase.from('course_access_emails').upsert({
-            email: order.email.toLowerCase().trim(),
-            product_id: addon.id,
-            order_id: order.id
-          }, { onConflict: 'email,product_id' })
-        }
-      }
-
-      // Build allProducts array for email
-      const allProducts = [
-        { name: order.product_name, priceOriginal: order.price_original || 0, priceDiscounted: order.price_discounted || 0 },
-        ...addons.map(a => ({ name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted }))
-      ]
-
-      // Send course access email via Apps Script
-      try {
-        const emailRes = await fetch('/api/course-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: order.email,
-            fullName: order.full_name,
-            productName: order.product_name,
-            orderId: order.id,
-            allProducts,
-            addonItems: addons
-          })
-        })
-        const data = await emailRes.json()
-        if (!data.success) {
-          showAdminToast('Gagal kirim email ke user - ' + (data.error || 'Unknown error'), 'error')
-        }
-      } catch (err) {
-        console.warn('Failed to send course email:', err)
-        showAdminToast('Gagal trigger email course. Cek koneksi.', 'error')
-      }
-    } else {
-      // When reverting to pending: remove course_access_emails to revoke access
-      await supabase.from('course_access_emails').delete().eq('order_id', order.id)
+    try {
+      await mutateCommerce({ action: 'set_order_status', id: order.id, status: newStatus })
+      await fetchOrders()
+      showAdminToast(newStatus === 'confirmed' ? 'Order dikonfirmasi!' : 'Order dikembalikan ke pending')
+    } catch (error) {
+      showAdminToast(error instanceof Error ? error.message : 'Gagal mengubah status order', 'error')
     }
-
-    fetchOrders()
-    showAdminToast(newStatus === 'confirmed' ? 'Order dikonfirmasi!' : 'Order dikembalikan ke pending')
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -2395,6 +2387,7 @@ function AdminDashboardInner() {
                     <th>Nama</th>
                     <th>Product</th>
                     <th>Total</th>
+                    <th>Payment</th>
                     <th>Status</th>
                     <th>Aksi</th>
                   </tr></thead>
@@ -2403,6 +2396,16 @@ function AdminDashboardInner() {
                     const totalFormatted = `Rp ${formatRp(o.total_paid)}`
                     const addons: AddonItem[] = Array.isArray(o.addon_items) ? o.addon_items : []
                     const allProductNames = [o.product_name, ...addons.map(a => a.name)]
+                    const paymentStatus = o.payment_status || (o.status === 'confirmed' ? 'legacy_confirmed' : 'pending')
+                    const paymentStatusLabel: Record<string, string> = {
+                      pending: 'PENDING',
+                      paid: 'PAID',
+                      failed: 'FAILED',
+                      expired: 'EXPIRED',
+                      refunded: 'REFUNDED',
+                      creation_failed: 'CREATE FAILED',
+                      legacy_confirmed: 'LEGACY PAID',
+                    }
 
                     function buildWaMsg(type: 'success' | 'pending') {
                       // Build course description based on single vs multiple
@@ -2434,17 +2437,13 @@ aku udah kirim Email Aktivasi akun untuk kamu daftarkan di Marcatching Course. s
                         return encodeURIComponent(
 `${pendingGreeting}
 
-aku liat kamu belum melakukan pembayaran ke Rekening tertera ya? yuk selesaikan dulu pembayaranya biar aku bisa kirim email aktivasi akun untuk akses Marcatching Course
+aku lihat pembayaranmu belum selesai. Yuk selesaikan dulu supaya aku bisa kirim email aktivasi akun untuk akses Marcatching Course.
 
 Nama Course :
 ${courseListForPending}
 Total bayar : ${totalFormatted}
 
-Transfer ke Rekening
-Nomor Rekening : 6030485643
-Atas Nama : Gilang Ramadhan
-
-Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
+Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalui Midtrans. Kalau ada kendala, kabari aku di sini ya!`
                         )
                       }
                     }
@@ -2460,6 +2459,16 @@ Kalau sudah, silahkan kirim bukti transfernya disini, aku tunggu ya!`
                         ))}
                       </td>
                       <td className={styles.orderTotal}>Rp {formatRp(o.total_paid)}</td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 128 }}>
+                          <span className={paymentStatus === 'paid' || paymentStatus === 'legacy_confirmed' ? styles.statusActive : styles.statusSoon}>
+                            {paymentStatusLabel[paymentStatus] || paymentStatus.toUpperCase()}
+                          </span>
+                          {o.payment_type && <span className={styles.orderCustomerEmail}>{o.payment_type}</span>}
+                          {o.midtrans_order_id && <span className={styles.orderCustomerEmail} style={{ overflowWrap: 'anywhere' }}>{o.midtrans_order_id}</span>}
+                          {o.paid_at && <span className={styles.orderCustomerEmail}>{new Date(o.paid_at).toLocaleString('id-ID')}</span>}
+                        </div>
+                      </td>
                       <td>
                         <button 
                           onClick={() => toggleOrderStatus(o)} 

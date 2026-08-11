@@ -1,50 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabaseClient'
+import { calculateCart, CommerceError } from '@/lib/commerce'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { code, productPrice, productId } = body
+    const body = await req.json() as Record<string, unknown>
+    const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : ''
+    const productIds = Array.isArray(body.productIds)
+      ? body.productIds.filter((id): id is string => typeof id === 'string' && id.length > 0)
+      : []
 
     if (!code) {
       return NextResponse.json({ valid: false, message: 'Kode voucher tidak boleh kosong' }, { status: 400 })
     }
-
-    const { data: voucher, error } = await supabase
-      .from('vouchers')
-      .select('*')
-      .eq('code', code.toUpperCase().trim())
-      .eq('is_active', true)
-      .single()
-
-    if (error || !voucher) {
-      return NextResponse.json({ valid: false, message: 'Kode voucher tidak valid atau sudah tidak aktif' })
+    if (productIds.length === 0) {
+      return NextResponse.json({ valid: false, message: 'Pilih produk terlebih dahulu' }, { status: 400 })
     }
 
-    // Check product restriction: applicable_products = null means all products
-    if (voucher.applicable_products && Array.isArray(voucher.applicable_products) && voucher.applicable_products.length > 0) {
-      if (!productId || !voucher.applicable_products.includes(productId)) {
-        return NextResponse.json({ valid: false, message: 'Voucher ini tidak berlaku untuk produk yang dipilih' })
-      }
-    }
-
-    // Calculate discount
-    let discountAmount = 0
-    if (voucher.discount_type === 'percentage') {
-      discountAmount = Math.round((productPrice || 0) * voucher.discount_value / 100)
-    } else {
-      discountAmount = voucher.discount_value
-    }
+    const cart = await calculateCart({
+      productId: productIds[0],
+      addonIds: productIds.slice(1),
+      voucherCode: code,
+    })
+    const eligibleProductCount = Object.values(cart.perProductDiscounts)
+      .filter(discount => discount > 0).length
 
     return NextResponse.json({
       valid: true,
-      discount_type: voucher.discount_type,
-      discount_value: voucher.discount_value,
-      discount_amount: discountAmount,
-      message: `Voucher berhasil! Diskon ${voucher.discount_type === 'percentage' ? voucher.discount_value + '%' : 'Rp ' + voucher.discount_value.toLocaleString('id-ID')}`
+      code: cart.voucherCode,
+      totalDiscount: cart.voucherDiscount,
+      discounts: cart.perProductDiscounts,
+      eligibleProductCount,
+      message: `Voucher berhasil diterapkan ke ${eligibleProductCount} produk.`,
     })
-
-  } catch {
+  } catch (error) {
+    if (error instanceof CommerceError) {
+      return NextResponse.json({ valid: false, message: error.message }, { status: error.status >= 500 ? 500 : 200 })
+    }
     return NextResponse.json({ valid: false, message: 'Terjadi kesalahan server' }, { status: 500 })
   }
 }

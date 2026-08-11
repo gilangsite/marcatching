@@ -1,53 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
+import { hasValidAdminSession } from '@/lib/adminSession'
+import { sendCourseAccessEmail } from '@/lib/courseEmail'
+import type { AddonItem } from '@/lib/supabaseClient'
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { email, fullName, productName, orderId, allProducts, addonItems } = body
+  if (!await hasValidAdminSession(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
-    if (!email || !fullName || !productName) {
+  try {
+    const body = await req.json() as Record<string, unknown>
+    const email = typeof body.email === 'string' ? body.email : ''
+    const fullName = typeof body.fullName === 'string' ? body.fullName : ''
+    const productName = typeof body.productName === 'string' ? body.productName : ''
+    const orderId = typeof body.orderId === 'string' ? body.orderId : ''
+    const addonItems = Array.isArray(body.addonItems) ? body.addonItems as AddonItem[] : []
+    const allProducts = Array.isArray(body.allProducts) ? body.allProducts as Array<Record<string, unknown>> : []
+
+    if (!email || !fullName || !productName || !orderId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const payload = JSON.stringify({
-      action: 'sendCourseEmail',
+    await sendCourseAccessEmail({
       email,
       fullName,
       productName,
       orderId,
-      allProducts: allProducts || [{ name: productName, priceOriginal: 0, priceDiscounted: 0 }],
-      addonItems: addonItems || [],
+      priceOriginal: Number(allProducts[0]?.priceOriginal) || 0,
+      priceDiscounted: Number(allProducts[0]?.priceDiscounted) || 0,
+      addonItems,
     })
-
-    // Apps Script Web App requires redirect:follow — Vercel server fetch doesn't auto-follow POST redirects
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: payload,
-      redirect: 'follow',
-    })
-
-    const responseText = await res.text()
-    console.log('Apps Script sendCourseEmail response:', responseText)
-
-    let data: { status?: string; message?: string }
-    try {
-      data = JSON.parse(responseText)
-    } catch {
-      // Apps Script returned non-JSON (e.g. redirect to login) — treat as error
-      console.error('Apps Script non-JSON response:', responseText)
-      return NextResponse.json({ error: 'Apps Script returned unexpected response: ' + responseText.slice(0, 200) }, { status: 500 })
-    }
-
-    if (data.status !== 'success') {
-      return NextResponse.json({ error: data.message || 'Failed to send email' }, { status: 500 })
-    }
-
     return NextResponse.json({ success: true })
-  } catch (err) {
-    console.error('course-email error:', err)
-    return NextResponse.json({ error: 'Internal server error: ' + String(err) }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to send course access email' }, { status: 500 })
   }
 }

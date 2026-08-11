@@ -1,126 +1,215 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabaseClient'
+import { calculateCart, CommerceError, fulfillOrder } from '@/lib/commerce'
+import { recordCheckout } from '@/lib/courseEmail'
+import { createSnapTransaction, type MidtransItem } from '@/lib/midtrans'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import type { AddonItem } from '@/lib/supabaseClient'
+
+function cleanText(value: unknown, maxLength: number) {
+  return typeof value === 'string' ? value.trim().slice(0, maxLength) : ''
+}
+
+function statusUrl(req: NextRequest, orderId: string, token: string) {
+  const url = new URL('/payment/status', req.nextUrl.origin)
+  url.searchParams.set('order', orderId)
+  url.searchParams.set('token', token)
+  return url.toString()
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const {
-      productId, productName, fullName, email, whatsapp,
-      background, referralSource, voucherCode,
-      priceOriginal, priceDiscounted, addonItems, addonTotal,
-      voucherDiscount, totalPaid,
-    } = body
+    const body = await req.json() as Record<string, unknown>
+    const productId = cleanText(body.productId, 64)
+    const voucherCode = cleanText(body.voucherCode, 64).toUpperCase()
+    const fullName = cleanText(body.fullName, 120)
+    const email = cleanText(body.email, 180).toLowerCase()
+    const whatsapp = cleanText(body.whatsapp, 40)
+    const background = cleanText(body.background, 200)
+    const referralSource = cleanText(body.referralSource, 200)
 
-    const addons: AddonItem[] = Array.isArray(addonItems) ? addonItems : []
-
-    // Validate required fields
-    if (!fullName || !email || !whatsapp || !productName) {
-      return NextResponse.json({ success: false, message: 'Semua field wajib diisi' }, { status: 400 })
+    if (!productId || !fullName || !email || !whatsapp || !background || !referralSource) {
+      return NextResponse.json({ message: 'Semua field wajib diisi' }, { status: 400 })
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return NextResponse.json({ message: 'Format email belum valid' }, { status: 400 })
     }
 
-    // 1. Insert order into Supabase
-    const { data: order, error: orderError } = await supabase
+    const cart = await calculateCart({
+      productId,
+      addonIds: body.addonIds,
+      voucherCode: voucherCode || null,
+    })
+
+    const orderId = randomUUID()
+    const publicStatusToken = randomUUID()
+    const midtransOrderId = `MRC-${orderId}`
+    const addonItems: AddonItem[] = cart.addons.map(addon => ({
+      id: addon.id,
+      name: addon.name,
+      priceOriginal: addon.priceOriginal,
+      priceDiscounted: addon.basePrice,
+    }))
+
+    const { error: insertError } = await supabaseAdmin
       .from('orders')
       .insert({
-        product_id: productId || null,
-        product_name: productName,
+        id: orderId,
+        product_id: cart.main.id,
+        product_name: cart.main.name,
         full_name: fullName,
         email,
         whatsapp,
-        background: background || null,
-        referral_source: referralSource || null,
-        voucher_code: voucherCode || null,
-        price_original: priceOriginal || 0,
-        price_discounted: priceDiscounted || 0,
-        addon_items: addons.length > 0 ? addons : [],
-        voucher_discount: voucherDiscount || 0,
-        total_paid: totalPaid || 0,
+        background,
+        referral_source: referralSource,
+        voucher_code: cart.voucherCode,
+        price_original: cart.main.priceOriginal,
+        price_discounted: cart.main.basePrice,
+        addon_items: addonItems,
+        voucher_discount: cart.voucherDiscount,
+        total_paid: cart.total,
         status: 'pending',
+        midtrans_order_id: midtransOrderId,
+        payment_status: 'pending',
+        fulfillment_status: 'pending',
+        public_status_token: publicStatusToken,
       })
-      .select()
-      .single()
 
-    if (orderError) {
-      console.error('Order insert error:', orderError)
-      return NextResponse.json({ success: false, message: 'Gagal menyimpan pesanan: ' + orderError.message }, { status: 500 })
+    if (insertError) {
+      console.error('Checkout order insert failed')
+      return NextResponse.json({ message: 'Pesanan belum berhasil dibuat' }, { status: 500 })
     }
 
-    // Increment checkout_clicks for the product (fire-and-forget, non-blocking)
-    if (productId) {
-      Promise.resolve(supabase.rpc('increment_checkout_clicks', { product_id_arg: productId })).catch(() => null)
-    }
+    void supabaseAdmin.rpc('increment_checkout_clicks', { product_id_arg: cart.main.id })
 
-    // NOTE: course_access_emails is NOT inserted here at checkout.
-    // Access is only granted when admin confirms the order (toggleOrderStatus in admin page).
-    // This prevents users from registering/activating their course account before payment is confirmed.
-
-    const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
-      'https://script.google.com/macros/s/AKfycbwMg8HxK3rZ0vyuDFj3czW1cOWYmSa6iy7aqYjU8nmadsBuHWyyZgg4b_NY-SSi-y7T/exec'
-
-    // Build combined product list for emails
-    const allProducts = [
-      { name: productName, priceOriginal: priceOriginal || 0, priceDiscounted: priceDiscounted || 0 },
-      ...addons.map(a => ({ name: a.name, priceOriginal: a.priceOriginal, priceDiscounted: a.priceDiscounted })),
-    ]
-
-    // 2. Send checkout data to Google Sheets + Confirmation Email + Admin Notification
     try {
-      const payload = JSON.stringify({
-        action: 'checkout',
-        orderId: order.id,
-        productName,
+      await recordCheckout({
+        orderId,
+        productName: cart.main.name,
         fullName,
         email,
         whatsapp,
-        background: background || '',
-        referralSource: referralSource || '',
-        voucherCode: voucherCode || '',
-        priceOriginal: priceOriginal || 0,
-        priceDiscounted: priceDiscounted || 0,
-        addonItems: addons,
-        addonTotal: addonTotal || 0,
-        allProducts,
-        voucherDiscount: voucherDiscount || 0,
-        totalPaid: totalPaid || 0,
-        status: 'pending',
+        background,
+        referralSource,
+        voucherCode: cart.voucherCode,
+        priceOriginal: cart.main.priceOriginal,
+        priceDiscounted: cart.main.basePrice,
+        addonItems,
+        voucherDiscount: cart.voucherDiscount,
+        totalPaid: cart.total,
       })
-      const gsRes = await fetch(appScriptUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: payload,
-        redirect: 'follow',
-      })
-      const gsData = await gsRes.text()
-      console.log('Apps Script Checkout Response:', gsData)
-    } catch (sheetErr) {
-      console.error('Apps Script checkout fetch error:', sheetErr)
+    } catch {
+      console.error('Checkout Apps Script recording failed')
     }
 
-    // 3. Build WhatsApp redirect URL
-    const productNamesArray = [productName, ...addons.map(a => a.name)]
-    const waNumber = '62895412747584'
-    let waText: string
+    const localStatusUrl = statusUrl(req, orderId, publicStatusToken)
 
-    if (productNamesArray.length === 1) {
-      // Single product — no numbered list
-      waText = `Halo Marcatching, aku ${fullName} baru aja check out ${productNamesArray[0]} dan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
-    } else {
-      // Multiple products — numbered list
-      const numberedList = productNamesArray.map((name, i) => `${i + 1}. ${name}`).join('\n')
-      waText = `Halo Marcatching, aku ${fullName} baru aja check out :\n\n${numberedList}\n\ndan sudah melakukan pembayaran, aku tunggu konfirmasinya, ya! Terima kasih.`
+    if (cart.total === 0) {
+      const now = new Date().toISOString()
+      const { error: freeOrderError } = await supabaseAdmin
+        .from('orders')
+        .update({
+          status: 'confirmed',
+          payment_status: 'paid',
+          paid_at: now,
+          payment_updated_at: now,
+        })
+        .eq('id', orderId)
+
+      if (freeOrderError) {
+        return NextResponse.json({ message: 'Pesanan gratis belum berhasil dikonfirmasi' }, { status: 500 })
+      }
+
+      try {
+        await fulfillOrder(orderId)
+      } catch {
+        console.error('Free order fulfillment failed')
+      }
+
+      return NextResponse.json({
+        orderId,
+        publicStatusToken,
+        snapToken: null,
+        redirectUrl: null,
+      })
     }
 
-    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`
+    const itemDetails: MidtransItem[] = [
+      {
+        id: cart.main.id.slice(0, 50),
+        price: cart.main.basePrice,
+        quantity: 1,
+        name: cart.main.name.slice(0, 50),
+        brand: 'Marcatching',
+        category: 'Digital Product',
+      },
+      ...cart.addons.map(addon => ({
+        id: addon.id.slice(0, 50),
+        price: addon.basePrice,
+        quantity: 1,
+        name: addon.name.slice(0, 50),
+        brand: 'Marcatching',
+        category: 'Digital Product',
+      })),
+    ]
 
-    return NextResponse.json({
-      success: true,
-      orderId: order.id,
-      whatsappUrl: waUrl,
-    })
+    if (cart.voucherDiscount > 0) {
+      itemDetails.push({
+        id: `VOUCHER-${orderId}`.slice(0, 50),
+        price: -cart.voucherDiscount,
+        quantity: 1,
+        name: `Voucher ${cart.voucherCode || ''}`.trim().slice(0, 50),
+      })
+    }
 
-  } catch (err) {
-    console.error('Checkout error:', err)
-    return NextResponse.json({ success: false, message: 'Terjadi kesalahan server' }, { status: 500 })
+    try {
+      const transaction = await createSnapTransaction({
+        transaction_details: {
+          order_id: midtransOrderId,
+          gross_amount: cart.total,
+        },
+        item_details: itemDetails,
+        customer_details: {
+          first_name: fullName.slice(0, 50),
+          email,
+          phone: whatsapp,
+        },
+        credit_card: { secure: true },
+        callbacks: { finish: localStatusUrl },
+      })
+
+      const { error: tokenSaveError } = await supabaseAdmin
+        .from('orders')
+        .update({
+          snap_token: transaction.token,
+          payment_redirect_url: transaction.redirectUrl,
+          payment_updated_at: new Date().toISOString(),
+        })
+        .eq('id', orderId)
+
+      if (tokenSaveError) throw tokenSaveError
+
+      return NextResponse.json({
+        orderId,
+        publicStatusToken,
+        snapToken: transaction.token,
+        redirectUrl: transaction.redirectUrl,
+      })
+    } catch {
+      await supabaseAdmin
+        .from('orders')
+        .update({
+          payment_status: 'creation_failed',
+          payment_updated_at: new Date().toISOString(),
+        })
+        .eq('id', orderId)
+      return NextResponse.json({ message: 'Sesi pembayaran belum berhasil dibuat. Silakan coba lagi.' }, { status: 502 })
+    }
+  } catch (error) {
+    if (error instanceof CommerceError) {
+      return NextResponse.json({ message: error.message }, { status: error.status })
+    }
+    console.error('Checkout request failed')
+    return NextResponse.json({ message: 'Terjadi kesalahan server' }, { status: 500 })
   }
 }

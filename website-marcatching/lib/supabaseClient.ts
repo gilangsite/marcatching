@@ -162,6 +162,18 @@ export type Order = {
   total_paid: number
   addon_items: AddonItem[] | null
   status: string
+  midtrans_order_id: string | null
+  midtrans_transaction_id: string | null
+  payment_status: 'pending' | 'paid' | 'failed' | 'expired' | 'refunded' | 'creation_failed' | 'legacy_confirmed'
+  payment_type: string | null
+  fraud_status: string | null
+  snap_token: string | null
+  payment_redirect_url: string | null
+  paid_at: string | null
+  payment_updated_at: string | null
+  fulfillment_status: string
+  confirmation_sent_at: string | null
+  public_status_token: string
   created_at: string
 }
 
