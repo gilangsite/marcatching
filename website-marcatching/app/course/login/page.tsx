@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
@@ -11,8 +11,10 @@ import {
   Eye,
   EyeOff,
   LockKeyhole,
+  Mail,
   ShieldCheck,
   Sparkles,
+  X,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import styles from '../course.module.css'
@@ -29,8 +31,37 @@ export default function CourseLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [forgotOpen, setForgotOpen] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotError, setForgotError] = useState('')
+  const [forgotSent, setForgotSent] = useState(false)
 
   const normalizedEmail = email.toLowerCase().trim()
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search)
+    if (query.get('password-reset') === 'success') {
+      setSuccess('Password baru berhasil disimpan. Silakan masuk menggunakan password barumu.')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!forgotOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !forgotLoading) setForgotOpen(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [forgotLoading, forgotOpen])
 
   function resetMessages() {
     setError('')
@@ -43,6 +74,45 @@ export default function CourseLoginPage() {
     setPassword('')
     setConfirmPassword('')
     setShowPassword(false)
+  }
+
+  function openForgotPassword() {
+    setForgotEmail(normalizedEmail)
+    setForgotError('')
+    setForgotSent(false)
+    setForgotOpen(true)
+  }
+
+  async function handleForgotPassword(event: React.FormEvent) {
+    event.preventDefault()
+    const targetEmail = forgotEmail.toLowerCase().trim()
+    setForgotError('')
+
+    if (!targetEmail || !/^\S+@\S+\.\S+$/.test(targetEmail)) {
+      setForgotError('Masukkan alamat email yang valid.')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      const response = await fetch('/api/course-password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: targetEmail }),
+      })
+      const data = await response.json() as { message?: string }
+      if (!response.ok) throw new Error(data.message || 'Permintaan belum dapat diproses.')
+
+      setForgotSent(true)
+    } catch (requestError) {
+      setForgotError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Permintaan belum dapat diproses. Silakan coba lagi.',
+      )
+    } finally {
+      setForgotLoading(false)
+    }
   }
 
   async function handleRegister(event: React.FormEvent) {
@@ -244,9 +314,16 @@ export default function CourseLoginPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="member-password">
-                {mode === 'login' ? 'Password' : 'Buat password'}
-              </label>
+              <div className={styles.authLabelRow}>
+                <label className={styles.formLabel} htmlFor="member-password">
+                  {mode === 'login' ? 'Password' : 'Buat password'}
+                </label>
+                {mode === 'login' && (
+                  <button type="button" className={styles.forgotPasswordButton} onClick={openForgotPassword}>
+                    Lupa password?
+                  </button>
+                )}
+              </div>
               <div className={styles.passwordField}>
                 <input
                   id="member-password"
@@ -310,6 +387,66 @@ export default function CourseLoginPage() {
           </p>
         </div>
       </section>
+
+      {forgotOpen && (
+        <div className={styles.authModalOverlay} onClick={() => !forgotLoading && setForgotOpen(false)}>
+          <section
+            className={styles.authModalCard}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="forgot-password-title"
+            onClick={event => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.authModalClose}
+              onClick={() => setForgotOpen(false)}
+              disabled={forgotLoading}
+              aria-label="Tutup popup lupa password"
+            >
+              <X size={18} />
+            </button>
+
+            <div className={styles.authModalIcon}><Mail size={24} /></div>
+            <h2 id="forgot-password-title">
+              {forgotSent ? 'Periksa email kamu.' : 'Buat password baru.'}
+            </h2>
+            <p>
+              {forgotSent
+                ? 'Jika email tersebut terdaftar, kami sudah mengirim link untuk membuat password baru. Periksa juga folder spam.'
+                : 'Masukkan email yang sebelumnya kamu gunakan untuk mengaktifkan akun Marcatching Course.'}
+            </p>
+
+            {forgotSent ? (
+              <button type="button" className={styles.authBtn} onClick={() => setForgotOpen(false)}>
+                Kembali ke login
+              </button>
+            ) : (
+              <form className={styles.authModalForm} onSubmit={handleForgotPassword}>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel} htmlFor="forgot-email">Email terdaftar</label>
+                  <input
+                    id="forgot-email"
+                    className={styles.formInput}
+                    type="email"
+                    placeholder="email@kamu.com"
+                    value={forgotEmail}
+                    onChange={event => setForgotEmail(event.target.value)}
+                    autoComplete="email"
+                    inputMode="email"
+                    autoFocus
+                    required
+                  />
+                </div>
+                {forgotError && <div className={styles.authError}>{forgotError}</div>}
+                <button type="submit" className={styles.authBtn} disabled={forgotLoading}>
+                  {forgotLoading ? 'Mengirim link...' : <>Kirim link reset <ArrowRight size={17} /></>}
+                </button>
+              </form>
+            )}
+          </section>
+        </div>
+      )}
     </main>
   )
 }

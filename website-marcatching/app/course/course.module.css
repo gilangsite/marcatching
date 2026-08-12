@@ -81,6 +81,8 @@
 .secondaryButton:focus-visible,
 .authTabs button:focus-visible,
 .authBtn:focus-visible,
+.authModalClose:focus-visible,
+.forgotPasswordButton:focus-visible,
 .passwordField button:focus-visible,
 .formInput:focus-visible,
 .courseCard:focus-visible,
@@ -549,6 +551,205 @@
 .authSupport a {
   color: #96cdf1;
   font-weight: 750;
+}
+
+.authLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.forgotPasswordButton {
+  color: #8fc9f5;
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+.forgotPasswordButton:hover {
+  color: #d6edff;
+}
+
+.authModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  padding: 1.25rem;
+  place-items: center;
+  background: rgba(1, 4, 7, 0.76);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: authModalFadeIn 180ms ease-out;
+}
+
+.authModalCard {
+  position: relative;
+  width: min(100%, 27rem);
+  padding: 2rem;
+  border: 1px solid rgba(179, 213, 244, 0.16);
+  border-radius: 1.25rem;
+  color: #edf6fc;
+  background: #0a1119;
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.5);
+  animation: authModalCardIn 200ms ease-out;
+}
+
+.authModalClose {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #7890a2;
+  background: #121f2a;
+}
+
+.authModalClose:hover {
+  color: #e8f5ff;
+  background: #1a3041;
+}
+
+.authModalClose:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.authModalIcon,
+.resetAuthIcon {
+  display: grid;
+  width: 3.1rem;
+  height: 3.1rem;
+  margin-bottom: 1.2rem;
+  place-items: center;
+  border: 1px solid rgba(143, 201, 245, 0.2);
+  border-radius: 0.85rem;
+  color: #9dd4fa;
+  background: rgba(91, 159, 205, 0.12);
+}
+
+.authModalCard h2 {
+  margin: 0 0 0.55rem;
+  color: #f2f7fb;
+  font-size: 1.55rem;
+  font-weight: 580;
+  letter-spacing: -0.025em;
+}
+
+.authModalCard > p {
+  color: #8fa2b2;
+  font-size: 0.75rem;
+  line-height: 1.65;
+}
+
+.authModalCard > .authBtn {
+  width: 100%;
+  margin-top: 1.4rem;
+}
+
+.authModalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1.4rem;
+}
+
+@keyframes authModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes authModalCardIn {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.resetAuthPage {
+  display: block;
+}
+
+.resetAuthPage .authPanel {
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(91, 159, 205, 0.15), transparent 25rem),
+    #030508;
+}
+
+.authCard.resetAuthCard {
+  width: min(100%, 31rem);
+  padding: clamp(1.5rem, 5vw, 2.6rem);
+  border: 1px solid rgba(179, 213, 244, 0.13);
+  border-radius: 1.25rem;
+  background: #0a1119;
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.38);
+}
+
+.resetAuthLogo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.4rem;
+}
+
+.resetAuthLogo img {
+  height: auto;
+}
+
+.resetAuthLogo span {
+  color: #718798;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.resetAuthCard .authHeading h1,
+.resetAuthState h1 {
+  margin: 0.55rem 0;
+  color: #f0f6fa;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 540;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+
+.resetAuthCard .authHeading p,
+.resetAuthState p {
+  color: #8296a7;
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.resetAuthState {
+  display: flex;
+  min-height: 18rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.resetAuthState .authBtn {
+  margin-top: 1.4rem;
+}
+
+.resetAuthIconSuccess {
+  border-color: rgba(91, 196, 151, 0.24);
+  color: #9cddc0;
+  background: rgba(42, 136, 96, 0.12);
+}
+
+@media (max-width: 480px) {
+  .authModalCard {
+    padding: 1.6rem;
+    border-radius: 1rem;
+  }
+
+  .resetAuthCard {
+    padding: 1.5rem;
+  }
 }
 
 /* Learning dashboard */

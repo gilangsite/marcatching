@@ -41,6 +41,12 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
 - `APPS_SCRIPT_PAYMENT_SECRET` wajib disimpan sebagai environment variable server-only di Vercel. Simpan nilai yang sama pada Google Apps Script melalui **Project Settings → Script Properties** dengan nama `PAYMENT_WEBHOOK_SECRET`; nilai ini melindungi email paid dan Finance income dari request palsu.
 - Email checkout berbayar mengarahkan pembeli untuk menyelesaikan pembayaran melalui URL Midtrans yang sama. Setelah status paid, halaman status menyediakan receipt PDF yang hanya dapat diunduh dengan order ID dan public status token yang cocok.
 
+## Konfigurasi Reset Password Course
+
+- Tambahkan `https://course.marcatching.com/reset-password` pada **Supabase Dashboard → Authentication → URL Configuration → Redirect URLs**.
+- Permintaan reset hanya mengirim email bila alamat tersebut sudah memiliki akun Supabase Auth.
+- Link recovery membuka halaman pembuatan password baru; Supabase mengganti hash password lama setelah password baru berhasil disimpan.
+
 ## Menjalankan secara Lokal
 
 1. Install dependensi:

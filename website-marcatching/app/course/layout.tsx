@@ -9,12 +9,15 @@ import styles from './course.module.css'
 export default function CourseLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const isLoginPage = pathname === '/login' || pathname === '/course/login'
-  const [checking, setChecking] = useState(!isLoginPage)
+  const isAuthPage = pathname === '/login'
+    || pathname === '/course/login'
+    || pathname === '/reset-password'
+    || pathname === '/course/reset-password'
+  const [checking, setChecking] = useState(!isAuthPage)
 
   useEffect(() => {
-    // Don't guard the login page itself
-    if (isLoginPage) {
+    // Login and password recovery validate their own access state.
+    if (isAuthPage) {
       return
     }
 
@@ -41,7 +44,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
 
     // Listen for auth state changes (e.g. logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && !isLoginPage) {
+      if (!session && !isAuthPage) {
         router.replace('/login')
       }
     })
@@ -51,10 +54,10 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
       window.clearTimeout(fallbackTimer)
       subscription.unsubscribe()
     }
-  }, [isLoginPage, router])
+  }, [isAuthPage, router])
 
   // Show nothing while checking auth (prevents flash)
-  if (checking && !isLoginPage) {
+  if (checking && !isAuthPage) {
     return (
       <div className={styles.gateLoading}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -65,7 +68,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
     )
   }
 
-  if (isLoginPage) return <>{children}</>
+  if (isAuthPage) return <>{children}</>
 
   return <CourseShell>{children}</CourseShell>
 }
