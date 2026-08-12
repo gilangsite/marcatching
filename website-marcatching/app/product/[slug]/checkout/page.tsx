@@ -6,7 +6,7 @@ import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
-import { ArrowLeft, ArrowRight, Loader2, ShoppingCart, Plus, X, Search, ChevronDown } from 'lucide-react'
+import { AlertCircle, ArrowLeft, ArrowRight, Loader2, ShoppingCart, Plus, X, Search, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Product, AddonItem } from '@/lib/supabaseClient'
 import styles from './checkout.module.css'
@@ -311,6 +311,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     if (!voucherCode.trim()) return
     setVoucherChecking(true)
     setVoucherMsg('')
+    setFormError('')
 
     try {
       const code = voucherCode.trim().toUpperCase()
@@ -335,12 +336,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
         setVoucherMsg(data.message || `Voucher berhasil diterapkan ke ${data.eligibleProductCount || 0} produk.`)
         setActivePayment(null)
       } else {
+        const message = data.message || 'Voucher ini tidak berlaku untuk produk yang dipilih.'
         setVoucherValid(false)
         setVoucherDiscount(0)
-        setVoucherMsg(data.message || 'Voucher ini tidak berlaku untuk produk yang dipilih.')
+        setFormError(message)
       }
     } catch {
-      setVoucherMsg('Gagal memvalidasi voucher')
+      setFormError('Gagal memvalidasi voucher. Silakan coba lagi.')
       setVoucherValid(false)
     }
     setVoucherChecking(false)
@@ -721,16 +723,45 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
               )}
             </div>
 
-            {formError && <p className={styles.formError}>{formError}</p>}
           </div>
         </div>
       </div>
+
+      {formError && (
+        <div
+          className={styles.errorOverlay}
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="checkout-error-title"
+          aria-describedby="checkout-error-message"
+          onClick={() => setFormError('')}
+        >
+          <div className={styles.errorPopup} onClick={event => event.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.errorClose}
+              onClick={() => setFormError('')}
+              aria-label="Tutup notifikasi"
+            >
+              <X size={18} />
+            </button>
+            <div className={styles.errorIcon} aria-hidden="true">
+              <AlertCircle size={26} />
+            </div>
+            <h2 id="checkout-error-title" className={styles.errorTitle}>Periksa kembali</h2>
+            <p id="checkout-error-message" className={styles.errorMessage}>{formError}</p>
+            <button type="button" className={styles.errorAction} onClick={() => setFormError('')}>
+              Oke, mengerti
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Fixed Bottom CTA */}
       <div className={styles.fixedCTA}>
         <button className={styles.ctaButton} onClick={handleCheckout} disabled={submitting}>
           {submitting
-            ? <><Loader2 size={18} className="animate-spin" /> Memproses...</>
+            ? <><Loader2 size={18} className={styles.loadingSpinner} /> Memproses...</>
             : <>{activePayment ? 'Lanjutkan Pembayaran' : 'Checkout Product'}<ArrowRight size={18} strokeWidth={2.5} /></>
           }
         </button>

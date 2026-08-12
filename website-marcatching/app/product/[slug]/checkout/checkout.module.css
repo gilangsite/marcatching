@@ -684,13 +684,106 @@
   color: #94a3b8;
 }
 
-.formError {
-  font-size: 0.82rem;
-  color: #0d3369;
-  background: #f8fafc;
+/* ── Centered Error Notification ──────────────────────────── */
+.errorOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 17, 26, 0.38);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: errorOverlayIn 0.18s ease-out;
+}
+
+.errorPopup {
+  position: relative;
+  width: min(100%, 390px);
+  padding: 30px 26px 24px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 14px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(7, 17, 26, 0.22);
+  text-align: center;
+  animation: errorPopupIn 0.2s ease-out;
+}
+
+.errorClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  color: #64748b;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.errorIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 15px;
+  border-radius: 999px;
+  color: #0d3369;
+  background: #eaf2fb;
+}
+
+.errorTitle {
+  margin: 0 0 8px;
+  color: #0d3369;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.errorMessage {
+  margin: 0;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.errorAction {
+  width: 100%;
+  margin-top: 22px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #0d3369;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.errorClose:hover {
+  color: #0d3369;
+  background: #e2e8f0;
+}
+
+.errorAction:hover {
+  background: #0a2850;
+}
+
+@keyframes errorOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes errorPopupIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ── Fixed Bottom CTA ──────────────────────────────────────── */
@@ -738,6 +831,16 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.loadingSpinner {
+  flex-shrink: 0;
+  transform-origin: center;
+  animation: checkoutSpinner 0.8s linear infinite;
+}
+
+@keyframes checkoutSpinner {
+  to { transform: rotate(360deg); }
 }
 
 /* ── Payment Modal ─────────────────────────────────────────── */
@@ -931,4 +1034,3 @@
     padding: 14px 20px;
   }
 }
-
