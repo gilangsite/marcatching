@@ -39,6 +39,7 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
 - Google Apps Script mencatat checkout pending. Setelah webhook memverifikasi pembayaran, action `paymentPaid` mengirim receipt `Pembelian Berhasil` ke pembeli dan email `Pembelian Baru` ke admin, masing-masing satu kali. Email aktivasi course tetap dikirim terpisah. Setelah mengubah `google-apps-script.js`, deploy versi baru pada Web App Apps Script yang sama.
 - Action `paymentPaid` juga mencatat transaksi berbayar ke sheet Finance `income` sebagai `Product Sales` dengan billing `Midtrans`. ID income memakai Midtrans order ID sehingga retry webhook memperbarui baris yang sama dan tidak membuat duplikat.
 - `APPS_SCRIPT_PAYMENT_SECRET` wajib disimpan sebagai environment variable server-only di Vercel. Simpan nilai yang sama pada Google Apps Script melalui **Project Settings → Script Properties** dengan nama `PAYMENT_WEBHOOK_SECRET`; nilai ini melindungi email paid dan Finance income dari request palsu.
+- Email checkout berbayar mengarahkan pembeli untuk menyelesaikan pembayaran melalui URL Midtrans yang sama. Setelah status paid, halaman status menyediakan receipt PDF yang hanya dapat diunduh dengan order ID dan public status token yang cocok.
 
 ## Menjalankan secara Lokal
 

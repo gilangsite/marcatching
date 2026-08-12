@@ -82,26 +82,6 @@ export async function POST(req: NextRequest) {
 
     void supabaseAdmin.rpc('increment_checkout_clicks', { product_id_arg: cart.main.id })
 
-    try {
-      await recordCheckout({
-        orderId,
-        productName: cart.main.name,
-        fullName,
-        email,
-        whatsapp,
-        background,
-        referralSource,
-        voucherCode: cart.voucherCode,
-        priceOriginal: cart.main.priceOriginal,
-        priceDiscounted: cart.main.basePrice,
-        addonItems,
-        voucherDiscount: cart.voucherDiscount,
-        totalPaid: cart.total,
-      })
-    } catch {
-      console.error('Checkout Apps Script recording failed')
-    }
-
     const localStatusUrl = statusUrl(req, orderId, publicStatusToken)
 
     if (cart.total === 0) {
@@ -194,6 +174,28 @@ export async function POST(req: NextRequest) {
         .eq('id', orderId)
 
       if (tokenSaveError) throw tokenSaveError
+
+      try {
+        await recordCheckout({
+          orderId,
+          productName: cart.main.name,
+          fullName,
+          email,
+          whatsapp,
+          background,
+          referralSource,
+          voucherCode: cart.voucherCode,
+          priceOriginal: cart.main.priceOriginal,
+          priceDiscounted: cart.main.basePrice,
+          addonItems,
+          voucherDiscount: cart.voucherDiscount,
+          totalPaid: cart.total,
+          midtransOrderId,
+          paymentUrl: transaction.redirectUrl,
+        })
+      } catch {
+        console.error('Checkout Apps Script recording failed')
+      }
 
       return NextResponse.json({
         orderId,

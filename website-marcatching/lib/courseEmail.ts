@@ -83,6 +83,7 @@ export type CheckoutNotificationInput = {
   paymentType?: string | null
   midtransOrderId?: string | null
   midtransTransactionId?: string | null
+  paymentUrl?: string | null
 }
 
 function checkoutNotificationPayload(input: CheckoutNotificationInput) {
@@ -116,6 +117,7 @@ function checkoutNotificationPayload(input: CheckoutNotificationInput) {
     paymentType: input.paymentType || '',
     midtransOrderId: input.midtransOrderId || '',
     midtransTransactionId: input.midtransTransactionId || '',
+    paymentUrl: input.paymentUrl || '',
   }
 }
 

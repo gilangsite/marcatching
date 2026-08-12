@@ -764,15 +764,20 @@ function sendConfirmationEmail(data) {
     }
   }
 
-  var subject = 'Pembayaran Sedang Dikonfirmasi — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
+  var subject = 'Selesaikan Pembayaranmu — ' + allProducts.map(function(p) { return p.name; }).join(' + ');
 
-  var productListHtml = allProducts.map(function(p) { return p.name || '-'; }).join('<br>');
+  var productListHtml = allProducts.map(function(p) { return escapeEmailHtml(p.name || '-'); }).join('<br>');
 
   var voucherRowConf = data.voucherCode
-    ? '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Voucher</td><td style="padding:6px 0;color:#16a34a;">' + data.voucherCode + ' (-' + formatRupiah(data.voucherDiscount || 0) + ')</td></tr>'
+    ? '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Voucher</td><td style="padding:6px 0;color:#16a34a;">' + escapeEmailHtml(data.voucherCode) + ' (-' + formatRupiah(data.voucherDiscount || 0) + ')</td></tr>'
     : '';
 
   var fullName = data.fullName || 'Pelanggan';
+  var paymentButton = data.paymentUrl
+    ? '<div style="text-align:center;margin:0 0 28px;">' +
+        '<a href="' + escapeEmailHtml(data.paymentUrl) + '" style="display:inline-block;background:#0d3369;color:#ffffff;font-size:15px;font-weight:800;padding:14px 32px;border-radius:10px;text-decoration:none;">Selesaikan Pembayaran</a>' +
+      '</div>'
+    : '';
 
   var htmlBody = '<!DOCTYPE html>' +
   '<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>' +
@@ -781,30 +786,40 @@ function sendConfirmationEmail(data) {
       
       '<div style="background:#0d3369;padding:32px 24px;text-align:center;">' +
         '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:32px;margin-bottom:12px;" />' +
-        '<h1 style="color:#ffffff;font-size:20px;margin:0;font-weight:700;">Pembayaran Sedang Dikonfirmasi</h1>' +
+        '<h1 style="color:#ffffff;font-size:20px;margin:0;font-weight:700;">Selesaikan Pembayaranmu</h1>' +
+        '<p style="color:rgba(255,255,255,0.75);font-size:13px;margin:8px 0 0;">Order sudah dibuat dan menunggu pembayaran</p>' +
       '</div>' +
 
       '<div style="padding:32px 24px;">' +
-        '<p style="font-size:16px;color:#1a1a1a;margin:0 0 8px;">Halo <strong>' + fullName + '</strong>,</p>' +
+        '<p style="font-size:16px;color:#1a1a1a;margin:0 0 8px;">Halo <strong>' + escapeEmailHtml(fullName) + '</strong>,</p>' +
         '<p style="font-size:14px;color:#4a5568;line-height:1.6;margin:0 0 24px;">' +
-          'Terima kasih telah melakukan checkout untuk produk <strong>' + (data.productName || '-') + '</strong>. Pembayaran kamu sedang dalam proses konfirmasi oleh tim Marcatching.' +
+          'Order untuk <strong>' + escapeEmailHtml(data.productName || '-') + '</strong> sudah dibuat, tetapi belum dibayar. Selesaikan pembayaran melalui Midtrans agar pembelian dan akses course dapat diproses otomatis.' +
         '</p>' +
 
         '<div style="background:#f7fafc;border-radius:12px;padding:20px;margin-bottom:24px;">' +
           '<h3 style="font-size:14px;color:#0d3369;margin:0 0 16px;">Detail Pembelian:</h3>' +
           '<table style="width:100%;font-size:14px;color:#2d3748;border-collapse:collapse;">' +
             '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;width:35%;">Produk</td><td style="padding:6px 0;font-weight:600;color:#111827;line-height:1.6;">' + productListHtml + '</td></tr>' +
-            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Nama</td><td style="padding:6px 0;color:#111827;">' + (data.fullName || '-') + '</td></tr>' +
-            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Email</td><td style="padding:6px 0;color:#111827;">' + (data.email || '-') + '</td></tr>' +
-            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">WhatsApp</td><td style="padding:6px 0;color:#111827;">' + (data.whatsapp || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Nama</td><td style="padding:6px 0;color:#111827;">' + escapeEmailHtml(data.fullName || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Email</td><td style="padding:6px 0;color:#111827;">' + escapeEmailHtml(data.email || '-') + '</td></tr>' +
+            '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">WhatsApp</td><td style="padding:6px 0;color:#111827;">' + escapeEmailHtml(data.whatsapp || '-') + '</td></tr>' +
             voucherRowConf +
             '<tr><td style="padding:6px 0;padding-right:20px;color:#718096;vertical-align:top;">Total Pembayaran</td><td style="padding:6px 0;font-weight:700;color:#111827;">' + formatRupiah(data.totalPaid || 0) + '</td></tr>' +
           '</table>' +
         '</div>' +
 
-        '<p style="font-size:13px;color:#718096;line-height:1.6;margin:0 0 8px;">' +
-          'Kami akan segera menghubungi kamu via WhatsApp untuk konfirmasi pembayaran. Jika ada pertanyaan, silakan hubungi kami melalui email atau WhatsApp.' +
-        '</p>' +
+        paymentButton +
+
+        '<div style="border-top:1px solid #e2e8f0;padding-top:22px;">' +
+          '<h3 style="font-size:14px;color:#0d3369;margin:0 0 14px;">Cara menyelesaikan pembayaran:</h3>' +
+          '<ol style="margin:0;padding-left:20px;color:#4a5568;font-size:13px;line-height:1.8;">' +
+            '<li>Klik tombol <strong>Selesaikan Pembayaran</strong> di atas.</li>' +
+            '<li>Pilih metode pembayaran yang tersedia di halaman Midtrans.</li>' +
+            '<li>Ikuti instruksi VA, QRIS, e-wallet, atau metode yang kamu pilih sampai selesai.</li>' +
+            '<li>Pastikan pembayaran dilakukan sebelum batas waktu yang ditampilkan Midtrans.</li>' +
+            '<li>Setelah berhasil, status order dan akses course akan diperbarui otomatis. Kamu tidak perlu mengirim bukti transfer.</li>' +
+          '</ol>' +
+        '</div>' +
       '</div>' +
 
       '<div style="background:#f7fafc;padding:20px 24px;text-align:center;border-top:1px solid #e2e8f0;">' +

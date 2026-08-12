@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle2, Clock3, RefreshCw, XCircle } from 'lucide-react'
+import { CheckCircle2, Clock3, Download, RefreshCw, XCircle } from 'lucide-react'
 import styles from './status.module.css'
 
 type OrderStatus = {
@@ -139,7 +139,16 @@ export default function PaymentStatusClient({
 
         <div className={styles.actions}>
           {isPaid ? (
-            <Link href="/course/login" className={styles.primaryAction}>Masuk ke Course</Link>
+            <>
+              <Link href="/course/login" className={styles.primaryAction}>Masuk ke Course</Link>
+              <a
+                href={`/api/orders/${encodeURIComponent(orderId)}/receipt?token=${encodeURIComponent(publicStatusToken)}`}
+                className={styles.secondaryAction}
+                download
+              >
+                <Download size={16} /> Download Receipt
+              </a>
+            </>
           ) : (
             <Link href="/store" className={styles.primaryAction}>Kembali ke Store</Link>
           )}
