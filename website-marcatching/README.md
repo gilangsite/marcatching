@@ -46,6 +46,7 @@ Website berbasis Next.js (App Router) untuk landing page platform Marcatching, d
 - Tambahkan `https://course.marcatching.com/reset-password` pada **Supabase Dashboard → Authentication → URL Configuration → Redirect URLs**.
 - Permintaan reset hanya mengirim email bila alamat tersebut sudah memiliki akun Supabase Auth.
 - Link recovery membuka halaman pembuatan password baru; Supabase mengganti hash password lama setelah password baru berhasil disimpan.
+- Untuk email ber-brand, aktifkan **Custom SMTP** di Supabase dan gunakan template **Reset Password** dari `docs/supabase-course-password-reset-email-template.html` dengan subject `Buat Password Baru — Marcatching Course`.
 
 ## Menjalankan secara Lokal
 
