@@ -1043,7 +1043,41 @@
 .guideProgress > div:first-child span { color: #8699a8; font-size: .6rem; font-weight: 700; }
 .guideProgress > div:first-child strong { color: #ddecf6; font-size: .68rem; }
 .guideProgress > div:last-child { margin: .42rem 0 0; }
-.guideCompleted { justify-self: end; color: #718695; font-size: .61rem; font-weight: 700; }
+.guideTopActions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.7rem;
+}
+
+.guideCompleted { color: #718695; font-size: .61rem; font-weight: 700; white-space: nowrap; }
+
+.saveQuitButton {
+  display: inline-flex;
+  min-height: 2.3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.72rem;
+  border: 1px solid var(--line);
+  border-radius: 0.62rem;
+  color: #dce9f3;
+  background: #0b151e;
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.saveQuitButton:hover {
+  border-color: var(--line-strong);
+  background: #10202d;
+}
+
+.saveQuitButton:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
 
 .guideStageRail {
   position: fixed;
@@ -1097,6 +1131,93 @@
 .guideTextarea > span { display: block; margin-top: .45rem; color: #5f7484; font-size: .59rem; text-align: right; }
 .guideFooter { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.35rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
 .guideHint { color: #6f8290; font-size: .63rem; }
+
+.sectionTransitionCard {
+  position: relative;
+  display: flex;
+  min-height: 35rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: clamp(2rem, 6vw, 4.5rem);
+  text-align: center;
+}
+
+.transitionStep {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.7rem;
+  color: #536b7e;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.transitionIcon {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 1.35rem;
+  place-items: center;
+  border: 1px solid rgba(140, 198, 255, 0.24);
+  border-radius: 1.1rem;
+  color: var(--accent);
+  background: rgba(140, 198, 255, 0.09);
+  box-shadow: 0 0 3.5rem rgba(140, 198, 255, 0.12);
+}
+
+.sectionTransitionCard h2 {
+  margin: 0.65rem 0 0.8rem;
+  color: var(--text);
+  font-size: clamp(2rem, 6vw, 3.65rem);
+  font-weight: 540;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.sectionTransitionCard p {
+  max-width: 36rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.transitionLine {
+  width: min(100%, 16rem);
+  height: 0.24rem;
+  overflow: hidden;
+  margin: 1.7rem 0 1rem;
+  border-radius: 999px;
+  background: rgba(140, 198, 255, 0.08);
+}
+
+.transitionLine i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: transitionProgress 2.4s linear forwards;
+}
+
+@keyframes transitionProgress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.sectionTransitionCard button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.85rem;
+  border: 0;
+  color: #a7d5f7;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.67rem;
+  font-weight: 760;
+}
 
 .socialSetupGrid { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .socialSetupRow { display: grid; grid-template-columns: 2.5rem minmax(0,1fr) 10rem; align-items: end; gap: .75rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
@@ -1198,7 +1319,7 @@
   .metricRow > span { border-bottom: 1px solid var(--line); }
   .metricRow > span:nth-child(3) { border-right: 0; }
   .metricRow > span:nth-last-child(-n+3) { border-bottom: 0; }
-  .guideTopbar { grid-template-columns: 1fr minmax(12rem, 26rem); }
+  .guideTopbar { grid-template-columns: auto minmax(12rem, 1fr) auto; gap: 1rem; }
   .guideCompleted { display: none; }
 }
 
@@ -1235,6 +1356,16 @@
   .guidedOverlay { padding: 5.75rem .7rem 1.5rem; }
   .guideTopbar { min-height: 4.25rem; grid-template-columns: 1fr; padding: .7rem 1rem; }
   .guideBrand { display: none; }
+  .guideProgress { padding-right: 7.5rem; }
+  .guideTopActions {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.9rem;
+  }
+  .saveQuitButton {
+    min-height: 2rem;
+    padding: 0 0.6rem;
+  }
   .guidedCard { min-height: 30rem; border-radius: .9rem; }
   .guideBody,
   .guideBodyWide { padding: 1.25rem; }

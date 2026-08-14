@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { BarChart3, Download, ExternalLink, FileText, Mail, RefreshCw, Search, Users } from 'lucide-react'
+import { BarChart3, Check, Copy, Download, ExternalLink, FileText, Mail, RefreshCw, Search, Users } from 'lucide-react'
 import styles from './admin.module.css'
 
 type WorkspaceExport = {
   id: string
   userId: string
+  name: string
   email: string
   whatsapp: string
   completedSections: number
@@ -18,18 +19,25 @@ type WorkspaceExport = {
   data: Record<string, unknown>
 }
 
-function downloadFile(name: string, content: string, type: string) {
-  const blob = new Blob([content], { type })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = name
-  anchor.click()
-  URL.revokeObjectURL(url)
+function feedbackMessage(item: WorkspaceExport) {
+  return [
+    `Hai ${item.name}, aku Gilang, founder Marcatching.`,
+    '',
+    'Aku lihat kamu sudah menyelesaikan Marcatching Creator Workspace kamu dengan data:',
+    `Nama: ${item.name}`,
+    `Email: ${item.email || 'Belum tersedia'}`,
+    `Nomor telepon: ${item.whatsapp || 'Belum tersedia'}`,
+    '',
+    'Izin aku kirim feedback dari hasil analisis tim Marcatching, ya.',
+    '',
+    '*Confidential — data dan feedback ini hanya untuk kebutuhan analisis Creator Workspace kamu.',
+  ].join('\n')
 }
 
-function csvCell(value: unknown) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`
+function exportUrl(format: 'pdf' | 'md' | 'json', id?: string) {
+  const params = new URLSearchParams({ format })
+  if (id) params.set('id', id)
+  return `/api/admin/creator-workspaces/export?${params.toString()}`
 }
 
 export default function CreatorWorkspaceTab() {
@@ -37,6 +45,7 @@ export default function CreatorWorkspaceTab() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
+  const [copiedId, setCopiedId] = useState('')
 
   async function load() {
     setLoading(true)
@@ -58,7 +67,7 @@ export default function CreatorWorkspaceTab() {
   const filtered = useMemo(() => {
     const normalized = query.toLowerCase().trim()
     if (!normalized) return workspaces
-    return workspaces.filter(item => item.email.toLowerCase().includes(normalized) || item.whatsapp.includes(normalized) || item.userId.includes(normalized))
+    return workspaces.filter(item => item.name.toLowerCase().includes(normalized) || item.email.toLowerCase().includes(normalized) || item.whatsapp.includes(normalized) || item.userId.includes(normalized))
   }, [query, workspaces])
 
   const totals = useMemo(() => ({
@@ -66,22 +75,10 @@ export default function CreatorWorkspaceTab() {
     experiments: workspaces.reduce((total, item) => total + item.experiments, 0),
   }), [workspaces])
 
-  function downloadJson(items: WorkspaceExport[], name: string) {
-    downloadFile(name, JSON.stringify({ exportedAt: new Date().toISOString(), workspaces: items }, null, 2), 'application/json;charset=utf-8')
-  }
-
-  function downloadCsv() {
-    const header = ['email', 'whatsapp', 'completed_sections', 'experiments', 'metric_snapshots', 'social_profiles', 'updated_at']
-    const rows = filtered.map(item => [
-      item.email,
-      item.whatsapp,
-      item.completedSections,
-      item.experiments,
-      item.metrics,
-      item.socialProfiles.map(profile => `${profile.platform}: ${profile.url} (${profile.audienceCount || 0})`).join(' | '),
-      item.updatedAt,
-    ].map(csvCell).join(','))
-    downloadFile('marcatching-creator-workspaces.csv', [header.join(','), ...rows].join('\n'), 'text/csv;charset=utf-8')
+  async function copyFeedback(item: WorkspaceExport) {
+    await navigator.clipboard.writeText(feedbackMessage(item))
+    setCopiedId(item.id)
+    window.setTimeout(() => setCopiedId(current => current === item.id ? '' : current), 1800)
   }
 
   return (
@@ -94,8 +91,9 @@ export default function CreatorWorkspaceTab() {
         </div>
         <div className={styles.creatorWorkspaceActions}>
           <button type="button" onClick={() => void load()}><RefreshCw size={15} /> Refresh</button>
-          <button type="button" onClick={downloadCsv}><Download size={15} /> Download CSV</button>
-          <button type="button" className={styles.creatorWorkspacePrimary} onClick={() => downloadJson(filtered, 'marcatching-creator-workspaces-ai.json')}><FileText size={15} /> Download AI JSON</button>
+          <a href={exportUrl('pdf')}><Download size={15} /> PDF</a>
+          <a href={exportUrl('md')}><FileText size={15} /> Markdown</a>
+          <a href={exportUrl('json')} className={styles.creatorWorkspacePrimary}><Download size={15} /> AI JSON</a>
         </div>
       </div>
 
@@ -105,24 +103,33 @@ export default function CreatorWorkspaceTab() {
         <article><FileText size={18} /><span><small>Experiments tercatat</small><strong>{totals.experiments}</strong></span></article>
       </div>
 
-      <label className={styles.creatorWorkspaceSearch}><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Cari email, WhatsApp, atau member ID" /></label>
+      <label className={styles.creatorWorkspaceSearch}><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Cari nama, email, WhatsApp, atau member ID" /></label>
 
       {loading ? <div className={styles.creatorWorkspaceEmpty}><RefreshCw size={18} /> Memuat Creator Workspaces...</div> : error ? <div className={styles.creatorWorkspaceEmpty}>{error}</div> : (
         <div className={styles.creatorWorkspaceTable}>
           <div className={styles.creatorWorkspaceTableHead}><span>Member</span><span>Progress</span><span>Data</span><span>Updated</span><span>Action</span></div>
-          {filtered.map(item => (
+          {filtered.map(item => {
+            const message = feedbackMessage(item)
+            const isComplete = item.completedSections >= 8
+            const whatsappNumber = item.whatsapp.replace(/\D/g, '').replace(/^0/, '62')
+            return (
             <article key={item.id}>
-              <div><strong>{item.email || 'Email belum tersedia'}</strong><small>{item.whatsapp || item.userId}</small></div>
+              <div><strong>{item.name}</strong><small>{item.email || 'Email belum tersedia'} · {item.whatsapp || item.userId}</small></div>
               <div><strong>{item.completedSections}/8 section</strong><small>{item.completedSections >= 8 ? 'Overview unlocked' : 'Guided journey'}</small></div>
               <div><strong>{item.experiments} experiments</strong><small>{item.metrics} monthly snapshots</small></div>
               <time>{new Date(item.updatedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</time>
               <div className={styles.creatorWorkspaceRowActions}>
-                {item.email && <a href={`mailto:${item.email}`} aria-label={`Email ${item.email}`}><Mail size={15} /></a>}
-                {item.whatsapp && <a href={`https://wa.me/${item.whatsapp.replace(/\D/g, '').replace(/^0/, '62')}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${item.whatsapp}`}><ExternalLink size={15} /></a>}
-                <button type="button" onClick={() => downloadJson([item], `creator-workspace-${item.userId}.json`)} aria-label="Download workspace"><Download size={15} /></button>
+                {isComplete && <button type="button" className={styles.creatorWorkspaceCopy} onClick={() => void copyFeedback(item)}>{copiedId === item.id ? <Check size={14} /> : <Copy size={14} />} {copiedId === item.id ? 'Tersalin' : 'Copy chat'}</button>}
+                {isComplete && item.email && <a href={`mailto:${item.email}?subject=${encodeURIComponent('Feedback Creator Workspace Marcatching')}&body=${encodeURIComponent(message)}`} aria-label={`Email ${item.email}`}><Mail size={15} /></a>}
+                {isComplete && whatsappNumber && <a href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${item.whatsapp}`}><ExternalLink size={15} /></a>}
+                <span className={styles.creatorWorkspaceFormats} aria-label={`Download workspace ${item.name}`}>
+                  <a href={exportUrl('pdf', item.id)}>PDF</a>
+                  <a href={exportUrl('md', item.id)}>MD</a>
+                  <a href={exportUrl('json', item.id)}>JSON</a>
+                </span>
               </div>
             </article>
-          ))}
+          )})}
           {!filtered.length && <div className={styles.creatorWorkspaceEmpty}>Tidak ada workspace yang cocok.</div>}
         </div>
       )}

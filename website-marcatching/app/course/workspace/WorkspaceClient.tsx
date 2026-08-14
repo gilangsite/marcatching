@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -59,6 +60,7 @@ import {
 import styles from './workspace.module.css'
 
 const LEGACY_STORAGE_KEY = 'marcatching-creator-workspace-v1'
+const RECOVERY_STORAGE_KEY = 'marcatching-creator-workspace-recovery-v2'
 const audienceTarget = 120
 const paragraphTarget = 240
 
@@ -191,6 +193,45 @@ const calendarStatuses: CalendarItem['status'][] = ['Idea', 'Draft', 'Ready', 'P
 
 function cloneDefaultData(): WorkspaceData {
   return JSON.parse(JSON.stringify(defaultWorkspaceData)) as WorkspaceData
+}
+
+type WorkspaceRecovery = {
+  userId: string
+  savedAt: number
+  data: WorkspaceData
+}
+
+function readRecovery(userId: string): WorkspaceRecovery | null {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(RECOVERY_STORAGE_KEY) || 'null') as WorkspaceRecovery | null
+    return parsed?.userId === userId && parsed.data ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function writeRecovery(userId: string, data: WorkspaceData) {
+  window.localStorage.setItem(RECOVERY_STORAGE_KEY, JSON.stringify({ userId, savedAt: Date.now(), data } satisfies WorkspaceRecovery))
+}
+
+function firstIncompleteSubstep(section: JourneySection, data: WorkspaceData) {
+  if (section === 'audience') {
+    const index = data.audience.findIndex(item => item.insight.trim().length < 30)
+    return index === -1 ? Math.max(0, data.audience.length - 1) : index
+  }
+  if (section === 'revenue') {
+    const index = revenueFields.findIndex(field => data.revenue[field.key].trim().length < 24)
+    return index === -1 ? revenueFields.length - 1 : index
+  }
+  if (section === 'memory') {
+    const index = memoryFields.findIndex(field => data.memory[field.key].trim().length < 100)
+    return index === -1 ? memoryFields.length - 1 : index
+  }
+  if (section === 'conversion') {
+    const index = conversionFields.findIndex(field => data.conversion[field.key].trim().length < 8)
+    return index === -1 ? conversionFields.length - 1 : index
+  }
+  return 0
 }
 
 function looksLikeUntouchedLegacyBlueprint(saved: Record<string, unknown>) {
@@ -375,6 +416,7 @@ function emptyMetric(): Omit<MetricSnapshot, 'id'> {
 }
 
 export default function WorkspaceClient() {
+  const router = useRouter()
   const [workspace, setWorkspace] = useState<WorkspaceData>(() => cloneDefaultData())
   const [activeSection, setActiveSection] = useState<WorkspaceSection>('overview')
   const [hydrated, setHydrated] = useState(false)
@@ -389,7 +431,10 @@ export default function WorkspaceClient() {
   const [resultExperimentId, setResultExperimentId] = useState<string | null>(null)
   const [showReset, setShowReset] = useState(false)
   const [resetAccepted, setResetAccepted] = useState(false)
+  const [showSectionTransition, setShowSectionTransition] = useState(false)
+  const [quitting, setQuitting] = useState(false)
   const skipAutosaveRef = useRef(false)
+  const workspaceRef = useRef(workspace)
 
   const guidedSection = useMemo<'social' | JourneySection | null>(() => {
     if (!workspace.onboarding.socialSetupDone) return 'social'
@@ -409,14 +454,13 @@ export default function WorkspaceClient() {
         return
       }
       setUserId(user.id)
-      const { data: row } = await supabase.from('creator_workspaces').select('data').eq('user_id', user.id).maybeSingle()
+      const { data: row } = await supabase.from('creator_workspaces').select('data, updated_at').eq('user_id', user.id).maybeSingle()
       if (!active) return
+      let initial = cloneDefaultData()
       if (row?.data) {
-        skipAutosaveRef.current = true
-        setWorkspace(mergeWorkspaceData(row.data))
+        initial = mergeWorkspaceData(row.data)
       } else {
         const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY)
-        let initial = cloneDefaultData()
         if (legacy) {
           try {
             initial = mergeWorkspaceData(JSON.parse(legacy))
@@ -424,10 +468,21 @@ export default function WorkspaceClient() {
             initial = cloneDefaultData()
           }
         }
-        skipAutosaveRef.current = true
-        setWorkspace(initial)
-        await supabase.from('creator_workspaces').upsert({ user_id: user.id, data: initial, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
         if (legacy) window.localStorage.removeItem(LEGACY_STORAGE_KEY)
+      }
+
+      const recovery = readRecovery(user.id)
+      const databaseUpdatedAt = row?.updated_at ? new Date(row.updated_at).getTime() : 0
+      const recoveredNewerDraft = recovery && recovery.savedAt > databaseUpdatedAt
+      if (recoveredNewerDraft) initial = mergeWorkspaceData(recovery.data)
+
+      skipAutosaveRef.current = true
+      workspaceRef.current = initial
+      setWorkspace(initial)
+
+      if (!row || recoveredNewerDraft) {
+        const { error } = await supabase.from('creator_workspaces').upsert({ user_id: user.id, data: initial, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+        if (!error && recoveredNewerDraft) window.localStorage.removeItem(RECOVERY_STORAGE_KEY)
       }
       if (active) setHydrated(true)
     }
@@ -436,19 +491,47 @@ export default function WorkspaceClient() {
   }, [])
 
   useEffect(() => {
+    workspaceRef.current = workspace
+    if (!hydrated || !userId) return
+    writeRecovery(userId, workspace)
+  }, [workspace, hydrated, userId])
+
+  useEffect(() => {
     if (!hydrated || !userId) return
     if (skipAutosaveRef.current) {
       skipAutosaveRef.current = false
       return
     }
-    const timeout = window.setTimeout(() => void persistWorkspace(workspace, true), 1200)
+    const timeout = window.setTimeout(() => void persistWorkspace(workspace, true), 600)
     return () => window.clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspace, hydrated, userId])
 
   useEffect(() => {
-    setSubstep(0)
+    if (!guidedSection || guidedSection === 'social') {
+      setSubstep(0)
+      setShowSectionTransition(false)
+      return
+    }
+    setSubstep(firstIncompleteSubstep(guidedSection, workspaceRef.current))
+    setShowSectionTransition(true)
+    const timeout = window.setTimeout(() => setShowSectionTransition(false), 2400)
+    return () => window.clearTimeout(timeout)
   }, [guidedSection])
+
+  useEffect(() => {
+    if (!hydrated || !userId) return
+    const preserveDraft = () => writeRecovery(userId, workspaceRef.current)
+    const preserveWhenHidden = () => {
+      if (document.visibilityState === 'hidden') preserveDraft()
+    }
+    window.addEventListener('pagehide', preserveDraft)
+    document.addEventListener('visibilitychange', preserveWhenHidden)
+    return () => {
+      window.removeEventListener('pagehide', preserveDraft)
+      document.removeEventListener('visibilitychange', preserveWhenHidden)
+    }
+  }, [hydrated, userId])
 
   function notify(message: string) {
     setToast(message)
@@ -457,6 +540,7 @@ export default function WorkspaceClient() {
 
   async function persistWorkspace(next: WorkspaceData, silent = false) {
     if (!userId) return false
+    const saveStartedAt = Date.now()
     setSaveStatus('saving')
     const { error } = await supabase.from('creator_workspaces').upsert({ user_id: userId, data: next, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
     if (error) {
@@ -464,6 +548,8 @@ export default function WorkspaceClient() {
       if (!silent) notify('Data belum tersimpan. Coba sekali lagi.')
       return false
     }
+    const recovery = readRecovery(userId)
+    if (!recovery || recovery.savedAt <= saveStartedAt) window.localStorage.removeItem(RECOVERY_STORAGE_KEY)
     setSaveStatus('saved')
     if (!silent) notify('Semua perubahan tersimpan ke akunmu.')
     return true
@@ -471,6 +557,13 @@ export default function WorkspaceClient() {
 
   async function saveNow() {
     await persistWorkspace(workspace)
+  }
+
+  async function saveAndQuit() {
+    setQuitting(true)
+    const saved = await persistWorkspace(workspace)
+    setQuitting(false)
+    if (saved) router.push('/')
   }
 
   function updateAudience(id: AudienceDimension['id'], insight: string) {
@@ -744,8 +837,18 @@ export default function WorkspaceClient() {
             section={guidedSection}
             progress={progress}
             completedCount={workspace.onboarding.completedSections.length}
+            onSaveAndQuit={saveAndQuit}
+            quitting={quitting}
           >
-            {renderGuidedStep(guidedSection)}
+            <AnimatePresence mode="wait">
+              {showSectionTransition && guidedSection !== 'social' ? (
+                <SectionTransitionCard key={`intro-${guidedSection}`} section={guidedSection} onContinue={() => setShowSectionTransition(false)} />
+              ) : (
+                <motion.div key={`form-${guidedSection}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
+                  {renderGuidedStep(guidedSection)}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </GuidedOverlay>
         )}
       </AnimatePresence>
@@ -1202,7 +1305,7 @@ export default function WorkspaceClient() {
   }
 }
 
-function GuidedOverlay({ section, progress, completedCount, children }: { section: 'social' | JourneySection; progress: number; completedCount: number; children: React.ReactNode }) {
+function GuidedOverlay({ section, progress, completedCount, onSaveAndQuit, quitting, children }: { section: 'social' | JourneySection; progress: number; completedCount: number; onSaveAndQuit: () => void; quitting: boolean; children: React.ReactNode }) {
   const meta = section === 'social' ? null : journeyCopy[section]
   return (
     <motion.div className={styles.guidedOverlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -1212,7 +1315,10 @@ function GuidedOverlay({ section, progress, completedCount, children }: { sectio
           <div><span>{section === 'social' ? 'Setup awal' : `Step ${journeyOrder.indexOf(section) + 1} of 8 · ${meta?.label}`}</span><strong>{progress}%</strong></div>
           <div><i style={{ width: `${progress}%` }} /></div>
         </div>
-        <span className={styles.guideCompleted}>{completedCount}/8 selesai</span>
+        <div className={styles.guideTopActions}>
+          <span className={styles.guideCompleted}>{completedCount}/8 selesai</span>
+          <button type="button" className={styles.saveQuitButton} onClick={onSaveAndQuit} disabled={quitting}><Save size={14} /> {quitting ? 'Menyimpan...' : 'Save & Quit'}</button>
+        </div>
       </div>
       <div className={styles.guideStageRail} aria-hidden="true">
         {journeyOrder.map((item, index) => {
@@ -1223,6 +1329,23 @@ function GuidedOverlay({ section, progress, completedCount, children }: { sectio
         })}
       </div>
       <main className={styles.guidedCard}>{children}</main>
+    </motion.div>
+  )
+}
+
+function SectionTransitionCard({ section, onContinue }: { section: JourneySection; onContinue: () => void }) {
+  const copy = journeyCopy[section]
+  const Icon = sectionIcons[section]
+  const index = journeyOrder.indexOf(section)
+  return (
+    <motion.div className={styles.sectionTransitionCard} initial={{ opacity: 0, scale: 0.96, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: -12 }} transition={{ duration: 0.34 }}>
+      <span className={styles.transitionStep}>0{index + 1}</span>
+      <span className={styles.transitionIcon}><Icon size={29} /></span>
+      <span className={styles.kicker}>{copy.eyebrow}</span>
+      <h2>{copy.label}</h2>
+      <p>{copy.intro}</p>
+      <div className={styles.transitionLine}><i /></div>
+      <button type="button" onClick={onContinue}>Mulai sekarang <ArrowRight size={15} /></button>
     </motion.div>
   )
 }

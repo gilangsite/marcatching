@@ -4170,6 +4170,7 @@
 }
 
 .page .creatorWorkspaceActions button,
+.page .creatorWorkspaceActions a,
 .page .creatorWorkspaceRowActions button,
 .page .creatorWorkspaceRowActions a {
   display: inline-flex;
@@ -4266,7 +4267,7 @@
 .page .creatorWorkspaceTableHead,
 .page .creatorWorkspaceTable article {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) minmax(130px, 0.8fr) minmax(150px, 0.8fr) 120px 130px;
+  grid-template-columns: minmax(220px, 1.25fr) minmax(130px, 0.72fr) minmax(150px, 0.72fr) 110px minmax(315px, 1.35fr);
   align-items: center;
   gap: 14px;
   padding: 0 16px;
@@ -4318,6 +4319,7 @@
 
 .page .creatorWorkspaceRowActions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 6px;
 }
@@ -4327,6 +4329,34 @@
   width: 34px;
   min-height: 34px;
   padding: 0;
+}
+
+.page .creatorWorkspaceRowActions .creatorWorkspaceCopy {
+  width: auto;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.page .creatorWorkspaceFormats {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid rgba(184, 214, 242, 0.13);
+  border-radius: 8px;
+}
+
+.page .creatorWorkspaceFormats a {
+  width: auto;
+  min-width: 39px;
+  min-height: 32px;
+  padding: 0 7px;
+  border: 0;
+  border-right: 1px solid rgba(184, 214, 242, 0.13);
+  border-radius: 0;
+  font-size: 0.56rem;
+}
+
+.page .creatorWorkspaceFormats a:last-child {
+  border-right: 0;
 }
 
 .page .creatorWorkspaceEmpty {
@@ -4355,7 +4385,7 @@
 
   .page .creatorWorkspaceTableHead,
   .page .creatorWorkspaceTable article {
-    min-width: 850px;
+    min-width: 1080px;
   }
 }
 
@@ -4364,7 +4394,8 @@
     grid-template-columns: 1fr;
   }
 
-  .page .creatorWorkspaceActions button {
+  .page .creatorWorkspaceActions button,
+  .page .creatorWorkspaceActions a {
     flex: 1;
   }
 }
