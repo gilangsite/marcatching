@@ -6,11 +6,12 @@ import styles from './PromptLibrary.module.css';
 interface PromptCardProps {
   prompt: PromptItem;
   onClick: (prompt: PromptItem) => void;
+  locked?: boolean;
 }
 
-export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onClick }) => {
+export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onClick, locked = false }) => {
   return (
-    <div className={styles.card} onClick={() => onClick(prompt)}>
+    <button type="button" className={`${styles.card} ${locked ? styles.cardLocked : ''}`} onClick={() => onClick(prompt)} aria-label={`${locked ? 'Upload brand-memory.md untuk membuka' : 'Buka'} ${prompt.title}`}>
       <div className={styles.cardHeader}>
         <span className={styles.cardBadge}>{prompt.categoryLabel}</span>
         <span className={styles.cardNumber}>#{prompt.promptNumber}</span>
@@ -30,9 +31,9 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onClick }) => {
       
       <div className={styles.cardFooter}>
         <span className={styles.cardAction}>
-          View Prompt <ArrowRight size={16} className={styles.cardActionIcon} />
+          {locked ? <><Lock size={15} /> Perlu Brand Memory</> : <>View Prompt <ArrowRight size={16} className={styles.cardActionIcon} /></>}
         </span>
       </div>
-    </div>
+    </button>
   );
 };

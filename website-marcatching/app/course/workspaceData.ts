@@ -1,55 +1,78 @@
-export type WorkspaceSection =
-  | 'overview'
+export type JourneySection =
   | 'audience'
   | 'revenue'
   | 'content'
-  | 'calendar'
   | 'memory'
   | 'conversion'
   | 'experiments'
   | 'metrics'
   | 'deliverables'
 
-export type AudienceDimension = {
-  id: string
-  label: string
-  prompt: string
-  insight: string
-  evidence: string
-  score: number
+export type WorkspaceSection = 'overview' | JourneySection | 'calendar'
+
+export type SocialPlatform = 'instagram' | 'tiktok' | 'youtube'
+
+export type SocialProfile = {
+  platform: SocialPlatform
+  url: string
+  audienceCount: number
 }
 
-export type ContentIP = {
+export type AudienceDimension = {
+  id: 'pain' | 'desire' | 'fear' | 'status' | 'friction' | 'trigger'
+  label: string
+  plainLabel: string
+  prompt: string
+  explanation: string
+  insight: string
+}
+
+export type RecommendedPrompt = {
   id: string
-  name: string
-  role: string
-  format: string
-  hook: string
-  value: string
-  cta: string
-  status: 'Ready' | 'Draft'
+  title: string
+  category: string
+  why: string
+  prompt: string
 }
 
 export type CalendarItem = {
   id: string
   week: number
-  day: string
   title: string
+  channel: string
   contentIp: string
-  format: string
-  cta: string
   status: 'Idea' | 'Draft' | 'Ready' | 'Published'
 }
+
+export type ExperimentStatus = 'Draft' | 'On going' | 'Uploaded'
 
 export type Experiment = {
   id: string
   name: string
   hypothesis: string
-  control: string
-  variant: string
-  metric: string
-  result: string
-  decision: 'Running' | 'Keep' | 'Iterate' | 'Kill'
+  contentUrl: string
+  status: ExperimentStatus
+  result: {
+    views: number
+    likes: number
+    comments: number
+    shares: number
+    saves: number
+    clicks: number
+    leads: number
+  }
+  learning: string
+  createdAt: string
+}
+
+export type MetricSnapshot = {
+  id: string
+  month: string
+  followers: number
+  averageViews: number
+  engagement: number
+  leads: number
+  sales: number
 }
 
 export type Deliverable = {
@@ -61,230 +84,218 @@ export type Deliverable = {
 }
 
 export type WorkspaceData = {
+  version: 2
   creatorName: string
   businessType: string
   primaryGoal: string
-  activePhase: number
+  socialProfiles: SocialProfile[]
+  onboarding: {
+    socialSetupDone: boolean
+    completedSections: JourneySection[]
+    skippedSections: JourneySection[]
+    unlockedAt: string
+  }
   audience: AudienceDimension[]
   revenue: {
     buyer: string
+    problem: string
     whyNow: string
     offer: string
     proof: string
-    path: string
-    price: string
+    revenuePath: string
   }
-  contentIps: ContentIP[]
-  calendar: CalendarItem[]
+  contentRole: 'content-creator' | 'digital-marketer' | ''
+  recommendedPrompts: RecommendedPrompt[]
+  contentExperimentSuggestion: string
   memory: {
     voice: string
-    audienceFacts: string
     redLines: string
+    audienceFacts: string
     qualityGate: string
+    experimentLearnings: string
   }
   conversion: {
-    awareness: string
+    attention: string
     profile: string
     lead: string
     nurture: string
     close: string
+    primaryCta: string
+    successPoint: string
   }
   experiments: Experiment[]
-  metrics: Array<{
-    label: string
-    baseline: number
-    current: number
-    target: number
-    suffix: string
-  }>
+  metrics: MetricSnapshot[]
   deliverables: Deliverable[]
+  calendar: CalendarItem[]
 }
+
+export const journeyOrder: JourneySection[] = [
+  'audience',
+  'revenue',
+  'content',
+  'memory',
+  'conversion',
+  'experiments',
+  'metrics',
+  'deliverables',
+]
 
 export const workspaceSections: Array<{
   id: WorkspaceSection
   label: string
   description: string
 }> = [
-  { id: 'overview', label: 'Overview', description: 'Progress, next action, dan review' },
-  { id: 'audience', label: 'Audience OS', description: 'Enam dimensi psikologi audiens' },
-  { id: 'revenue', label: 'Revenue Thesis', description: 'Buyer, offer, proof, dan revenue path' },
-  { id: 'content', label: 'Content IP', description: 'Tiga seri konten yang repeatable' },
-  { id: 'calendar', label: '30-Day Map', description: 'Prioritas eksekusi dan status produksi' },
-  { id: 'memory', label: 'AI Memory', description: 'Konteks tetap untuk kualitas output AI' },
-  { id: 'conversion', label: 'Conversion Map', description: 'Jalur dari perhatian menuju transaksi' },
-  { id: 'experiments', label: 'Experiments', description: 'Hipotesis, variasi, dan keputusan' },
-  { id: 'metrics', label: 'Metrics', description: 'Baseline, signal, dan revenue proxy' },
-  { id: 'deliverables', label: 'Deliverables', description: 'Sembilan output Creator Revenue OS' },
+  { id: 'overview', label: 'Overview', description: 'Seluruh sistem dalam satu pandangan' },
+  { id: 'audience', label: 'Audience OS', description: 'Kenali cara pembeli berpikir' },
+  { id: 'revenue', label: 'Revenue Thesis', description: 'Alasan orang membeli dari kamu' },
+  { id: 'content', label: 'Content IP', description: 'Prompt paling relevan untukmu' },
+  { id: 'memory', label: 'AI Memory', description: 'Brand context yang bisa dipakai ulang' },
+  { id: 'conversion', label: 'Conversion Map', description: 'Jalur perhatian sampai hasil' },
+  { id: 'experiments', label: 'Experiments', description: 'Uji konten dan simpan hasilnya' },
+  { id: 'metrics', label: 'Metric Scorecard', description: 'Catatan perkembangan per bulan' },
+  { id: 'deliverables', label: 'Deliverables', description: 'Status output yang harus selesai' },
+  { id: 'calendar', label: '30-Day Map', description: 'Rencana eksekusi setelah setup' },
 ]
 
-export const programPhases = [
-  { name: 'Diagnose', timing: 'Day 1–3', output: 'Baseline + Audience OS' },
-  { name: 'Revenue Thesis', timing: 'Day 4–6', output: 'Monetization path' },
-  { name: 'Content OS', timing: 'Day 7–11', output: '3 Content IPs' },
-  { name: 'Conversion', timing: 'Day 12–15', output: 'CTA + lead path' },
-  { name: 'Activation', timing: 'Day 16–21', output: '6 assets + review' },
+export const defaultAudience: AudienceDimension[] = [
+  {
+    id: 'pain',
+    label: 'Pain',
+    plainLabel: 'Masalah utama',
+    prompt: 'Jika pembeli kamu adalah orang yang kamu jelaskan tadi, masalah apa yang paling mengganggu mereka sekarang?',
+    explanation: 'Pain bukan sekadar keluhan umum. Cari situasi nyata yang membuat mereka berhenti, frustrasi, rugi waktu, atau merasa hasilnya tidak bergerak.',
+    insight: '',
+  },
+  {
+    id: 'desire',
+    label: 'Desire',
+    plainLabel: 'Hasil yang diharapkan',
+    prompt: 'Kalau masalah itu selesai, hasil seperti apa yang paling mereka harapkan?',
+    explanation: 'Desire adalah perubahan yang ingin mereka rasakan atau tunjukkan. Tulis hasil akhirnya, bukan hanya fitur yang mereka beli.',
+    insight: '',
+  },
+  {
+    id: 'fear',
+    label: 'Fear',
+    plainLabel: 'Hal yang ditakutkan',
+    prompt: 'Apa yang paling mereka takutkan jika memilih solusi yang salah atau tidak melakukan apa-apa?',
+    explanation: 'Fear menjelaskan risiko yang ada di kepala pembeli: gagal lagi, membuang uang, terlihat tidak kompeten, atau kehilangan kesempatan.',
+    insight: '',
+  },
+  {
+    id: 'status',
+    label: 'Status',
+    plainLabel: 'Identitas yang ingin dibangun',
+    prompt: 'Setelah berhasil, mereka ingin dikenal sebagai orang seperti apa?',
+    explanation: 'Status adalah identitas yang ingin mereka miliki di mata diri sendiri atau orang lain—misalnya lebih profesional, konsisten, atau dipercaya.',
+    insight: '',
+  },
+  {
+    id: 'friction',
+    label: 'Friction',
+    plainLabel: 'Alasan belum bertindak',
+    prompt: 'Apa yang membuat mereka masih menunda meskipun masalahnya sudah terasa?',
+    explanation: 'Friction adalah hambatan untuk bergerak: harga, waktu, proses yang rumit, kurang percaya, atau tidak tahu harus mulai dari mana.',
+    insight: '',
+  },
+  {
+    id: 'trigger',
+    label: 'Trigger',
+    plainLabel: 'Momen pemicu',
+    prompt: 'Peristiwa apa yang biasanya membuat mereka akhirnya berkata, “aku harus mulai sekarang”?',
+    explanation: 'Trigger adalah momen yang mengubah niat menjadi tindakan—deadline, hasil yang turun, komentar tertentu, kebutuhan mendadak, atau target baru.',
+    insight: '',
+  },
+]
+
+export const defaultDeliverables: Deliverable[] = [
+  { id: 'd1', code: '01', name: 'Audience OS', description: 'Enam insight pembeli yang sudah cukup spesifik untuk dipakai membuat pesan.', status: 'Not started' },
+  { id: 'd2', code: '02', name: 'Revenue Thesis', description: 'Satu alasan yang jelas kenapa target pembeli memilih offer kamu sekarang.', status: 'Not started' },
+  { id: 'd3', code: '03', name: 'Prompt Stack', description: 'Tiga prompt utama sesuai role dan konteks bisnis kamu.', status: 'Not started' },
+  { id: 'd4', code: '04', name: 'Brand Memory', description: 'File brand-memory.md yang siap dipakai di Marcatching Prompt Library.', status: 'Not started' },
+  { id: 'd5', code: '05', name: 'Conversion Map', description: 'Jalur dari perhatian menuju primary CTA dan success point.', status: 'Not started' },
+  { id: 'd6', code: '06', name: 'Experiment Log', description: 'Konten yang diuji, status publikasi, hasil, dan learning-nya.', status: 'Not started' },
+  { id: 'd7', code: '07', name: 'Monthly Scorecard', description: 'Snapshot bulanan untuk membaca perubahan akun secara manual.', status: 'Not started' },
+  { id: 'd8', code: '08', name: '30-Day Map', description: 'Rencana konten lanjutan berdasarkan sistem yang sudah dibangun.', status: 'Not started' },
 ]
 
 export const defaultWorkspaceData: WorkspaceData = {
-  creatorName: 'Creator Workspace',
-  businessType: 'Knowledge creator',
-  primaryGoal: 'Mengubah konten edukasi menjadi qualified leads',
-  activePhase: 2,
-  audience: [
-    {
-      id: 'pain',
-      label: 'Pain',
-      prompt: 'Masalah apa yang paling sering mereka keluhkan?',
-      insight: 'Konten sudah konsisten, tetapi tidak menghasilkan percakapan penjualan.',
-      evidence: 'Komentar, DM, dan hasil audit konten',
-      score: 78,
-    },
-    {
-      id: 'desire',
-      label: 'Desire',
-      prompt: 'Hasil apa yang ingin terasa nyata bagi mereka?',
-      insight: 'Punya sistem konten yang bisa diulang tanpa kehilangan gaya personal.',
-      evidence: 'Pertanyaan saat discovery call',
-      score: 72,
-    },
-    {
-      id: 'fear',
-      label: 'Fear',
-      prompt: 'Risiko apa yang membuat mereka menunda?',
-      insight: 'Takut terlihat terlalu menjual dan kehilangan kepercayaan audiens.',
-      evidence: 'Objection log',
-      score: 64,
-    },
-    {
-      id: 'status',
-      label: 'Status',
-      prompt: 'Mereka ingin dikenal sebagai siapa?',
-      insight: 'Praktisi yang punya sudut pandang, bukan akun tips generik.',
-      evidence: 'Bio, caption, dan aspirasi brand',
-      score: 70,
-    },
-    {
-      id: 'friction',
-      label: 'Friction',
-      prompt: 'Apa yang membuat keputusan terasa berat?',
-      insight: 'Belum ada offer yang cukup jelas untuk dipromosikan berulang kali.',
-      evidence: 'Audit CTA dan landing path',
-      score: 58,
-    },
-    {
-      id: 'trigger',
-      label: 'Trigger',
-      prompt: 'Momen apa yang mendorong mereka bertindak?',
-      insight: 'Saat views stabil tetapi tidak ada DM, lead, atau penjualan yang masuk.',
-      evidence: 'Performance review 30 hari',
-      score: 76,
-    },
+  version: 2,
+  creatorName: '',
+  businessType: '',
+  primaryGoal: '',
+  socialProfiles: [
+    { platform: 'instagram', url: '', audienceCount: 0 },
+    { platform: 'tiktok', url: '', audienceCount: 0 },
+    { platform: 'youtube', url: '', audienceCount: 0 },
   ],
-  revenue: {
-    buyer: 'Knowledge creator dan founder-led brand dengan audiens awal',
-    whyNow: 'Sudah memproduksi konten, tetapi belum memiliki sistem untuk mengubah perhatian menjadi lead.',
-    offer: 'Creator Revenue Sprint — implementasi sistem konten-to-revenue selama 21 hari.',
-    proof: 'Audit before/after, enam aset terbit, perubahan CTA response, dan qualified lead.',
-    path: 'Konten → profile → diagnostic → WhatsApp → fit call → payment',
-    price: 'Rp1.490.000 founding cohort',
+  onboarding: {
+    socialSetupDone: false,
+    completedSections: [],
+    skippedSections: [],
+    unlockedAt: '',
   },
-  contentIps: [
-    {
-      id: 'content-doctor',
-      name: 'Content Doctor',
-      role: 'Mendemonstrasikan kemampuan diagnosis',
-      format: 'Public teardown 45–60 detik',
-      hook: 'Kontennya rapi. Tapi tidak ada alasan untuk membeli.',
-      value: 'Menunjukkan satu bottleneck dan tiga perbaikan paling bernilai.',
-      cta: 'Ketik “OS” untuk mini-audit.',
-      status: 'Ready',
-    },
-    {
-      id: 'audience-lab',
-      name: 'Audience OS Lab',
-      role: 'Membuat metode Marcatching terlihat',
-      format: 'Satu signal → angle → CTA',
-      hook: 'Satu komentar ini lebih berguna dari 10 prompt viral.',
-      value: 'Mengubah bukti audiens menjadi arah konten yang spesifik.',
-      cta: 'Simpan lalu coba ke satu komentar audiensmu.',
-      status: 'Ready',
-    },
-    {
-      id: 'build-with-me',
-      name: 'Build With Me',
-      role: 'Membangun trust melalui proses',
-      format: 'Sprint diary / carousel',
-      hook: 'Day 6: kami membuang 70% ide kontennya.',
-      value: 'Memperlihatkan keputusan, batasan, dan progress program.',
-      cta: 'Lihat blueprint lengkap di profile.',
-      status: 'Draft',
-    },
-  ],
-  calendar: [
-    { id: 'c1', week: 1, day: 'Mon', title: 'Kenapa views bukan masalah utamanya', contentIp: 'Content Doctor', format: 'Short video', cta: 'Comment OS', status: 'Published' },
-    { id: 'c2', week: 1, day: 'Wed', title: 'Membaca pain dari satu komentar', contentIp: 'Audience OS Lab', format: 'Carousel', cta: 'Save', status: 'Ready' },
-    { id: 'c3', week: 1, day: 'Fri', title: 'Day 3: baseline yang mengubah arah', contentIp: 'Build With Me', format: 'Short video', cta: 'View blueprint', status: 'Draft' },
-    { id: 'c4', week: 2, day: 'Mon', title: 'CTA yang membuat audiens diam', contentIp: 'Content Doctor', format: 'Short video', cta: 'Comment OS', status: 'Ready' },
-    { id: 'c5', week: 2, day: 'Wed', title: 'Desire bukan daftar benefit', contentIp: 'Audience OS Lab', format: 'Carousel', cta: 'Save', status: 'Idea' },
-    { id: 'c6', week: 2, day: 'Fri', title: 'Menyederhanakan satu revenue path', contentIp: 'Build With Me', format: 'Carousel', cta: 'Start audit', status: 'Idea' },
-    { id: 'c7', week: 3, day: 'Mon', title: 'Offer bagus yang tidak pernah terlihat', contentIp: 'Content Doctor', format: 'Short video', cta: 'Comment OS', status: 'Idea' },
-    { id: 'c8', week: 3, day: 'Wed', title: 'Status signal dalam konten edukasi', contentIp: 'Audience OS Lab', format: 'Carousel', cta: 'Share', status: 'Idea' },
-    { id: 'c9', week: 3, day: 'Fri', title: 'Tiga Content IP, bukan 30 ide acak', contentIp: 'Build With Me', format: 'Short video', cta: 'View method', status: 'Idea' },
-    { id: 'c10', week: 4, day: 'Mon', title: 'Profile visit tinggi, DM tetap kosong', contentIp: 'Content Doctor', format: 'Short video', cta: 'Start audit', status: 'Idea' },
-    { id: 'c11', week: 4, day: 'Wed', title: 'Friction yang tidak terlihat di bio', contentIp: 'Audience OS Lab', format: 'Carousel', cta: 'Save', status: 'Idea' },
-    { id: 'c12', week: 4, day: 'Fri', title: 'Apa yang berubah setelah 21 hari', contentIp: 'Build With Me', format: 'Case pulse', cta: 'Apply', status: 'Idea' },
-  ],
+  audience: defaultAudience,
+  revenue: {
+    buyer: '',
+    problem: '',
+    whyNow: '',
+    offer: '',
+    proof: '',
+    revenuePath: '',
+  },
+  contentRole: '',
+  recommendedPrompts: [],
+  contentExperimentSuggestion: '',
   memory: {
-    voice: 'Tajam, tenang, observasional, dan berbasis bukti. Hindari gaya guru yang serba tahu. Gunakan Bahasa Indonesia natural dengan istilah Inggris hanya ketika lebih presisi.',
-    audienceFacts: 'Audiens sudah aktif membuat konten, memiliki keahlian atau offer, dan lelah dengan tips viral yang tidak terhubung ke revenue. Mereka membutuhkan sistem yang sederhana dan bisa diulang.',
-    redLines: 'Jangan menjanjikan viral, follower growth, atau revenue pasti. Jangan membuat urgency palsu. Jangan menyebut data sebagai fakta bila masih berupa hipotesis.',
-    qualityGate: 'Setiap output harus punya: satu signal audiens, satu ketegangan yang spesifik, satu insight yang dapat dieksekusi, satu CTA yang sesuai intent, dan tidak ada klaim tanpa bukti.',
+    voice: '',
+    redLines: '',
+    audienceFacts: '',
+    qualityGate: '',
+    experimentLearnings: '',
   },
   conversion: {
-    awareness: 'Content Doctor / Audience OS Lab',
-    profile: 'Positioning + pinned proof',
-    lead: '5-minute Creator Revenue Audit',
-    nurture: 'Result page + WhatsApp follow-up',
-    close: '15-minute fit call → founding sprint',
+    attention: '',
+    profile: '',
+    lead: '',
+    nurture: '',
+    close: '',
+    primaryCta: '',
+    successPoint: '',
   },
-  experiments: [
-    {
-      id: 'e1',
-      name: 'CTA keyword vs profile link',
-      hypothesis: 'CTA keyword menghasilkan lebih banyak qualified conversation dibanding link langsung.',
-      control: 'Lihat link di bio',
-      variant: 'Ketik “OS” untuk mini-audit',
-      metric: 'Qualified DM per 1.000 views',
-      result: 'Menunggu 6 aset terbit',
-      decision: 'Running',
-    },
-    {
-      id: 'e2',
-      name: 'Proof-first hook',
-      hypothesis: 'Membuka dengan diagnosis nyata meningkatkan retention 3 detik.',
-      control: 'Tips membangun konten yang convert',
-      variant: 'Views-nya bukan masalah. Jalur setelah views yang hilang.',
-      metric: '3-second hold rate',
-      result: 'Belum dimulai',
-      decision: 'Iterate',
-    },
-  ],
-  metrics: [
-    { label: 'Posts / week', baseline: 2, current: 4, target: 5, suffix: '' },
-    { label: 'Median views', baseline: 1100, current: 1780, target: 2500, suffix: '' },
-    { label: 'Profile actions', baseline: 18, current: 42, target: 60, suffix: '' },
-    { label: 'Qualified leads', baseline: 0, current: 3, target: 8, suffix: '' },
-    { label: 'Production time', baseline: 180, current: 105, target: 75, suffix: ' min' },
-  ],
-  deliverables: [
-    { id: 'd1', code: '01', name: 'Baseline Scorecard', description: '30 post, median views, profile action, dan revenue path.', status: 'Approved' },
-    { id: 'd2', code: '02', name: 'Audience OS', description: 'Pain, desire, fear, status, friction, trigger + evidence.', status: 'Review' },
-    { id: 'd3', code: '03', name: 'Revenue Thesis', description: 'Buyer, why now, core offer, proof, dan monetization lane.', status: 'In progress' },
-    { id: 'd4', code: '04', name: 'Content IP Playbook', description: 'Tiga signature series, hooks, rules, dan CTA role.', status: 'In progress' },
-    { id: 'd5', code: '05', name: '30-Day Content Map', description: '30 angle, 12 prioritas, dan enam launch assets.', status: 'Not started' },
-    { id: 'd6', code: '06', name: 'AI Creator Memory', description: 'Voice, audience facts, red lines, dan quality gate.', status: 'Review' },
-    { id: 'd7', code: '07', name: 'Conversion Map', description: 'Primary CTA, lead destination, nurture, dan close step.', status: 'Not started' },
-    { id: 'd8', code: '08', name: 'Experiment Log', description: 'Hypothesis, control, variant, metric, dan decision.', status: 'In progress' },
-    { id: 'd9', code: '09', name: 'Case Study Pack', description: 'Before, intervention, result, quote, dan permission.', status: 'Not started' },
-  ],
+  experiments: [],
+  metrics: [],
+  deliverables: defaultDeliverables,
+  calendar: [],
+}
+
+function textRatio(value: unknown, target: number) {
+  return Math.min((typeof value === 'string' ? value.trim().length : 0) / target, 1)
+}
+
+export function calculateWorkspaceProgress(data: WorkspaceData) {
+  const scores: number[] = []
+  const socialProfiles = Array.isArray(data.socialProfiles) ? data.socialProfiles : []
+  const audience = Array.isArray(data.audience) ? data.audience : []
+  const experiments = Array.isArray(data.experiments) ? data.experiments : []
+  const metrics = Array.isArray(data.metrics) ? data.metrics : []
+  const deliverables = Array.isArray(data.deliverables) ? data.deliverables : []
+
+  scores.push(Math.min(socialProfiles.filter(profile => profile?.url?.trim()).length / 3, 1))
+  defaultAudience.forEach(dimension => scores.push(textRatio(audience.find(item => item.id === dimension.id)?.insight, 120)))
+  const revenue = data.revenue || defaultWorkspaceData.revenue
+  Object.values(revenue).forEach(value => scores.push(textRatio(value, 140)))
+  scores.push(data.contentRole ? 1 : 0)
+  scores.push(Math.min((Array.isArray(data.recommendedPrompts) ? data.recommendedPrompts.length : 0) / 3, 1))
+  const memory = data.memory || defaultWorkspaceData.memory
+  ;(['voice', 'redLines', 'audienceFacts', 'qualityGate'] as const).forEach(field => scores.push(textRatio(memory[field], 240)))
+  const conversion = data.conversion || defaultWorkspaceData.conversion
+  ;(['attention', 'profile', 'lead', 'nurture', 'close', 'primaryCta', 'successPoint'] as const).forEach(field => scores.push(textRatio(conversion[field], 90)))
+  scores.push(Math.min(experiments.length, 1))
+  const measuredExperiments = experiments.filter(item => Number(item?.result?.views || 0) > 0).length
+  scores.push(experiments.length ? Math.min(measuredExperiments / experiments.length, 1) : 0)
+  scores.push(Math.min(metrics.length / 3, 1))
+  scores.push(deliverables.length ? deliverables.filter(item => item.status !== 'Not started').length / deliverables.length : 0)
+  const raw = scores.reduce((total, score) => total + score, 0) / scores.length
+  return Math.min(99, Math.floor(raw * 99))
 }

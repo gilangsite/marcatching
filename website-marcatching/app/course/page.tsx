@@ -19,6 +19,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import type { CourseMaterial, Product } from '@/lib/supabaseClient'
+import { calculateWorkspaceProgress, type WorkspaceData } from './workspaceData'
 import styles from './course.module.css'
 
 type EnrolledCourse = Product & {
@@ -46,6 +47,8 @@ export default function CourseDashboardPage() {
   const [userName, setUserName] = useState('')
   const [courses, setCourses] = useState<EnrolledCourse[]>([])
   const [loading, setLoading] = useState(true)
+  const [workspaceProgress, setWorkspaceProgress] = useState(0)
+  const [workspaceSectionsDone, setWorkspaceSectionsDone] = useState(0)
 
   useEffect(() => {
     void loadDashboard()
@@ -64,6 +67,17 @@ export default function CourseDashboardPage() {
 
     const email = (user.email || '').toLowerCase().trim()
     setUserName(displayNameFromEmail(email))
+
+    const { data: workspaceRow } = await supabase
+      .from('creator_workspaces')
+      .select('data')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (workspaceRow?.data) {
+      const workspaceData = workspaceRow.data as WorkspaceData
+      setWorkspaceProgress(calculateWorkspaceProgress(workspaceData))
+      setWorkspaceSectionsDone(Array.isArray(workspaceData.onboarding?.completedSections) ? workspaceData.onboarding.completedSections.length : 0)
+    }
 
     const { data: enrollments } = await supabase
       .from('course_access_emails')
@@ -205,14 +219,14 @@ export default function CourseDashboardPage() {
           </Link>
         </div>
         <div className={styles.workspaceBlueprint} aria-hidden="true">
-          <div className={styles.blueprintTop}><span /> Creator Revenue OS <b>Day 7 / 21</b></div>
+          <div className={styles.blueprintTop}><span /> Creator Revenue OS <b>{workspaceSectionsDone}/8 sections</b></div>
           <div className={styles.blueprintBody}>
-            <div className={styles.blueprintScore}><strong>52%</strong><span>System installed</span></div>
-            <div className={styles.blueprintLine}><i style={{ width: '52%' }} /></div>
+            <div className={styles.blueprintScore}><strong>{workspaceProgress}%</strong><span>Real data filled</span></div>
+            <div className={styles.blueprintLine}><i style={{ width: `${workspaceProgress}%` }} /></div>
             <div className={styles.blueprintModules}>
-              <span className={styles.blueprintDone}>Audience OS <CheckCircle2 size={13} /></span>
-              <span className={styles.blueprintDone}>Revenue Thesis <CheckCircle2 size={13} /></span>
-              <span className={styles.blueprintActive}>Content IP <Target size={13} /></span>
+              <span className={workspaceSectionsDone >= 1 ? styles.blueprintDone : styles.blueprintActive}>Audience OS {workspaceSectionsDone >= 1 ? <CheckCircle2 size={13} /> : <Target size={13} />}</span>
+              <span className={workspaceSectionsDone >= 2 ? styles.blueprintDone : styles.blueprintActive}>Revenue Thesis {workspaceSectionsDone >= 2 ? <CheckCircle2 size={13} /> : <Target size={13} />}</span>
+              <span className={workspaceSectionsDone >= 3 ? styles.blueprintDone : styles.blueprintActive}>Content IP {workspaceSectionsDone >= 3 ? <CheckCircle2 size={13} /> : <Target size={13} />}</span>
             </div>
           </div>
         </div>

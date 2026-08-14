@@ -14,7 +14,7 @@ import {
   FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -26,6 +26,7 @@ import CashflowAnalytics from './CashflowAnalytics'
 import RichTextEditor from '@/components/RichTextEditor'
 import SecurityTab from './SecurityTab'
 import SurveyTab from './SurveyTab'
+import CreatorWorkspaceTab from './CreatorWorkspaceTab'
 
 // ─── Admin Toast Event ────────────────────────────────────────
 type AdminToastType = 'success' | 'error'
@@ -553,7 +554,7 @@ function HomeFinancePulse({
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey'
+  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces'
   const [tab, setTab] = useState<TabType>('menu')
   const [showOtherTabs, setShowOtherTabs] = useState(false)
   const tabMeta: Record<TabType, { eyebrow: string; label: string }> = {
@@ -573,6 +574,7 @@ function AdminDashboardInner() {
     contact: { eyebrow: 'Support', label: 'Contact Info' },
     security: { eyebrow: 'Access', label: 'Keamanan' },
     survey: { eyebrow: 'Research', label: 'Survey' },
+    'creator-workspaces': { eyebrow: 'Creator Intelligence', label: 'Creator Workspaces' },
   }
   const activeTabMeta = tabMeta[tab]
 
@@ -1624,6 +1626,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
           <button className={`${styles.navItem} ${tab === 'security' ? styles.navActive : ''}`} onClick={() => { setTab('security'); setIsSidebarOpen(false) }}><Lock size={18} /> Keamanan</button>
           <button className={`${styles.navItem} ${tab === 'survey' ? styles.navActive : ''}`} onClick={() => { setTab('survey'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Survey</button>
+          <button className={`${styles.navItem} ${tab === 'creator-workspaces' ? styles.navActive : ''}`} onClick={() => { setTab('creator-workspaces'); setIsSidebarOpen(false) }}><BrainCircuit size={18} /> Creator Workspaces</button>
 
           <div style={{ position: 'relative' }}>
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
@@ -1811,6 +1814,7 @@ function AdminDashboardInner() {
                         { tab: 'contact',    Icon: Mail,         label: 'Contact',    color: '#1e40af' },
                         { tab: 'security',   Icon: Lock,         label: 'Keamanan',   color: '#0d3369' },
                         { tab: 'survey',     Icon: ClipboardList,label: 'Survey',     color: '#0d3369' },
+                        { tab: 'creator-workspaces', Icon: BrainCircuit, label: 'Creator Workspaces', color: '#1e40af' },
                       ] as const).map((item) => (
                         <motion.button
                           key={item.tab}
@@ -2105,6 +2109,7 @@ function AdminDashboardInner() {
 
         {/* ── SURVEY TAB ─── */}
         {tab === 'survey' && <SurveyTab />}
+        {tab === 'creator-workspaces' && <CreatorWorkspaceTab />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (

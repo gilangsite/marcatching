@@ -10,9 +10,10 @@ interface PromptDetailDrawerProps {
   prompt: PromptItem | null;
   isOpen: boolean;
   onClose: () => void;
+  brandMemory: string;
 }
 
-export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, isOpen, onClose }) => {
+export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, isOpen, onClose, brandMemory }) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -23,7 +24,8 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
 
   const handleCopy = () => {
     if (prompt) {
-      const copyText = prompt.fullPrompt.replace(/```text\n/g, '').replace(/```\n*/g, '');
+      const promptText = prompt.fullPrompt.replace(/```text\n/g, '').replace(/```\n*/g, '');
+      const copyText = `# BRAND MEMORY CONTEXT\n\n${brandMemory}\n\n# MARCATCHING PROMPT\n\n${promptText}`;
       navigator.clipboard.writeText(copyText);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
@@ -61,6 +63,7 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
             </div>
 
             <div className={styles.drawerBody}>
+              <div className={styles.memoryAttachedBadge}><CheckCircle2 size={15} /> Brand Memory attached</div>
               <div className={styles.infoSection}>
                 <div className={styles.infoLabel}>Psychological Job</div>
                 <div className={styles.infoText}>{prompt.psychologicalJob}</div>
