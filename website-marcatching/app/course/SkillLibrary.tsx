@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { BrainCircuit, CheckCircle2, Download, ExternalLink, FileArchive, LockKeyhole, RefreshCw, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
@@ -19,6 +20,8 @@ type SkillCatalogItem = {
   status: 'locked' | 'memory_required' | 'ready'
 }
 
+type SkillDownloadMode = 'original' | 'personalized'
+
 function filenameFromDisposition(value: string | null, fallback: string) {
   if (!value) return fallback
   const encoded = value.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
@@ -32,7 +35,7 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
   const [skills, setSkills] = useState<SkillCatalogItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [generatingId, setGeneratingId] = useState('')
+  const [activeDownload, setActiveDownload] = useState('')
   const [notice, setNotice] = useState('')
 
   async function memberToken() {
@@ -63,35 +66,37 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function createSkill(skill: SkillCatalogItem) {
-    setGeneratingId(skill.id)
+  async function downloadSkill(skill: SkillCatalogItem, mode: SkillDownloadMode) {
+    const downloadKey = `${skill.id}:${mode}`
+    setActiveDownload(downloadKey)
     setNotice('')
     setError('')
     try {
       const token = await memberToken()
-      if (!token) throw new Error('Login kembali untuk membuat Skill.')
+      if (!token) throw new Error('Login kembali untuk mengunduh Skill.')
       const response = await fetch('/api/workspace/skills', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skillId: skill.id }),
+        body: JSON.stringify({ skillId: skill.id, mode }),
       })
       if (!response.ok) {
         const payload = await response.json() as { message?: string }
-        throw new Error(payload.message || 'Skill belum berhasil dibuat.')
+        throw new Error(payload.message || 'Skill belum berhasil diunduh.')
       }
       const blob = await response.blob()
-      const filename = filenameFromDisposition(response.headers.get('content-disposition'), `${skill.sourceName}-personalized.zip`)
+      const fallback = mode === 'original' ? `${skill.sourceName}.zip` : `${skill.sourceName}-personalized.zip`
+      const filename = filenameFromDisposition(response.headers.get('content-disposition'), fallback)
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
       anchor.href = url
       anchor.download = filename
       anchor.click()
       window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-      setNotice(`${skill.name} sudah dibuat dan dipersonalisasi dari Brand Memory kamu.`)
+      setNotice(mode === 'original' ? `${skill.name} original berhasil diunduh.` : `${skill.name} sudah dibuat dan dipersonalisasi dari Brand Memory kamu.`)
     } catch (generationError) {
-      setError(generationError instanceof Error ? generationError.message : 'Skill belum berhasil dibuat.')
+      setError(generationError instanceof Error ? generationError.message : 'Skill belum berhasil diunduh.')
     } finally {
-      setGeneratingId('')
+      setActiveDownload('')
     }
   }
 
@@ -101,7 +106,7 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
         <div>
           <span><Sparkles size={13} /> Marcatching Skill Builder</span>
           <h2>Ubah Brand Memory menjadi Skill yang benar-benar milikmu.</h2>
-          <p>Setiap Skill hanya terbuka jika produk requirement-nya sudah kamu miliki. Saat dibuat, framework asli dipertahankan dan konteks brand kamu ditanam langsung ke dalam ZIP.</p>
+          <p>Setelah produk dimiliki, kamu bisa mengunduh Skill original atau membuat versi dengan tambahan brand-memory.md milikmu.</p>
         </div>
         <button type="button" onClick={() => void loadSkills()} disabled={loading} aria-label="Refresh katalog Skill"><RefreshCw size={15} /> Refresh</button>
       </header>
@@ -112,15 +117,21 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
         <div className={styles.skillState}><FileArchive size={22} /><strong>Belum ada Skill di katalog.</strong><p>Skill baru yang di-upload dari Inside akan otomatis muncul di sini.</p></div>
       ) : (
         <div className={styles.skillGrid}>
-          {skills.map(skill => (
-            <article key={skill.id} className={`${styles.skillCard} ${skill.status === 'locked' ? styles.skillCardLocked : ''}`}>
+          {skills.map(skill => {
+            const originalKey = `${skill.id}:original`
+            const personalizedKey = `${skill.id}:personalized`
+            const skillBusy = activeDownload.startsWith(`${skill.id}:`)
+            return <article key={skill.id} className={`${styles.skillCard} ${skill.status === 'locked' ? styles.skillCardLocked : ''}`}>
+              <div className={styles.skillMedia}>
+                {skill.imageUrl ? <Image src={skill.imageUrl} alt={`Cover ${skill.name}`} fill sizes={compact ? '(max-width: 720px) 100vw, 40vw' : '(max-width: 720px) 100vw, 50vw'} unoptimized className={styles.skillImage} /> : <span className={styles.skillMediaPlaceholder}><FileArchive size={30} /> Cover Skill</span>}
+              </div>
               <div className={styles.skillCardTop}>
                 <span className={styles.skillIcon}>{skill.status === 'locked' ? <LockKeyhole size={21} /> : <FileArchive size={21} />}</span>
                 <span className={`${styles.skillBadge} ${skill.status === 'ready' ? styles.skillBadgeReady : ''}`}>
                   {skill.status === 'locked' ? 'Belum dimiliki' : skill.status === 'ready' ? 'Ready to create' : 'AI Memory diperlukan'}
                 </span>
               </div>
-              <small>Personalized Skill · .zip</small>
+              <small>Original & personalized Skill · .zip</small>
               <h3>{skill.name}</h3>
               <p>{skill.description}</p>
               <div className={styles.skillRequirements}>
@@ -130,17 +141,25 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
               <div className={styles.skillCardAction}>
                 {skill.status === 'locked' ? (
                   <a href={skill.storeUrl} target="_blank" rel="noreferrer">Lihat di Marcatching Store <ExternalLink size={14} /></a>
-                ) : skill.status === 'memory_required' ? (
-                  <Link href="/workspace">Lengkapi AI Memory <BrainCircuit size={14} /></Link>
                 ) : (
-                  <button type="button" onClick={() => void createSkill(skill)} disabled={generatingId === skill.id}>
-                    {generatingId === skill.id ? <RefreshCw size={15} /> : <Download size={15} />}
-                    {generatingId === skill.id ? 'Mencocokkan Skill...' : 'Create personalized Skill'}
-                  </button>
+                  <>
+                    <button type="button" className={styles.skillOriginalAction} onClick={() => void downloadSkill(skill, 'original')} disabled={skillBusy}>
+                      {activeDownload === originalKey ? <RefreshCw size={15} /> : <Download size={15} />}
+                      {activeDownload === originalKey ? 'Menyiapkan ZIP...' : 'Download Skill original'}
+                    </button>
+                    {skill.status === 'memory_required' ? (
+                      <Link href="/workspace">Lengkapi AI Memory <BrainCircuit size={14} /></Link>
+                    ) : (
+                      <button type="button" className={styles.skillPersonalizedAction} onClick={() => void downloadSkill(skill, 'personalized')} disabled={skillBusy}>
+                        {activeDownload === personalizedKey ? <RefreshCw size={15} /> : <Sparkles size={15} />}
+                        {activeDownload === personalizedKey ? 'Mencocokkan Skill...' : 'Create personalized Skill'}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </article>
-          ))}
+          })}
         </div>
       )}
 

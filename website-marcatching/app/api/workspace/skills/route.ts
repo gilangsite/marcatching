@@ -26,6 +26,23 @@ function unauthorized() {
   return NextResponse.json({ message: 'Sesi kamu sudah berakhir. Login kembali untuk melanjutkan.' }, { status: 401 })
 }
 
+function safeZipFilename(value: string) {
+  const base = value.replace(/\.zip$/i, '').replace(/[\r\n"\\/]/g, '-').replace(/\s+/g, ' ').trim().slice(0, 110) || 'marcatching-skill'
+  return `${base}.zip`
+}
+
+function zipDownload(buffer: Buffer, filename: string) {
+  const asciiFilename = filename.replace(/[^a-z0-9.-]/gi, '-')
+  return new NextResponse(new Uint8Array(buffer), {
+    headers: {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+      'Content-Length': String(buffer.length),
+      'Cache-Control': 'private, no-store',
+    },
+  })
+}
+
 function getDriveFileId(url: string) {
   return url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] || url.match(/[?&]id=([a-zA-Z0-9_-]+)/)?.[1] || ''
 }
@@ -113,8 +130,9 @@ export async function POST(request: NextRequest) {
   if (!user?.email) return unauthorized()
 
   try {
-    const body = await request.json() as { skillId?: unknown }
+    const body = await request.json() as { skillId?: unknown; mode?: unknown }
     const skillId = typeof body.skillId === 'string' ? body.skillId.trim() : ''
+    const mode = body.mode === 'original' ? 'original' : 'personalized'
     if (!skillId) return NextResponse.json({ message: 'Pilih Skill yang ingin dibuat.' }, { status: 400 })
 
     const { data: skill, error: skillError } = await supabaseAdmin
@@ -139,16 +157,23 @@ export async function POST(request: NextRequest) {
     }
 
     const email = user.email.toLowerCase().trim()
-    const [{ data: entitlement }, workspace] = await Promise.all([
-      supabaseAdmin.from('course_access_emails').select('id').eq('email', email).eq('product_id', skill.product_id).maybeSingle(),
-      loadWorkspace(user.id),
-    ])
+    const { data: entitlement, error: entitlementError } = await supabaseAdmin
+      .from('course_access_emails')
+      .select('id')
+      .eq('email', email)
+      .eq('product_id', skill.product_id)
+      .maybeSingle()
+    if (entitlementError) throw new Error('Akses Skill belum bisa diperiksa.')
     if (!entitlement) return NextResponse.json({ message: 'Skill ini belum kamu miliki. Selesaikan checkout terlebih dahulu.' }, { status: 403 })
+
+    const template = await fetchSkillTemplate(skill.content_url)
+    if (mode === 'original') return zipDownload(template, safeZipFilename(skill.title))
+
+    const workspace = await loadWorkspace(user.id)
     if (!workspace || !isBrandMemoryReady(workspace)) {
       return NextResponse.json({ message: 'Lengkapi Creator Voice, Redlines, Audience Facts, dan Output Quality Gate sebelum membuat Skill.' }, { status: 409 })
     }
 
-    const template = await fetchSkillTemplate(skill.content_url)
     const displayName = String(user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0] || 'Creator')
     const personalized = customizeSkillZip({
       template,
@@ -156,16 +181,7 @@ export async function POST(request: NextRequest) {
       workspace,
       identity: { name: displayName, email },
     })
-    const asciiFilename = personalized.filename.replace(/[^a-z0-9.-]/gi, '-')
-
-    return new NextResponse(new Uint8Array(personalized.buffer), {
-      headers: {
-        'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodeURIComponent(personalized.filename)}`,
-        'Content-Length': String(personalized.buffer.length),
-        'Cache-Control': 'private, no-store',
-      },
-    })
+    return zipDownload(personalized.buffer, personalized.filename)
   } catch (error) {
     return NextResponse.json({ message: error instanceof Error ? error.message : 'Skill belum berhasil dibuat.' }, { status: 500 })
   }

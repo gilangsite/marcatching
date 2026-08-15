@@ -93,6 +93,34 @@
   background: #080d12;
 }
 
+.skillMedia {
+  position: relative;
+  display: grid;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  place-items: center;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(164, 207, 239, 0.1);
+  border-radius: 0.72rem;
+  background: #050b10;
+}
+
+.skillImage {
+  object-fit: contain;
+  object-position: center;
+  padding: 0.35rem;
+}
+
+.skillMediaPlaceholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #61788a;
+  font-size: 0.6rem;
+  font-weight: 760;
+}
+
 .skillCardTop {
   display: flex;
   align-items: center;
@@ -179,6 +207,9 @@
 }
 
 .skillCardAction {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
   margin-top: auto;
 }
 
@@ -193,6 +224,17 @@
 .skillCardLocked .skillCardAction a {
   color: #dce9f2;
   background: #101922;
+}
+
+.skillCardAction .skillPersonalizedAction {
+  border-color: rgba(143, 201, 245, 0.34);
+  color: #07111a;
+  background: #8cc6ff;
+}
+
+.skillCardAction .skillOriginalAction {
+  color: #b9cddd;
+  background: #0c161f;
 }
 
 .skillState {

@@ -110,6 +110,11 @@
   flex: 0 0 auto;
 }
 
+.inlineActions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .saveSignal {
   display: inline-flex;
   min-height: 2.35rem;

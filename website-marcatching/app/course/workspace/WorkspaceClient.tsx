@@ -36,6 +36,7 @@ import {
   Sparkles,
   Target,
   TrendingUp,
+  Upload,
   Users,
   Video,
 } from 'lucide-react'
@@ -173,6 +174,33 @@ const memoryFields: Array<{
     placeholder: 'Output hanya boleh dipakai jika... Setiap konten wajib memiliki... Rewrite jika... Sebelum final, periksa...',
   },
 ]
+
+type MemoryKey = keyof WorkspaceData['memory']
+
+const memoryHeadingAliases: Array<{ key: MemoryKey; aliases: string[] }> = [
+  { key: 'voice', aliases: ['creator voice', 'brand voice', 'tone of voice', 'suara brand'] },
+  { key: 'redLines', aliases: ['redlines', 'red lines', 'brand redlines', 'batasan brand'] },
+  { key: 'audienceFacts', aliases: ['audience facts', 'audience fact', 'fakta audiens', 'fakta audience'] },
+  { key: 'qualityGate', aliases: ['output quality gate', 'quality gate', 'standar kualitas output'] },
+  { key: 'experimentLearnings', aliases: ['experiment learnings', 'experiment learning', 'learning experiment'] },
+]
+
+function parseBrandMemoryMarkdown(markdown: string) {
+  const headings = [...markdown.matchAll(/^#{1,2}(?!#)\s+(.+?)\s*$/gm)]
+  const parsed: Partial<WorkspaceData['memory']> = {}
+
+  headings.forEach((heading, index) => {
+    const normalized = heading[1].toLowerCase().replace(/[*_`:#]/g, '').replace(/\s+/g, ' ').trim()
+    const target = memoryHeadingAliases.find(item => item.aliases.some(alias => normalized === alias || normalized.startsWith(`${alias} `)))
+    if (!target) return
+    const start = (heading.index || 0) + heading[0].length
+    const end = index < headings.length - 1 ? (headings[index + 1].index || markdown.length) : markdown.length
+    const value = markdown.slice(start, end).trim()
+    if (value) parsed[target.key] = value
+  })
+
+  return parsed
+}
 
 const conversionFields: Array<{
   key: keyof WorkspaceData['conversion']
@@ -436,6 +464,7 @@ export default function WorkspaceClient() {
   const [showSectionTransition, setShowSectionTransition] = useState(false)
   const [quitting, setQuitting] = useState(false)
   const skipAutosaveRef = useRef(false)
+  const memoryFileInputRef = useRef<HTMLInputElement>(null)
   const workspaceRef = useRef(workspace)
 
   const guidedSection = useMemo<'social' | JourneySection | null>(() => {
@@ -578,6 +607,33 @@ export default function WorkspaceClient() {
 
   function updateMemory(key: keyof WorkspaceData['memory'], value: string) {
     setWorkspace(current => ({ ...current, memory: { ...current.memory, [key]: value } }))
+  }
+
+  function openMemoryImport() {
+    memoryFileInputRef.current?.click()
+  }
+
+  async function importMemoryFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget
+    const file = input.files?.[0]
+    if (!file) return
+
+    try {
+      if (file.size > 1024 * 1024) throw new Error('File maksimal 1 MB.')
+      if (!/\.(md|txt)$/i.test(file.name)) throw new Error('Gunakan file .md atau .txt.')
+      const imported = parseBrandMemoryMarkdown(await file.text())
+      const importedEntries = Object.entries(imported) as Array<[MemoryKey, string]>
+      if (!importedEntries.length) throw new Error('Heading Brand Memory belum dikenali.')
+      setWorkspace(current => ({
+        ...current,
+        memory: importedEntries.reduce((memory, [key, value]) => ({ ...memory, [key]: value }), current.memory),
+      }))
+      notify(`${importedEntries.length} bagian Brand Memory berhasil diimpor dan tetap bisa kamu edit.`)
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'Brand Memory belum berhasil diimpor.')
+    } finally {
+      input.value = ''
+    }
   }
 
   function updateConversion(key: keyof WorkspaceData['conversion'], value: string) {
@@ -855,6 +911,7 @@ export default function WorkspaceClient() {
         )}
       </AnimatePresence>
 
+      <input ref={memoryFileInputRef} type="file" accept=".md,.txt,text/markdown,text/plain" hidden onChange={importMemoryFile} />
       {toast && <div className={styles.toast} role="status"><CheckCircle2 size={17} /> {toast}</div>}
     </div>
   )
@@ -995,7 +1052,7 @@ export default function WorkspaceClient() {
         onContinue={() => substep < memoryFields.length - 1 ? setSubstep(current => current + 1) : completeSection('memory')}
         continueLabel={substep === memoryFields.length - 1 ? 'Simpan AI Memory' : 'Simpan paragraf & lanjut'}
         subProgress={`${substep + 1}/${memoryFields.length}`}
-        extraAction={substep === memoryFields.length - 1 ? <button type="button" className={styles.secondaryButton} onClick={downloadMemory}><Download size={15} /> Download brand-memory.md</button> : undefined}
+        extraAction={<><button type="button" className={styles.secondaryButton} onClick={openMemoryImport}><Upload size={15} /> Import file</button>{substep === memoryFields.length - 1 && <button type="button" className={styles.secondaryButton} onClick={downloadMemory}><Download size={15} /> Download brand-memory.md</button>}</>}
       />
     )
   }
@@ -1187,7 +1244,7 @@ export default function WorkspaceClient() {
   function renderMemorySection() {
     return (
       <div className={styles.sectionStack}>
-        <SectionIntro section="memory" action={<div className={styles.inlineActions}><button type="button" className={styles.secondaryButton} onClick={importExperimentToMemory}><FlaskConical size={15} /> Suggestion from Experiments</button><button type="button" className={styles.primaryButton} onClick={downloadMemory}><Download size={15} /> Download brand-memory.md</button></div>} />
+        <SectionIntro section="memory" action={<div className={styles.inlineActions}><button type="button" className={styles.secondaryButton} onClick={importExperimentToMemory}><FlaskConical size={15} /> Suggestion from Experiments</button><button type="button" className={styles.secondaryButton} onClick={openMemoryImport}><Upload size={15} /> Import file</button><button type="button" className={styles.primaryButton} onClick={downloadMemory}><Download size={15} /> Download brand-memory.md</button></div>} />
         <div className={styles.memoryDocument}>
           <div className={styles.documentBar}><FileText size={15} /><span>brand-memory.md</span><b>{memoryFields.filter(field => workspace.memory[field.key].trim().length >= 100).length}/4 ready</b></div>
           {memoryFields.map((field, index) => (
