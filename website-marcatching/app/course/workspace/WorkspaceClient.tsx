@@ -57,6 +57,7 @@ import {
   type WorkspaceData,
   type WorkspaceSection,
 } from '../workspaceData'
+import SkillLibrary from '../SkillLibrary'
 import styles from './workspace.module.css'
 
 const LEGACY_STORAGE_KEY = 'marcatching-creator-workspace-v1'
@@ -1216,6 +1217,7 @@ export default function WorkspaceClient() {
           ))}
           {workspace.memory.experimentLearnings && <div className={styles.experimentMemory}><span>Experiment learnings</span><p>{workspace.memory.experimentLearnings}</p></div>}
         </div>
+        <SkillLibrary compact />
       </div>
     )
   }
@@ -1315,10 +1317,7 @@ function GuidedOverlay({ section, progress, completedCount, onSaveAndQuit, quitt
           <div><span>{section === 'social' ? 'Setup awal' : `Step ${journeyOrder.indexOf(section) + 1} of 8 · ${meta?.label}`}</span><strong>{progress}%</strong></div>
           <div><i style={{ width: `${progress}%` }} /></div>
         </div>
-        <div className={styles.guideTopActions}>
-          <span className={styles.guideCompleted}>{completedCount}/8 selesai</span>
-          <button type="button" className={styles.saveQuitButton} onClick={onSaveAndQuit} disabled={quitting}><Save size={14} /> {quitting ? 'Menyimpan...' : 'Save & Quit'}</button>
-        </div>
+        <span className={styles.guideCompleted}>{completedCount}/8 selesai</span>
       </div>
       <div className={styles.guideStageRail} aria-hidden="true">
         {journeyOrder.map((item, index) => {
@@ -1328,7 +1327,12 @@ function GuidedOverlay({ section, progress, completedCount, onSaveAndQuit, quitt
           return <span key={item} className={`${active ? styles.stageActive : ''} ${done ? styles.stageDone : ''}`}><Icon size={14} /></span>
         })}
       </div>
-      <main className={styles.guidedCard}>{children}</main>
+      <main className={styles.guidedCard}>
+        {children}
+        <div className={styles.guideQuitFooter}>
+          <button type="button" className={styles.saveQuitButton} onClick={onSaveAndQuit} disabled={quitting}><Save size={14} /> {quitting ? 'Menyimpan progress...' : 'Save & Quit'}</button>
+        </div>
+      </main>
     </motion.div>
   )
 }

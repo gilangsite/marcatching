@@ -11,7 +11,7 @@ import {
   ShoppingBag, Check, X, ChevronRight, ExternalLink,
   Upload, Image as ImageIcon, Type, MousePointerClick, GripVertical, Menu,
   Package, Tag, ClipboardList, Eye, EyeOff, BookMarked,
-  FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
+  FileArchive, FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
   TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit
@@ -965,6 +965,14 @@ function AdminDashboardInner() {
 
   async function handleDocBatchUpload(e: React.ChangeEvent<HTMLInputElement>, productId: string) {
     const files = e.target.files; if (!files || files.length === 0) return
+    const selectedFiles = Array.from(files)
+    const selectedSkills = selectedFiles.filter(file => file.name.toLowerCase().endsWith('.zip'))
+    const existingSkill = (courseMaterials[productId] || []).some(material => material.type === 'zip')
+    if (selectedSkills.length > 1 || (selectedSkills.length === 1 && existingSkill)) {
+      showAdminToast(existingSkill ? 'Product ini sudah memiliki satu Skill. Hapus Skill lama sebelum menggantinya.' : 'Satu product hanya bisa terhubung ke satu Skill.', 'error')
+      e.target.value = ''
+      return
+    }
     const appScriptUrl = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || ''
     setUploadingPdf(true)
     const uploaded: { filename: string; url: string; ext: string }[] = []
@@ -974,7 +982,8 @@ function AdminDashboardInner() {
         reader.onload = async (event) => {
           const base64 = event.target?.result as string
           try {
-            const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'uploadPdf', filename: file.name, mimeType: file.type, base64 }) })
+            const mimeType = file.name.toLowerCase().endsWith('.zip') ? 'application/zip' : file.name.toLowerCase().endsWith('.md') ? 'text/markdown' : 'application/pdf'
+            const res = await fetch(appScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'uploadPdf', filename: file.name, mimeType, base64 }) })
             const data = await res.json()
             if (data.status === 'success') {
               const ext = file.name.toLowerCase().endsWith('.md') ? 'md' : file.name.toLowerCase().endsWith('.zip') ? 'zip' : 'pdf'
@@ -995,6 +1004,7 @@ function AdminDashboardInner() {
       })
     }
     setUploadingPdf(false)
+    e.target.value = ''
     fetchCourseMaterials(productId)
   }
 
@@ -2538,8 +2548,8 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
           <div className={styles.tabContent} style={{ maxWidth: 900 }}>
             <div className={styles.contentHeader}>
               <div>
-                <h1 className={styles.contentTitle}>E-Course</h1>
-                <p className={styles.contentDesc}>Kelola materi untuk setiap course / produk</p>
+                <h1 className={styles.contentTitle}>Learning & Skills</h1>
+                <p className={styles.contentDesc}>Kelola video, dokumen, dan Skill ZIP untuk setiap produk.</p>
               </div>
               <button 
                 className="btn btn-navy" 
@@ -2581,7 +2591,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
                         <div style={{ flex: 1 }}>
                           <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>{product.name}</div>
                           <div style={{ fontSize: '0.77rem', color: '#94a3b8', marginTop: 1 }}>
-                            {isExpanded && !isLoadingMats ? `${mats.length} materi` : 'Klik untuk kelola materi'}
+                            {isExpanded && !isLoadingMats ? `${mats.filter(mat => mat.type !== 'zip').length} materi · ${mats.filter(mat => mat.type === 'zip').length} skill` : 'Klik untuk kelola materi & skill'}
                           </div>
                         </div>
                         <ChevronRight size={16} color="#94a3b8" style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
@@ -2622,11 +2632,11 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
                                               <GripVertical size={15} />
                                             </div>
                                             <div style={{ width: 28, height: 28, borderRadius: 6, background: mat.type === 'pdf' ? '#eff6ff' : mat.type === 'md' ? 'rgba(157,224,193,0.16)' : mat.type === 'zip' ? 'rgba(216,180,254,0.16)' : 'rgba(255,213,143,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : mat.type === 'zip' ? <FileText size={15} color="#9333ea" /> : <Video size={15} color="#dc2626" />}
+                                              {mat.type === 'pdf' ? <FileText size={15} color="#2563eb" /> : mat.type === 'md' ? <FileText size={15} color="#16a34a" /> : mat.type === 'zip' ? <FileArchive size={15} color="#9333ea" /> : <Video size={15} color="#dc2626" />}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                               <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1e293b' }}>{mat.title}</div>
-                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : mat.type === 'md' ? 'MD' : mat.type === 'zip' ? 'ZIP' : 'Video'}</div>
+                                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{mat.type === 'pdf' ? 'PDF' : mat.type === 'md' ? 'MD' : mat.type === 'zip' ? 'Skill ZIP' : 'Video'}</div>
                                             </div>
                                             <button
                                               onClick={() => deleteMaterial(mat.id, product.id)}
@@ -2646,16 +2656,29 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
 
                               {/* Add material buttons */}
                               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                                {/* PDF batch upload */}
+                                {/* Document batch upload */}
                                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#eff6ff', color: '#2563eb', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #93c5fd' }}>
                                   <Upload size={14} />
-                                  {uploadingPdf ? 'Mengupload Dokumen...' : 'Upload Dokumen (.pdf, .md, .zip)'}
+                                  {uploadingPdf ? 'Mengupload...' : 'Upload Dokumen (.pdf, .md)'}
                                   <input
                                     type="file"
                                     multiple
-                                    accept=".pdf,.md,.zip"
+                                    accept=".pdf,.md"
                                     style={{ display: 'none' }}
                                     disabled={uploadingPdf}
+                                    onChange={(e) => handleDocBatchUpload(e, product.id)}
+                                  />
+                                </label>
+
+                                {/* Skill ZIP upload */}
+                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(147,51,234,0.08)', color: '#9333ea', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed rgba(147,51,234,0.35)' }}>
+                                  <FileArchive size={14} />
+                                  {uploadingPdf ? 'Mengupload...' : mats.some(mat => mat.type === 'zip') ? 'Ganti via hapus Skill lama' : 'Upload Skill (.zip)'}
+                                  <input
+                                    type="file"
+                                    accept=".zip,application/zip"
+                                    style={{ display: 'none' }}
+                                    disabled={uploadingPdf || mats.some(mat => mat.type === 'zip')}
                                     onChange={(e) => handleDocBatchUpload(e, product.id)}
                                   />
                                 </label>

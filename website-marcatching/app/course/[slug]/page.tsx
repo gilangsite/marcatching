@@ -115,6 +115,7 @@ export default function CourseDetailPage() {
       .from('course_materials')
       .select('*')
       .eq('product_id', course.id)
+      .neq('type', 'zip')
       .order('order_index')
 
     const nextMaterials = courseMaterials || []
@@ -355,7 +356,7 @@ function MaterialViewer({
   if (material.type === 'md' || material.type === 'zip') {
     const fileId = getDriveFileId(material.content_url)
     const downloadUrl = fileId
-      ? `/api/download?id=${fileId}&title=${encodeURIComponent(material.title)}`
+      ? `/api/download?id=${fileId}&title=${encodeURIComponent(material.title)}&type=${material.type}`
       : material.content_url
     const extension = material.type === 'md' ? '.md' : '.zip'
 

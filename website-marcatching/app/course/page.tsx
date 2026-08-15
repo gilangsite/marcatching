@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import type { CourseMaterial, Product } from '@/lib/supabaseClient'
 import { calculateWorkspaceProgress, type WorkspaceData } from './workspaceData'
+import SkillLibrary from './SkillLibrary'
 import styles from './course.module.css'
 
 type EnrolledCourse = Product & {
@@ -90,41 +91,28 @@ export default function CourseDashboardPage() {
       return
     }
 
-    const productIds = [...new Set(enrollments.map(item => item.product_id))]
-    const { data: products } = await supabase
-      .from('products')
-      .select('*')
-      .in('id', productIds)
+    const productIds = [...new Set(enrollments.map(item => item.product_id).filter((id): id is string => typeof id === 'string' && id.length > 0))]
+    const [{ data: products }, { data: materials }] = await Promise.all([
+      supabase.from('products').select('*').in('id', productIds),
+      supabase.from('course_materials').select('*').in('product_id', productIds).neq('type', 'zip').order('order_index'),
+    ])
 
     if (!products) {
       setLoading(false)
       return
     }
 
-    const enriched = await Promise.all(
-      products.map(async product => {
-        const { data: materials } = await supabase
-          .from('course_materials')
-          .select('*')
-          .eq('product_id', product.id)
-          .order('order_index')
-
-        const materialIds = (materials || []).map(material => material.id)
-        let completedCount = 0
-
-        if (materialIds.length) {
-          const { data: progress } = await supabase
-            .from('learning_progress')
-            .select('material_id')
-            .eq('user_id', user.id)
-            .in('material_id', materialIds)
-
-          completedCount = progress?.length || 0
-        }
-
-        return { ...product, materials: materials || [], completedCount }
-      })
-    )
+    const courseMaterials = (materials || []) as CourseMaterial[]
+    const materialIds = courseMaterials.map(material => material.id)
+    const { data: progress } = materialIds.length
+      ? await supabase.from('learning_progress').select('material_id').eq('user_id', user.id).in('material_id', materialIds)
+      : { data: [] }
+    const completedIds = new Set((progress || []).map(item => item.material_id))
+    const enriched = products.flatMap(product => {
+      const productMaterials = courseMaterials.filter(material => material.product_id === product.id)
+      if (!productMaterials.length) return []
+      return [{ ...product, materials: productMaterials, completedCount: productMaterials.filter(material => completedIds.has(material.id)).length }]
+    })
 
     setCourses(enriched)
     setLoading(false)
@@ -231,6 +219,8 @@ export default function CourseDashboardPage() {
           </div>
         </div>
       </section>
+
+      <SkillLibrary />
 
       <section className={styles.courseSection}>
         <div className={styles.sectionHeader}>

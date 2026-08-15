@@ -1,0 +1,234 @@
+.skillLibrary {
+  margin-top: 2.2rem;
+  color: #edf5fa;
+}
+
+.skillLibraryCompact {
+  margin-top: 1rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(164, 207, 239, 0.1);
+}
+
+.skillHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.skillHeader > div > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  color: #78b8e4;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.skillHeader h2 {
+  max-width: 28ch;
+  margin: 0.4rem 0 0.35rem;
+  color: #eef6fb;
+  font-size: clamp(1.35rem, 3vw, 2.2rem);
+  font-weight: 550;
+  letter-spacing: -0.025em;
+  line-height: 1.13;
+}
+
+.skillHeader p {
+  max-width: 48rem;
+  color: #7e93a4;
+  font-size: 0.69rem;
+  line-height: 1.65;
+}
+
+.skillHeader > button,
+.skillCardAction a,
+.skillCardAction button {
+  display: inline-flex;
+  min-height: 2.55rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(164, 207, 239, 0.14);
+  border-radius: 0.68rem;
+  color: #dcebf5;
+  background: #0c161f;
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 780;
+  text-decoration: none;
+}
+
+.skillHeader > button:disabled,
+.skillCardAction button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.skillCard {
+  display: flex;
+  min-height: 20rem;
+  flex-direction: column;
+  padding: 1.15rem;
+  border: 1px solid rgba(164, 207, 239, 0.13);
+  border-radius: 0.92rem;
+  background:
+    radial-gradient(circle at 100% 0, rgba(80, 155, 211, 0.12), transparent 13rem),
+    #081018;
+}
+
+.skillCardLocked {
+  background: #080d12;
+}
+
+.skillCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.skillIcon {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border: 1px solid rgba(143, 201, 245, 0.17);
+  border-radius: 0.7rem;
+  color: #8fc9f5;
+  background: rgba(77, 151, 207, 0.08);
+}
+
+.skillCardLocked .skillIcon {
+  color: #637889;
+  background: rgba(112, 132, 148, 0.05);
+}
+
+.skillBadge {
+  padding: 0.38rem 0.55rem;
+  border: 1px solid rgba(164, 207, 239, 0.1);
+  border-radius: 999px;
+  color: #788c9c;
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.skillBadgeReady {
+  border-color: rgba(116, 203, 165, 0.2);
+  color: #8ad8b5;
+  background: rgba(72, 171, 125, 0.07);
+}
+
+.skillCard > small {
+  margin-top: 1rem;
+  color: #668095;
+  font-size: 0.56rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skillCard h3 {
+  margin: 0.28rem 0 0.45rem;
+  color: #edf5fa;
+  font-size: 1.15rem;
+  font-weight: 590;
+  letter-spacing: -0.015em;
+}
+
+.skillCard > p {
+  color: #788d9e;
+  font-size: 0.67rem;
+  line-height: 1.62;
+}
+
+.skillRequirements {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  margin: 1rem 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(164, 207, 239, 0.08);
+  border-bottom: 1px solid rgba(164, 207, 239, 0.08);
+}
+
+.skillRequirements span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: #677c8c;
+  font-size: 0.6rem;
+}
+
+.skillRequirements .requirementReady {
+  color: #84cfae;
+}
+
+.skillCardAction {
+  margin-top: auto;
+}
+
+.skillCardAction a,
+.skillCardAction button {
+  width: 100%;
+  border-color: rgba(143, 201, 245, 0.22);
+  color: #c8e4f6;
+  background: rgba(77, 151, 207, 0.08);
+}
+
+.skillCardLocked .skillCardAction a {
+  color: #dce9f2;
+  background: #101922;
+}
+
+.skillState {
+  display: flex;
+  min-height: 11rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-direction: column;
+  border: 1px dashed rgba(164, 207, 239, 0.14);
+  border-radius: 0.9rem;
+  color: #72899a;
+  background: #081018;
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.skillState strong { color: #dceaf4; font-size: 0.76rem; }
+.skillState p { color: #687e8f; }
+
+.skillNotice,
+.skillError {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding: 0.72rem 0.85rem;
+  border-radius: 0.65rem;
+  font-size: 0.62rem;
+}
+
+.skillNotice { color: #9bddbf; background: rgba(71, 171, 124, 0.08); }
+.skillError { color: #efaaa4; background: rgba(196, 78, 66, 0.08); }
+
+@media (max-width: 720px) {
+  .skillHeader { align-items: flex-start; flex-direction: column; }
+  .skillHeader > button { width: 100%; }
+  .skillGrid { grid-template-columns: 1fr; }
+  .skillCard { min-height: 18rem; }
+}
