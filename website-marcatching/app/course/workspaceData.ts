@@ -269,6 +269,31 @@ export const defaultWorkspaceData: WorkspaceData = {
   calendar: [],
 }
 
+export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new Date()) {
+  const updated = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta' }).format(updatedAt)
+  return [
+    '# Brand Memory',
+    '',
+    `Updated: ${updated}`,
+    '',
+    '## Creator Voice',
+    data.memory.voice,
+    '',
+    '## Redlines',
+    data.memory.redLines,
+    '',
+    '## Audience Facts',
+    data.memory.audienceFacts,
+    '',
+    '## Output Quality Gate',
+    data.memory.qualityGate,
+    '',
+    '## Experiment Learnings',
+    data.memory.experimentLearnings || 'Belum ada experiment learning yang diimpor.',
+    '',
+  ].join('\n')
+}
+
 function textRatio(value: unknown, target: number) {
   return Math.min((typeof value === 'string' ? value.trim().length : 0) / target, 1)
 }

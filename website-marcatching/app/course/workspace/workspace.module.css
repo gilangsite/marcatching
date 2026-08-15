@@ -16,6 +16,19 @@
   font-family: var(--font), 'DM Sans', sans-serif;
 }
 
+.workspacePage button,
+.workspacePage .quietLink,
+.workspacePage .libraryLink {
+  white-space: nowrap;
+}
+
+.workspacePage .moduleNav button,
+.workspacePage .sectionCardGrid button,
+.workspacePage .roleChoices button,
+.workspacePage .socialProfilesLine button {
+  white-space: normal;
+}
+
 .workspaceLoading {
   display: flex;
   min-height: 70svh;
@@ -85,8 +98,16 @@
 .heroActions,
 .guideFooterActions {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.55rem;
+}
+
+.headerActions > *,
+.inlineActions > *,
+.heroActions > *,
+.guideFooterActions > * {
+  flex: 0 0 auto;
 }
 
 .saveSignal {

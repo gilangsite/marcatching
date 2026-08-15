@@ -43,6 +43,7 @@ import {
   defaultAudience,
   defaultWorkspaceData,
   calculateWorkspaceProgress,
+  createBrandMemoryMarkdown,
   journeyOrder,
   workspaceSections,
   type AudienceDimension,
@@ -657,27 +658,7 @@ export default function WorkspaceClient() {
   }
 
   function memoryMarkdown() {
-    return [
-      '# Brand Memory',
-      '',
-      `Updated: ${new Date().toLocaleDateString('id-ID')}`,
-      '',
-      '## Creator Voice',
-      workspace.memory.voice,
-      '',
-      '## Redlines',
-      workspace.memory.redLines,
-      '',
-      '## Audience Facts',
-      workspace.memory.audienceFacts,
-      '',
-      '## Output Quality Gate',
-      workspace.memory.qualityGate,
-      '',
-      '## Experiment Learnings',
-      workspace.memory.experimentLearnings || 'Belum ada experiment learning yang diimpor.',
-      '',
-    ].join('\n')
+    return createBrandMemoryMarkdown(workspace)
   }
 
   function downloadMemory() {

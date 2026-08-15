@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { deflateRawSync, inflateRawSync } from 'node:zlib'
-import type { WorkspaceData } from '@/app/course/workspaceData'
+import { createBrandMemoryMarkdown, type WorkspaceData } from '../app/course/workspaceData'
 
 const LOCAL_FILE_SIGNATURE = 0x04034b50
 const CENTRAL_FILE_SIGNATURE = 0x02014b50
@@ -11,10 +11,7 @@ const MAX_TEMPLATE_BYTES = 25 * 1024 * 1024
 type ZipEntry = {
   name: string
   data: Buffer
-}
-
-function text(value: unknown, fallback = 'Belum diisi') {
-  return typeof value === 'string' && value.trim() ? value.trim() : fallback
+  isDirectory?: boolean
 }
 
 function safeSlug(value: string, fallback = 'creator') {
@@ -26,11 +23,13 @@ function safeSlug(value: string, fallback = 'creator') {
     .slice(0, 38) || fallback
 }
 
-function cleanZipPath(value: string) {
-  const normalized = value.replace(/\\/g, '/').replace(/^\/+/, '')
+function validateZipPath(value: string) {
+  const normalized = value.replace(/\\/g, '/')
   const segments = normalized.split('/').filter(Boolean)
-  if (!segments.length || segments.some(segment => segment === '..')) return ''
-  return segments.join('/')
+  if (!segments.length || normalized.startsWith('/') || /^[a-z]:\//i.test(normalized) || segments.some(segment => segment === '..') || value.includes('\0')) {
+    throw new Error('Template Skill memiliki path file yang tidak aman')
+  }
+  return value
 }
 
 function findEndRecord(buffer: Buffer) {
@@ -63,8 +62,7 @@ function readZipEntries(buffer: Buffer): ZipEntry[] {
     const rawName = buffer.subarray(cursor + 46, cursor + 46 + filenameLength).toString('utf8')
     cursor += 46 + filenameLength + extraLength + commentLength
 
-    const name = cleanZipPath(rawName)
-    if (!name || rawName.endsWith('/') || name.startsWith('__MACOSX/') || name.split('/').includes('.DS_Store')) continue
+    const name = validateZipPath(rawName)
     if ((flags & 0x1) !== 0) throw new Error('Template Skill terenkripsi dan tidak bisa dipersonalisasi')
     if (localOffset + 30 > buffer.length || buffer.readUInt32LE(localOffset) !== LOCAL_FILE_SIGNATURE) {
       throw new Error('File template Skill tidak lengkap')
@@ -76,7 +74,7 @@ function readZipEntries(buffer: Buffer): ZipEntry[] {
     const compressed = buffer.subarray(dataStart, dataStart + compressedSize)
     const data = method === 0 ? Buffer.from(compressed) : method === 8 ? inflateRawSync(compressed) : null
     if (!data) throw new Error(`Metode kompresi ZIP ${method} belum didukung`)
-    entries.push({ name, data })
+    entries.push({ name, data, isDirectory: rawName.endsWith('/') })
   }
 
   if (!entries.length) throw new Error('Template Skill tidak memiliki file')
@@ -146,7 +144,8 @@ function writeZip(entries: ZipEntry[]) {
     central.writeUInt16LE(0, 32)
     central.writeUInt16LE(0, 34)
     central.writeUInt16LE(0, 36)
-    central.writeUInt32LE((0o100644 << 16) >>> 0, 38)
+    const unixMode = entry.isDirectory ? 0o040755 : 0o100644
+    central.writeUInt32LE((unixMode << 16) >>> 0, 38)
     central.writeUInt32LE(offset, 42)
     centralParts.push(central, name)
     offset += local.length + name.length + payload.length
@@ -171,64 +170,6 @@ export function isBrandMemoryReady(data: unknown) {
   return Boolean(memory && [memory.voice, memory.redLines, memory.audienceFacts, memory.qualityGate].every(value => typeof value === 'string' && value.trim().length >= 100))
 }
 
-export function createBrandMemoryProfile(data: WorkspaceData, identity: { name: string; email: string }) {
-  const audience = Array.isArray(data.audience) ? data.audience : []
-  const audienceValue = (id: string) => text(audience.find(item => item.id === id)?.insight)
-  return [
-    '# Brand Memory Profile',
-    '',
-    `Generated from Marcatching Creator Workspace: ${new Date().toISOString()}`,
-    '',
-    '## Brand Snapshot',
-    `Creator / Brand: ${text(data.creatorName, identity.name)}`,
-    `Email: ${identity.email}`,
-    `Business Type: ${text(data.businessType)}`,
-    `Primary Goal: ${text(data.primaryGoal)}`,
-    '',
-    '## Audience',
-    `Primary Buyer: ${text(data.revenue?.buyer)}`,
-    `Pain: ${audienceValue('pain')}`,
-    `Desire: ${audienceValue('desire')}`,
-    `Fear: ${audienceValue('fear')}`,
-    `Status Goal: ${audienceValue('status')}`,
-    `Friction: ${audienceValue('friction')}`,
-    `Trigger: ${audienceValue('trigger')}`,
-    `Audience Facts: ${text(data.memory?.audienceFacts)}`,
-    '',
-    '## Offer & Revenue Thesis',
-    `Core Problem: ${text(data.revenue?.problem)}`,
-    `Why Now: ${text(data.revenue?.whyNow)}`,
-    `Offer: ${text(data.revenue?.offer)}`,
-    `Proof: ${text(data.revenue?.proof)}`,
-    `Revenue Path: ${text(data.revenue?.revenuePath)}`,
-    '',
-    '## Voice',
-    text(data.memory?.voice),
-    '',
-    '## Redlines',
-    text(data.memory?.redLines),
-    '',
-    '## Output Quality Gate',
-    text(data.memory?.qualityGate),
-    '',
-    '## Conversion',
-    `Primary CTA: ${text(data.conversion?.primaryCta)}`,
-    `Success Point: ${text(data.conversion?.successPoint)}`,
-    '',
-    '## Experiment Learnings',
-    text(data.memory?.experimentLearnings),
-    '',
-    '## Integrity Rule',
-    'Treat this profile as the authoritative personalization layer. Never invent missing proof, facts, offers, or audience claims. Ask for clarification when a required fact is marked Belum diisi.',
-    '',
-  ].join('\n')
-}
-
-function personalizeSkillMarkdown(markdown: string, skillName: string) {
-  const withName = markdown.replace(/(^---\s*\n[\s\S]*?^name:\s*)[^\n]+/m, `$1${skillName}`)
-  return `${withName.trim()}\n\n## Creator Workspace Personalization — Mandatory\n\nBefore executing any task, read \`brand-memory-profile.md\` at the skill root. Treat it as the authoritative source for audience, offer, voice, redlines, CTA, and output quality. The original Marcatching frameworks and quality gates remain active, but generic brand defaults must not override the creator's Brand Memory. Never invent missing proof or facts.\n`
-}
-
 export function customizeSkillZip(input: {
   template: Buffer
   templateSlug: string
@@ -236,29 +177,25 @@ export function customizeSkillZip(input: {
   identity: { name: string; email: string }
 }) {
   const parsed = readZipEntries(input.template)
-  const firstSegments = parsed.map(entry => entry.name.split('/')[0])
-  const commonRoot = firstSegments.every(segment => segment === firstSegments[0]) && parsed.some(entry => entry.name.includes('/')) ? firstSegments[0] : ''
+  const skillEntry = parsed
+    .filter(entry => /(^|\/)SKILL\.md$/.test(entry.name.replace(/\\/g, '/')))
+    .sort((a, b) => a.name.length - b.name.length)[0]
+  if (!skillEntry) throw new Error('Template ZIP tidak memiliki SKILL.md')
+
+  const normalizedSkillPath = skillEntry.name.replace(/\\/g, '/')
+  const skillRoot = normalizedSkillPath.includes('/') ? normalizedSkillPath.slice(0, normalizedSkillPath.lastIndexOf('/') + 1) : ''
+  const memoryPath = `${skillRoot}brand-memory.md`
   const creatorSlug = safeSlug(input.workspace.creatorName || input.identity.name || input.identity.email.split('@')[0])
   const templateSlug = safeSlug(input.templateSlug, 'marcatching-skill')
   const skillName = `${creatorSlug}-${templateSlug}`.slice(0, 63).replace(/-$/, '')
-  const root = `${skillName}/`
-  const profile = Buffer.from(createBrandMemoryProfile(input.workspace, input.identity), 'utf8')
-  let hasSkillFile = false
-
+  const brandMemory = Buffer.from(createBrandMemoryMarkdown(input.workspace), 'utf8')
+  let memoryMerged = false
   const entries = parsed.map(entry => {
-    const relative = commonRoot && entry.name.startsWith(`${commonRoot}/`) ? entry.name.slice(commonRoot.length + 1) : entry.name
-    if (relative === 'SKILL.md') {
-      hasSkillFile = true
-      return { name: `${root}SKILL.md`, data: Buffer.from(personalizeSkillMarkdown(entry.data.toString('utf8'), skillName), 'utf8') }
-    }
-    if (relative === '08-brand-guidelines.md') {
-      const override = `# Creator Workspace Brand Override\n\nAlways read \`brand-memory-profile.md\` first. Its voice, audience, redlines, CTA, and quality gate override generic brand assumptions below. Keep the original Marcatching visual defaults only when the profile does not specify an alternative.\n\n`
-      return { name: `${root}${relative}`, data: Buffer.from(override + entry.data.toString('utf8'), 'utf8') }
-    }
-    return { name: `${root}${relative}`, data: entry.data }
+    if (entry.name.replace(/\\/g, '/') !== memoryPath) return entry
+    memoryMerged = true
+    return { ...entry, data: brandMemory }
   })
+  if (!memoryMerged) entries.push({ name: memoryPath, data: brandMemory })
 
-  if (!hasSkillFile) throw new Error('Template ZIP tidak memiliki SKILL.md')
-  entries.push({ name: `${root}brand-memory-profile.md`, data: profile })
   return { buffer: writeZip(entries), filename: `${skillName}.zip`, skillName }
 }
