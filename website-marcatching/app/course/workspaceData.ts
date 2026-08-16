@@ -275,6 +275,7 @@ export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new D
     '# Brand Memory',
     '',
     `Updated: ${updated}`,
+    `Brand/Creator: ${data.creatorName.trim() || 'Belum diisi'}`,
     '',
     '## Creator Voice',
     data.memory.voice,
