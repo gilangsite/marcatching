@@ -2657,7 +2657,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
                               {/* Add material buttons */}
                               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
                                 {/* Document batch upload */}
-                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#eff6ff', color: '#2563eb', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed #93c5fd' }}>
+                                <label className="btn btn-navy" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, opacity: uploadingPdf ? 0.6 : 1 }}>
                                   <Upload size={14} />
                                   {uploadingPdf ? 'Mengupload...' : 'Upload Dokumen (.pdf, .md)'}
                                   <input
@@ -2671,7 +2671,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
                                 </label>
 
                                 {/* Skill ZIP upload */}
-                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(147,51,234,0.08)', color: '#9333ea', borderRadius: 8, cursor: uploadingPdf ? 'wait' : 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed rgba(147,51,234,0.35)' }}>
+                                <label className="btn btn-navy" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', cursor: uploadingPdf || mats.some(mat => mat.type === 'zip') ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 600, opacity: uploadingPdf || mats.some(mat => mat.type === 'zip') ? 0.5 : 1 }}>
                                   <FileArchive size={14} />
                                   {uploadingPdf ? 'Mengupload...' : mats.some(mat => mat.type === 'zip') ? 'Ganti via hapus Skill lama' : 'Upload Skill (.zip)'}
                                   <input
@@ -2685,8 +2685,9 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
 
                                 {/* Add video button */}
                                 <button
+                                  className="btn btn-navy"
                                   onClick={() => { setShowMaterialForm(showMaterialForm === product.id ? null : product.id); setMaterialForm({ title: '', type: 'video', content_url: '' }); setMaterialError('') }}
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255,213,143,0.16)', color: '#ffd58f', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, border: '1.5px dashed rgba(255,213,143,0.4)', outline: 'none' }}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600 }}
                                 >
                                   <Video size={14} /> Tambah Video
                                 </button>

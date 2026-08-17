@@ -12,9 +12,9 @@ interface PromptCardProps {
 export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onClick, autoFilled = false }) => {
   return (
     <button type="button" className={styles.card} onClick={() => onClick(prompt)} aria-label={`Buka ${prompt.title}`}>
+      <span className={styles.cardNumber}>#{prompt.promptNumber}</span>
       <div className={styles.cardHeader}>
         <span className={styles.cardBadge}>{prompt.categoryLabel}</span>
-        <span className={styles.cardNumber}>#{prompt.promptNumber}</span>
       </div>
       
       <h3 className={styles.cardTitle}>{prompt.title}</h3>
