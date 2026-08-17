@@ -11,41 +11,6 @@
   padding-bottom: 116px;
 }
 
-/* ── Hero ── */
-.hero {
-  padding: 100px 24px 60px;
-  text-align: center;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.heroInner {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.heroTag {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #94a3b8;
-  margin-bottom: 16px;
-}
-
-.heroTitle {
-  font-size: 4rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  color: #0d3369;
-  margin-bottom: 16px;
-}
-
-.heroDesc {
-  font-size: 1rem;
-  color: #64748b;
-  line-height: 1.7;
-}
-
 /* ── Page Blocks ── */
 .pageBlocks {
   width: min(1120px, calc(100% - 48px));
@@ -55,6 +20,159 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.promoBanner {
+  position: relative;
+  width: min(1120px, calc(100% - 48px));
+  max-width: 1120px;
+  margin: 20px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+}
+
+.promoBannerClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.promoBannerVisual {
+  position: relative;
+  flex: 0 0 7rem;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f1f5f9;
+}
+
+.promoBannerVisualImg {
+  object-fit: cover;
+}
+
+.promoBannerDiscountBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.promoBannerCopy {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.promoBannerKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0d3369;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.promoBannerCopy h2 {
+  max-width: 32ch;
+  margin: 8px 0;
+  color: #0d3369;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.promoBannerCopy > p {
+  max-width: 40rem;
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.promoBannerCountdown {
+  margin-bottom: 10px;
+  color: #0d3369;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.promoBannerPricing {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.promoBannerPricing strong {
+  color: #0d3369;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.promoBannerOldPrice {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-decoration: line-through;
+}
+
+.promoBannerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.promoBannerCheckoutBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #0d3369;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.promoBannerCheckoutBtn:hover {
+  transform: translateY(-1px);
+}
+
+.promoBannerCloseBtn {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .pageBlocks > :not(.grid) {
@@ -127,66 +245,15 @@
   transform: translateY(-2px);
 }
 
-/* ── Filter Bar ── */
-.filterBar {
-  position: sticky;
-  top: var(--store-navbar-height);
-  z-index: 40;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 0 24px;
-  margin-top: 0;
-}
-
-.filterBarInner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.filterBarInner::-webkit-scrollbar { display: none; }
-
-.catPills {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.catPill {
-  padding: 6px 16px;
-  border-radius: 999px;
-  border: 1px solid #e2e8f0;
-  background: transparent;
-  color: #64748b;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.18s ease;
-  font-family: inherit;
-}
-.catPill:hover {
-  border-color: #0d3369;
-  color: #0d3369;
-}
-.catPillActive {
-  background: #0d3369;
-  color: #ffffff;
-  border-color: #0d3369;
-  font-weight: 700;
-}
-
 /* ── Ecommerce shortcuts ── */
 .shopNav {
   position: fixed;
   top: calc(max(env(safe-area-inset-top), 8px) + 14px);
-  right: max(24px, calc((100vw - 1100px) / 2 + 24px));
-  z-index: 120;
+  /* +112px clears the Navbar's account/login slot, which sits at the same right
+     edge as this cluster (both centered against the shared 1120px content width) —
+     without this they'd render on top of each other. */
+  right: max(136px, calc((100vw - 1120px) / 2 + 136px));
+  z-index: 110;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -337,15 +404,6 @@
 }
 
 /* ── Grid ── */
-.gridSection {
-  padding: 48px 24px 0;
-}
-
-.gridWrap {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 280px));
@@ -415,6 +473,18 @@
   padding: 3px 10px;
   border-radius: 999px;
   background: #dc2626;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cardOwnedBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #16a34a;
   color: #ffffff;
   font-size: 0.72rem;
   font-weight: 700;

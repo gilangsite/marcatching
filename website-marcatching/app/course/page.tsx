@@ -18,9 +18,11 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import type { CourseMaterial, Product } from '@/lib/supabaseClient'
+import type { CourseMaterial, Product, PromotionWithProduct } from '@/lib/supabaseClient'
 import { calculateWorkspaceProgress, type WorkspaceData } from './workspaceData'
 import SkillLibrary from './SkillLibrary'
+import PromotionSection from './PromotionSection'
+import { PromotionPopupModal } from './PromotionPopupModal'
 import styles from './course.module.css'
 
 type EnrolledCourse = Product & {
@@ -50,6 +52,8 @@ export default function CourseDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [workspaceProgress, setWorkspaceProgress] = useState(0)
   const [workspaceSectionsDone, setWorkspaceSectionsDone] = useState(0)
+  const [promotion, setPromotion] = useState<PromotionWithProduct | null>(null)
+  const [showPromoPopup, setShowPromoPopup] = useState(false)
 
   useEffect(() => {
     void loadDashboard()
@@ -68,6 +72,19 @@ export default function CourseDashboardPage() {
 
     const email = (user.email || '').toLowerCase().trim()
     setUserName(displayNameFromEmail(email))
+
+    try {
+      const promoResponse = await fetch('/api/promotions/active', { cache: 'no-store' })
+      if (promoResponse.ok) {
+        const promoPayload = await promoResponse.json() as { data: PromotionWithProduct | null }
+        if (promoPayload.data) {
+          setPromotion(promoPayload.data)
+          setShowPromoPopup(true)
+        }
+      }
+    } catch (promoError) {
+      console.error(promoError)
+    }
 
     const { data: workspaceRow } = await supabase
       .from('creator_workspaces')
@@ -133,8 +150,23 @@ export default function CourseDashboardPage() {
     ? Math.round((continueCourse.completedCount / continueCourse.materials.length) * 100)
     : 0
 
+  function closePromoPopup() {
+    setShowPromoPopup(false)
+  }
+
+  function dismissPromoSection() {
+    setPromotion(null)
+  }
+
+  function handlePromoExpire() {
+    setPromotion(null)
+    setShowPromoPopup(false)
+  }
+
   return (
     <div className={styles.dashboardPage}>
+      <PromotionPopupModal isOpen={showPromoPopup} promotion={promotion} onClose={closePromoPopup} onExpire={handlePromoExpire} />
+
       <header className={styles.pageHeader}>
         <div>
           <span className={styles.eyebrow}><Compass size={14} /> Learning home</span>
@@ -219,6 +251,10 @@ export default function CourseDashboardPage() {
           </div>
         </div>
       </section>
+
+      {promotion && !showPromoPopup && (
+        <PromotionSection promotion={promotion} onClose={dismissPromoSection} onExpire={handlePromoExpire} />
+      )}
 
       <SkillLibrary />
 

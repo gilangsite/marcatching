@@ -14,7 +14,7 @@ import {
   FileArchive, FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit, Megaphone
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -27,6 +27,7 @@ import RichTextEditor from '@/components/RichTextEditor'
 import SecurityTab from './SecurityTab'
 import SurveyTab from './SurveyTab'
 import CreatorWorkspaceTab from './CreatorWorkspaceTab'
+import PromotionsTab from './PromotionsTab'
 
 // ─── Admin Toast Event ────────────────────────────────────────
 type AdminToastType = 'success' | 'error'
@@ -554,7 +555,7 @@ function HomeFinancePulse({
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces'
+  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces' | 'promotions'
   const [tab, setTab] = useState<TabType>('menu')
   const [showOtherTabs, setShowOtherTabs] = useState(false)
   const tabMeta: Record<TabType, { eyebrow: string; label: string }> = {
@@ -575,6 +576,7 @@ function AdminDashboardInner() {
     security: { eyebrow: 'Access', label: 'Keamanan' },
     survey: { eyebrow: 'Research', label: 'Survey' },
     'creator-workspaces': { eyebrow: 'Creator Intelligence', label: 'Creator Workspaces' },
+    promotions: { eyebrow: 'Growth', label: 'Promotions' },
   }
   const activeTabMeta = tabMeta[tab]
 
@@ -1637,6 +1639,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'security' ? styles.navActive : ''}`} onClick={() => { setTab('security'); setIsSidebarOpen(false) }}><Lock size={18} /> Keamanan</button>
           <button className={`${styles.navItem} ${tab === 'survey' ? styles.navActive : ''}`} onClick={() => { setTab('survey'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Survey</button>
           <button className={`${styles.navItem} ${tab === 'creator-workspaces' ? styles.navActive : ''}`} onClick={() => { setTab('creator-workspaces'); setIsSidebarOpen(false) }}><BrainCircuit size={18} /> Creator Workspaces</button>
+          <button className={`${styles.navItem} ${tab === 'promotions' ? styles.navActive : ''}`} onClick={() => { setTab('promotions'); setIsSidebarOpen(false) }}><Megaphone size={18} /> Promotions</button>
 
           <div style={{ position: 'relative' }}>
             <button className={styles.navItem} onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontWeight: 'bold' }}><Plus size={18} /> Tambah Link</button>
@@ -1825,6 +1828,7 @@ function AdminDashboardInner() {
                         { tab: 'security',   Icon: Lock,         label: 'Keamanan',   color: '#0d3369' },
                         { tab: 'survey',     Icon: ClipboardList,label: 'Survey',     color: '#0d3369' },
                         { tab: 'creator-workspaces', Icon: BrainCircuit, label: 'Creator Workspaces', color: '#1e40af' },
+                        { tab: 'promotions', Icon: Megaphone, label: 'Promotions', color: '#0d3369' },
                       ] as const).map((item) => (
                         <motion.button
                           key={item.tab}
@@ -2120,6 +2124,7 @@ function AdminDashboardInner() {
         {/* ── SURVEY TAB ─── */}
         {tab === 'survey' && <SurveyTab />}
         {tab === 'creator-workspaces' && <CreatorWorkspaceTab />}
+        {tab === 'promotions' && <PromotionsTab products={products} />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (
@@ -2148,6 +2153,7 @@ function AdminDashboardInner() {
                         t === 'image' ? { url: '', aspect_ratio: '16:9', caption: '' } :
                         t === 'video' ? { video_url: '', caption: '' } :
                         t === 'product' ? { product_id: '', store_status: 'active' } :
+                        t === 'promotion' ? {} :
                         { btn_text: '', btn_url: '', btn_color: '#ffffff', btn_text_color: '#000000', align: 'center' }
                       )
                     }}>
@@ -2157,6 +2163,7 @@ function AdminDashboardInner() {
                       <option value="video">Online Video</option>
                       <option value="button">Button</option>
                       <option value="product">Produk</option>
+                      <option value="promotion">Promotion</option>
                     </select>
                   </div>
                   {(storeBlockType === 'headline' || storeBlockType === 'text') && (
@@ -2219,6 +2226,11 @@ function AdminDashboardInner() {
                       </div>
                     </div>
                   )}
+                  {storeBlockType === 'promotion' && (
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6, margin: 0 }}>
+                      Tidak perlu konfigurasi. Promotion yang sedang berstatus <strong>On Going</strong> (diatur di tab Promotions) akan otomatis muncul di posisi block ini. Geser urutan block ini untuk mengatur di mana promotion tampil di halaman /store.
+                    </p>
+                  )}
                 </form>
               </div>
             )}
@@ -2239,12 +2251,14 @@ function AdminDashboardInner() {
                       {b.type === 'product' && thumb && <img src={thumb} alt={linkedProduct?.name} style={{ width: 32, height: 40, objectFit: 'cover', borderRadius: 5, flexShrink: 0 }} />}
                       {b.type !== 'product' && (
                         <div style={{ width: 32, height: 32, minWidth: 32, background: '#f1f5f9', fontSize: '0.68rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, flexShrink: 0 }}>
-                          {b.type === 'headline' ? 'H' : b.type === 'text' ? 'T' : b.type === 'image' ? 'IMG' : b.type === 'video' ? 'VID' : 'BTN'}
+                          {b.type === 'headline' ? 'H' : b.type === 'text' ? 'T' : b.type === 'image' ? 'IMG' : b.type === 'video' ? 'VID' : b.type === 'promotion' ? 'PROMO' : 'BTN'}
                         </div>
                       )}
                       <div className={styles.linkInfo}>
                         {b.type === 'product'
                           ? <><span className={styles.linkTitle}>{linkedProduct?.name || '(produk dihapus)'}</span><span className={styles.linkUrl}>Rp {formatRp(linkedProduct?.price_after_discount ?? 0)} · <ShoppingCart size={11} style={{ display: 'inline', verticalAlign: 'middle' }} /> {linkedProduct?.checkout_clicks ?? 0}</span></>
+                          : b.type === 'promotion'
+                          ? <><span className={styles.linkTitle}>Promotion Banner</span><span className={styles.linkUrl}>Otomatis ambil promotion yang sedang On Going · <span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Aktif' : 'Tersembunyi'}</span></span></>
                           : <><span className={styles.linkTitle}>{b.type.toUpperCase()} — {typeof (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—') === 'string' ? (b.content.text || b.content.btn_text || b.content.url || b.content.video_url || '—').replace(/<[^>]*>?/gm, '') : '—'}</span><span className={styles.linkUrl}><span className={b.is_active ? styles.statusActive : styles.statusSoon}>{b.is_active ? 'Aktif' : 'Tersembunyi'}</span></span></>
                         }
                       </div>

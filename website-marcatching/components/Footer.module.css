@@ -7,20 +7,20 @@
 }
 
 .footerLight {
-  background: #030508;
-  border-top: 1px solid rgba(184, 214, 242, 0.1);
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
 }
 
 .footerLight .copy {
-  color: #637180;
+  color: #64748b;
 }
 
 .footerLight .copy strong {
-  color: #aebdca;
+  color: #0d3369;
 }
 
 .inner {
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px;
   text-align: center;

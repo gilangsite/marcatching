@@ -1,9 +1,38 @@
 import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jimbydkqlputlvpcspjv.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 'sb_publishable_rF4yCw9hMldmrawKp3tALg_Y0zO7MAD'
 
-const createMarcatchingClient = () => createClient(supabaseUrl, supabaseAnonKey)
+// Member session needs to be visible across course.marcatching.com, marcatching.com
+// (store), and any other *.marcatching.com surface, so the browser client stores its
+// session in a cookie scoped to the shared parent domain instead of per-origin localStorage.
+// Local dev (*.localhost) intentionally does NOT get a cross-subdomain domain here —
+// Chromium rejects `Domain=localhost` set from a subdomain like course.localhost
+// (verified: the Set-Cookie is silently dropped, breaking login entirely), because it
+// treats the single-label `localhost` host as a public-suffix boundary. Falling back to
+// a host-only cookie keeps login working per-surface in dev; only real domains support
+// the cross-subdomain sharing this is for, and marcatching.com is a real domain.
+function computeCookieDomain(): string | undefined {
+  const host = window.location.hostname
+  if (host.endsWith('marcatching.com')) return '.marcatching.com'
+  return undefined
+}
+
+function createMarcatchingClient() {
+  if (typeof window === 'undefined') {
+    // Server: stateless anon client for public reads only. Server Components/routes
+    // that need the signed-in user go through lib/supabaseServer.ts instead.
+    return createClient(supabaseUrl, supabaseAnonKey)
+  }
+  return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: {
+      domain: computeCookieDomain(),
+      sameSite: 'lax',
+      secure: window.location.protocol === 'https:',
+    },
+  })
+}
 type MarcatchingSupabaseClient = ReturnType<typeof createMarcatchingClient>
 
 const globalForSupabase = globalThis as typeof globalThis & {
@@ -86,9 +115,24 @@ export type ProductCategory = {
   created_at: string
 }
 
+export type Promotion = {
+  id: string
+  headline: string
+  description: string | null
+  product_id: string
+  status: 'on_going' | 'off'
+  ends_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type PromotionWithProduct = Promotion & {
+  product: Pick<Product, 'id' | 'name' | 'slug' | 'image_url' | 'price_before_discount' | 'price_after_discount' | 'discount_percentage' | 'is_coming_soon'>
+}
+
 export type StorePageBlock = {
   id: string
-  type: 'headline' | 'text' | 'image' | 'video' | 'button' | 'product'
+  type: 'headline' | 'text' | 'image' | 'video' | 'button' | 'product' | 'promotion'
   content: {
     // headline
     text?: string

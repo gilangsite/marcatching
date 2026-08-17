@@ -1096,6 +1096,122 @@
   background: rgba(77, 151, 207, 0.09);
 }
 
+.promotionSection {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.1rem;
+  padding: clamp(1.3rem, 3.5vw, 2.4rem);
+  overflow: hidden;
+  border: 1px solid rgba(164, 207, 239, 0.11);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(75, 148, 203, 0.17), transparent 18rem),
+    #081018;
+}
+
+.promotionClose {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.promotionVisual {
+  position: relative;
+  flex: 0 0 8rem;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #071019;
+}
+
+.promotionVisual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promotionDiscountBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.promotionCopy {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.promotionCopy h2 {
+  max-width: 32ch;
+  margin: 0.6rem 0;
+  color: #eff6fa;
+  font-size: clamp(1.25rem, 2.6vw, 1.9rem);
+  font-weight: 550;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.promotionCopy > p {
+  max-width: 40rem;
+  margin-bottom: 0.7rem;
+  color: #8196a7;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.promotionCountdown {
+  margin-bottom: 0.7rem;
+  color: #8cc6ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.promotionPricing {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.promotionPricing strong {
+  color: #f0f6fa;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.promotionOldPrice {
+  color: #64748b;
+  font-size: 0.85rem;
+  text-decoration: line-through;
+}
+
+.promotionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  flex-shrink: 0;
+}
+
 .courseSection {
   margin-top: 2.2rem;
 }
@@ -1721,6 +1837,10 @@
 
   .workspaceBlueprint {
     transform: none;
+  }
+
+  .promotionVisual {
+    flex-basis: 6.5rem;
   }
 }
 

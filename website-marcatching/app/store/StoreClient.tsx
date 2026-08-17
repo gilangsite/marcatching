@@ -4,10 +4,14 @@ import { useState, useRef, useMemo, useEffect, type CSSProperties } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { BadgePercent, ChevronDown, CreditCard, PackageCheck, Search, ShoppingBag, ShoppingCart, X } from 'lucide-react'
-import type { NavLink, StorePageBlock, Product, ProductCategory } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
+import type { NavLink, StorePageBlock, Product, ProductCategory, PromotionWithProduct } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import VideoEmbed from '@/components/VideoEmbed'
+import StorePromoBanner from '@/components/store/StorePromoBanner'
+import StorePromoModal from '@/components/store/StorePromoModal'
+import StoreLoginModal from '@/components/store/StoreLoginModal'
 import styles from './store.module.css'
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -116,6 +120,7 @@ function ProductCard({
   product,
   categories,
   isComingSoon,
+  isOwned,
   voucherDiscount,
   isInCart,
   onAddToCart,
@@ -123,6 +128,7 @@ function ProductCard({
   product: Product
   categories: ProductCategory[]
   isComingSoon: boolean
+  isOwned: boolean
   voucherDiscount: number
   isInCart: boolean
   onAddToCart: (product: Product) => void
@@ -160,6 +166,7 @@ function ProductCard({
           ) : product.discount_percentage > 0 && (
             <span className={styles.cardDiscountBadge}>-{product.discount_percentage}%</span>
           )}
+          {isOwned && <span className={styles.cardOwnedBadge}>Owned</span>}
           {cat && <span className={styles.cardCatBadge}>{cat.name}</span>}
           {isComingSoon && (
             <div className={styles.comingSoonOverlay}>
@@ -195,11 +202,11 @@ function ProductCard({
           <button
             type="button"
             className={styles.cardCartBtn}
-            disabled={isComingSoon || isInCart}
+            disabled={isComingSoon || isInCart || isOwned}
             onClick={() => onAddToCart(product)}
           >
             <ShoppingCart size={14} />
-            {isComingSoon ? 'Soon' : isInCart ? 'Di Cart' : 'Cart'}
+            {isOwned ? 'Dimiliki' : isComingSoon ? 'Soon' : isInCart ? 'Di Cart' : 'Cart'}
           </button>
         </div>
       </div>
@@ -209,12 +216,14 @@ function ProductCard({
 
 // ── Main Client Component ─────────────────────────────────────
 export default function StoreClient({
-  navLinks, blocks, products, categories,
+  navLinks, blocks, products, categories, promotion, ownedProductIds,
 }: {
   navLinks: NavLink[]
   blocks: StorePageBlock[]
   products: Product[]
   categories: ProductCategory[]
+  promotion: PromotionWithProduct | null
+  ownedProductIds: string[]
 }) {
   const [activeCategory, setActiveCategory] = useState('all')
   const [search, setSearch] = useState('')
@@ -222,13 +231,73 @@ export default function StoreClient({
   const [showVoucherSheet, setShowVoucherSheet] = useState(false)
   const [showCartSheet, setShowCartSheet] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
+  const [activePromotion, setActivePromotion] = useState(promotion)
+  const [showPromoPopup, setShowPromoPopup] = useState(false)
   const [voucherInput, setVoucherInput] = useState('')
   const [voucherChecking, setVoucherChecking] = useState(false)
   const [voucherMsg, setVoucherMsg] = useState('')
   const [appliedVoucher, setAppliedVoucher] = useState<AppliedVoucher | null>(null)
   const [cartIds, setCartIds] = useState<string[]>([])
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set(ownedProductIds))
   const searchRef = useRef<HTMLInputElement>(null)
   const categoryMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function showPromoOnLoad() {
+      if (promotion) setShowPromoPopup(true)
+    }
+    showPromoOnLoad()
+  }, [promotion])
+
+  async function refreshAuthState() {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUserEmail(user?.email ?? null)
+    // Server already computed owned products for whoever was logged in via the shared
+    // cookie at request time. Refetch to cover a user who just signed in client-side
+    // (via the login modal, or SSO detected after this page already loaded).
+    if (!user?.email) { setOwnedIds(new Set()); return }
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) return
+    const res = await fetch('/api/store/owned-products', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
+    if (res.ok) {
+      const payload = await res.json() as { ownedProductIds?: string[] }
+      setOwnedIds(new Set(payload.ownedProductIds || []))
+    }
+  }
+
+  useEffect(() => {
+    async function initAuthState() {
+      await refreshAuthState()
+    }
+    void initAuthState()
+  }, [])
+
+  function closePromoModal() {
+    setShowPromoPopup(false)
+  }
+
+  function dismissPromoBanner() {
+    setActivePromotion(null)
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    setUserEmail(null)
+    setOwnedIds(new Set())
+  }
+
+  async function handleLoginSuccess() {
+    setShowLoginModal(false)
+    await refreshAuthState()
+  }
+
+  function handlePromoExpire() {
+    setActivePromotion(null)
+    setShowPromoPopup(false)
+  }
 
   // Index products by id for O(1) lookup
   const productsById = useMemo(() => {
@@ -367,6 +436,9 @@ export default function StoreClient({
     .filter((product): product is Product => Boolean(product) && !product.is_coming_soon)
   const cartTotal = cartProducts.reduce((total, product) => total + getDisplayPrice(product), 0)
   const isFiltering = search || activeCategory !== 'all'
+  // Admin can drag a "Promotion" block into store_page_blocks to choose where the banner
+  // sits; until they do, it defaults to the top of the page (the original hardcoded spot).
+  const hasPromotionBlock = blocks.some(b => b.type === 'promotion' && b.is_active)
 
   function selectCategory(categoryId: string) {
     setActiveCategory(categoryId)
@@ -392,9 +464,19 @@ export default function StoreClient({
 
   return (
     <>
-      <Navbar navLinks={navLinks} variant="light" />
+      <Navbar
+        navLinks={navLinks}
+        variant="light"
+        account={{ email: userEmail, onLoginClick: () => setShowLoginModal(true), onLogoutClick: handleLogout }}
+      />
+      <StoreLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} onSuccess={handleLoginSuccess} />
+      <StorePromoModal isOpen={showPromoPopup} promotion={activePromotion} onClose={closePromoModal} onExpire={handlePromoExpire} />
 
       <main className={styles.main}>
+        {!hasPromotionBlock && activePromotion && !showPromoPopup && (
+          <StorePromoBanner promotion={activePromotion} onClose={dismissPromoBanner} onExpire={handlePromoExpire} />
+        )}
+
         {productBlocks.length > 0 && (
           <nav className={styles.shopNav} aria-label="Store shortcuts">
             <div className={styles.categoryMenuWrap} ref={categoryMenuRef}>
@@ -511,7 +593,11 @@ export default function StoreClient({
             <>
               {/* Always show content blocks even when filtering */}
               {blocks.filter(b => b.type !== 'product' && b.is_active).map(block => (
-                <ContentBlockRenderer key={block.id} block={block} />
+                block.type === 'promotion'
+                  ? (activePromotion && !showPromoPopup
+                      ? <StorePromoBanner key={block.id} promotion={activePromotion} onClose={dismissPromoBanner} onExpire={handlePromoExpire} />
+                      : null)
+                  : <ContentBlockRenderer key={block.id} block={block} />
               ))}
               {/* Filtered product grid */}
               <div className={styles.grid}>
@@ -526,6 +612,7 @@ export default function StoreClient({
                         product={p}
                         categories={categories}
                         isComingSoon={b.content.store_status === 'coming_soon' || !!p.is_coming_soon}
+                        isOwned={ownedIds.has(p.id)}
                         voucherDiscount={getVoucherDiscount(p)}
                         isInCart={cartIds.includes(p.id)}
                         onAddToCart={handleAddToCart}
@@ -566,6 +653,7 @@ export default function StoreClient({
                               product={p}
                               categories={categories}
                               isComingSoon={pb.content.store_status === 'coming_soon' || !!p.is_coming_soon}
+                              isOwned={ownedIds.has(p.id)}
                               voucherDiscount={getVoucherDiscount(p)}
                               isInCart={cartIds.includes(p.id)}
                               onAddToCart={handleAddToCart}
@@ -574,6 +662,11 @@ export default function StoreClient({
                         })}
                       </div>
                       )
+                    }
+                    i++
+                  } else if (b.type === 'promotion') {
+                    if (activePromotion && !showPromoPopup) {
+                      rendered.push(<StorePromoBanner key={b.id} promotion={activePromotion} onClose={dismissPromoBanner} onExpire={handlePromoExpire} />)
                     }
                     i++
                   } else {
@@ -593,6 +686,7 @@ export default function StoreClient({
                             product={p}
                             categories={categories}
                             isComingSoon={pb.content.store_status === 'coming_soon' || !!p.is_coming_soon}
+                            isOwned={ownedIds.has(p.id)}
                             voucherDiscount={getVoucherDiscount(p)}
                             isInCart={cartIds.includes(p.id)}
                             onAddToCart={handleAddToCart}

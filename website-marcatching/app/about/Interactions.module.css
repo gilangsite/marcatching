@@ -57,6 +57,11 @@
   position: relative;
   overflow: hidden;
   clip-path: inset(0 100% 0 0 round 1rem);
+  animation: imageMaskReveal 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+
+@keyframes imageMaskReveal {
+  to { clip-path: inset(0 0% 0 0 round 1rem); }
 }
 
 .parallax { position: relative; overflow: hidden; }
@@ -219,5 +224,5 @@
   .underline,
   .tilt,
   .spotlight { transition: none; transform: none !important; }
-  .imageMask { clip-path: none; }
+  .imageMask { animation: none; clip-path: none; }
 }

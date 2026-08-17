@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-// Edge Runtime compatible — NO Supabase client, use REST API directly
+// Edge Runtime compatible — the admin-session check below stays on raw REST (no
+// Supabase client needed for a single-row lookup). The member session refresh
+// further down does use @supabase/ssr's createServerClient, which is Edge-safe.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 // Support both env var naming conventions (Vercel uses PUBLISHABLE_DEFAULT_KEY)
@@ -8,6 +11,13 @@ const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
   ''
+
+// Same cookie-domain logic as lib/supabaseClient.ts's browser client (see the comment
+// there for why *.localhost intentionally does not get a cross-subdomain domain).
+function computeCookieDomain(hostname: string): string | undefined {
+  if (hostname.endsWith('marcatching.com')) return '.marcatching.com'
+  return undefined
+}
 
 async function isValidSession(sessionToken: string): Promise<boolean> {
   try {
@@ -51,6 +61,37 @@ export async function proxy(req: NextRequest) {
   // the port so local redirects don't end up as course.localhost:3000:3000.
   const hostname = (req.headers.get('host') || req.nextUrl.hostname).split(':')[0]
 
+  // Member (Supabase Auth) session refresh — only bother if a session cookie is
+  // already present, so anonymous traffic (most of /store, /article, etc.) doesn't
+  // pay for an extra round-trip. Collected cookies get re-applied to whichever
+  // response this proxy ends up returning, via withRefreshedCookies() below.
+  const refreshedCookies: { name: string; value: string; options: CookieOptions }[] = []
+  if (req.cookies.getAll().some(cookie => cookie.name.startsWith('sb-'))) {
+    try {
+      const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookieOptions: {
+          domain: computeCookieDomain(hostname),
+          sameSite: 'lax',
+          secure: req.nextUrl.protocol === 'https:',
+        },
+        cookies: {
+          getAll: () => req.cookies.getAll(),
+          setAll: cookiesToSet => { refreshedCookies.push(...cookiesToSet) },
+        },
+      })
+      await supabase.auth.getUser()
+    } catch (err) {
+      console.error('[proxy] member session refresh error:', err)
+    }
+  }
+
+  function withRefreshedCookies<T extends NextResponse>(res: T): T {
+    for (const { name, value, options } of refreshedCookies) {
+      res.cookies.set(name, value, options)
+    }
+    return res
+  }
+
   let effectivePath = pathname
 
   // 1. Subdomain Page (Landing Page) Logic
@@ -64,7 +105,7 @@ export async function proxy(req: NextRequest) {
     const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
     url.hostname = isLocal ? `page.${hostname}` : 'page.marcatching.com'
     url.pathname = pathname.replace('/page-home', '') || '/'
-    return NextResponse.redirect(url)
+    return withRefreshedCookies(NextResponse.redirect(url))
   }
 
   // 2. Subdomain Course Logic
@@ -76,7 +117,7 @@ export async function proxy(req: NextRequest) {
     const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
     url.hostname = isLocal ? `course.${hostname}` : 'course.marcatching.com'
     url.pathname = pathname.replace('/course', '') || '/'
-    return NextResponse.redirect(url)
+    return withRefreshedCookies(NextResponse.redirect(url))
   }
 
   // 2. Subdomain Admin (inside.) Logic
@@ -88,7 +129,7 @@ export async function proxy(req: NextRequest) {
     const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
     url.hostname = isLocal ? `inside.${hostname}` : 'inside.marcatching.com'
     url.pathname = pathname.replace('/admin', '') || '/'
-    return NextResponse.redirect(url)
+    return withRefreshedCookies(NextResponse.redirect(url))
   }
 
   // 3. Protect effective /admin routes (not /admin/login)
@@ -102,7 +143,7 @@ export async function proxy(req: NextRequest) {
       res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
       res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
       res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
-      return res
+      return withRefreshedCookies(res)
     }
 
     // Always verify against DB with no-store cache — critical for Hard Exit to work
@@ -112,17 +153,17 @@ export async function proxy(req: NextRequest) {
       res.cookies.set('marcatching_admin_session', '', { maxAge: 0, path: '/' })
       res.cookies.set('marcatching_admin_v2', '', { maxAge: 0, path: '/' })
       res.cookies.set('marcatching_admin', '', { maxAge: 0, path: '/' })
-      return res
+      return withRefreshedCookies(res)
     }
   }
 
   // 4. Apply rewrite if effectivePath changed
   if (effectivePath !== pathname) {
     url.pathname = effectivePath
-    return NextResponse.rewrite(url)
+    return withRefreshedCookies(NextResponse.rewrite(url))
   }
 
-  return NextResponse.next()
+  return withRefreshedCookies(NextResponse.next())
 }
 
 export const config = {

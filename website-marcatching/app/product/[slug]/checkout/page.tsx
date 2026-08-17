@@ -208,6 +208,24 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     fetchData()
   }, [slug, router])
 
+  // If the buyer is signed in (member session — possibly shared cross-subdomain from
+  // course.marcatching.com or /store), prefill from their most recent order. Never
+  // overwrite fields the buyer has already typed into.
+  useEffect(() => {
+    async function prefillFromSession() {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) return
+      const res = await fetch('/api/checkout/prefill', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
+      if (!res.ok) return
+      const payload = await res.json() as { email?: string; full_name?: string; whatsapp?: string }
+      setFullName(current => current || payload.full_name || '')
+      setEmail(current => current || payload.email || '')
+      setWhatsapp(current => current || payload.whatsapp || '')
+    }
+    void prefillFromSession()
+  }, [])
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

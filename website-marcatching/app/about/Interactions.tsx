@@ -84,6 +84,9 @@ export function SplitLineReveal({ lines, className = '' }: { lines: string[]; cl
 }
 
 export function ImageMaskReveal({ children, className = '' }: { children: ReactNode; className?: string }) {
+  // Plays once on mount via a plain CSS animation (see .imageMask) rather than a
+  // scroll-triggered useInView — this section can sit far enough down the page that
+  // IntersectionObserver-based reveal was unreliably not firing at all.
   return <div className={`${styles.imageMask} ${className}`}>{children}</div>
 }
 
