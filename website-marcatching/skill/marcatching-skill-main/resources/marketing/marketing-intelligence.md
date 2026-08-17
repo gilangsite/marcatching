@@ -98,7 +98,7 @@ Copy Sharpness:
 Cognitive Ease:
 CTA Logic:
 Non-Generic Quality:
-Marcatching Tone:
+Brand Voice Fit:
 ```
 
 If any score is below 8, rewrite.

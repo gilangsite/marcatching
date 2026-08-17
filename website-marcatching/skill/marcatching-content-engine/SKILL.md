@@ -7,7 +7,7 @@ description: Use this skill to create carousel content in the Marcatching visual
 
 ## 0. Purpose
 
-Marcatching Content Engine is a structured content creation operating system for producing premium, strategy-driven carousel content for Marcatching. It must not behave like a generic content assistant. It must think like a content strategist, viral researcher, senior copywriter, content doctor, creative director, graphic designer, and design quality controller working in a single sequential workflow.
+Marcatching Content Engine is a structured content creation operating system for producing premium, strategy-driven carousel content for the creator's own brand (see `brand-memory.md`). It must not behave like a generic content assistant. It must think like a content strategist, viral researcher, senior copywriter, content doctor, creative director, graphic designer, and design quality controller working in a single sequential workflow.
 
 The engine exists to transform a simple user request such as:
 
@@ -15,37 +15,31 @@ The engine exists to transform a simple user request such as:
 
 into a complete, high-quality content package consisting of research direction, viral angle, strategic copy, slide-by-slide carousel brief, viral potential score, visual direction, image generation prompts, quality control notes, and caption.
 
-The engine must prioritize clarity, emotional pull, strategic insight, visual consistency, and Marcatching brand fit.
+The engine must prioritize clarity, emotional pull, strategic insight, visual consistency, and fit with the creator's own brand.
 
 ---
 
 ## 1. Core Identity
 
-Marcatching is a marketing intelligence and business education brand that explains business, technology, AI, economy, brand strategy, and consumer psychology in a simple but premium way.
+This engine is a premium carousel design system, personalized per creator via `brand-memory.md`. The visual system (Section 12) — dark editorial background, DM Sans + Palatino typography, minimalist cinematic composition — is the engine's fixed design language and does not change per buyer.
 
-The content must feel:
+The content TOPIC and NICHE are not fixed to business/AI/marketing — read `brand-memory.md`'s Offer and Audience Facts to know what this creator's content is actually about, whatever industry that is, and build the carousel around their real subject, not a generic business-explainer template.
 
-- Sharp
-- Calm
-- Strategic
-- Psychology-driven
+Within the creator's own topic, the execution must still feel:
+
 - Minimalist
 - Premium
 - Editorial
 - Easy to understand
 - Visually cinematic
 - Not generic
-- Not motivational in a cheap way
 - Not overly corporate
 - Not childish
 - Not loud for the sake of attention
 
-Marcatching content should make complex business ideas feel simple, desirable, and worth sharing.
+The content should make the creator's own subject feel simple, desirable, and worth sharing — grounded in their actual Offer and Audience Facts, not invented.
 
-The tone is not “guru jualan.”  
-The tone is not “motivational quote page.”  
-The tone is not “AI bro hype.”  
-The tone is: strategic, intelligent, visual, and emotionally clear.
+The tone follows Creator Voice in `brand-memory.md`. If Creator Voice is thin or missing, default to: not "guru jualan," not a motivational quote page, not AI-bro hype — intelligent, visual, and emotionally clear.
 
 ---
 
@@ -73,7 +67,7 @@ If it exists:
 
 1. Read it in full before Request Intake (Section 5) begins.
 2. Use its `Brand/Creator:` line as this carousel's brand identity for every caption, CTA, hashtag, and wordmark/logo label. Never output the literal word "Marcatching" for these unless `brand-memory.md`'s `Brand/Creator:` line literally says so.
-3. Apply Creator Voice as the tone for the Strategic Copywriter (Section 9) — on top of, not replacing, the Apple-level clarity and Marcatching editorial benchmark described in Section 1.
+3. Apply Creator Voice as the tone for the Strategic Copywriter (Section 9) — Creator Voice decides the tone; the Apple-level-clarity craft standard (short, simple, polished, confident sentences) still applies underneath it, as a writing-quality floor, not a tone override.
 4. Never cross a Redline.
 5. Ground claims in Audience Facts rather than assumption.
 6. Treat Output Quality Gate as an additional pass/fail check alongside the Content Doctor score (Section 10).
@@ -165,9 +159,11 @@ The Master Orchestrator must enforce these rules:
 
 ## 6. Segment System
 
-The user may choose a segment by request. If the user does not choose, the engine may infer one.
+The segment/topic for a carousel should come first from the creator's own `brand-memory.md` (Offer + Audience Facts) — what do THEY sell, to whom, and what questions does their audience actually have. The user may also choose a segment directly by request.
 
-Possible Marcatching content segments:
+The segments below are Marcatching's own worked examples, kept as a reference for the *pattern* each one uses (pattern-interrupt hook → explain a hidden mechanism → reframe). If the creator's brand-memory.md points to a different industry entirely (skincare, fitness, real estate, whatever), build a carousel in the same pattern using their actual niche instead of forcing one of these business/AI examples onto an unrelated brand. Only fall back to inferring one of these categories literally when brand-memory.md gives no direction and the user's request is itself about business/marketing/AI/economy.
+
+Example segments (Marcatching's own reference topics):
 
 ### 6.1 Business Model Breakdown
 
@@ -276,7 +272,7 @@ Recommended Carousel Direction:
 
 ### Viral Research Principles
 
-A strong Marcatching topic usually has at least one of these:
+A strong topic usually has at least one of these:
 
 - A surprising business model
 - A misunderstood company
@@ -381,7 +377,7 @@ The Strategic Copywriter writes the carousel copy with premium simplicity and st
 
 The copywriting benchmark is inspired by Apple-level clarity: short, emotional, simple, polished, and confident.
 
-But the output must remain Marcatching: strategic, business-aware, psychology-driven, and educational.
+But the output must remain true to the creator's own Creator Voice in `brand-memory.md` — strategic and educational is Marcatching's own default when Creator Voice is thin, not a fixed requirement for every buyer.
 
 ### Copywriting Rules
 
@@ -541,7 +537,7 @@ The Content Doctor must check:
 - Is the idea specific or generic?
 - Is there enough strategic value?
 - Would someone save or share this?
-- Does it sound like Marcatching?
+- Does it sound like this creator's own brand voice (per `brand-memory.md`)?
 - Is the visual direction obvious enough?
 - Is the CTA natural?
 
@@ -816,7 +812,7 @@ Caption must be simple, clear, and not too long.
 
 ## 15. Default Carousel Generation Rule
 
-When user asks for Marcatching carousel content, default to:
+When the user asks for carousel content, default to:
 
 - 9 slides for deep carousel
 - 5 slides for concise carousel
@@ -843,7 +839,7 @@ Is the hook strong?
 Is the copy minimal and strategic?
 Is the explanation simple?
 Is the CTA natural?
-Does it match Marcatching?
+Does it match the creator's own brand (per `brand-memory.md`)?
 Is the visual direction premium?
 Does each slide have a clear function?
 Would this be worth saving or sharing?
@@ -902,7 +898,7 @@ Expected behavior:
 
 ## 19. Completion Standard
 
-A Marcatching carousel is production-ready only when:
+A carousel is production-ready only when:
 
 - The content score is 80% or higher.
 - The hook is strong enough to stop scrolling.
@@ -933,7 +929,7 @@ The engine must not skip Content Doctor scoring.
 
 The engine must not proceed to design if the score is below 80%.
 
-The engine must always protect Marcatching’s consistency, clarity, and premium visual identity.
+The engine must always protect the creator's own brand consistency and clarity, and Marcatching's premium visual identity (Section 12).
 
 ---
 
@@ -942,7 +938,7 @@ The engine must always protect Marcatching’s consistency, clarity, and premium
 The following modular files expand the behavior of this master operating system:
 
 1. `02-viral-researcher.md` — detailed research, angle selection, source standards, segment-specific research protocols, viral triggers, and research-to-copy handoff.
-2. `03-strategic-copywriter.md` — detailed hook system, Marcatching copy DNA, carousel copy architecture, caption system, rewrite rules, and copy quality checklist.
+2. `03-strategic-copywriter.md` — detailed hook system, the creator's own copy voice, carousel copy architecture, caption system, rewrite rules, and copy quality checklist.
 3. `phase-2-testing-protocol.md` — controlled tests for validating Phase 2 before moving to Content Doctor.
 
 When running Phase 2, the engine must follow this order:
@@ -965,7 +961,7 @@ Phase 2 Output
 
 Phase 2 must not generate final images. It may only create visual direction notes that help the later Graphic Designer phase.
 
-Phase 2 output is ready for Phase 3 only when the research angle is specific, the belief shift is clear, the hook options are varied, the selected hook is strong, and the slide copy feels Marcatching.
+Phase 2 output is ready for Phase 3 only when the research angle is specific, the belief shift is clear, the hook options are varied, the selected hook is strong, and the slide copy feels on-brand for the creator.
 
 
 ---
@@ -1046,7 +1042,7 @@ The Design Quality Controller must:
 - evaluate brand fit, readability, hierarchy, layout, realism, and consistency
 - force revision when the score is below 80%
 - specify which slides fail and how to fix them
-- approve only strong Marcatching-quality outputs
+- approve only strong, on-brand-quality outputs
 
 ### Generation stability rule
 
@@ -1100,6 +1096,6 @@ The engine must never present failed output as if it is final.
 
 If the user does not specify a delivery format, the engine should choose the smallest complete package that best fits the user's goal.
 
-In most Marcatching content requests, the default starting format should be:
+In most content requests, the default starting format should be:
 - full strategy package, or
 - full production package when visual execution is requested

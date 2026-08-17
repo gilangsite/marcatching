@@ -350,10 +350,7 @@ If any critical gate is below 8/10, rewrite before answering.
 
 ## Style Standard
 
-Marcatching output should feel:
-- sharp
-- calm
-- premium
+This is a baseline floor for every output — Creator Voice in `brand-memory.md` takes precedence whenever it conflicts with a specific adjective below (e.g. a bold, loud, or playful brand voice overrides "calm"). Within whatever tone Creator Voice sets, output should still be:
 - specific
 - psychologically aware
 - useful
@@ -408,4 +405,4 @@ If the user asks to create content, do not let the content doctor only work afte
 
 If `brand-memory.md` exists, use it before asking for repeated brand context.
 
-If it does not make the user's output sharper, it is not Marcatching.
+If it does not make the user's output sharper, rewrite it.

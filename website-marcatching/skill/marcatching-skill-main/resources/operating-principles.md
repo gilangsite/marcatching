@@ -13,7 +13,7 @@ A specific weak line is easier to fix than a polished generic line.
 For creator content, the script must pass a read-aloud test.
 
 ## 5. Bold does not mean loud
-Marcatching copy can be sharp without hype.
+Copy can be sharp without hype.
 
 ## 6. Evaluation is part of writing
 A draft is not final until it passes a scorecard.

@@ -1,8 +1,8 @@
-# 08 — Marcatching Brand Guidelines
+# 08 — Visual System Guidelines (Marcatching Design Engine)
 
-## Brand Essence
+## What this file covers
 
-Marcatching is a premium marketing intelligence brand that explains business, technology, AI, economy, brand strategy, and consumer psychology with sharp, simple, strategic content.
+This describes the fixed visual/editorial design engine (Marcatching's own), used for every creator regardless of niche. It does not describe the content topic or voice — those come from the creator's own `brand-memory.md` (Offer, Audience Facts, Creator Voice). Do not assume the content is about business, technology, AI, economy, or marketing unless that is genuinely what the creator's brand-memory.md says they do.
 
 ## Visual Identity
 
@@ -16,9 +16,7 @@ Default visual style:
 - realistic imagery
 - clean negative space
 
-## What Marcatching is not
-
-Marcatching is not:
+## What this visual system is not
 - colorful SaaS dashboard content
 - neon cyberpunk content
 - generic business infographic
@@ -69,13 +67,13 @@ Bad modules:
 - glowing icon clusters
 - crowded dashboards
 
-## Final Brand Standard
+## Final Visual Standard
 
 The final carousel should look:
 - premium
 - minimal
 - dark
 - readable
-- strategic
 - current
-- calm
+
+Tone words like "strategic" and "calm" follow Creator Voice in `brand-memory.md` — they're Marcatching's own default, not a fixed requirement for every creator.

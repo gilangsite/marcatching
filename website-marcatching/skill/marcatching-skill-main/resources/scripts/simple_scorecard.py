@@ -14,7 +14,7 @@ scorecards = {
     "marketing": [
         "Audience Fit", "Product Specificity", "Differentiation", "Emotional Precision",
         "Proof Safety", "Copy Sharpness", "Cognitive Ease", "CTA Logic",
-        "Non-Generic Quality", "Marcatching Tone"
+        "Non-Generic Quality", "Brand Voice Fit"
     ],
     "content": [
         "Audience Relevance", "FYP Potential", "Hook Strength", "Retention Logic",

@@ -4,16 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, CheckCircle2 } from 'lucide-react';
 import { PromptItem } from '@/src/data/promptLibrary';
+import { fillPromptContext, hasPromptContext, type PromptContext } from '@/lib/promptLibraryContext';
 import styles from './PromptLibrary.module.css';
 
 interface PromptDetailDrawerProps {
   prompt: PromptItem | null;
   isOpen: boolean;
   onClose: () => void;
-  brandMemory: string;
+  promptContext: PromptContext;
 }
 
-export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, isOpen, onClose, brandMemory }) => {
+export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, isOpen, onClose, promptContext }) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -22,11 +23,13 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
     }
   }, [isOpen]);
 
+  const filledPrompt = prompt
+    ? fillPromptContext(prompt.fullPrompt.replace(/```text\n/g, '').replace(/```\n*/g, ''), promptContext)
+    : '';
+
   const handleCopy = () => {
     if (prompt) {
-      const promptText = prompt.fullPrompt.replace(/```text\n/g, '').replace(/```\n*/g, '');
-      const copyText = `# BRAND MEMORY CONTEXT\n\n${brandMemory}\n\n# MARCATCHING PROMPT\n\n${promptText}`;
-      navigator.clipboard.writeText(copyText);
+      navigator.clipboard.writeText(filledPrompt);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
@@ -63,7 +66,9 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
             </div>
 
             <div className={styles.drawerBody}>
-              <div className={styles.memoryAttachedBadge}><CheckCircle2 size={15} /> Brand Memory attached</div>
+              {hasPromptContext(promptContext) && (
+                <div className={styles.memoryAttachedBadge}><CheckCircle2 size={15} /> Terisi otomatis dari Brand Memory kamu</div>
+              )}
               <div className={styles.infoSection}>
                 <div className={styles.infoLabel}>Psychological Job</div>
                 <div className={styles.infoText}>{prompt.psychologicalJob}</div>
@@ -80,7 +85,7 @@ export const PromptDetailDrawer: React.FC<PromptDetailDrawerProps> = ({ prompt, 
 
               <div className={styles.promptBox}>
                 <div className={styles.promptText}>
-                  {prompt.fullPrompt.replace(/```text\n/g, '').replace(/```\n*/g, '')}
+                  {filledPrompt}
                 </div>
                 <button className={styles.copyBtn} onClick={handleCopy}>
                   {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}

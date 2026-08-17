@@ -1,7 +1,8 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Package, FileText, Layers, Zap } from 'lucide-react';
+import { SkillStoreModal } from './SkillStoreModal';
 
 interface HowToUseModalProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ interface HowToUseModalProps {
 }
 
 export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose }) => {
+  const [skillStoreOpen, setSkillStoreOpen] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -21,6 +24,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
   }, [isOpen]);
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -65,7 +69,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
             <div style={{ padding: '32px' }}>
               {/* Intro */}
               <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: 1.7, marginBottom: '32px' }}>
-                Prompt Library ini bekerja dengan <strong style={{ color: '#f1f5f9' }}>Marcatching Skill Main v1.1</strong> — satu skill yang diinstall di Claude. Setup cukup dilakukan sekali, lalu kamu bisa langsung jalankan prompt dari library ini kapan saja.
+                Isi Brand Memory di Creator Workspace <strong style={{ color: '#f1f5f9' }}>sekali saja</strong>, dan prompt di library ini akan otomatis terisi dengan data brand kamu setiap kali dibuka — tidak wajib, tapi bikin hasilnya jauh lebih spesifik daripada isi manual.
               </p>
 
               {/* Steps */}
@@ -74,28 +78,20 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                 {/* Step 1 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
                   <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
-                    <Package size={20} />
+                    <FileText size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '8px' }}>
-                      Step 1 — Install Skill di Claude
+                      Step 1 — Login & Isi Brand Memory di Creator Workspace
                     </h3>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem', marginBottom: '12px' }}>
-                      Download Skill ZIP dari Marcatching, lalu install di Claude. Setelah aktif, panggil skill dengan mengetik:
+                      Lengkapi Creator Voice, Redlines, Audience Facts, Offer, dan Proof Kit sekali saja di Creator Workspace. Ini opsional — tanpa ini prompt tetap bisa dipakai, cuma field-nya kosong dan harus diisi manual.
                     </p>
-                    <div style={{ background: 'rgba(13, 51, 105, 0.30)', border: '1px solid rgba(255, 255, 255, 0.16)', borderRadius: '8px', padding: '12px 16px', fontFamily: 'monospace', fontSize: '0.9rem', color: '#ffffff' }}>
-                      /marcatching-skill-main
-                    </div>
-
-                    {/* Download Button */}
-                    <a 
-                      href="https://www.marcatching.com/product/master-skills-for-marketing-expert"
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ 
-                        marginTop: '16px', 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
+                    <a
+                      href="/course/workspace"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         gap: '8px',
                         background: '#f8fafc',
                         color: '#0f172a',
@@ -107,8 +103,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                         transition: 'all 0.2s'
                       }}
                     >
-                      <Download size={17} />
-                      Download Marcatching Skill
+                      Buka Creator Workspace
                     </a>
                   </div>
                 </div>
@@ -116,22 +111,14 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                 {/* Step 2 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
                   <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
-                    <FileText size={20} />
+                    <Layers size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '8px' }}>
-                      Step 2 — Isi Brand Memory Template
+                      Step 2 — Prompt di sini otomatis terisi
                     </h3>
-                    <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem', marginBottom: '10px' }}>
-                      Buka file <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: '4px' }}>brand-memory-template.md</code> dari Skill ZIP. Isi bagian:
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
-                      {['Brand Snapshot', 'Offer', 'Audience', 'Voice', 'Competitors', 'Proof', 'Usage Notes'].map(item => (
-                        <span key={item} style={{ background: 'rgba(13, 51, 105, 0.30)', border: '1px solid rgba(255, 255, 255, 0.16)', borderRadius: '6px', padding: '3px 10px', fontSize: '0.82rem', color: '#ffffff' }}>{item}</span>
-                      ))}
-                    </div>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem' }}>
-                      Setelah selesai, rename jadi <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: '4px' }}>brand-memory-profile.md</code> — ini adalah memory utama brandmu.
+                      Begitu Brand Memory kamu lengkap, buka prompt manapun di library ini — field seperti <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Brand/Product:</code>, <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Tone:</code>, dan <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Offer:</code> otomatis terisi data brand kamu, baik saat dibaca di halaman ini maupun saat di-copy. Field yang sifatnya per-konten (Funnel Stage, Channel) tetap kosong karena memang berubah tiap kamu bikin konten baru.
                     </p>
                   </div>
                 </div>
@@ -139,27 +126,36 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                 {/* Step 3 */}
                 <div style={{ display: 'flex', gap: '16px' }}>
                   <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(13, 51, 105, 0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.16)' }}>
-                    <Layers size={20} />
+                    <Package size={20} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '8px' }}>
-                      Step 3 — Simpan Brand Memory ke Claude Project
+                      Step 3 — Pakai Skill Marcatching di Claude/ChatGPT (opsional)
                     </h3>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem', marginBottom: '12px' }}>
-                      Ada 3 cara menyimpan brand memory agar tidak perlu diketik ulang:
+                      Kalau kamu sudah beli Skill Marcatching, download versi personalized dari Creator Workspace — <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>brand-memory.md</code> sudah otomatis ada di dalam ZIP-nya, tidak perlu upload atau rename manual lagi.
                     </p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {[
-                        { label: 'Option A — Claude Project', desc: 'Upload brand-memory-profile.md ke Project Knowledge. Setiap sesi baru langsung tersedia.' },
-                        { label: 'Option B — Same Conversation', desc: 'Upload atau paste brand-memory-profile.md di awal conversation. Berlaku untuk satu sesi.' },
-                        { label: 'Option C — Local File', desc: 'Simpan file di lokal. Jika ada update brand, edit file lalu upload ulang ke project.' },
-                      ].map((opt, i) => (
-                        <div key={i} style={{ background: 'rgba(13, 51, 105, 0.24)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '12px 14px' }}>
-                          <strong style={{ color: '#ffffff', fontSize: '0.88rem', display: 'block', marginBottom: '4px' }}>{opt.label}</strong>
-                          <span style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: 1.5 }}>{opt.desc}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSkillStoreOpen(true)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'rgba(255,255,255,0.06)',
+                        color: '#f8fafc',
+                        fontWeight: 700,
+                        padding: '10px 20px',
+                        borderRadius: '8px',
+                        fontSize: '0.93rem',
+                        border: '1px solid rgba(255,255,255,0.14)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <Download size={17} />
+                      Lihat Skill Marcatching
+                    </button>
                   </div>
                 </div>
 
@@ -170,33 +166,23 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
                   </div>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '8px' }}>
-                      Step 4 — Jalankan Skill + Copy Prompt
+                      Step 4 — Copy Prompt & Jalankan
                     </h3>
                     <p style={{ color: '#94a3b8', lineHeight: 1.6, fontSize: '0.93rem', marginBottom: '12px' }}>
-                      Setiap sesi baru, gunakan format ini:
+                      Klik &quot;Copy Prompt&quot; lalu paste ke Claude atau ChatGPT.
                     </p>
-                    <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '14px 16px', fontFamily: 'monospace', fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.7 }}>
-                      <span style={{ color: '#ffffff' }}>/marcatching-skill-main</span>
-                      <br /><br />
-                      Gunakan Brand Memory Profile yang tersedia sebagai konteks utama.
-                      <br /><br />
-                      Task:<br />
-                      [Paste prompt dari library ini]
-                    </div>
 
-                    {/* Important Warning */}
-                    <div style={{ 
-                      background: 'rgba(13, 51, 105, 0.28)', 
-                      border: '1px solid rgba(255, 255, 255, 0.14)', 
-                      padding: '14px 16px', 
-                      borderRadius: '8px',
-                      marginTop: '12px'
+                    <div style={{
+                      background: 'rgba(13, 51, 105, 0.28)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
+                      padding: '14px 16px',
+                      borderRadius: '8px'
                     }}>
                       <strong style={{ color: '#ffffff', display: 'block', marginBottom: '6px', fontSize: '0.88rem' }}>
-                        WAJIB: Isi Placeholder di Bagian Konteks!
+                        Field kosong itu wajar, bukan error
                       </strong>
                       <p style={{ color: '#cbd5e1', fontSize: '0.85rem', margin: 0, lineHeight: 1.5 }}>
-                        Setiap prompt punya bagian <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Konteks:</code>. Hapus contoh teks dan isi dengan data brand kamu yang spesifik. Output yang generic adalah akibat dari konteks yang kosong.
+                        Kalau belum login atau Brand Memory belum lengkap, bagian <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>Konteks:</code> di prompt tetap kosong — isi manual sesuai brand kamu sebelum menjalankan prompt, atau lengkapi Brand Memory dulu supaya terisi otomatis di kunjungan berikutnya.
                       </p>
                     </div>
                   </div>
@@ -224,7 +210,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
 
               <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.87rem', lineHeight: 1.5, textAlign: 'center' }}>
-                  <strong style={{ color: '#94a3b8' }}>Ingat:</strong> Prompt ini tidak akan bekerja maksimal tanpa <em>Skill Main</em> dari Marcatching.
+                  <strong style={{ color: '#94a3b8' }}>Ingat:</strong> Brand Memory yang lengkap bikin hasil prompt jauh lebih spesifik — tapi opsional, prompt tetap jalan tanpanya.
                 </p>
               </div>
             </div>
@@ -232,5 +218,7 @@ export const HowToUseModal: React.FC<HowToUseModalProps> = ({ isOpen, onClose })
         </div>
       )}
     </AnimatePresence>
+    <SkillStoreModal isOpen={skillStoreOpen} onClose={() => setSkillStoreOpen(false)} />
+    </>
   );
 };

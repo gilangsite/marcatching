@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BrainCircuit, CheckCircle2, Download, ExternalLink, FileArchive, LockKeyhole, RefreshCw, Sparkles } from 'lucide-react'
+import { BrainCircuit, CheckCircle2, Download, ExternalLink, FileArchive, LockKeyhole, RefreshCw, Settings2, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
+import { SkillRequirementsModal } from './SkillRequirementsModal'
 import styles from './skill-library.module.css'
 
 type SkillCatalogItem = {
@@ -36,6 +37,8 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeDownload, setActiveDownload] = useState('')
+  const [checkingRequirements, setCheckingRequirements] = useState('')
+  const [requirementsModal, setRequirementsModal] = useState<{ skillId: string; skillName: string } | null>(null)
   const [notice, setNotice] = useState('')
 
   async function memberToken() {
@@ -100,6 +103,33 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
     }
   }
 
+  async function handleCreatePersonalized(skill: SkillCatalogItem) {
+    setCheckingRequirements(skill.id)
+    setError('')
+    try {
+      const token = await memberToken()
+      if (!token) throw new Error('Login kembali untuk mengunduh Skill.')
+      const response = await fetch(`/api/workspace/skills/requirements?skillId=${encodeURIComponent(skill.id)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      })
+      const payload = await response.json() as { fields?: Array<{ key: string }>; existingAnswers?: Record<string, string> }
+      const fields = payload.fields || []
+      const existingAnswers = payload.existingAnswers || {}
+      const allAnswered = fields.every(field => (existingAnswers[field.key] || '').trim().length > 0)
+      if (fields.length > 0 && !allAnswered) {
+        setRequirementsModal({ skillId: skill.id, skillName: skill.name })
+        return
+      }
+    } catch {
+      // If the requirements check itself fails, fall through and let the actual
+      // download call surface a real error instead of silently blocking the user.
+    } finally {
+      setCheckingRequirements('')
+    }
+    void downloadSkill(skill, 'personalized')
+  }
+
   return (
     <section className={`${styles.skillLibrary} ${compact ? styles.skillLibraryCompact : ''}`}>
       <header className={styles.skillHeader}>
@@ -150,10 +180,15 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
                     {skill.status === 'memory_required' ? (
                       <Link href="/workspace">Lengkapi AI Memory <BrainCircuit size={14} /></Link>
                     ) : (
-                      <button type="button" className={styles.skillPersonalizedAction} onClick={() => void downloadSkill(skill, 'personalized')} disabled={skillBusy}>
-                        {activeDownload === personalizedKey ? <RefreshCw size={15} /> : <Sparkles size={15} />}
-                        {activeDownload === personalizedKey ? 'Mencocokkan Skill...' : 'Create personalized Skill'}
-                      </button>
+                      <>
+                        <button type="button" className={styles.skillPersonalizedAction} onClick={() => void handleCreatePersonalized(skill)} disabled={skillBusy || checkingRequirements === skill.id}>
+                          {activeDownload === personalizedKey || checkingRequirements === skill.id ? <RefreshCw size={15} /> : <Sparkles size={15} />}
+                          {activeDownload === personalizedKey ? 'Mencocokkan Skill...' : checkingRequirements === skill.id ? 'Mengecek requirement...' : 'Create personalized Skill'}
+                        </button>
+                        <button type="button" className={styles.skillOriginalAction} onClick={() => setRequirementsModal({ skillId: skill.id, skillName: skill.name })} disabled={skillBusy}>
+                          <Settings2 size={15} /> Customize
+                        </button>
+                      </>
                     )}
                   </>
                 )}
@@ -165,6 +200,18 @@ export default function SkillLibrary({ compact = false }: { compact?: boolean })
 
       {notice && <p className={styles.skillNotice} role="status"><CheckCircle2 size={14} /> {notice}</p>}
       {error && <p className={styles.skillError} role="alert">{error}</p>}
+
+      <SkillRequirementsModal
+        isOpen={requirementsModal !== null}
+        skillId={requirementsModal?.skillId || ''}
+        skillName={requirementsModal?.skillName || ''}
+        onClose={() => setRequirementsModal(null)}
+        onSaved={() => {
+          const skill = skills.find(item => item.id === requirementsModal?.skillId)
+          setRequirementsModal(null)
+          if (skill) void downloadSkill(skill, 'personalized')
+        }}
+      />
     </section>
   )
 }

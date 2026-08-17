@@ -7,7 +7,7 @@ import styles from './PromptLibrary.module.css';
 const faqs = [
   {
     question: "How do I use these prompts?",
-    answer: "Copy the prompt, fill in the blanks in the 'Konteks' section with your specific product and audience details, and paste it into ChatGPT, Claude, or any AI tool."
+    answer: "If you're logged in and your Brand Memory is filled in the Creator Workspace, the 'Konteks' section fills in automatically. Otherwise, copy the prompt, fill in the blanks with your specific product and audience details, and paste it into ChatGPT, Claude, or any AI tool."
   },
   {
     question: "Do I need a paid AI tool?",
@@ -40,7 +40,7 @@ export const HowToUsePromptLibrary: React.FC = () => {
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
               <h3>Fill in the Context Blanks</h3>
-              <p>Every prompt has a 'Konteks' section. Don't leave it empty. The more precise you are with your Product, Audience, and Friction, the sharper the AI's output will be.</p>
+              <p>Every prompt has a 'Konteks' section. Fill in your Brand Memory once in the Creator Workspace and it auto-fills here — or fill it manually per prompt. Either way, don't leave it empty: the more precise your Product, Audience, and Friction, the sharper the AI's output will be.</p>
             </div>
           </div>
           

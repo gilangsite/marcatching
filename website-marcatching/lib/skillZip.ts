@@ -2,6 +2,7 @@ import 'server-only'
 
 import { deflateRawSync, inflateRawSync } from 'node:zlib'
 import { createBrandMemoryMarkdown, type WorkspaceData } from '../app/course/workspaceData'
+import type { SkillRequirementField } from './skillRequirements'
 
 const LOCAL_FILE_SIGNATURE = 0x04034b50
 const CENTRAL_FILE_SIGNATURE = 0x02014b50
@@ -170,25 +171,50 @@ export function isBrandMemoryReady(data: unknown) {
   return Boolean(memory && [memory.voice, memory.redLines, memory.audienceFacts, memory.qualityGate].every(value => typeof value === 'string' && value.trim().length >= 100))
 }
 
+function findSkillRoot(entries: ZipEntry[]) {
+  const skillEntry = entries
+    .filter(entry => /(^|\/)SKILL\.md$/.test(entry.name.replace(/\\/g, '/')))
+    .sort((a, b) => a.name.length - b.name.length)[0]
+  if (!skillEntry) throw new Error('Template ZIP tidak memiliki SKILL.md')
+  const normalizedSkillPath = skillEntry.name.replace(/\\/g, '/')
+  return normalizedSkillPath.includes('/') ? normalizedSkillPath.slice(0, normalizedSkillPath.lastIndexOf('/') + 1) : ''
+}
+
+/** Reads REQUIREMENTS.md sitting next to SKILL.md in a skill template, if the template ships one. */
+export function extractRequirementsDoc(template: Buffer): string | null {
+  const parsed = readZipEntries(template)
+  const skillRoot = findSkillRoot(parsed)
+  const requirementsPath = `${skillRoot}REQUIREMENTS.md`
+  const entry = parsed.find(item => item.name.replace(/\\/g, '/') === requirementsPath)
+  return entry ? entry.data.toString('utf8') : null
+}
+
+function renderSkillRequirementsSection(skillLabel: string, fields: SkillRequirementField[], answers: Record<string, string>) {
+  if (!fields.length) return ''
+  const lines = ['', `## Skill Requirements: ${skillLabel}`, '']
+  for (const field of fields) {
+    lines.push(`### ${field.label}`, (answers[field.key] || '').trim() || 'Belum diisi.', '')
+  }
+  return lines.join('\n')
+}
+
 export function customizeSkillZip(input: {
   template: Buffer
   templateSlug: string
   workspace: WorkspaceData
   identity: { name: string; email: string }
+  skillRequirements?: { skillLabel: string; fields: SkillRequirementField[]; answers: Record<string, string> }
 }) {
   const parsed = readZipEntries(input.template)
-  const skillEntry = parsed
-    .filter(entry => /(^|\/)SKILL\.md$/.test(entry.name.replace(/\\/g, '/')))
-    .sort((a, b) => a.name.length - b.name.length)[0]
-  if (!skillEntry) throw new Error('Template ZIP tidak memiliki SKILL.md')
-
-  const normalizedSkillPath = skillEntry.name.replace(/\\/g, '/')
-  const skillRoot = normalizedSkillPath.includes('/') ? normalizedSkillPath.slice(0, normalizedSkillPath.lastIndexOf('/') + 1) : ''
+  const skillRoot = findSkillRoot(parsed)
   const memoryPath = `${skillRoot}brand-memory.md`
   const creatorSlug = safeSlug(input.workspace.creatorName || input.identity.name || input.identity.email.split('@')[0])
   const templateSlug = safeSlug(input.templateSlug, 'marcatching-skill')
   const skillName = `${creatorSlug}-${templateSlug}`.slice(0, 63).replace(/-$/, '')
-  const brandMemory = Buffer.from(createBrandMemoryMarkdown(input.workspace), 'utf8')
+  const requirementsSection = input.skillRequirements
+    ? renderSkillRequirementsSection(input.skillRequirements.skillLabel, input.skillRequirements.fields, input.skillRequirements.answers)
+    : ''
+  const brandMemory = Buffer.from(createBrandMemoryMarkdown(input.workspace) + requirementsSection, 'utf8')
   let memoryMerged = false
   const entries = parsed.map(entry => {
     if (entry.name.replace(/\\/g, '/') !== memoryPath) return entry

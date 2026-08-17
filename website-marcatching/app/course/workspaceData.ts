@@ -131,6 +131,8 @@ export type WorkspaceData = {
   metrics: MetricSnapshot[]
   deliverables: Deliverable[]
   calendar: CalendarItem[]
+  /** Per-skill customization answers, keyed by product_id, then by the requirement field's key. */
+  skillRequirements: Record<string, Record<string, string>>
 }
 
 export const journeyOrder: JourneySection[] = [
@@ -275,6 +277,7 @@ export const defaultWorkspaceData: WorkspaceData = {
   metrics: [],
   deliverables: defaultDeliverables,
   calendar: [],
+  skillRequirements: {},
 }
 
 export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new Date()) {

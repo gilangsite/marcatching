@@ -340,9 +340,9 @@
 
 .cardHeader {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
+  padding-right: 40px;
   position: relative;
   z-index: 1;
 }
@@ -360,9 +360,18 @@
 }
 
 .cardNumber {
-  color: rgba(255,255,255,0.5);
-  font-size: 0.875rem;
-  font-weight: 500;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .cardTitle {

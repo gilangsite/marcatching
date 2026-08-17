@@ -12,7 +12,7 @@ Copy Sharpness:
 Cognitive Ease:
 CTA Logic:
 Non-Generic Quality:
-Marcatching Tone:
+Brand Voice Fit:
 ```
 
 ## Content Scorecard

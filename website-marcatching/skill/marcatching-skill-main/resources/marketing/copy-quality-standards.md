@@ -1,12 +1,10 @@
 # Copy Quality Standards
 
-## Good Marcatching Copy
+## Good Copy Standard
 
-Good copy is:
+Within whatever tone Creator Voice in `brand-memory.md` sets, good copy is:
 
 - specific
-- calm
-- sharp
 - short enough to remember
 - emotionally precise
 - product-aware
@@ -54,9 +52,9 @@ Add concrete situation.
 Add before-after contrast.
 ```
 
-## Marcatching Lines
+## Example Line Patterns
 
-Use only when relevant:
+Style reference only — these show the *pattern* (short, contrastive, one idea per sentence). Do not insert them verbatim into a buyer's output; write a new line in the same pattern using their own brand/offer:
 
 ```text
 Trust is not claimed. Trust is designed.

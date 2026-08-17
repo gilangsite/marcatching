@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { CheckCircle2, FileText, LockKeyhole, Upload } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle2, Sparkles } from 'lucide-react';
 import { HeroSection } from '@/components/prompt-library/HeroSection';
 import { SearchBar } from '@/components/prompt-library/SearchBar';
 import { CategoryFilter } from '@/components/prompt-library/CategoryFilter';
@@ -12,6 +13,7 @@ import { HowToUsePromptLibrary } from '@/components/prompt-library/HowToUsePromp
 import { HowToUseModal } from '@/components/prompt-library/HowToUseModal';
 import { promptLibrary, PromptCategory, PromptItem, PromptRole } from '@/src/data/promptLibrary';
 import { supabase, type NavLink } from '@/lib/supabaseClient';
+import { buildPromptContext, hasPromptContext, type PromptContext } from '@/lib/promptLibraryContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import styles from '@/components/prompt-library/PromptLibrary.module.css';
@@ -26,10 +28,8 @@ export default function PromptLibraryPage() {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHowToModalOpen, setIsHowToModalOpen] = useState(false);
-  const [brandMemory, setBrandMemory] = useState('');
-  const [brandMemoryName, setBrandMemoryName] = useState('');
-  const [brandMemoryError, setBrandMemoryError] = useState('');
-  const [isDraggingMemory, setIsDraggingMemory] = useState(false);
+  const [promptContext, setPromptContext] = useState<PromptContext>({});
+  const [workspaceStatus, setWorkspaceStatus] = useState<'checking' | 'signed-out' | 'connected'>('checking');
 
   useEffect(() => {
     let mounted = true;
@@ -48,30 +48,31 @@ export default function PromptLibraryPage() {
     };
   }, []);
 
-  const handleOpenDrawer = (prompt: PromptItem) => {
-    if (!brandMemory) {
-      setBrandMemoryError('Upload brand-memory.md terlebih dahulu agar prompt membawa konteks brand kamu.');
-      document.getElementById('brand-memory-gate')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
+  useEffect(() => {
+    let mounted = true;
+
+    async function hydrateBrandContext() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!mounted) return;
+      if (!user) {
+        setWorkspaceStatus('signed-out');
+        return;
+      }
+      const { data: row } = await supabase.from('creator_workspaces').select('data').eq('user_id', user.id).maybeSingle();
+      if (!mounted) return;
+      setPromptContext(buildPromptContext(row?.data));
+      setWorkspaceStatus('connected');
     }
+
+    void hydrateBrandContext();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleOpenDrawer = (prompt: PromptItem) => {
     setSelectedPrompt(prompt);
     setIsDrawerOpen(true);
-  };
-
-  const readBrandMemory = async (file?: File) => {
-    if (!file) return;
-    if (!file.name.toLowerCase().endsWith('.md')) {
-      setBrandMemoryError('File harus berformat .md. Download brand-memory.md dari Creator Workspace.');
-      return;
-    }
-    const content = await file.text();
-    if (content.trim().length < 80) {
-      setBrandMemoryError('Isi brand-memory.md masih terlalu pendek untuk menjadi konteks prompt.');
-      return;
-    }
-    setBrandMemory(content.trim());
-    setBrandMemoryName(file.name);
-    setBrandMemoryError('');
   };
 
   const handleCloseDrawer = () => {
@@ -124,34 +125,24 @@ export default function PromptLibraryPage() {
         <HeroSection />
         
         <div className={styles.container}>
-          <section
-            id="brand-memory-gate"
-            className={`${styles.memoryGate} ${brandMemory ? styles.memoryGateReady : ''} ${brandMemoryError ? styles.memoryGateAttention : ''}`}
-          >
-            <div className={styles.memoryGateCopy}>
-              <span>{brandMemory ? <CheckCircle2 size={21} /> : <LockKeyhole size={21} />}</span>
-              <div>
-                <small>Required context</small>
-                <h2>{brandMemory ? 'Brand Memory sudah terhubung.' : 'Masukkan brand-memory.md sebelum membuka prompt.'}</h2>
-                <p>{brandMemory ? `${brandMemoryName} hanya dibaca di browser ini dan akan ikut disalin bersama prompt.` : 'File ini membuat prompt memahami voice, redlines, audience facts, dan quality gate brand kamu—bukan menghasilkan jawaban generik.'}</p>
-              </div>
-            </div>
-            <label
-              className={`${styles.memoryDropzone} ${isDraggingMemory ? styles.memoryDropzoneDragging : ''}`}
-              onDragOver={(event) => { event.preventDefault(); setIsDraggingMemory(true); }}
-              onDragLeave={() => setIsDraggingMemory(false)}
-              onDrop={(event) => {
-                event.preventDefault();
-                setIsDraggingMemory(false);
-                void readBrandMemory(event.dataTransfer.files[0]);
-              }}
+          {workspaceStatus !== 'checking' && (
+            <section
+              id="brand-memory-gate"
+              className={`${styles.memoryGate} ${hasPromptContext(promptContext) ? styles.memoryGateReady : ''}`}
             >
-              <input type="file" accept=".md,text/markdown,text/plain" onChange={(event) => void readBrandMemory(event.target.files?.[0])} />
-              {brandMemory ? <FileText size={18} /> : <Upload size={18} />}
-              <span>{brandMemory ? 'Ganti file' : 'Upload atau drop file .md'}</span>
-            </label>
-            {brandMemoryError && <p className={styles.memoryGateError}>{brandMemoryError}</p>}
-          </section>
+              <div className={styles.memoryGateCopy}>
+                <span>{hasPromptContext(promptContext) ? <CheckCircle2 size={21} /> : <Sparkles size={21} />}</span>
+                <div>
+                  <small>Optional context</small>
+                  <h2>{hasPromptContext(promptContext) ? 'Brand Memory kamu terhubung.' : 'Prompt di bawah masih kosong — isi manual atau hubungkan Brand Memory.'}</h2>
+                  <p>{hasPromptContext(promptContext) ? 'Field seperti Brand/Product, Tone, dan Offer otomatis terisi dari Creator Workspace kamu saat prompt dibuka.' : 'Login dan lengkapi Brand Memory di Creator Workspace supaya field ini terisi otomatis tiap kamu buka prompt — atau tetap isi manual, itu opsional.'}</p>
+                </div>
+              </div>
+              <Link href="/course/workspace" className={styles.memoryDropzone}>
+                <span>{hasPromptContext(promptContext) ? 'Kelola Brand Memory' : 'Isi Brand Memory'}</span>
+              </Link>
+            </section>
+          )}
           
           {/* Role Selector UI */}
           <div className={styles.roleSelectorWrap}>
@@ -197,7 +188,7 @@ export default function PromptLibraryPage() {
                   key={prompt.id} 
                   prompt={prompt} 
                   onClick={handleOpenDrawer} 
-                  locked={!brandMemory}
+                  autoFilled={hasPromptContext(promptContext)}
                 />
               ))}
             </div>
@@ -220,7 +211,7 @@ export default function PromptLibraryPage() {
           prompt={selectedPrompt} 
           isOpen={isDrawerOpen} 
           onClose={handleCloseDrawer} 
-          brandMemory={brandMemory}
+          promptContext={promptContext}
         />
       </main>
 

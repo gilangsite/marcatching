@@ -386,6 +386,17 @@ function mergeWorkspaceData(parsed: unknown): WorkspaceData {
           status: calendarStatuses.includes(item.status as CalendarItem['status']) ? item.status as CalendarItem['status'] : 'Idea',
         }))
       : [],
+    skillRequirements: saved.skillRequirements && typeof saved.skillRequirements === 'object' && !Array.isArray(saved.skillRequirements)
+      ? Object.fromEntries(
+          Object.entries(saved.skillRequirements as Record<string, unknown>).flatMap(([productId, answers]) => {
+            if (!answers || typeof answers !== 'object' || Array.isArray(answers)) return []
+            const cleaned = Object.fromEntries(
+              Object.entries(answers as Record<string, unknown>).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+            )
+            return [[productId, cleaned]]
+          })
+        )
+      : {},
   }
 }
 

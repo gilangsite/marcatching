@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  ShoppingBag,
   Sparkles,
   X,
 } from 'lucide-react'
@@ -19,6 +20,7 @@ import styles from './shell.module.css'
 const navigation = [
   { href: '/', label: 'Learning Home', description: 'Course dan progress', icon: LayoutDashboard },
   { href: '/workspace', label: 'Creator Workspace', description: 'Revenue operating system', icon: Sparkles },
+  { href: '/store', label: 'Store', description: 'Cari & beli produk Marcatching', icon: ShoppingBag },
 ]
 
 function getDisplayName(email: string) {
@@ -52,11 +54,13 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   }, [mobileOpen])
 
   const displayName = useMemo(() => getDisplayName(email), [email])
-  const currentLabel = pathname?.startsWith('/workspace')
-    ? 'Creator Workspace'
-    : pathname === '/' || pathname === '/course'
-      ? 'Learning Home'
-      : 'Course'
+  const currentLabel = pathname?.startsWith('/store')
+    ? 'Store'
+    : pathname?.startsWith('/workspace')
+      ? 'Creator Workspace'
+      : pathname === '/' || pathname === '/course'
+        ? 'Learning Home'
+        : 'Course'
 
   async function handleLogout() {
     await supabase.auth.signOut()

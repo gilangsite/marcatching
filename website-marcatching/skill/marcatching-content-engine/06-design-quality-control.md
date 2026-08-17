@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This role is the final visual gatekeeper before Marcatching carousel content is considered ready.
+This role is the final visual gatekeeper before carousel content is considered ready.
 
-It checks whether the visual output truly matches the approved content brief, the Marcatching brand system, and the quality threshold expected from a premium editorial business brand.
+It checks whether the visual output truly matches the approved content brief, the Marcatching visual design system (Section 12 in SKILL.md), and the quality threshold expected from a premium editorial carousel.
 
 The Design Quality Controller does not create the original concept. It evaluates, diagnoses, and instructs revision or regeneration when necessary.
 
@@ -40,7 +40,7 @@ Use a 1–100% Design Quality Score.
 
 - 90–100% = excellent, ready to use
 - 80–89% = strong, ready with minor notes
-- 70–79% = usable but below Marcatching ideal, revise
+- 70–79% = usable but below the target visual standard, revise
 - below 70% = fail, regenerate or redesign
 
 ### Hard rule
@@ -73,13 +73,13 @@ Total = 100%
 ## Category Definitions
 
 ### 1. Brand Fit — 20%
-Checks whether the output feels unmistakably Marcatching.
+Checks whether the visual output feels unmistakably premium/editorial (Marcatching's design engine) AND whether the copy on the slides matches the creator's own Creator Voice in `brand-memory.md`.
 
 Questions:
-- Does it feel premium, minimal, strategic, and editorial?
+- Does it feel premium, minimal, and editorial?
 - Is the black-background aesthetic handled properly?
 - Does the typography behavior feel aligned with DM Sans + Palatino logic?
-- Does the tone feel business-intelligent rather than generic motivational?
+- Does the tone on the slides match Creator Voice (or feel business-intelligent rather than generic motivational, if Creator Voice is thin)?
 - Does the design avoid noisy trend aesthetics?
 
 Fail examples:
@@ -203,7 +203,7 @@ Checks whether the closing slide supports the brand outcome.
 
 Questions:
 - Is the CTA clear?
-- Is it aligned with Marcatching tone?
+- Is it aligned with the creator's own Creator Voice (or a calm, premium default tone if Creator Voice is thin)?
 - Is it not overly pushy or weak?
 
 Fail examples:
@@ -223,10 +223,10 @@ For every carousel, evaluate the following:
 - Is the sequence logical?
 
 ### Brand Consistency
-- Is the overall aesthetic Marcatching?
+- Is the overall visual aesthetic on-brand for Marcatching's design engine (Section 12)?
 - Is the black background handled consistently?
 - Is typography pairing logical?
-- Is the tone premium and strategic?
+- Does the tone match Creator Voice in `brand-memory.md` (or premium/strategic as the default if thin)?
 
 ### Text Quality in Visuals
 - Is all text readable?
@@ -279,7 +279,7 @@ Action:
 
 ### Type C — Major Failure
 Examples:
-- full carousel lacks Marcatching identity
+- full carousel lacks brand identity (neither the creator's voice nor the visual design engine comes through)
 - hook slide is weak
 - multiple slides are overcrowded
 - major anatomy or realism errors
@@ -360,7 +360,7 @@ If not, it must force quality.
 
 ## Final Rule
 
-Marcatching should never publish a carousel that looks inconsistent, generic, or visually confused.
+This engine should never produce a carousel that looks inconsistent, generic, or visually confused.
 
 If something feels off, even if it is hard to explain at first glance, Design QC must investigate and either diagnose or reject it.
 

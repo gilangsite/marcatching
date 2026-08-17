@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getMemberFromRequest } from '@/lib/memberApiAuth'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { customizeSkillZip, isBrandMemoryReady } from '@/lib/skillZip'
-import type { WorkspaceData } from '@/app/course/workspaceData'
+import { customizeSkillZip, extractRequirementsDoc, isBrandMemoryReady } from '@/lib/skillZip'
+import { parseSkillRequirements } from '@/lib/skillRequirements'
+import { fetchSkillTemplate, loadWorkspace } from '@/lib/skillSource'
 
 type SkillRow = {
   id: string
@@ -41,35 +42,6 @@ function zipDownload(buffer: Buffer, filename: string) {
       'Cache-Control': 'private, no-store',
     },
   })
-}
-
-function getDriveFileId(url: string) {
-  return url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] || url.match(/[?&]id=([a-zA-Z0-9_-]+)/)?.[1] || ''
-}
-
-async function fetchSkillTemplate(url: string) {
-  const parsed = new URL(url)
-  if (parsed.protocol !== 'https:' || !['drive.google.com', 'docs.google.com'].includes(parsed.hostname)) {
-    throw new Error('Lokasi template Skill tidak didukung')
-  }
-  const driveId = getDriveFileId(url)
-  if (!driveId) throw new Error('Link template Skill tidak valid')
-
-  const response = await fetch(`https://drive.google.com/uc?export=download&id=${driveId}`, { cache: 'no-store', redirect: 'follow' })
-  if (!response.ok) throw new Error('Template Skill belum bisa diunduh')
-  const template = Buffer.from(await response.arrayBuffer())
-  if (template.length < 4 || template.readUInt32LE(0) !== 0x04034b50) throw new Error('File sumber bukan ZIP Skill yang valid')
-  return template
-}
-
-async function loadWorkspace(userId: string) {
-  const { data, error } = await supabaseAdmin
-    .from('creator_workspaces')
-    .select('data')
-    .eq('user_id', userId)
-    .maybeSingle()
-  if (error) throw new Error('Creator Workspace belum bisa dibaca')
-  return data?.data as WorkspaceData | undefined
 }
 
 export async function GET(request: NextRequest) {
@@ -114,7 +86,7 @@ export async function GET(request: NextRequest) {
         owned,
         memoryReady,
         canCreate: owned && memoryReady,
-        storeUrl: `https://www.marcatching.com/product/${product.slug}`,
+        storeUrl: `/product/${product.slug}`,
         status: !owned ? 'locked' : memoryReady ? 'ready' : 'memory_required',
       }]
     })
@@ -174,12 +146,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Lengkapi Creator Voice, Redlines, Audience Facts, dan Output Quality Gate sebelum membuat Skill.' }, { status: 409 })
     }
 
+    const requirementsDoc = extractRequirementsDoc(template)
+    const requirementFields = requirementsDoc ? parseSkillRequirements(requirementsDoc) : []
+    const savedAnswers = workspace.skillRequirements?.[skill.product_id] || {}
+    const missingRequirement = requirementFields.some(field => !savedAnswers[field.key]?.trim())
+    if (missingRequirement) {
+      return NextResponse.json({ message: 'Lengkapi Customize Skill terlebih dahulu sebelum membuat Skill ini.' }, { status: 409 })
+    }
+
     const displayName = String(user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0] || 'Creator')
     const personalized = customizeSkillZip({
       template,
       templateSlug: skill.title,
       workspace,
       identity: { name: displayName, email },
+      skillRequirements: requirementFields.length ? { skillLabel: skill.title, fields: requirementFields, answers: savedAnswers } : undefined,
     })
     return zipDownload(personalized.buffer, personalized.filename)
   } catch (error) {
