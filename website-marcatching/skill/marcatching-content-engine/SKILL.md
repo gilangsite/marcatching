@@ -77,9 +77,14 @@ If it exists:
 4. Never cross a Redline.
 5. Ground claims in Audience Facts rather than assumption.
 6. Treat Output Quality Gate as an additional pass/fail check alongside the Content Doctor score (Section 10).
-7. The visual system (dark theme, 4:5 ratio, DM Sans + Palatino typography, editorial minimalism — Section 12) is Marcatching's fixed design engine and does NOT change based on `brand-memory.md`. Only the brand identity text (caption, CTA, hashtag, wordmark/logo label) and the copywriting voice change.
+7. Use Offer and Proof Kit (General Proof, Testimonials, Numbers/Data, Process Evidence, Limitations) as the only source of proof/credibility content in the copy — don't invent testimonials or numbers, and lean on Limitations where proof is thin. Use Primary CTA as the default closing action unless the request asks for a different one.
+8. The visual system (dark theme, 4:5 ratio, DM Sans + Palatino typography, editorial minimalism — Section 12) is Marcatching's fixed design engine and does NOT change based on `brand-memory.md`. Only the brand identity text (caption, CTA, hashtag, wordmark/logo label), the copywriting voice, and the proof used in copy change.
 
 If `brand-memory.md` does not exist (original/non-personalized download): ask the user for their brand/creator name, voice, and any redlines before writing the caption, CTA, or wordmark/logo label. Never default to "Marcatching" for someone else's carousel.
+
+## Conditional Clarification Gate
+
+Brand-level facts (Offer, Voice, Redlines, Audience Facts, Proof Kit, Primary CTA) come from `brand-memory.md` and don't need to be asked about. What's still fair to ask, in one short message before writing, if the request doesn't already make it clear: the topic/segment for this specific carousel, the desired slide count, and the desired action if it should differ from Primary CTA. Don't ask about things the request already states or clearly implies — most requests already give you the topic.
 
 ---
 

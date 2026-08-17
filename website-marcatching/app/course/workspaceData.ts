@@ -102,6 +102,10 @@ export type WorkspaceData = {
     whyNow: string
     offer: string
     proof: string
+    testimonials: string
+    numbersData: string
+    processEvidence: string
+    limitations: string
     revenuePath: string
   }
   contentRole: 'content-creator' | 'digital-marketer' | ''
@@ -242,6 +246,10 @@ export const defaultWorkspaceData: WorkspaceData = {
     whyNow: '',
     offer: '',
     proof: '',
+    testimonials: '',
+    numbersData: '',
+    processEvidence: '',
+    limitations: '',
     revenuePath: '',
   },
   contentRole: '',
@@ -277,6 +285,9 @@ export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new D
     `Updated: ${updated}`,
     `Brand/Creator: ${data.creatorName.trim() || 'Belum diisi'}`,
     '',
+    '## Offer',
+    data.revenue.offer || 'Belum diisi di Revenue Thesis.',
+    '',
     '## Creator Voice',
     data.memory.voice,
     '',
@@ -285,6 +296,21 @@ export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new D
     '',
     '## Audience Facts',
     data.memory.audienceFacts,
+    '',
+    '## Proof Kit',
+    '### General Proof',
+    data.revenue.proof || 'Belum diisi di Revenue Thesis.',
+    '### Testimonials',
+    data.revenue.testimonials || 'Belum ada testimoni yang dicatat.',
+    '### Numbers/Data',
+    data.revenue.numbersData || 'Belum ada angka/data yang dicatat.',
+    '### Process Evidence',
+    data.revenue.processEvidence || 'Belum ada bukti proses/mekanisme yang dicatat.',
+    '### Limitations / Honest Notes',
+    data.revenue.limitations || 'Belum ada batasan yang dicatat — jangan mengarang klaim di luar apa yang tersedia di atas.',
+    '',
+    '## Primary CTA',
+    data.conversion.primaryCta || 'Belum diisi di Conversion Map.',
     '',
     '## Output Quality Gate',
     data.memory.qualityGate,

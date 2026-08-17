@@ -29,7 +29,7 @@ If it does not exist and sources are available:
 1. Read official website/product page first.
 2. Read user-provided brand docs.
 3. Read social content examples.
-4. Extract voice, redlines, audience facts, and an output quality bar.
+4. Extract offer, voice, redlines, audience facts, proof (testimonials, numbers, process evidence, honest limitations), primary CTA, and an output quality bar.
 5. Build a Brand Memory using the schema below.
 6. Use this memory before writing.
 
@@ -55,9 +55,17 @@ This is the same schema as the real `brand-memory.md` at the skill root — use 
 # Brand Memory
 Brand/Creator:
 
+## Offer
 ## Creator Voice
 ## Redlines
 ## Audience Facts
+## Proof Kit
+### General Proof
+### Testimonials
+### Numbers/Data
+### Process Evidence
+### Limitations / Honest Notes
+## Primary CTA
 ## Output Quality Gate
 ## Experiment Learnings
 ```

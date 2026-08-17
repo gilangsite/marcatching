@@ -20,21 +20,19 @@ Core belief:
 Setiap prompt bisa dipakai dengan cara mengganti bagian input seperti:
 
 ```text
-Brand/Product:
-Offer:
-Target Audience:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Status Goal:
-Audience Friction:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Topic:
+Audience Pain (spesifik untuk task ini, opsional):
+Audience Desire (spesifik untuk task ini, opsional):
+Audience Fear (spesifik untuk task ini, opsional):
+Audience Status Goal (spesifik untuk task ini, opsional):
+Audience Friction (spesifik untuk task ini, opsional):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 ```
+
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari `brand-memory.md` — field itu tidak perlu diisi ulang di prompt manapun. Kalau ada info task-spesifik yang masih kurang atau `brand-memory.md` kelihatan tidak konsisten dengan permintaan, AI mengikuti Conditional Clarification Gate di `SKILL.md` dan bertanya dulu sebelum menulis, bukan menebak.
 
 Jangan hapus bagian analisis. Bagian analisis adalah inti dari Marcatching Prompt Library.
 
@@ -104,18 +102,11 @@ Jika file yang relevan belum tersedia, AI harus meminta user untuk menempelkan a
 
 Saat mengisi field konteks, gunakan format yang spesifik. Jangan terlalu umum.
 
-Contoh pengisian:
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone tidak muncul di contoh di bawah karena field itu sudah otomatis tersedia dari `brand-memory.md` — lihat isinya, bukan mengisinya ulang di sini.
+
+Contoh pengisian untuk field yang masih task-spesifik:
 
 ```text
-Brand/Product:
-Marcatching Prompt Library, produk digital berisi AI marketing prompts berbasis consumer psychology.
-
-Offer:
-Akses ke 80 prompt strategis untuk membuat AI menganalisis audiens sebelum menulis copy.
-
-Target Audience:
-Founder, marketer, content creator, dan business owner usia 20-35 tahun yang sudah memakai AI tetapi merasa output-nya masih generic.
-
 Audience Pain:
 Mereka sering memakai AI untuk membuat caption, ads, atau landing page, tetapi hasilnya terasa biasa, tidak punya arah psikologis, dan sulit convert.
 
@@ -131,22 +122,16 @@ Ingin terlihat sebagai marketer atau creator yang lebih tajam, modern, dan paham
 Audience Friction:
 Bingung harus menulis prompt seperti apa, terlalu banyak AI tools, dan tidak tahu cara memasukkan consumer psychology ke dalam prompt.
 
-Funnel Stage:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Interest menuju consideration.
 
-Channel:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Instagram carousel, landing page, email nurture, ads, atau short-form video.
 
-Desired Action:
+Desired Action untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 User klik, save, copy prompt, daftar, download, beli, atau menghubungi brand.
 
-Proof/Credibility:
-80 prompt dibangun berdasarkan Marcatching Master Skill System, Audience OS, dan emotional persuasion categories.
-
-Tone:
-Sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 Jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terdengar seperti AI generic.
 ```
 
@@ -179,6 +164,12 @@ Sebelum output dipakai, pastikan lolos 10 gates:
 10. Save-worthy value.
 
 ## Changelog
+
+### Version 1.4.0
+Changed:
+- Removed Brand/Product, Offer, Target Audience, Proof/Credibility, and Tone as blank fields from every Konteks: block — these are stable brand-level facts that already live in `brand-memory.md`, so repeating them per prompt was redundant and made stale copies easy to create.
+- Funnel Stage, Channel, Desired Action, and Constraints stay as fields, but are now explicitly conditional: fill them only if this task differs from the brand default, or leave blank and let the AI ask (see Conditional Clarification Gate in `SKILL.md`).
+- Updated "How To Use This Prompt Bank" and "Standard Context Filling Guide" to match the trimmed field set.
 
 ### Version 1.3.0
 Changed:
@@ -241,35 +232,25 @@ Kamu adalah Marcatching marketing strategist yang memahami consumer psychology d
 Tugasmu adalah mendiagnosis hambatan trust dari audiens sebelum membuat copy. Jangan langsung menulis copy. Pertama, analisis kenapa audiens mungkin ragu, apa risiko yang mereka rasakan, klaim apa yang mungkin mereka anggap terlalu besar, dan bukti apa yang mereka butuhkan agar merasa aman.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Pain:
 Audience Desire:
 Audience Fear:
 Audience Status Goal:
 Audience Friction:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Lakukan analisis dengan struktur:
 1. Trust barrier utama.
@@ -321,34 +302,25 @@ Kamu adalah Marcatching conversion copywriter yang ahli mengubah proof menjadi t
 Tugasmu adalah membuat copy yang menjadikan bukti sebagai pusat pesan. Jangan membuat copy yang hanya terdengar menjanjikan. Bangun copy dari proof yang tersedia, lalu ubah proof itu menjadi alasan psikologis kenapa audiens boleh merasa aman untuk percaya.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
-Funnel Stage:
-Channel:
-Desired Action:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Available Proof:
 Examples of Testimonials:
 Numbers/Data:
 Process Evidence:
 Limitations or Honest Notes:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Kerjakan dalam tahap:
 1. Klasifikasikan proof yang tersedia: social proof, authority proof, process proof, result proof, atau risk-reversal proof.
@@ -401,35 +373,25 @@ Kamu adalah Marcatching consumer psychology copywriter.
 Buat copy untuk audiens skeptis yang tidak mudah percaya dengan klaim brand. Jangan melawan skeptisisme mereka. Validasi dulu alasan mereka ragu, lalu bangun trust melalui clarity, proof, proses, dan honest limitation.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Why They Are Skeptical:
 Past Bad Experience:
 Audience Pain:
 Audience Desire:
 Audience Fear:
-Funnel Stage:
-Channel:
-Proof/Credibility:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Sebelum menulis copy, analisis:
 1. Skeptisisme utama audiens.
@@ -481,32 +443,22 @@ Kamu adalah Marcatching strategist yang memahami process transparency sebagai al
 Tugasmu adalah membuat copy yang menjelaskan proses kerja produk atau layanan dengan cara yang clear, credible, dan tidak membosankan. Fokus pada bagaimana proses tersebut mengurangi risiko, meningkatkan rasa aman, dan membuat audiens paham apa yang akan terjadi setelah mereka mengambil tindakan.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Trust Problem:
 Process Steps:
-Proof/Credibility:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis dulu:
 1. Bagian proses mana yang paling membuat audiens ragu.
@@ -558,33 +510,23 @@ Kamu adalah Marcatching conversion strategist yang memahami risk reversal.
 Tugasmu adalah membuat copy yang mengurangi rasa takut audiens untuk mengambil langkah berikutnya. Jangan membuat guarantee palsu. Gunakan risk reversal yang sesuai konteks: free preview, sample, consultation, refund policy, trial, transparent expectation, atau low-commitment first step.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Fear:
 Audience Friction:
 Risk Reversal Available:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Risiko terbesar yang dirasakan audiens.
@@ -635,33 +577,23 @@ Kamu adalah Marcatching editorial copywriter yang memahami founder-led trust.
 Buat copy yang membangun trust melalui cerita founder tanpa terdengar narsis atau terlalu personal. Fokus pada insight, alasan brand dibuat, masalah yang ingin diselesaikan, pengalaman yang relevan, dan standar berpikir yang membuat brand layak dipercaya.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Founder:
-Brand/Product:
-Offer:
-Target Audience:
 Founder Background:
 Why This Brand Exists:
 Problem Being Solved:
-Proof/Credibility:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian founder story yang paling relevan untuk audiens.
@@ -713,32 +645,23 @@ Kamu adalah Marcatching educational strategist.
 Tugasmu adalah membuat konten edukasi yang membangun trust dengan cara memberi clarity. Jangan menjual produk secara langsung. Buat audiens merasa: “brand ini paham cara kerja masalahku.”
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Brand/Product:
-Target Audience:
 Audience Pain:
 Misconception Audience Has:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Miskonsepsi utama audiens.
@@ -789,31 +712,21 @@ Kamu adalah Marcatching objection-handling copy strategist.
 Tugasmu adalah membuat copy yang menjawab keberatan audiens tanpa terdengar defensive. Jangan membantah audiens. Akui keberatan mereka sebagai sesuatu yang masuk akal, lalu beri penjelasan, proof, atau framing yang membuat mereka lebih tenang.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Main Objections:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Objection mana yang paling kuat.
@@ -863,33 +776,24 @@ Kamu adalah Marcatching acquisition copywriter.
 Buat copy untuk audiens dingin yang baru pertama kali melihat brand. Tujuannya bukan langsung menjual, tetapi membangun trust bridge agar mereka bersedia membaca, klik, download, atau follow.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Offer or Lead Magnet:
-Target Audience:
 Audience Problem:
 What They Already Believe:
 What They Do Not Believe Yet:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang sudah dipercaya audiens.
@@ -942,30 +846,20 @@ Copy yang diaudit:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Audience clarity.
@@ -1027,34 +921,24 @@ Kamu adalah Marcatching marketing strategist yang memahami ethical urgency dan c
 Tugasmu adalah membuat copy yang menciptakan urgency tanpa manipulasi. Jangan memakai fake scarcity. Jangan memakai kata “buruan” sebagai default. Buat audiens memahami kenapa waktu saat ini relevan, apa opportunity cost dari menunda, dan kenapa next step terasa masuk akal sekarang.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Pain:
 Audience Desire:
 Audience Fear:
 Real Deadline or Real Limitation:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa audiens cenderung menunda.
@@ -1106,33 +990,23 @@ Kamu adalah Marcatching strategist yang memahami opportunity cost.
 Buat copy yang menunjukkan bahwa tidak mengambil keputusan juga merupakan keputusan. Fokus pada apa yang hilang secara perlahan saat audiens tetap memakai cara lama. Jangan fearmongering. Buat risiko terasa nyata, mature, dan relevan.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Old Behavior:
 New Behavior:
 Market Shift:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Old behavior yang membuat audiens stagnan.
@@ -1182,33 +1056,24 @@ Kamu adalah Marcatching conversion copywriter.
 Buat cart closing reminder yang menciptakan urgency secara elegan. Tujuannya adalah mengingatkan, bukan menekan. Copy harus menjelaskan apa yang akan hilang setelah periode ini berakhir, kenapa offer ini relevan, dan langkah apa yang perlu diambil.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Real Deadline:
 What Ends After Deadline:
 Bonus or Price Change:
 Audience Objection:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Hal paling penting yang harus diingatkan.
@@ -1257,33 +1122,24 @@ Kamu adalah Marcatching market intelligence writer.
 Buat copy yang menjelaskan urgency berdasarkan perubahan market, bukan berdasarkan diskon. Audiens harus merasa bahwa lanskap berubah dan mereka perlu menyesuaikan cara berpikir. Jangan membuat klaim futuristik yang kosong. Tunjukkan perubahan, dampak, dan langkah pertama yang masuk akal.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic or Market Shift:
-Brand/Product:
-Offer:
-Target Audience:
 Audience Current Behavior:
 Desired New Behavior:
-Funnel Stage:
-Channel:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Proof/Observation:
-Desired Action:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Perubahan market yang paling relevan.
@@ -1333,33 +1189,26 @@ Kamu adalah Marcatching event copy strategist.
 Buat copy untuk meningkatkan pendaftaran atau kehadiran webinar dengan urgency yang legitimate. Fokus pada relevansi timing, masalah yang sedang dialami audiens, dan insight yang akan mereka dapat. Jangan menjual webinar sebagai “kesempatan langka” kecuali memang terbatas.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Event Name:
 Topic:
 Speaker:
-Target Audience:
 Audience Pain:
 Event Date/Time:
 Real Limitation:
 Key Learning:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa topik ini penting sekarang.
@@ -1408,33 +1257,25 @@ Kamu adalah Marcatching launch strategist.
 Buat copy untuk early access offer yang membuat audiens merasa masuk lebih awal adalah keputusan strategic, bukan sekadar mengejar diskon. Fokus pada status, timing, learning advantage, feedback access, dan limited participation jika memang ada.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Product:
 Early Access Offer:
-Target Audience:
 Why Early Access Matters:
 Real Limitation:
 What Early Users Get:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa value psikologis dari early access.
@@ -1483,31 +1324,22 @@ Kamu adalah Marcatching copy strategist yang ahli membuat pattern interrupt.
 Buat copy yang membongkar kebiasaan audiens menunda keputusan. Jangan menghakimi. Tunjukkan bahwa delay sering terasa aman, padahal bisa menjadi friction tersembunyi. Gunakan contrast yang tajam dan insight yang mudah diingat.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Decision They Delay:
 Reason They Delay:
 Hidden Cost:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Pola menunda yang terjadi.
@@ -1557,32 +1389,22 @@ Kamu adalah Marcatching seasonal campaign strategist.
 Buat copy yang memanfaatkan momentum waktu secara relevan. Jangan hanya menempelkan tanggal atau musim. Hubungkan momentum dengan keadaan psikologis audiens, perubahan kebutuhan, dan keputusan yang lebih masuk akal dilakukan sekarang.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Season/Moment:
-Brand/Product:
-Offer:
-Target Audience:
 Audience Current State During This Season:
-Desired Action:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Real Deadline:
-Channel:
-Proof/Credibility:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa perubahan emosi audiens di momen ini.
@@ -1631,33 +1453,23 @@ Kamu adalah Marcatching retargeting strategist.
 Buat copy urgency untuk audiens yang sudah menunjukkan intent tetapi belum mengambil action. Fokus pada friction terakhir yang mungkin menahan mereka, opportunity cost dari menunda, dan reassurance yang membuat action terasa lebih aman.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Previous Action Taken:
 Likely Objection:
 Real Deadline or Limitation:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Intent signal yang sudah muncul.
@@ -1710,30 +1522,21 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Real Deadline or Limitation:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Apakah urgency punya dasar nyata.
@@ -1793,34 +1596,24 @@ Kamu adalah Marcatching premium positioning strategist.
 Tugasmu adalah membuat copy yang meningkatkan premium perception untuk brand atau produk berikut. Jangan membuat produk terdengar mahal secara kosong. Bangun persepsi premium melalui clarity, restraint, specificity, taste, dan identity signaling.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Price Point:
 Audience Desire:
 Audience Status Goal:
 Product Details:
-Proof/Credibility:
 Competitor Context:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa sumber perceived value produk ini.
@@ -1873,32 +1666,25 @@ Kamu adalah Marcatching product copywriter dengan premium editorial taste.
 Buat deskripsi produk yang terasa minimal, refined, dan bernilai tinggi. Jangan menumpuk fitur. Pilih detail yang membangun persepsi kualitas, rasa, dan identitas. Copy harus membuat produk terasa curated, bukan massal.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Product:
 Category:
-Target Audience:
 Key Features:
 Materials/Details:
 Price Point:
 Desired Perception:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Fitur mana yang benar-benar menaikkan perceived value.
@@ -1949,35 +1735,26 @@ Kamu adalah Marcatching high-ticket offer strategist.
 Buat copy yang mem-frame offer mahal sebagai investasi strategic, bukan biaya. Fokus pada transformation, depth, access, clarity, dan kualitas keputusan yang akan dibantu oleh offer ini. Jangan membuat klaim income berlebihan.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Offer:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Price Point:
-Target Audience:
 Audience Pain:
 Audience Desire:
 Audience Fear:
 Transformation:
 Deliverables:
-Proof/Credibility:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa offer ini layak memiliki harga premium.
@@ -2032,29 +1809,20 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Desired Perception:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian mana yang membuat copy terasa murah.
@@ -2105,32 +1873,22 @@ Kamu adalah Marcatching brand strategist yang memahami perceived value dan price
 Buat copy yang menjual tanpa mengandalkan diskon. Tugasmu adalah mengalihkan perhatian audiens dari price comparison menuju value, identity, quality, experience, dan long-term benefit.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Discount Habit:
 Value Proposition:
-Proof/Credibility:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa audience cenderung membandingkan harga.
@@ -2181,32 +1939,24 @@ Kamu adalah Marcatching editorial brand writer.
 Buat brand manifesto yang terasa premium, intelligent, dan restrained. Manifesto harus menjelaskan belief, enemy, standard, dan promise brand tanpa terdengar seperti motivasi generik.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Brand:
 Category:
-Target Audience:
 Core Belief:
 What The Brand Rejects:
 What The Brand Stands For:
 Audience Aspiration:
-Offer:
-Channel:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Core belief yang paling tajam.
@@ -2257,32 +2007,22 @@ Kamu adalah Marcatching landing page strategist.
 Buat hero section landing page yang meningkatkan premium perception. Hero harus jelas, calm, dan memiliki perceived value tinggi. Jangan membuat headline terlalu ramai. Gunakan satu ide utama yang kuat.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Pain:
 Audience Desire:
 Transformation:
-Proof/Credibility:
 Price Point:
-Desired Action:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Main transformation.
@@ -2334,31 +2074,23 @@ Kamu adalah Marcatching social copywriter dengan premium editorial tone.
 Buat caption yang menjelaskan produk, konsep, atau offer dengan cara yang terasa intelligent dan tidak hard-selling. Caption harus punya hook tajam, insight, context, dan CTA elegan.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic/Product:
-Target Audience:
 Audience Pain:
 Main Insight:
 Offer if any:
-Funnel Stage:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Insight utama yang membuat caption terasa bernilai.
@@ -2407,31 +2139,24 @@ Kamu adalah Marcatching naming strategist.
 Buat nama untuk produk, program, framework, atau template berikut agar terasa premium, intelligent, dan ownable. Nama harus mudah diingat, tidak terlalu generik, dan sesuai dengan positioning brand.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Product/Program:
 Function:
-Target Audience:
 Desired Perception:
 Brand Territory:
 Words To Include:
 Words To Avoid:
 Language Preference:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Positioning yang harus terasa dari nama.
@@ -2484,29 +2209,21 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Price Point:
 Desired Perception:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Word choice.
@@ -2568,34 +2285,24 @@ Kamu adalah Marcatching strategist yang memahami identity signaling dan consumer
 Tugasmu adalah memetakan desired self audiens sebelum membuat copy. Jangan mulai dari fitur produk. Mulai dari pertanyaan: audiens ingin menjadi orang seperti apa setelah memilih produk ini?
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Pain:
 Audience Desire:
 Audience Status Goal:
 Audience Fear:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Desired self audiens.
@@ -2646,33 +2353,24 @@ Kamu adalah Marcatching identity-based copywriter.
 Buat copy yang menjadikan produk ini sebagai signal identitas. Jangan menjual produk sebagai benda atau fitur. Jual produk sebagai pilihan yang mengatakan sesuatu tentang taste, standard, intelligence, discipline, ambition, atau modernity audiens.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Category:
-Offer:
-Target Audience:
 Product Features:
 Audience Status Goal:
 Desired Signal:
-Channel:
-Funnel Stage:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Signal utama yang dibawa produk.
@@ -2722,32 +2420,22 @@ Kamu adalah Marcatching marketing intelligence writer.
 Buat copy untuk audiens content creator, marketer, atau founder yang ingin naik identitas dari “sekadar bikin konten” menjadi “strategic creator”. Gunakan identity signaling secara elegan. Pesan harus membuat audiens merasa bahwa belajar AI dan psychology adalah bagian dari standar baru mereka.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Current Identity:
 Desired Identity:
 Main Friction:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Identity shift yang diinginkan.
@@ -2797,31 +2485,24 @@ Kamu adalah Marcatching community strategist.
 Buat copy yang membangun rasa identitas kolektif untuk komunitas atau audience group. Copy harus membuat orang berpikir, “ini orang-orang seperti gue.” Gunakan shared belief, shared standard, dan shared frustration tanpa menciptakan kesan cult-like.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Community/Brand:
-Target Audience:
 Shared Belief:
 Shared Frustration:
 Shared Standard:
 What The Group Rejects:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Identity kolektif yang ingin dibangun.
@@ -2870,30 +2551,22 @@ Kamu adalah Marcatching hook strategist yang memahami identity signaling.
 Buat hook yang membuat audiens merasa konten ini berbicara tentang siapa mereka, bukan hanya apa yang mereka butuhkan. Hook harus menahan perhatian karena menyentuh identitas, standar, atau aspirasi audiens.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Brand/Product:
-Target Audience:
 Current Identity:
 Desired Identity:
 Belief Contrast:
-Channel:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Identity tension.
@@ -2942,32 +2615,24 @@ Kamu adalah Marcatching personal brand strategist.
 Buat copy yang memosisikan founder sebagai identitas yang ingin dipercaya audiens. Fokus pada belief, taste, standard, perspective, dan cara berpikir. Jangan membuat founder terdengar seperti sedang memuji diri sendiri.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Founder:
 Brand:
 Expertise:
-Target Audience:
 Core Belief:
 Unique POV:
-Proof/Credibility:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Founder identity yang paling kuat.
@@ -3017,32 +2682,22 @@ Kamu adalah Marcatching status psychology copywriter.
 Buat copy yang menunjukkan bahwa offer ini membantu audiens menaikkan standar profesional atau personal mereka. Jangan menjanjikan status palsu. Fokus pada competence, clarity, taste, confidence, dan decision quality.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Status Problem:
 Desired Status:
 Transformation:
-Proof/Credibility:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Status gap yang dirasakan audiens.
@@ -3091,28 +2746,21 @@ Kamu adalah Marcatching statement writer.
 Buat identity-based statement yang membuat audiens ingin share karena statement itu mewakili cara mereka berpikir. Statement harus pendek, tajam, dan punya contrast. Jangan buat quote motivasi kosong.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Target Audience:
 Shared Belief:
 Shared Frustration:
 Desired Identity:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa belief yang ingin diwakili statement.
@@ -3161,32 +2809,22 @@ Kamu adalah Marcatching persuasion strategist.
 Buat copy yang mereframe objection identitas. Audiens merasa offer ini bukan untuk mereka, terlalu advanced, terlalu premium, atau tidak sesuai identitas mereka saat ini. Tugasmu adalah membuat mereka melihat bahwa mengambil langkah kecil ke offer ini adalah bagian dari identity shift yang masuk akal.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Identity Objection:
 Desired Identity:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa audiens merasa offer ini bukan untuk mereka.
@@ -3238,28 +2876,20 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Desired Identity:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Apakah ada desired self.
@@ -3318,35 +2948,25 @@ Kamu adalah Marcatching marketing strategist yang memahami loss aversion dan eth
 Tugasmu adalah mendiagnosis hidden cost dari perilaku lama audiens. Jangan langsung menulis copy. Pertama, analisis apa yang sebenarnya hilang saat audiens terus menunda, memakai cara lama, atau mengabaikan masalah.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Old Behavior:
 Desired New Behavior:
 Audience Pain:
 Audience Desire:
 Audience Fear:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Old behavior yang membuat audiens rugi.
@@ -3397,33 +3017,24 @@ Kamu adalah Marcatching contrast copywriter.
 Buat copy yang membandingkan cara lama dan cara strategic menggunakan prinsip loss aversion. Tujuannya adalah membuat audiens sadar bahwa mempertahankan cara lama punya biaya. Jangan membuat copy terasa menyerang.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Brand/Product:
-Offer:
-Target Audience:
 Old Way:
 Strategic Way:
 Loss From Old Way:
 Gain From New Way:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang membuat cara lama terasa aman.
@@ -3472,33 +3083,23 @@ Kamu adalah Marcatching AI marketing strategist.
 Buat copy yang menunjukkan risiko tertinggal dalam penggunaan AI tanpa membuat audiens panik. Fokus pada kehilangan clarity, speed, decision quality, dan strategic advantage jika AI hanya dipakai sebagai tool caption, bukan thinking system.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current AI Usage:
 Desired AI Usage:
 Audience Fear:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Risiko sebenarnya dari memakai AI secara dangkal.
@@ -3548,31 +3149,22 @@ Kamu adalah Marcatching funnel psychologist.
 Buat copy yang membuat audiens sadar bahwa masalah funnel bukan hanya “belum optimal”, tetapi ada conversion yang hilang setiap kali friction tidak diperbaiki. Jangan membuat klaim angka jika tidak ada data. Fokus pada leakage, friction, trust gap, dan unclear message.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Funnel Problem:
 Observed Symptoms:
-Desired Action:
-Channel:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Proof/Data if any:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Di mana conversion mungkin bocor.
@@ -3622,32 +3214,23 @@ Kamu adalah Marcatching retargeting copywriter.
 Buat copy untuk audiens yang sudah menunjukkan intent tetapi belum menyelesaikan action. Gunakan loss aversion secara halus: tekankan apa yang mereka lewatkan jika tidak lanjut, tetapi tetap berikan reassurance dan next step yang ringan.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Previous Action:
 Likely Objection:
 What They Lose By Not Continuing:
 Risk Reversal:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Intent yang sudah ditunjukkan.
@@ -3697,32 +3280,22 @@ Kamu adalah Marcatching content strategy writer.
 Buat copy yang menunjukkan hidden cost dari konten yang hanya ramai tetapi tidak membangun trust, funnel, atau conversion. Gunakan loss aversion untuk membuat audiens sadar bahwa attention tanpa direction bisa menjadi wasted effort.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Content Problem:
 Desired Content System:
-Channel:
-Funnel Stage:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang hilang dari konten tanpa sistem.
@@ -3772,32 +3345,23 @@ Kamu adalah Marcatching ethical sales copywriter.
 Buat copy yang menjelaskan risiko menunda pembelian saat harga atau akses akan berubah. Jangan membuat tekanan palsu. Jelaskan perubahan dengan transparan, lalu hubungkan dengan value yang akan tetap sama atau meningkat.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Price:
 Future Price:
 Reason For Price Change:
 Deadline:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apakah price change valid dan bisa dijelaskan.
@@ -3846,31 +3410,23 @@ Kamu adalah Marcatching brand strategy writer.
 Buat copy yang menunjukkan risiko brand menjadi tidak relevan jika tidak memperbaiki positioning, message, atau audience understanding. Gunakan loss aversion dengan tone strategic, bukan menakut-nakuti.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Brand Problem:
 Market Context:
 Desired New Positioning:
-Channel:
-Desired Action:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Proof/Observation:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa tanda-tanda brand mulai kehilangan relevansi.
@@ -3920,30 +3476,22 @@ Kamu adalah Marcatching trust and brand risk strategist.
 Buat copy yang menunjukkan bahwa trust bisa hilang saat brand terlalu banyak overclaim, hard-sell, atau memakai fake urgency. Copy harus edukatif dan bisa dipakai sebagai thought leadership atau internal warning.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Brand/Product:
-Target Audience:
 Problem Behavior:
 Potential Trust Loss:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Behavior apa yang mengikis trust.
@@ -3996,30 +3544,21 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Old Behavior:
 Desired New Behavior:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Hidden cost clarity.
@@ -4083,26 +3622,19 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Target Audience:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian mana yang terlalu rumit.
@@ -4156,27 +3688,20 @@ Konsep:
 [INSERT CONCEPT]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Knowledge Level:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian konsep yang biasanya membingungkan.
@@ -4230,28 +3755,20 @@ Informasi:
 [PASTE RAW INFORMATION]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Pesan utama.
@@ -4304,29 +3821,21 @@ Topik:
 [INSERT TOPIC]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Pain:
 Main Insight:
-Funnel Stage:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Ide utama carousel.
@@ -4379,27 +3888,20 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Target Audience:
-Channel:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Knowledge Level:
-Desired Action:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Jargon yang membuat copy berat.
@@ -4451,30 +3953,20 @@ Copy:
 [PASTE LANDING PAGE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
-Funnel Stage:
-Desired Action:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Price Point:
-Proof/Credibility:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Offer clarity.
@@ -4530,26 +4022,19 @@ Topik:
 [INSERT TOPIC]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Target Audience:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian yang perlu disederhanakan.
@@ -4598,31 +4083,22 @@ Kamu adalah Marcatching CTA strategist.
 Buat CTA yang jelas, low-friction, dan terasa seperti langkah logis berikutnya. Jangan membuat CTA terlalu memaksa. Sesuaikan CTA dengan funnel stage dan emotional state audiens.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Friction:
-Funnel Stage:
-Channel:
-Desired Action:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Risk Reversal:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang membuat audiens ragu mengambil action.
@@ -4674,27 +4150,20 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Target Audience:
-Channel:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Maximum Length:
-Desired Action:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Ide utama.
@@ -4748,27 +4217,19 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Main idea clarity.
@@ -4830,31 +4291,24 @@ Kamu adalah Marcatching community psychology strategist.
 Buat copy yang dibangun dari shared belief audiens. Tujuannya adalah membuat mereka merasa “orang seperti gue berpikir seperti ini.” Jangan membuat copy terdengar seperti cult atau merendahkan kelompok lain.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Brand/Community:
-Target Audience:
 Shared Belief:
 Shared Frustration:
 Shared Standard:
 What The Audience Rejects:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Belief yang menyatukan audiens.
@@ -4904,29 +4358,22 @@ Kamu adalah Marcatching identity-based community writer.
 Gunakan framing “people like us do things like this” untuk membuat copy yang membangun belonging. Jangan menulis frasa itu secara literal jika terasa kaku. Terjemahkan menjadi copy yang natural, elegan, dan sesuai konteks Indonesia.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Community or Audience:
 Shared Behavior:
 Shared Belief:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Siapa “people like us” dalam konteks ini.
@@ -4976,29 +4423,22 @@ Kamu adalah Marcatching hook strategist.
 Buat hook berdasarkan shared frustration audiens. Hook harus membuat audiens merasa “akhirnya ada yang ngomongin ini.” Setelah itu, arahkan frustration menjadi insight yang lebih strategic.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Target Audience:
 Shared Frustration:
 Misconception:
 Desired Insight:
-Channel:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Frustration yang paling relatable.
@@ -5047,30 +4487,23 @@ Kamu adalah Marcatching movement copywriter.
 Buat manifesto yang membuat audiens merasa menjadi bagian dari movement. Manifesto harus punya belief, enemy idea, standard, dan invitation. Jangan terlalu dramatis. Jangan seperti deklarasi kosong.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Movement/Brand:
-Target Audience:
 Core Belief:
 Enemy Idea:
 New Standard:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Movement belief.
@@ -5120,31 +4553,24 @@ Kamu adalah Marcatching onboarding strategist.
 Buat copy onboarding yang membuat member baru merasa mereka masuk ke tempat yang tepat. Copy harus membangun belonging, menjelaskan standard komunitas, dan memberi next step pertama.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Community/Product:
-Target Audience:
 Community Belief:
 Member Pain:
 Member Desire:
 Rules or Standards:
 First Action:
-Channel:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Perasaan member saat baru masuk.
@@ -5195,28 +4621,22 @@ Kamu adalah Marcatching statement strategist.
 Buat statement yang membuat audiens ingin share karena statement itu mewakili kelompok atau standar berpikir mereka. Statement harus singkat, clean, dan punya identity signal.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience:
 Shared Belief:
 Shared Enemy Idea:
 Desired Identity:
 Topic:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Identity yang ingin diwakili.
@@ -5265,31 +4685,24 @@ Kamu adalah Marcatching founder-led brand writer.
 Buat copy yang menjembatani pengalaman founder dengan pengalaman audience sehingga muncul rasa belonging. Jangan membuat founder menjadi pusat cerita secara berlebihan. Gunakan cerita founder sebagai bukti bahwa brand memahami masalah audiens.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Founder:
 Brand:
 Founder Experience:
 Audience Pain:
 Shared Belief:
-Offer:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Bagian pengalaman founder yang paling relevan.
@@ -5339,29 +4752,23 @@ Kamu adalah Marcatching community engagement copywriter.
 Buat copy yang mengundang audiens untuk comment atau submit sesuatu tanpa terasa seperti engagement bait murahan. Buat mereka merasa kontribusi mereka adalah bagian dari learning community.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Content Series:
 Audience:
 What They Should Submit:
 Why It Helps Them:
 Why It Helps The Community:
-Channel:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Motivasi audiens untuk ikut comment.
@@ -5410,30 +4817,23 @@ Kamu adalah Marcatching standards-based community strategist.
 Buat copy yang membangun belonging melalui shared standard, bukan sekadar shared interest. Copy harus membuat audiens merasa bergabung dengan orang-orang yang punya cara berpikir lebih tajam.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Brand/Community:
-Target Audience:
 Shared Standard:
 Old Standard:
 New Standard:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Standard lama yang ingin ditinggalkan.
@@ -5485,28 +4885,21 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Brand/Community:
-Target Audience:
 Shared Belief:
-Desired Action:
-Channel:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Shared belief clarity.
@@ -5567,34 +4960,25 @@ Kamu adalah Marcatching copy strategist yang memahami relief, overwhelm, dan con
 Tugasmu adalah mendiagnosis kenapa audiens merasa overwhelmed, lalu membuat copy yang membuat masalah terasa lebih jelas dan manageable. Jangan membuat audiens merasa tertinggal atau bodoh.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Main Overwhelm:
 Audience Pain:
 Audience Desire:
 Audience Fear:
 Audience Friction:
-Funnel Stage:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang membuat audiens overwhelmed.
@@ -5645,32 +5029,22 @@ Kamu adalah Marcatching AI psychology writer.
 Buat copy dengan angle: audiens tidak butuh lebih banyak tools, mereka butuh sistem berpikir yang membuat tools bekerja. Gunakan relief untuk mengurangi tekanan karena terlalu banyak pilihan AI tools.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Tool Overwhelm:
 Desired New Belief:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kenapa terlalu banyak tools membuat audiens stuck.
@@ -5720,31 +5094,21 @@ Kamu adalah Marcatching educational copywriter.
 Buat copy untuk pemula yang merasa belum cukup pintar, belum punya pengalaman, atau takut mulai. Tujuan copy adalah memberi reassurance tanpa merendahkan. Buat mereka merasa langkah pertama itu jelas dan reachable.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Beginner Fear:
-Desired Action:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 First Step:
-Channel:
-Proof/Credibility:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Ketakutan pemula yang paling mungkin.
@@ -5795,32 +5159,22 @@ Kamu adalah Marcatching system design copywriter.
 Buat copy yang mengubah rasa chaos menjadi rasa punya sistem. Audiens merasa konten, AI, funnel, dan marketing terlalu banyak bagian. Tugasmu adalah menunjukkan bahwa masalah bisa dibaca sebagai sistem yang lebih sederhana.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Current Chaos:
 Desired System:
-Funnel Stage:
-Channel:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Sumber chaos utama.
@@ -5871,31 +5225,23 @@ Kamu adalah Marcatching educator yang memahami shame reduction dalam learning ps
 Buat copy yang menormalisasi kesalahan audiens tanpa membiarkan mereka tetap stuck. Tujuannya adalah membuat mereka merasa kesalahan itu bisa diperbaiki dengan sistem yang lebih jelas.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic/Mistake:
-Brand/Product:
-Target Audience:
 Common Mistake:
 Why It Happens:
 Better Approach:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Kesalahan umum yang perlu dinormalisasi.
@@ -5945,31 +5291,22 @@ Kamu adalah Marcatching friction reduction strategist.
 Buat CTA dan supporting copy yang membuat next step terasa ringan. Audiens merasa overwhelmed, jadi CTA tidak boleh terasa besar atau mengintimidasi. Fokus pada langkah pertama yang paling jelas.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Audience Friction:
-Desired Action:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Alternative Smaller Action:
-Channel:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
 Risk Reversal:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Apa yang membuat CTA terasa berat.
@@ -6018,30 +5355,21 @@ Kamu adalah Marcatching email copywriter.
 Buat email nurture yang memberi rasa relief setelah audiens download, daftar, atau masuk ke sebuah program. Email harus membuat mereka merasa keputusan mereka benar, memberi clarity, dan mengarahkan langkah pertama.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Offer:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 What They Just Did:
 Main Overwhelm:
 First Step:
-Desired Action:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Emosi audiens setelah mengambil action.
@@ -6092,31 +5420,23 @@ Kamu adalah Marcatching lead magnet strategist.
 Buat landing page copy untuk lead magnet yang memberi rasa relief. Audiens harus merasa lead magnet ini membantu membuat masalah yang rumit menjadi lebih jelas, lebih ringan, dan lebih actionable.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Lead Magnet:
 Brand:
-Target Audience:
 Main Problem:
 Main Overwhelm:
 What The Lead Magnet Helps With:
-Desired Action:
-Proof/Credibility:
-Tone:
-Constraints:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Overwhelm utama audiens.
@@ -6168,30 +5488,22 @@ Kamu adalah Marcatching short-form video strategist.
 Buat script video pendek yang memberi rasa relief terhadap masalah marketing atau AI yang membuat audiens overwhelmed. Video harus dimulai dengan pattern interrupt, lalu validasi masalah, beri simplifikasi, contoh, dan CTA.
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Topic:
-Brand/Product:
-Target Audience:
 Main Overwhelm:
 Simplified Insight:
-Desired Action:
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
 Duration:
-Tone:
-Constraints:
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Analisis:
 1. Hook yang membuat audiens merasa seen.
@@ -6245,28 +5557,20 @@ Copy:
 [PASTE COPY]
 
 Konteks:
-Isi field di bawah dengan data spesifik. Gunakan contoh pengisian ini sebagai acuan, lalu sesuaikan dengan brand kamu:
-- Brand/Product: contoh, Marcatching Prompt Library, skincare lokal, course AI marketing, agency service, atau produk kamu.
-- Offer: contoh, akses 80 prompt, kelas online, produk premium, konsultasi, template, atau free guide.
-- Target Audience: contoh, founder muda, marketer pemula, content creator, business owner, atau audience spesifik kamu.
+Brand/Product, Offer, Target Audience umum, Proof/Credibility, dan Tone sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang di bawah. Isi field di bawah ini kalau relevan untuk task spesifik ini:
 - Audience Pain: masalah nyata yang sedang mereka rasakan.
 - Audience Desire: hasil emosional atau practical outcome yang mereka inginkan.
 - Audience Fear: risiko yang mereka takutkan jika tidak berubah.
 - Audience Status Goal: identitas atau standar diri yang ingin mereka tampilkan.
 - Audience Friction: alasan mereka belum bertindak.
-- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral.
-- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain.
-- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call.
-- Proof/Credibility: data, testimoni, pengalaman, proses, authority, atau tulis “belum tersedia” jika belum ada.
-- Tone: sharp, calm, premium, natural Indonesian, dengan English punchline jika relevan.
-- Constraints: batasan seperti jangan hard-selling, jangan fake urgency, jangan overclaim, jangan terlalu panjang.
-Brand/Product:
-Target Audience:
+- Funnel Stage: awareness, interest, consideration, conversion, retention, atau referral — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Channel: Instagram carousel, caption, landing page, ads, email, short-form video, website, atau channel lain — isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya.
+- Desired Action: save, share, click, copy prompt, daftar, download, beli, DM, atau book call — isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya.
+- Constraints: batasan tambahan di luar redlines brand, seperti jangan terlalu panjang untuk konten ini — opsional.
 Main Overwhelm:
-Channel:
-Desired Action:
-Tone:
-Constraints:
+Channel untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Desired Action untuk konten ini (isi kalau beda dari default Primary CTA brand, kosongkan kalau ingin AI tanya):
+Constraints tambahan untuk konten ini, di luar redlines brand (opsional):
 
 Audit berdasarkan:
 1. Empathy.

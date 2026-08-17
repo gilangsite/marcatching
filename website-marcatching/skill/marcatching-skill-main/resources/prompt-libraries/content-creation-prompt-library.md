@@ -81,25 +81,20 @@ Task:
 Build a complete strategic content system for a brand, creator, product, or campaign.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -130,25 +125,20 @@ Task:
 Map what the audience thinks, feels, fears, wants, and shares before making content.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -179,25 +169,20 @@ Task:
 Create non-generic content pillars tied to audience psychology and funnel goals.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -228,25 +213,20 @@ Task:
 Define what each platform should do instead of reposting the same content everywhere.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -277,25 +257,20 @@ Task:
 Audit whether a creator or brand has a clear, follow-worthy content identity.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -326,25 +301,20 @@ Task:
 Connect viral content to trust, leads, conversion, retention, and referral.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -375,25 +345,20 @@ Task:
 Turn one niche into repeatable content clusters and subtopics.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -424,25 +389,20 @@ Task:
 Build the content system for a launch, event, offer, or movement.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -473,25 +433,20 @@ Task:
 Define how a brand should sound across hooks, captions, scripts, comments, and CTAs.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -522,25 +477,20 @@ Task:
 Create a practical 30-day roadmap from strategy to execution.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -578,25 +528,20 @@ Task:
 Research current viral trends and convert them into brand-fit opportunities.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -629,25 +574,20 @@ Task:
 Analyze competitor content to extract reusable patterns without copying.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -680,25 +620,20 @@ Task:
 Extract repeatable mechanics from viral/FYP content examples.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -731,25 +666,20 @@ Task:
 Turn comments, DMs, and audience questions into strategic content insight.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -782,25 +712,20 @@ Task:
 Identify hook patterns currently working in a niche or platform.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -833,25 +758,20 @@ Task:
 Find topics, formats, and angles competitors are missing.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -884,25 +804,20 @@ Task:
 Create a reusable library of viral formats for a niche.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -935,25 +850,20 @@ Task:
 Score which trends to use, adapt, or ignore.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -986,25 +896,20 @@ Task:
 Adapt viral mechanics without damaging brand positioning.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1037,25 +942,20 @@ Task:
 Create a weekly trend report for a content team.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1091,25 +991,20 @@ Task:
 Generate 100 ideas, classify them, then recommend the strongest ones.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1140,25 +1035,20 @@ Task:
 Create a recurring series that is recognizable, repeatable, and FYP-friendly.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1189,25 +1079,20 @@ Task:
 Break one topic into 20 different psychological angles.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1238,25 +1123,20 @@ Task:
 Create bold but ethical ideas without ragebait or misinformation.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1287,25 +1167,20 @@ Task:
 Make educational content less boring and more FYP-friendly.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1336,25 +1211,20 @@ Task:
 Create transformation-based content ideas using contrast.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1385,25 +1255,20 @@ Task:
 Generate misconception-correction ideas that feel clear and credible.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1434,25 +1299,20 @@ Task:
 Turn audience comments into content ideas using their own language.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1483,25 +1343,20 @@ Task:
 Create content ideas from founder belief, lessons, mistakes, and perspective.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1532,25 +1387,20 @@ Task:
 Turn evergreen topics into timely, platform-native ideas.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1586,25 +1436,20 @@ Task:
 Write short-form scripts with hook, pacing, visual direction, and CTA.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1635,25 +1480,20 @@ Task:
 Turn a topic into a beginning-middle-end narrative.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1684,25 +1524,20 @@ Task:
 Create a premium mini-documentary style script.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1733,25 +1568,20 @@ Task:
 Create relatable dialogue content with tension and payoff.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1782,25 +1612,20 @@ Task:
 Create authoritative but simple educational scripts.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1831,25 +1656,20 @@ Task:
 Write POV content that feels relatable and identity-driven.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1880,25 +1700,20 @@ Task:
 Create a 7-slide carousel with narrative flow.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1929,25 +1744,20 @@ Task:
 Write launch scripts that build context, desire, trust, and action.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -1978,25 +1788,20 @@ Task:
 Create emotionally resonant content without melodrama.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2027,25 +1832,20 @@ Task:
 Write natural user-generated style scripts that still feel strategic.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2081,25 +1881,20 @@ Task:
 Audit and rewrite hooks to stop the scroll without clickbait.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2130,25 +1925,20 @@ Task:
 Design the first 3 seconds of a short-form video.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2179,25 +1969,20 @@ Task:
 Rewrite scripts to reduce drop-off and improve watch-through.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2228,25 +2013,20 @@ Task:
 Create relevant pattern interrupts without gimmicks.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2277,25 +2057,20 @@ Task:
 Design first-frame visual ideas that stop scrolling.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2326,25 +2101,20 @@ Task:
 Add curiosity loops without misleading the audience.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2375,25 +2145,20 @@ Task:
 Build a script ending that connects back to the opening.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2424,25 +2189,20 @@ Task:
 Write captions that keep people reading after the video.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2473,25 +2233,20 @@ Task:
 Design on-screen text timing and sequencing for retention.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2522,25 +2277,20 @@ Task:
 Create hook variants to test different psychological triggers.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2578,25 +2328,20 @@ Task:
 Review medical education content for misleading claims and safety issues.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2629,25 +2374,20 @@ Task:
 Separate facts, interpretations, opinions, and marketing claims.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2680,25 +2420,20 @@ Task:
 Find content lines that could mislead or overgeneralize.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2731,25 +2466,20 @@ Task:
 Turn source material into a safe content brief.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2782,25 +2512,20 @@ Task:
 Add disclaimers and safety boundaries without making content boring.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2833,25 +2558,20 @@ Task:
 Simplify complex topics without changing meaning.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2884,25 +2604,20 @@ Task:
 Run a final pre-publish check for sensitive content.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2935,25 +2650,20 @@ Task:
 Make myth-busting content safe, nuanced, and credible.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -2986,25 +2696,20 @@ Task:
 Audit content on health, finance, social, or sensitive issues.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3037,25 +2742,20 @@ Task:
 Convert credible source material into safe social content.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3093,25 +2793,20 @@ Task:
 Analyze why a content likely performed well or reached FYP.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3144,25 +2839,20 @@ Task:
 Analyze why a content underperformed and how to fix it.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3195,25 +2885,20 @@ Task:
 Create a structured performance report after publishing.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3246,25 +2931,20 @@ Task:
 Score and fix hook, body, payoff, and CTA.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3297,25 +2977,20 @@ Task:
 Find where viewers may drop off and why.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3348,25 +3023,20 @@ Task:
 Separate vanity engagement from valuable engagement.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3399,25 +3069,20 @@ Task:
 Analyze whether content has save/share potential.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3450,25 +3115,20 @@ Task:
 Compare content against competitor examples.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3501,25 +3161,20 @@ Task:
 Score any content draft before publishing.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3552,25 +3207,20 @@ Task:
 Turn analytics into concrete next content experiments.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3606,25 +3256,20 @@ Task:
 Turn one idea into many platform-native assets.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3655,25 +3300,20 @@ Task:
 Plan a batch production workflow from research to scheduling.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3704,25 +3344,20 @@ Task:
 Create a 30-day calendar with funnel and emotional jobs.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3753,25 +3388,20 @@ Task:
 Create an SOP for consistent content production.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3802,25 +3432,20 @@ Task:
 Repurpose long-form content into shorts, carousels, emails, and posts.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3851,25 +3476,20 @@ Task:
 Rewrite one content for multiple platforms.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3900,25 +3520,20 @@ Task:
 Build a workflow for strategists, writers, designers, editors, and talent.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3949,25 +3564,20 @@ Task:
 Design a reusable asset library for hooks, scripts, proof, visuals, and CTAs.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -3998,25 +3608,20 @@ Task:
 Plan a focused sprint for product launch content.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.
@@ -4047,25 +3652,20 @@ Task:
 Create a weekly review system to improve content over time.
 
 Input:
-Brand/Product:
-Offer/Topic:
-Target Audience:
-Platform:
+Topic:
 Goal:
 Current Content Problem:
-Audience Pain:
-Audience Desire:
-Audience Fear:
-Audience Friction:
-Funnel Stage:
 Content Format:
 References/Links/Sources/Analytics if available:
-Tone:
-Constraints:
+Channel/Platform untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Funnel Stage untuk konten ini (isi kalau beda dari biasanya, kosongkan kalau ingin AI tanya):
+Fokus audience khusus untuk konten ini, kalau ada (pain/desire/fear/friction spesifik di luar audience facts umum):
+
+Brand/Product, Offer, Target Audience umum, Tone, dan Constraints brand sudah otomatis tersedia dari brand-memory.md — tidak perlu diisi ulang. Kalau ada info task-spesifik yang masih kurang, ikuti Conditional Clarification Gate di SKILL.md sebelum menulis.
 
 Process:
 1. Pahami konteks dan jangan langsung membuat output.
-2. Jika memory tersedia, gunakan brand, audience, offer, proof, dan voice memory.
+2. Baca brand-memory.md untuk brand, offer, audience, proof, dan voice — treat sebagai given. Ikuti Conditional Clarification Gate di SKILL.md untuk info task-spesifik yang belum jelas.
 3. Petakan Audience OS jika relevan.
 4. Tentukan emotional/FYP trigger utama dan pendukung.
 5. Sesuaikan output dengan platform, funnel stage, dan desired action.

@@ -135,6 +135,10 @@ const revenueFields: Array<{
   { key: 'whyNow', term: 'Why Now', plain: 'Alasan membeli sekarang', question: 'Kenapa masalah ini perlu diselesaikan sekarang, bukan enam bulan lagi?', explanation: 'Cari tekanan waktu yang jujur: target, perubahan kondisi, biaya menunda, atau momentum yang sedang terbuka.' },
   { key: 'offer', term: 'Offer', plain: 'Solusi yang kamu jual', question: 'Solusi apa yang kamu tawarkan, untuk hasil apa, dan dalam bentuk apa?', explanation: 'Jelaskan deliverable atau pengalaman yang mereka beli—bukan slogan. Buat satu kalimat yang mudah diulang.' },
   { key: 'proof', term: 'Proof', plain: 'Alasan untuk percaya', question: 'Bukti apa yang membuat pembeli merasa aman untuk percaya?', explanation: 'Bisa berupa hasil, proses, pengalaman, contoh pekerjaan, testimoni, atau batasan yang dijelaskan dengan jujur.' },
+  { key: 'testimonials', term: 'Testimonials', plain: 'Kutipan nyata dari pembeli', question: 'Kutipan atau ulasan nyata apa yang pernah kamu terima dari pembeli/klien?', explanation: 'Tulis kutipan asli sedekat mungkin dengan kata-kata mereka. Kalau belum ada, tulis apa adanya—jangan mengarang testimoni.' },
+  { key: 'numbersData', term: 'Numbers/Data', plain: 'Angka yang mendukung klaim', question: 'Angka atau data konkret apa yang bisa mendukung klaimmu—hasil, jumlah klien, durasi, persentase?', explanation: 'Angka spesifik jauh lebih meyakinkan daripada klaim umum. Kalau belum punya data terukur, tulis "belum tersedia" agar AI tidak mengarang angka.' },
+  { key: 'processEvidence', term: 'Process Evidence', plain: 'Bukti cara kerja/mekanisme', question: 'Kalau belum ada hasil besar untuk dipamerkan, bagaimana cara/proses kerjamu bisa jadi bukti kredibilitas?', explanation: 'Proses yang jelas dan bisa dijelaskan sering kali sama meyakinkannya dengan hasil akhir, terutama untuk brand baru.' },
+  { key: 'limitations', term: 'Limitations', plain: 'Batasan yang jujur diungkap', question: 'Apa yang belum bisa kamu klaim atau buktikan sekarang, dan sebaiknya diakui secara jujur?', explanation: 'Ini mencegah AI membuat klaim berlebihan. Contoh: "belum ada studi kasus jangka panjang" atau "baru diuji untuk niche tertentu".' },
   { key: 'revenuePath', term: 'Revenue Path', plain: 'Jalur menuju transaksi', question: 'Dari konten, langkah apa saja yang mereka lalui sampai menjadi pembeli?', explanation: 'Contoh: konten → profile → DM → diagnostic call → payment. Pilih jalur terpendek yang tetap terasa masuk akal.' },
 ]
 
@@ -317,6 +321,10 @@ function mergeWorkspaceData(parsed: unknown): WorkspaceData {
       whyNow: String(revenue.whyNow || ''),
       offer: String(revenue.offer || ''),
       proof: String(revenue.proof || ''),
+      testimonials: String(revenue.testimonials || ''),
+      numbersData: String(revenue.numbersData || ''),
+      processEvidence: String(revenue.processEvidence || ''),
+      limitations: String(revenue.limitations || ''),
       revenuePath: String(revenue.revenuePath || revenue.path || ''),
     },
     contentRole: saved.contentRole === 'content-creator' || saved.contentRole === 'digital-marketer' ? saved.contentRole : '',

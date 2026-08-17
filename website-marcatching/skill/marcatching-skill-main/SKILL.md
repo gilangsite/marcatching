@@ -55,11 +55,12 @@ For every serious request:
 6. If the request mentions FYP, viral, reach, engagement, views, scroll-stopping, shareability, or platform growth, run Viral Potential Preflight before writing.
 7. If the request involves factual, medical, legal, financial, trend, statistic, or brand research claims, run Research Safety before writing.
 8. If the output depends on a brand/product and `brand-memory.md` is not available, learn the brand before writing (see Mandatory Brand Learning Gate).
-9. Create a short strategy brief.
-10. Generate the output.
-11. Evaluate internally.
-12. Rewrite if any critical score is weak.
-13. Return the final answer in the requested format.
+9. Check for missing or inconsistent task-specific context before writing (see Conditional Clarification Gate) — ask one short question if genuinely needed, otherwise proceed.
+10. Create a short strategy brief.
+11. Generate the output.
+12. Evaluate internally.
+13. Rewrite if any critical score is weak.
+14. Return the final answer in the requested format.
 
 ## Resource Loading
 
@@ -82,12 +83,22 @@ Its schema (exact headings) is:
 # Brand Memory
 Brand/Creator: <name>
 
+## Offer
 ## Creator Voice
 ## Redlines
 ## Audience Facts
+## Proof Kit
+### General Proof
+### Testimonials
+### Numbers/Data
+### Process Evidence
+### Limitations / Honest Notes
+## Primary CTA
 ## Output Quality Gate
 ## Experiment Learnings
 ```
+
+Offer, Proof Kit, and Primary CTA are stable brand-level facts too — treat them the same as Creator Voice and Redlines: read once, reuse across every request, never ask the user to re-type them. Do not invent testimonials, numbers, or proof that aren't listed — if a Proof Kit sub-section says nothing is available yet, say so honestly instead of fabricating it.
 
 Do not confuse it with:
 
@@ -188,7 +199,7 @@ If `brand-memory.md` does not exist, also check for legacy manual-workflow files
 - `source-bank.md`
 
 Rule:
-Use `brand-memory.md` as the default brand context before asking for the same information again. Do not ask the user to re-enter Creator Voice, Redlines, Audience Facts, or Output Quality Gate if `brand-memory.md` is already available — treat its content as a hard constraint, not a suggestion.
+Use `brand-memory.md` as the default brand context before asking for the same information again. Do not ask the user to re-enter Offer, Creator Voice, Redlines, Audience Facts, Proof Kit, Primary CTA, or Output Quality Gate if `brand-memory.md` is already available — treat its content as a hard constraint, not a suggestion. Task-specific details it doesn't cover (platform, funnel stage, topic) follow the Conditional Clarification Gate instead.
 
 ### For evaluation and rewrite
 Read:
@@ -249,9 +260,11 @@ This gate has two paths. Check `brand-memory.md` first.
 1. Read it in full before writing anything.
 2. Treat Creator Voice and Redlines as hard constraints — voice must match, redlines must never be crossed.
 3. Treat Audience Facts as ground truth over assumption.
-4. Treat Output Quality Gate as the acceptance checklist for the final output.
-5. Treat Experiment Learnings as a prioritized signal, not a hard constraint.
-6. Do not ask the user to re-explain brand basics that are already in the file.
+4. Treat Offer and Primary CTA as the default product/action context — use them instead of asking "what do you sell" or "what should the CTA be" again.
+5. Treat the Proof Kit (General Proof, Testimonials, Numbers/Data, Process Evidence, Limitations) as the only source of proof you're allowed to use — pull from whichever sub-section actually has content, and lean on Limitations/honest framing where proof is thin rather than inventing something stronger.
+6. Treat Output Quality Gate as the acceptance checklist for the final output.
+7. Treat Experiment Learnings as a prioritized signal, not a hard constraint.
+8. Do not ask the user to re-explain brand basics that are already in the file. See the Conditional Clarification Gate below for what's still fair to ask about.
 
 **Path B — `brand-memory.md` is missing (original/non-personalized download, or manual use) and brand context is thin:**
 
@@ -267,6 +280,19 @@ This gate has two paths. Check `brand-memory.md` first.
    - objections
    - category alternatives
 4. Do not use generic copy until product truth is clear.
+
+## Conditional Clarification Gate
+
+Some context is stable per brand and belongs in `brand-memory.md` — Offer, Creator Voice, Redlines, Audience Facts, Proof Kit, Primary CTA. Other context is genuinely different per request — which platform this specific piece is for, which funnel stage it targets, the actual topic, and whether the desired action differs from the brand's default CTA. Don't invent the second kind, and don't make the user fill out a long form for it either — most requests already state or imply it.
+
+Before writing:
+
+1. Pull everything stable from `brand-memory.md` (see Mandatory Brand Learning Gate, Path A).
+2. Check whether the user's current message already states or clearly implies the task-specific pieces this request needs (platform/channel, funnel stage, topic, desired action if not the default). If so, proceed — don't ask for confirmation of things that are obvious from context.
+3. If something task-specific is genuinely missing and would materially change the output, ask about it in one short message before writing anything. Ask only for what's actually missing, not everything a prompt template could theoretically use.
+4. If `brand-memory.md` looks inconsistent with what's being asked right now — a different offer, audience, or claim than what's on file — say so and ask which one is current instead of silently picking one.
+
+This keeps fast requests fast, while still catching the cases where guessing would produce a generic or wrong output.
 
 ## Mandatory Research Safety Gate
 
@@ -293,7 +319,7 @@ Before final output, internally score the output.
 - Differentiation
 - Copy strength
 - Funnel fit
-- Proof handling
+- Proof handling (drawn only from the Proof Kit in `brand-memory.md` when it exists — no invented testimonials, numbers, or claims)
 - Brand fit (matches Creator Voice, does not cross any Redlines, grounded in Audience Facts — all from `brand-memory.md` when it exists)
 - Non-generic quality
 
