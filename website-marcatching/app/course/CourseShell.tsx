@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
+  BookOpen,
   ChevronRight,
   HelpCircle,
   LayoutDashboard,
@@ -20,6 +21,7 @@ import styles from './shell.module.css'
 const navigation = [
   { href: '/', label: 'Learning Home', description: 'Course dan progress', icon: LayoutDashboard },
   { href: '/workspace', label: 'Creator Workspace', description: 'Revenue operating system', icon: Sparkles },
+  { href: '/prompt-library', label: 'Prompt Library', description: 'Copy prompt siap pakai', icon: BookOpen },
   { href: '/store', label: 'Store', description: 'Cari & beli produk Marcatching', icon: ShoppingBag },
 ]
 
@@ -56,11 +58,13 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   const displayName = useMemo(() => getDisplayName(email), [email])
   const currentLabel = pathname?.startsWith('/store')
     ? 'Store'
-    : pathname?.startsWith('/workspace')
-      ? 'Creator Workspace'
-      : pathname === '/' || pathname === '/course'
-        ? 'Learning Home'
-        : 'Course'
+    : pathname?.startsWith('/prompt-library')
+      ? 'Prompt Library'
+      : pathname?.startsWith('/workspace')
+        ? 'Creator Workspace'
+        : pathname === '/' || pathname === '/course'
+          ? 'Learning Home'
+          : 'Course'
 
   async function handleLogout() {
     await supabase.auth.signOut()
