@@ -531,7 +531,7 @@ export default function StoreClient({
               width: cartFlight.from.width,
               height: cartFlight.from.height,
               borderRadius: 12,
-              opacity: 1,
+              opacity: 0.8,
               zIndex: 10001,
               overflow: 'hidden',
               pointerEvents: 'none',
@@ -543,9 +543,9 @@ export default function StoreClient({
               width: 20,
               height: 20,
               borderRadius: 999,
-              opacity: 0.3,
+              opacity: 0,
             }}
-            transition={{ duration: 0.65, ease: [0.34, 1.2, 0.64, 1] }}
+            transition={{ duration: 0.7, ease: [0.34, 1.2, 0.64, 1] }}
             onAnimationComplete={handleCartFlightComplete}
           >
             {cartFlight.imageUrl ? (
