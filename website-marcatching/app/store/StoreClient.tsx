@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect, type CSSProperties } from 'react'
+import { useState, useRef, useMemo, useEffect, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
 import { BadgePercent, ChevronDown, CreditCard, PackageCheck, Search, ShoppingBag, ShoppingCart, X } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { NavLink, StorePageBlock, Product, ProductCategory, PromotionWithProduct } from '@/lib/supabaseClient'
@@ -12,6 +13,7 @@ import VideoEmbed from '@/components/VideoEmbed'
 import StorePromoBanner from '@/components/store/StorePromoBanner'
 import StorePromoModal from '@/components/store/StorePromoModal'
 import StoreLoginModal from '@/components/store/StoreLoginModal'
+import MobileShopMenu from '@/components/store/MobileShopMenu'
 import styles from './store.module.css'
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -42,6 +44,13 @@ function getJustifyContent(align: string | undefined): CSSProperties['justifyCon
 type AppliedVoucher = {
   code: string
   discounts: Record<string, number>
+}
+
+type CartFlight = {
+  id: number
+  imageUrl: string | null
+  from: { top: number; left: number; width: number; height: number }
+  to: { top: number; left: number }
 }
 
 // ── Block renderer: content types ────────────────────────────
@@ -131,7 +140,7 @@ function ProductCard({
   isOwned: boolean
   voucherDiscount: number
   isInCart: boolean
-  onAddToCart: (product: Product) => void
+  onAddToCart: (product: Product, event: ReactMouseEvent<HTMLButtonElement>, thumbUrl: string | null) => void
 }) {
   const thumb = getDriveThumb(product.image_url, 'w800-h1000')
   const cat = categories.find(c => c.id === product.category_id)
@@ -203,7 +212,7 @@ function ProductCard({
             type="button"
             className={styles.cardCartBtn}
             disabled={isComingSoon || isInCart || isOwned}
-            onClick={() => onAddToCart(product)}
+            onClick={(e) => onAddToCart(product, e, thumb)}
           >
             <ShoppingCart size={14} />
             {isOwned ? 'Dimiliki' : isComingSoon ? 'Soon' : isInCart ? 'Di Cart' : 'Cart'}
@@ -241,6 +250,8 @@ export default function StoreClient({
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set(ownedProductIds))
+  const [cartFlight, setCartFlight] = useState<CartFlight | null>(null)
+  const [cartBumpNonce, setCartBumpNonce] = useState(0)
   const searchRef = useRef<HTMLInputElement>(null)
   const categoryMenuRef = useRef<HTMLDivElement>(null)
 
@@ -369,8 +380,29 @@ export default function StoreClient({
     return Math.max(0, product.price_after_discount - getVoucherDiscount(product))
   }
 
-  function handleAddToCart(product: Product) {
+  function handleAddToCart(product: Product, event: ReactMouseEvent<HTMLButtonElement>, thumbUrl: string | null) {
     setCartIds(prev => prev.includes(product.id) ? prev : [...prev, product.id])
+
+    // Fly a copy of the thumbnail from the clicked button toward whichever cart icon is
+    // actually visible right now (desktop shopNav cart button, or the mobile menu trigger),
+    // then bump that icon so the user gets clear visual confirmation it worked.
+    const fromRect = event.currentTarget.getBoundingClientRect()
+    const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-cart-flight-target]'))
+    const target = targets.find(el => el.getBoundingClientRect().width > 0)
+    const toRect = target?.getBoundingClientRect()
+    if (!toRect) { setCartBumpNonce(n => n + 1); return }
+
+    setCartFlight({
+      id: Date.now(),
+      imageUrl: thumbUrl,
+      from: { top: fromRect.top, left: fromRect.left, width: fromRect.width, height: fromRect.height },
+      to: { top: toRect.top + toRect.height / 2, left: toRect.left + toRect.width / 2 },
+    })
+  }
+
+  function handleCartFlightComplete() {
+    setCartFlight(null)
+    setCartBumpNonce(n => n + 1)
   }
 
   function handleRemoveFromCart(productId: string) {
@@ -468,9 +500,63 @@ export default function StoreClient({
         navLinks={navLinks}
         variant="light"
         account={{ email: userEmail, onLoginClick: () => setShowLoginModal(true), onLogoutClick: handleLogout }}
+        mobileMenu={(
+          <MobileShopMenu
+            categories={categories}
+            activeCategory={activeCategory}
+            onSelectCategory={setActiveCategory}
+            productCount={productBlocks.length}
+            appliedVoucherActive={Boolean(appliedVoucher)}
+            voucherProductCount={voucherProductCount}
+            onOpenVoucher={() => setShowVoucherSheet(true)}
+            cartCount={cartProducts.length}
+            onOpenCart={() => setShowCartSheet(true)}
+            canCheckout={Boolean(firstAvailableProduct)}
+            onCheckout={handleCheckoutCart}
+            cartBumpNonce={cartBumpNonce}
+          />
+        )}
       />
       <StoreLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} onSuccess={handleLoginSuccess} />
       <StorePromoModal isOpen={showPromoPopup} promotion={activePromotion} onClose={closePromoModal} onExpire={handlePromoExpire} />
+
+      <AnimatePresence>
+        {cartFlight && (
+          <motion.div
+            key={cartFlight.id}
+            initial={{
+              position: 'fixed',
+              top: cartFlight.from.top,
+              left: cartFlight.from.left,
+              width: cartFlight.from.width,
+              height: cartFlight.from.height,
+              borderRadius: 12,
+              opacity: 1,
+              zIndex: 10001,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+              boxShadow: '0 10px 24px rgba(13, 51, 105, 0.25)',
+            }}
+            animate={{
+              top: cartFlight.to.top - 10,
+              left: cartFlight.to.left - 10,
+              width: 20,
+              height: 20,
+              borderRadius: 999,
+              opacity: 0.3,
+            }}
+            transition={{ duration: 0.65, ease: [0.34, 1.2, 0.64, 1] }}
+            onAnimationComplete={handleCartFlightComplete}
+          >
+            {cartFlight.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={cartFlight.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: '#0d3369' }} />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className={styles.main}>
         {!hasPromotionBlock && activePromotion && !showPromoPopup && (
@@ -544,11 +630,19 @@ export default function StoreClient({
             <button
               type="button"
               className={styles.shopNavItem}
+              data-cart-flight-target="true"
               aria-label={`Buka keranjang, ${cartProducts.length} item`}
               title="Keranjang"
               onClick={() => setShowCartSheet(true)}
             >
-              <ShoppingCart size={18} />
+              <motion.span
+                key={cartBumpNonce}
+                style={{ display: 'inline-flex' }}
+                animate={{ scale: [1, 1.22, 0.94, 1.08, 1], rotate: [0, -14, 11, -5, 0] }}
+                transition={{ duration: 0.55, ease: 'easeOut' }}
+              >
+                <ShoppingCart size={18} />
+              </motion.span>
               <span>Keranjang</span>
               <strong>{cartProducts.length}</strong>
             </button>

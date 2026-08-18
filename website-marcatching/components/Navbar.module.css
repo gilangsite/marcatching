@@ -35,6 +35,12 @@
   align-items: center;
 }
 
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .dropdownWrap {
   position: relative;
 }

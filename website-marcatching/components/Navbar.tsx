@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LogOut } from 'lucide-react'
@@ -19,9 +19,13 @@ type NavbarProps = {
   // Optional account slot — only rendered when passed, so other Navbar consumers
   // (article pages, campaign pages, etc.) are unaffected.
   account?: NavbarAccount
+  // Optional extra slot rendered to the right of the account slot (rightmost) — used
+  // by /store for its mobile-only "more actions" dropdown, so it sits right next to
+  // the login/account control instead of floating independently and overlapping it.
+  mobileMenu?: ReactNode
 }
 
-export default function Navbar({ variant = 'dark', account }: NavbarProps) {
+export default function Navbar({ variant = 'dark', account, mobileMenu }: NavbarProps) {
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -46,25 +50,30 @@ export default function Navbar({ variant = 'dark', account }: NavbarProps) {
             style={{ objectFit: 'contain', height: '32px', width: 'auto' }}
           />
         </Link>
-        {account && (
-          <div className={styles.dropdownWrap} ref={menuRef}>
-            {account.email ? (
-              <>
-                <button type="button" className={styles.accountAvatarBtn} onClick={() => setShowMenu(v => !v)} aria-label="Akun">
-                  {account.email.charAt(0).toUpperCase()}
-                </button>
-                {showMenu && (
-                  <div className={styles.dropdownMenu}>
-                    <span className={styles.dropdownEmail}>{account.email}</span>
-                    <button type="button" className={styles.dropdownItemBtn} onClick={() => { setShowMenu(false); account.onLogoutClick() }}>
-                      <LogOut size={14} /> Logout
+        {(account || mobileMenu) && (
+          <div className={styles.navActions}>
+            {account && (
+              <div className={styles.dropdownWrap} ref={menuRef}>
+                {account.email ? (
+                  <>
+                    <button type="button" className={styles.accountAvatarBtn} onClick={() => setShowMenu(v => !v)} aria-label="Akun">
+                      {account.email.charAt(0).toUpperCase()}
                     </button>
-                  </div>
+                    {showMenu && (
+                      <div className={styles.dropdownMenu}>
+                        <span className={styles.dropdownEmail}>{account.email}</span>
+                        <button type="button" className={styles.dropdownItemBtn} onClick={() => { setShowMenu(false); account.onLogoutClick() }}>
+                          <LogOut size={14} /> Logout
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <button type="button" className={styles.accountLoginBtn} onClick={account.onLoginClick}>Masuk</button>
                 )}
-              </>
-            ) : (
-              <button type="button" className={styles.accountLoginBtn} onClick={account.onLoginClick}>Masuk</button>
+              </div>
             )}
+            {mobileMenu}
           </div>
         )}
       </div>
