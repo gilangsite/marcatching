@@ -1,20 +1,21 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
-import { Plus, Pencil, Trash2, X, Check, Megaphone, StopCircle } from 'lucide-react'
-import type { Product, PromotionWithProduct } from '@/lib/supabaseClient'
+import { Reorder } from 'framer-motion'
+import { Plus, Pencil, Trash2, X, Check, Megaphone, StopCircle, GripVertical } from 'lucide-react'
+import type { Product, PromotionWithProducts } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 import { showAdminToast } from './page'
 
 type PromotionForm = {
   headline: string
   description: string
-  product_id: string
+  product_ids: string[]
   status: 'on_going' | 'off'
   ends_at: string
 }
 
-const EMPTY_FORM: PromotionForm = { headline: '', description: '', product_id: '', status: 'off', ends_at: '' }
+const EMPTY_FORM: PromotionForm = { headline: '', description: '', product_ids: [], status: 'off', ends_at: '' }
 
 function formatRp(num: number) {
   return 'Rp ' + num.toLocaleString('id-ID')
@@ -27,10 +28,10 @@ function toLocalInputValue(iso: string) {
 }
 
 export default function PromotionsTab({ products }: { products: Product[] }) {
-  const [promotions, setPromotions] = useState<PromotionWithProduct[]>([])
+  const [promotions, setPromotions] = useState<PromotionWithProducts[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<PromotionWithProduct | null>(null)
+  const [editing, setEditing] = useState<PromotionWithProducts | null>(null)
   const [form, setForm] = useState<PromotionForm>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -60,12 +61,12 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
     setShowForm(true)
   }
 
-  function openEdit(promotion: PromotionWithProduct) {
+  function openEdit(promotion: PromotionWithProducts) {
     setEditing(promotion)
     setForm({
       headline: promotion.headline,
       description: promotion.description || '',
-      product_id: promotion.product_id,
+      product_ids: promotion.products.map(p => p.id),
       status: promotion.status,
       ends_at: promotion.ends_at ? toLocalInputValue(promotion.ends_at) : '',
     })
@@ -73,9 +74,16 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
     setShowForm(true)
   }
 
+  function toggleProduct(id: string) {
+    setForm(f => ({
+      ...f,
+      product_ids: f.product_ids.includes(id) ? f.product_ids.filter(x => x !== id) : [...f.product_ids, id],
+    }))
+  }
+
   async function saveForm(e: FormEvent) {
     e.preventDefault()
-    if (!form.headline.trim() || !form.product_id) { setError('Headline dan produk wajib diisi'); return }
+    if (!form.headline.trim() || form.product_ids.length === 0) { setError('Headline dan minimal 1 produk wajib diisi'); return }
 
     setSaving(true)
     setError('')
@@ -89,7 +97,7 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
           promotion: {
             headline: form.headline,
             description: form.description,
-            product_id: form.product_id,
+            product_ids: form.product_ids,
             status: form.status,
             ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
           },
@@ -106,7 +114,7 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
     setSaving(false)
   }
 
-  async function stopPromotion(promotion: PromotionWithProduct) {
+  async function stopPromotion(promotion: PromotionWithProducts) {
     try {
       const res = await fetch('/api/admin/promotions', {
         method: 'POST',
@@ -117,7 +125,7 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
           promotion: {
             headline: promotion.headline,
             description: promotion.description,
-            product_id: promotion.product_id,
+            product_ids: promotion.products.map(p => p.id),
             status: 'off',
             ends_at: promotion.ends_at,
           },
@@ -131,7 +139,7 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
     }
   }
 
-  async function deletePromotion(promotion: PromotionWithProduct) {
+  async function deletePromotion(promotion: PromotionWithProducts) {
     if (!confirm(`Hapus promotion "${promotion.headline}"?`)) return
     try {
       const res = await fetch('/api/admin/promotions', {
@@ -173,12 +181,46 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
               <textarea className="input" rows={3} placeholder="Deskripsi singkat promosi..." value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="form-group">
-              <label className="label">Produk *</label>
-              <select className="select" value={form.product_id} onChange={e => setForm(f => ({ ...f, product_id: e.target.value }))}>
-                <option value="">— Pilih Produk —</option>
-                {selectableProducts.map(p => <option key={p.id} value={p.id}>{p.name} ({formatRp(p.price_after_discount)})</option>)}
-              </select>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '4px 0 0' }}>Harga & diskon otomatis ikut produk. Produk &quot;Coming Soon&quot; tidak muncul di daftar ini.</p>
+              <label className="label">Produk * ({form.product_ids.length} dipilih)</label>
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 8px' }}>Centang produk yang mau dimasukkan ke promosi ini. Harga & diskon otomatis ikut masing-masing produk. Produk &quot;Coming Soon&quot; tidak muncul di daftar ini.</p>
+              <div style={{ maxHeight: 220, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 8, padding: 6 }}>
+                {selectableProducts.map(p => (
+                  <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 6px', cursor: 'pointer', borderRadius: 6 }}>
+                    <input type="checkbox" checked={form.product_ids.includes(p.id)} onChange={() => toggleProduct(p.id)} />
+                    <span style={{ flex: 1, fontSize: '0.85rem', color: '#0d3369' }}>{p.name}</span>
+                    <span style={{ fontSize: '0.78rem', color: '#64748b' }}>{formatRp(p.price_after_discount)}</span>
+                  </label>
+                ))}
+                {selectableProducts.length === 0 && (
+                  <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '4px' }}>Belum ada produk yang bisa dipakai (semua sedang Coming Soon).</p>
+                )}
+              </div>
+              {form.product_ids.length > 0 && (
+                <>
+                  <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '10px 0 4px' }}>Urutan tampil (geser untuk mengubah urutan):</p>
+                  <Reorder.Group
+                    axis="y"
+                    values={form.product_ids}
+                    onReorder={ids => setForm(f => ({ ...f, product_ids: ids }))}
+                    style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}
+                  >
+                    {form.product_ids.map(id => {
+                      const p = products.find(pp => pp.id === id)
+                      return (
+                        <Reorder.Item
+                          key={id}
+                          value={id}
+                          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', border: '1px solid #e2e8f0', borderRadius: 8, background: '#ffffff', cursor: 'grab' }}
+                        >
+                          <GripVertical size={14} color="#94a3b8" />
+                          <span style={{ flex: 1, fontSize: '0.82rem', color: '#0d3369' }}>{p?.name || '(produk tidak ditemukan)'}</span>
+                          <button type="button" onClick={() => toggleProduct(id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', display: 'flex' }}><X size={14} /></button>
+                        </Reorder.Item>
+                      )
+                    })}
+                  </Reorder.Group>
+                </>
+              )}
             </div>
             <div className={styles.formGrid}>
               <div className="form-group">
@@ -217,7 +259,7 @@ export default function PromotionsTab({ products }: { products: Product[] }) {
                 <span className={styles.linkTitle}>{promotion.headline}</span>
                 <span className={styles.linkUrl}>
                   {promotion.status === 'on_going' ? <span className={styles.statusActive}>On Going</span> : <span className={styles.statusSoon}>Off</span>}
-                  {' · '}{promotion.product?.name || 'Produk tidak ditemukan'}
+                  {' · '}{promotion.products.length} produk{promotion.products.length > 0 ? ` (${promotion.products.map(p => p.name).join(', ')})` : ''}
                   {' · '}{promotion.ends_at ? `Berakhir ${new Date(promotion.ends_at).toLocaleString('id-ID')}` : 'Tanpa batas waktu'}
                 </span>
               </div>

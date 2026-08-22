@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import type { CourseMaterial, Product, PromotionWithProduct } from '@/lib/supabaseClient'
+import type { CourseMaterial, Product, PromotionWithProducts } from '@/lib/supabaseClient'
 import { calculateWorkspaceProgress, type WorkspaceData } from './workspaceData'
 import SkillLibrary from './SkillLibrary'
 import PromotionSection from './PromotionSection'
@@ -52,7 +52,7 @@ export default function CourseDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [workspaceProgress, setWorkspaceProgress] = useState(0)
   const [workspaceSectionsDone, setWorkspaceSectionsDone] = useState(0)
-  const [promotion, setPromotion] = useState<PromotionWithProduct | null>(null)
+  const [promotion, setPromotion] = useState<PromotionWithProducts | null>(null)
   const [showPromoPopup, setShowPromoPopup] = useState(false)
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function CourseDashboardPage() {
     try {
       const promoResponse = await fetch('/api/promotions/active', { cache: 'no-store' })
       if (promoResponse.ok) {
-        const promoPayload = await promoResponse.json() as { data: PromotionWithProduct | null }
+        const promoPayload = await promoResponse.json() as { data: PromotionWithProducts | null }
         if (promoPayload.data) {
           setPromotion(promoPayload.data)
           setShowPromoPopup(true)

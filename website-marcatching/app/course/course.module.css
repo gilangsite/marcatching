@@ -1099,10 +1099,8 @@
 .promotionSection {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1.1rem;
   margin-top: 1.1rem;
   padding: clamp(1.3rem, 3.5vw, 2.4rem);
   overflow: hidden;
@@ -1130,39 +1128,12 @@
   cursor: pointer;
 }
 
-.promotionVisual {
-  position: relative;
-  flex: 0 0 8rem;
-  aspect-ratio: 4/5;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  background: #071019;
+.promotionHeader {
+  max-width: 42rem;
+  padding-right: 2.5rem;
 }
 
-.promotionVisual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.promotionDiscountBadge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  padding: 0.18rem 0.55rem;
-  border-radius: 999px;
-  background: #dc2626;
-  color: #ffffff;
-  font-size: 0.62rem;
-  font-weight: 800;
-}
-
-.promotionCopy {
-  flex: 1 1 20rem;
-  min-width: 0;
-}
-
-.promotionCopy h2 {
+.promotionHeader h2 {
   max-width: 32ch;
   margin: 0.6rem 0;
   color: #eff6fa;
@@ -1172,44 +1143,116 @@
   line-height: 1.15;
 }
 
-.promotionCopy > p {
+.promotionHeader > p {
   max-width: 40rem;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0;
   color: #8196a7;
   font-size: 0.78rem;
   line-height: 1.6;
 }
 
 .promotionCountdown {
-  margin-bottom: 0.7rem;
+  margin-top: 0.7rem;
   color: #8cc6ff;
   font-size: 0.82rem;
   font-weight: 700;
 }
 
-.promotionPricing {
+.promotionProductGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.9rem;
+}
+
+.promotionProductCard {
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
+  flex-direction: column;
+  border: 1px solid rgba(164, 207, 239, 0.11);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #071019;
 }
 
-.promotionPricing strong {
-  color: #f0f6fa;
-  font-size: 1.3rem;
+.promotionProductVisual {
+  position: relative;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: #0a1118;
+}
+
+.promotionProductVisual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promotionProductBadge {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+.promotionProductBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.7rem;
+}
+
+.promotionProductName {
+  color: #edf5fb;
+  font-size: 0.8rem;
   font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.promotionOldPrice {
+.promotionProductPricing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.promotionProductPricing strong {
+  color: #f0f6fa;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.promotionProductOldPrice {
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   text-decoration: line-through;
 }
 
-.promotionActions {
+.promotionProductCheckout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #e7f3fc;
+  color: #06101a;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.promotionFooter {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  flex-shrink: 0;
+  justify-content: flex-end;
 }
 
 .courseSection {
@@ -1838,10 +1881,6 @@
   .workspaceBlueprint {
     transform: none;
   }
-
-  .promotionVisual {
-    flex-basis: 6.5rem;
-  }
 }
 
 @media (max-width: 680px) {
@@ -1888,6 +1927,19 @@
 
   .lessonActions {
     grid-column: 2 / -1;
+  }
+
+  .promotionSection {
+    padding: 1.6rem 1.25rem 1.4rem;
+  }
+
+  .promotionHeader h2 {
+    max-width: none;
+  }
+
+  .promotionProductGrid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.6rem;
   }
 }
 

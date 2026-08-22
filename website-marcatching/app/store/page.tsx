@@ -2,8 +2,9 @@ import { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
 import { getServerSupabase } from '@/lib/supabaseServer'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import type { NavLink, StorePageBlock, ProductCategory, Product, PromotionWithProduct } from '@/lib/supabaseClient'
+import type { NavLink, StorePageBlock, ProductCategory, Product, PromotionWithProducts } from '@/lib/supabaseClient'
 import { expireIfPastDue } from '@/lib/promotionExpiry'
+import { PROMOTION_SELECT, shapePromotion, type PromotionRow } from '@/lib/promotionProducts'
 import StoreClient from './StoreClient'
 
 export const dynamic = 'force-dynamic'
@@ -30,7 +31,7 @@ export default async function StorePage() {
     supabase.from('product_categories').select('*').order('order_index'),
     supabase
       .from('promotions')
-      .select('*, product:products(id, name, slug, image_url, price_before_discount, price_after_discount, discount_percentage, is_coming_soon)')
+      .select(PROMOTION_SELECT)
       .eq('status', 'on_going')
       .order('updated_at', { ascending: false })
       .limit(1)
@@ -41,8 +42,8 @@ export default async function StorePage() {
   const blocks: StorePageBlock[] = blocksRes.data ?? []
   const products: Product[] = productsRes.data ?? []
   const categories: ProductCategory[] = categoriesRes.data ?? []
-  const promotion: PromotionWithProduct | null = promotionRes.data
-    ? await expireIfPastDue(promotionRes.data as PromotionWithProduct)
+  const promotion: PromotionWithProducts | null = promotionRes.data
+    ? await expireIfPastDue(shapePromotion(promotionRes.data as unknown as PromotionRow))
     : null
 
   let ownedProductIds: string[] = []

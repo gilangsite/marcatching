@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BadgePercent, ChevronDown, CreditCard, PackageCheck, Search, ShoppingBag, ShoppingCart, X } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
-import type { NavLink, StorePageBlock, Product, ProductCategory, PromotionWithProduct } from '@/lib/supabaseClient'
+import type { NavLink, StorePageBlock, Product, ProductCategory, PromotionWithProducts } from '@/lib/supabaseClient'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import VideoEmbed from '@/components/VideoEmbed'
@@ -231,7 +231,7 @@ export default function StoreClient({
   blocks: StorePageBlock[]
   products: Product[]
   categories: ProductCategory[]
-  promotion: PromotionWithProduct | null
+  promotion: PromotionWithProducts | null
   ownedProductIds: string[]
 }) {
   const [activeCategory, setActiveCategory] = useState('all')

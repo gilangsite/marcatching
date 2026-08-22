@@ -119,15 +119,19 @@ export type Promotion = {
   id: string
   headline: string
   description: string | null
-  product_id: string
+  // Deprecated: single-product promotions used this FK directly. Products now live in
+  // promotion_products (many-to-many) — see PromotionWithProducts.products below.
+  product_id: string | null
   status: 'on_going' | 'off'
   ends_at: string | null
   created_at: string
   updated_at: string
 }
 
-export type PromotionWithProduct = Promotion & {
-  product: Pick<Product, 'id' | 'name' | 'slug' | 'image_url' | 'price_before_discount' | 'price_after_discount' | 'discount_percentage' | 'is_coming_soon'>
+export type PromotionProductSummary = Pick<Product, 'id' | 'name' | 'slug' | 'image_url' | 'price_before_discount' | 'price_after_discount' | 'discount_percentage' | 'is_coming_soon'>
+
+export type PromotionWithProducts = Promotion & {
+  products: PromotionProductSummary[]
 }
 
 export type StorePageBlock = {
