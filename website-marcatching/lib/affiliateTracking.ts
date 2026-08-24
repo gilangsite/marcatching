@@ -15,6 +15,8 @@ type AttributionSnapshot = {
   commissionBps: number
   holdingDays: number
   attributionWindowDays: number
+  status: 'valid' | 'invalid'
+  invalidReason: string | null
 }
 
 function signingSecret() {
@@ -90,9 +92,10 @@ export async function resolveAffiliateAttribution(
   const versionEnds = version.ends_at ? new Date(version.ends_at).getTime() : Number.POSITIVE_INFINITY
   if (
     program.product_id !== productId || program.status !== 'active' || !['published', 'retired'].includes(version.status) ||
-    member.status !== 'active' || !link.is_active || now > windowEnds || clickedAt < versionStarts || clickedAt >= versionEnds ||
-    String(member.email).trim().toLowerCase() === buyerEmail.trim().toLowerCase()
+    member.status !== 'active' || !link.is_active || now > windowEnds || clickedAt < versionStarts || clickedAt >= versionEnds
   ) return null
+
+  const selfPurchase = String(member.email).trim().toLowerCase() === buyerEmail.trim().toLowerCase()
 
   return {
     clickId: click.click_id,
@@ -103,6 +106,8 @@ export async function resolveAffiliateAttribution(
     commissionBps: Number(version.commission_bps),
     holdingDays: Number(program.holding_days),
     attributionWindowDays: Number(program.attribution_window_days),
+    status: selfPurchase ? 'invalid' : 'valid',
+    invalidReason: selfPurchase ? 'self_purchase' : null,
   }
 }
 
@@ -153,6 +158,8 @@ export async function createOrderItemsAndAttribution(input: {
     commission_bps: attribution.commissionBps,
     holding_days: attribution.holdingDays,
     attribution_window_days: attribution.attributionWindowDays,
+    status: attribution.status,
+    invalid_reason: attribution.invalidReason,
   })
   if (attributionError) throw new Error('Failed to save affiliate attribution')
 }

@@ -108,6 +108,8 @@ function doPost(e) {
       return handleFinanceUpdate(data);
     } else if (data.action === 'financeDelete') {
       return handleFinanceDelete(data);
+    } else if (data.action === 'financeReconcileMidtransV2') {
+      return handleFinanceReconcileMidtransV2(data);
     } else if (data.action === 'surveySubmit') {
       return handleSurveySubmit(data);
     } else if (data.action === 'uploadSurveyThumbnail') {
@@ -967,8 +969,37 @@ function getFinanceSheet(sheetType) {
 }
 
 // ─── AUTO INCOME FROM VERIFIED MIDTRANS PAYMENT ─────────────
+function verifiedFinanceOrderAmount(data) {
+  var rawAmount = data.financeAmountRupiah !== undefined && data.financeAmountRupiah !== null
+    ? String(data.financeAmountRupiah).trim()
+    : String(data.totalPaid == null ? '' : data.totalPaid).trim();
+  if (!/^\d+$/.test(rawAmount)) throw new Error('Invalid paid-order finance amount');
+
+  var suppliedAmount = Number(rawAmount);
+  if (!isFinite(suppliedAmount) || suppliedAmount < 0 || Math.floor(suppliedAmount) !== suppliedAmount) {
+    throw new Error('Paid-order finance amount must be a non-negative integer');
+  }
+
+  var products = data.allProducts && data.allProducts.length ? data.allProducts : [];
+  if (products.length) {
+    var productSubtotal = products.reduce(function(sum, product) {
+      var price = Number(product.priceDiscounted);
+      if (!isFinite(price) || price < 0) throw new Error('Invalid product price in finance payload');
+      return sum + Math.round(price);
+    }, 0);
+    var voucherDiscount = Math.max(0, Math.round(Number(data.voucherDiscount) || 0));
+    var calculatedAmount = Math.max(0, productSubtotal - voucherDiscount);
+    if (calculatedAmount !== suppliedAmount) {
+      console.error('Finance amount mismatch; product snapshot used for order ' + String(data.orderId || 'unknown'));
+      return calculatedAmount;
+    }
+  }
+
+  return suppliedAmount;
+}
+
 function recordPaidOrderIncome(data) {
-  var nominal = Number(data.totalPaid) || 0;
+  var nominal = verifiedFinanceOrderAmount(data);
   if (nominal <= 0) {
     return { status: 'skipped', reason: 'zero_total', duplicate: false };
   }
@@ -1030,6 +1061,59 @@ function recordPaidOrderIncome(data) {
 
   sheet.appendRow(rowValues[0].concat([financeId]));
   return { status: 'success', id: financeId, duplicate: false };
+}
+
+// Reconcile only Midtrans-generated income rows from server-authoritative orders.
+// The unique action/function name avoids collisions with legacy Finance script files.
+function handleFinanceReconcileMidtransV2(data) {
+  var expectedSecret = PropertiesService.getScriptProperties().getProperty('PAYMENT_WEBHOOK_SECRET');
+  if (!expectedSecret || !data.paymentSecret || String(data.paymentSecret) !== String(expectedSecret)) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error', message: 'Unauthorized finance reconciliation'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var repairs = Array.isArray(data.repairs) ? data.repairs : [];
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var sheet = getFinanceSheet('income');
+    var lastRow = sheet.getLastRow();
+    if (lastRow <= 1 || repairs.length === 0) {
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', repaired: 0 }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var repairById = {};
+    repairs.forEach(function(repair) {
+      var id = String(repair.id || '');
+      var nominal = Number(repair.nominal);
+      if (id.indexOf('MIDTRANS-') === 0 && isFinite(nominal) && nominal >= 0 && Math.floor(nominal) === nominal) {
+        repairById[id] = nominal;
+      }
+    });
+
+    var ids = sheet.getRange(2, 8, lastRow - 1, 1).getValues();
+    var repaired = 0;
+    for (var i = 0; i < ids.length; i++) {
+      var rowId = String(ids[i][0] || '');
+      if (Object.prototype.hasOwnProperty.call(repairById, rowId)) {
+        var amountCell = sheet.getRange(i + 2, 2);
+        amountCell.clearContent();
+        amountCell.setNumberFormat('0');
+        amountCell.setValue(repairById[rowId]);
+        repaired++;
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', repaired: repaired }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 // ─── READ all rows ───────────────────────────────────────────

@@ -120,6 +120,7 @@ function checkoutNotificationPayload(input: CheckoutNotificationInput) {
     allProducts,
     voucherDiscount: input.voucherDiscount,
     totalPaid: input.totalPaid,
+    financeAmountRupiah: String(Math.max(0, Math.round(input.totalPaid))),
     paidAt: input.paidAt || '',
     paymentType: input.paymentType || '',
     midtransOrderId: input.midtransOrderId || '',

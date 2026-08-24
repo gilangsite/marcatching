@@ -25,7 +25,7 @@ type Dashboard = {
   member: { id: string; display_name: string; affiliate_code: string; status: string; accepted_terms_at: string } | null
   requiresTermsAcceptance: boolean
   settings: { minimumPayoutRupiah: number; settlementSchedule: string; attributionModel: string; commissionBase: string }
-  totals: { clicks: number; pending: number; available: number; processing: number; paid: number }
+  totals: { clicks: number; blockedSelfPurchases: number; pending: number; available: number; processing: number; paid: number }
   programs: Array<any>
   commissions: Array<any>
   adjustments: Array<any>
@@ -163,6 +163,10 @@ export default function AffiliatePage() {
         <article><Banknote /><span>Siap payout</span><strong>{formatMoney(data.totals.available)}</strong></article>
         <article><ReceiptText /><span>Sudah dibayar</span><strong>{formatMoney(data.totals.paid)}</strong></article>
       </section>
+
+      {data.totals.blockedSelfPurchases > 0 && <p className={styles.blockedNotice}>
+        <ShieldCheck size={16} /> {data.totals.blockedSelfPurchases} checkout menggunakan email affiliate sendiri dan otomatis diklasifikasikan sebagai Direct tanpa komisi.
+      </p>}
 
       <nav className={styles.tabs}>
         {(['programs', 'commissions', 'payouts', 'terms'] as const).map(tab => (

@@ -21,7 +21,7 @@ import styles from './affiliate.module.css'
 
 type AdminData = Record<string, any> & {
   products: Array<any>; programs: Array<any>; versions: Array<any>; members: Array<any>;
-  accounts: Array<any>; clicks: Array<any>; commissions: Array<any>; adjustments: Array<any>; cycles: Array<any>;
+  accounts: Array<any>; clicks: Array<any>; attributions: Array<any>; commissions: Array<any>; adjustments: Array<any>; cycles: Array<any>;
   statements: Array<any>; payouts: Array<any>; emailDeliveries: Array<any>; disputes: Array<any>; terms: Array<any>;
   configuration: {
     attributionSecretConfigured: boolean;
@@ -183,7 +183,7 @@ export default function AffiliateTab() {
           <article><span>Processing</span><strong>{formatMoney(data.metrics.processingRupiah)}</strong><p>Sudah dialokasikan ke statement dan payout.</p></article>
           <article><span>Lifetime paid</span><strong>{formatMoney(data.metrics.paidRupiah)}</strong><p>Riwayat tetap tersimpan; saldo tidak pernah di-reset.</p></article>
         </section>
-        <section className={styles.panel}><div className={styles.panelTitle}><div><span>Control notes</span><h2>Aturan inti aktif</h2></div></div><div className={styles.rules}><p><CheckCircle2 /> Komisi snapshot per order dan rate version.</p><p><CheckCircle2 /> Self-purchase dan link kedaluwarsa tidak dihitung.</p><p><CheckCircle2 /> Refund membalik komisi sebelum payout.</p><p><CheckCircle2 /> Rp50.000 minimum; sisanya carry forward.</p></div></section>
+        <section className={styles.panel}><div className={styles.panelTitle}><div><span>Control notes</span><h2>Aturan inti aktif</h2></div></div><div className={styles.rules}><p><CheckCircle2 /> Komisi snapshot per order dan rate version.</p><p><CheckCircle2 /> Self-purchase dan link kedaluwarsa tidak dihitung.</p><p><CheckCircle2 /> Refund membalik komisi sebelum payout.</p><p><CheckCircle2 /> Rp50.000 minimum; sisanya carry forward.</p>{data.metrics.blockedSelfPurchases > 0 && <p><ShieldAlert /> {data.metrics.blockedSelfPurchases} self-purchase tercatat sebagai Direct tanpa komisi.</p>}</div></section>
       </>}
 
       {section === 'programs' && <div className={styles.programLayout}>

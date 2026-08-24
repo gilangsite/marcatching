@@ -38,13 +38,14 @@ function affiliateRuntimeConfiguration() {
 
 async function dashboard() {
   await supabaseAdmin.rpc('promote_mature_affiliate_commissions')
-  const [products, programs, versions, members, accounts, clicks, commissions, adjustments, cycles, statements, payouts, emailDeliveries, disputes, terms] = await Promise.all([
+  const [products, programs, versions, members, accounts, clicks, attributions, commissions, adjustments, cycles, statements, payouts, emailDeliveries, disputes, terms] = await Promise.all([
     supabaseAdmin.from('products').select('id,name,slug,image_url,price_after_discount,is_active,is_coming_soon').order('created_at', { ascending: false }),
     supabaseAdmin.from('affiliate_programs').select('*').order('created_at', { ascending: false }),
     supabaseAdmin.from('affiliate_program_versions').select('*').order('version_number', { ascending: false }),
     supabaseAdmin.from('affiliate_members').select('id,user_id,email,display_name,affiliate_code,status,accepted_terms_at,created_at').order('created_at', { ascending: false }),
     supabaseAdmin.from('affiliate_payout_accounts').select('affiliate_member_id,bank_name,account_name,account_number_last4,tax_id_last4,verified_at'),
     supabaseAdmin.from('affiliate_clicks').select('id,affiliate_member_id,program_id,is_valid,clicked_at', { count: 'exact' }).eq('is_valid', true).order('clicked_at', { ascending: false }).limit(1000),
+    supabaseAdmin.from('affiliate_attributions').select('id,order_id,affiliate_member_id,program_id,status,invalid_reason,attributed_at').order('attributed_at', { ascending: false }).limit(1000),
     supabaseAdmin.from('affiliate_commissions').select('id,order_id,affiliate_member_id,program_id,program_version_id,statement_id,status,commissionable_amount_rupiah,commission_bps,commission_amount_rupiah,available_at,reversal_reason,paid_at,created_at').order('created_at', { ascending: false }).limit(1000),
     supabaseAdmin.from('affiliate_adjustments').select('*').order('created_at', { ascending: false }).limit(1000),
     supabaseAdmin.from('affiliate_settlement_cycles').select('*').order('period_end', { ascending: false }).limit(50),
@@ -54,7 +55,7 @@ async function dashboard() {
     supabaseAdmin.from('affiliate_disputes').select('*').order('created_at', { ascending: false }).limit(500),
     supabaseAdmin.from('affiliate_terms_versions').select('*').order('version', { ascending: false }),
   ])
-  const failed = [products, programs, versions, members, accounts, clicks, commissions, adjustments, cycles, statements, payouts, emailDeliveries, disputes, terms].find(result => result.error)
+  const failed = [products, programs, versions, members, accounts, clicks, attributions, commissions, adjustments, cycles, statements, payouts, emailDeliveries, disputes, terms].find(result => result.error)
   if (failed?.error) throw failed.error
 
   const commissionRows = commissions.data || []
@@ -64,13 +65,14 @@ async function dashboard() {
     .reduce((sum, row) => sum + Number(row.commission_amount_rupiah || 0), 0)
   return {
     products: products.data || [], programs: programs.data || [], versions: versions.data || [],
-    members: members.data || [], accounts: accounts.data || [], clicks: clicks.data || [],
+    members: members.data || [], accounts: accounts.data || [], clicks: clicks.data || [], attributions: attributions.data || [],
     commissions: commissionRows, adjustments: adjustmentRows, cycles: cycles.data || [], statements: statements.data || [],
     payouts: payouts.data || [], emailDeliveries: emailDeliveries.data || [], disputes: disputes.data || [], terms: terms.data || [],
     configuration: affiliateRuntimeConfiguration(),
     metrics: {
       activeAffiliates: (members.data || []).filter(row => row.status === 'active').length,
       validClicks: clicks.count ?? (clicks.data || []).length,
+      blockedSelfPurchases: (attributions.data || []).filter(row => row.status === 'invalid' && row.invalid_reason === 'self_purchase').length,
       pendingRupiah: total(['pending']),
       availableRupiah: total(['available']) + adjustmentRows.filter(row => row.status === 'available').reduce((sum, row) => sum + Number(row.amount_rupiah || 0), 0),
       processingRupiah: total(['allocated']) + adjustmentRows.filter(row => row.status === 'allocated').reduce((sum, row) => sum + Number(row.amount_rupiah || 0), 0),

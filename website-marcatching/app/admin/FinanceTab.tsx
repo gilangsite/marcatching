@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import {
-  Plus, X, Check, Trash2, Pencil, TrendingUp, TrendingDown,
-  Settings, DollarSign, RefreshCw, ChevronDown, ChevronUp,
+  Plus, X, Trash2, Pencil, TrendingUp, TrendingDown,
+  Settings, DollarSign, RefreshCw,
   FileSpreadsheet
 } from 'lucide-react'
 import styles from './admin.module.css'
@@ -186,11 +186,8 @@ function FinanceModal({
   onSave: (form: typeof EMPTY_FORM) => void
   saving: boolean
 }) {
-  const [form, setForm] = useState(EMPTY_FORM)
-
-  useEffect(() => {
-    if (modal.editing) {
-      setForm({
+  const [form, setForm] = useState(() => modal.editing
+    ? {
         date: modal.editing.date,
         nominal: String(modal.editing.nominal),
         category: modal.editing.category,
@@ -198,17 +195,14 @@ function FinanceModal({
         details: modal.editing.details,
         billing: modal.editing.billing,
         status: modal.editing.status,
-      })
-    } else {
-      setForm({
+      }
+    : {
         ...EMPTY_FORM,
         date: todayStr(),
         category: config.categories[0] ?? '',
         billing: config.billingOptions[0] ?? 'Once',
         status: config.statusOptions[0] ?? 'Paid',
       })
-    }
-  }, [modal, config])
 
   if (!modal.open) return null
 
@@ -323,10 +317,10 @@ export default function FinanceTab() {
         fetch('/api/finance?type=income'),
         fetch('/api/finance?type=cost'),
       ])
-      const iData = await iRes.json()
-      const cData = await cRes.json()
-      setIncomeRecords((iData.rows ?? []).map((r: any) => ({ ...r, type: 'income' as FinanceType })))
-      setCostRecords((cData.rows ?? []).map((r: any) => ({ ...r, type: 'cost' as FinanceType })))
+      const iData = await iRes.json() as { rows?: Array<Omit<FinanceRecord, 'type'>> }
+      const cData = await cRes.json() as { rows?: Array<Omit<FinanceRecord, 'type'>> }
+      setIncomeRecords((iData.rows ?? []).map(record => ({ ...record, type: 'income' as FinanceType })))
+      setCostRecords((cData.rows ?? []).map(record => ({ ...record, type: 'cost' as FinanceType })))
     } catch (err) {
       console.error('Finance fetch error:', err)
     }
@@ -400,6 +394,25 @@ export default function FinanceTab() {
     showAdminToast('Transaksi dihapus')
   }
 
+  async function reconcileMidtrans() {
+    setSaving(true)
+    try {
+      const response = await fetch('/api/finance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reconcile_midtrans' }),
+      })
+      const result = await response.json()
+      if (!response.ok || result.status !== 'success') throw new Error(result.message || 'Rekonsiliasi gagal')
+      await fetchData()
+      showAdminToast(`${Number(result.repaired) || 0} transaksi Midtrans disinkronkan.`)
+    } catch (error) {
+      showAdminToast('Gagal sinkronisasi: ' + String(error), 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   // ── Config save ────────────────────
   function handleConfigSave(cfg: FinanceConfig) {
     setConfig(cfg)
@@ -436,6 +449,10 @@ export default function FinanceTab() {
             className="btn btn-ghost" style={{ fontSize: '0.82rem', padding: '8px 14px' }}>
             <FileSpreadsheet size={14} /> Database
           </a>
+          <button className="btn btn-ghost" style={{ fontSize: '0.82rem', padding: '8px 14px' }}
+            onClick={reconcileMidtrans} disabled={saving}>
+            <RefreshCw size={14} className={saving ? 'spin' : ''} /> Sync Orders
+          </button>
           <button className="btn btn-ghost" style={{ padding: '8px 14px' }}
             onClick={() => setShowSettings(v => !v)}>
             <Settings size={16} />
@@ -601,9 +618,9 @@ export default function FinanceTab() {
       )}
 
       {/* ── Modal ── */}
-      <FinanceModal modal={modal} config={config}
+      {modal.open && <FinanceModal key={`${modal.type}:${modal.editing?.id || 'new'}`} modal={modal} config={config}
         onClose={() => setModal({ open: false, type: 'income', editing: null })}
-        onSave={handleSave} saving={saving} />
+        onSave={handleSave} saving={saving} />}
     </div>
   )
 }

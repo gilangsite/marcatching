@@ -254,11 +254,12 @@ export async function getAffiliateDashboard(user: User, storeOrigin: string) {
     .order('created_at', { ascending: false })
 
   const memberId = member?.id
-  const [enrollmentsResult, linksResult, clicksResult, commissionsResult, adjustmentsResult, payoutsResult, statementsResult, disputesResult, accountResult] = memberId
+  const [enrollmentsResult, linksResult, clicksResult, attributionsResult, commissionsResult, adjustmentsResult, payoutsResult, statementsResult, disputesResult, accountResult] = memberId
     ? await Promise.all([
       supabaseAdmin.from('affiliate_enrollments').select('program_id, program_version_id, status, accepted_at, affiliate_program_versions(version_number,commission_bps,starts_at,ends_at)').eq('affiliate_member_id', memberId),
       supabaseAdmin.from('affiliate_links').select('program_id, token, is_active').eq('affiliate_member_id', memberId),
       supabaseAdmin.from('affiliate_clicks').select('id, program_id, clicked_at', { count: 'exact' }).eq('affiliate_member_id', memberId).order('clicked_at', { ascending: false }).limit(100),
+      supabaseAdmin.from('affiliate_attributions').select('id', { count: 'exact', head: true }).eq('affiliate_member_id', memberId).eq('status', 'invalid').eq('invalid_reason', 'self_purchase'),
       supabaseAdmin.from('affiliate_commissions').select('id, order_id, program_id, status, commissionable_amount_rupiah, commission_bps, commission_amount_rupiah, available_at, created_at').eq('affiliate_member_id', memberId).order('created_at', { ascending: false }).limit(100),
       supabaseAdmin.from('affiliate_adjustments').select('id, source_commission_id, statement_id, adjustment_type, status, amount_rupiah, reason, available_at, created_at').eq('affiliate_member_id', memberId).order('created_at', { ascending: false }).limit(100),
       supabaseAdmin.from('affiliate_payouts').select('id, statement_id, status, amount_rupiah, bank_name, account_name, account_number_last4, transfer_reference, proof_url, paid_at, created_at').eq('affiliate_member_id', memberId).order('created_at', { ascending: false }).limit(50),
@@ -266,7 +267,7 @@ export async function getAffiliateDashboard(user: User, storeOrigin: string) {
       supabaseAdmin.from('affiliate_disputes').select('id, statement_id, disputed_amount_rupiah, reason, evidence_url, status, admin_note, resolved_at, created_at').eq('affiliate_member_id', memberId).order('created_at', { ascending: false }).limit(50),
       supabaseAdmin.from('affiliate_payout_accounts').select('bank_name, account_name, account_number_last4, tax_id_last4, verified_at').eq('affiliate_member_id', memberId).maybeSingle(),
     ])
-    : Array.from({ length: 9 }, () => ({ data: [] }))
+    : Array.from({ length: 10 }, () => ({ data: [] }))
 
   const enrollments = enrollmentsResult.data || []
   const links = linksResult.data || []
@@ -306,6 +307,9 @@ export async function getAffiliateDashboard(user: User, storeOrigin: string) {
   const clickCount = 'count' in clicksResult
     ? clicksResult.count ?? clicksResult.data?.length ?? 0
     : clicksResult.data?.length ?? 0
+  const blockedSelfPurchases = 'count' in attributionsResult
+    ? attributionsResult.count ?? 0
+    : 0
 
   return {
     terms,
@@ -317,7 +321,7 @@ export async function getAffiliateDashboard(user: User, storeOrigin: string) {
       attributionModel: 'Last valid click',
       commissionBase: 'Nilai item setelah diskon voucher; biaya Midtrans ditanggung Marcatching.',
     },
-    totals: { clicks: clickCount, ...totals },
+    totals: { clicks: clickCount, blockedSelfPurchases, ...totals },
     programs: programDtos,
     commissions,
     adjustments: adjustmentsResult.data || [],
