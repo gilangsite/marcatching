@@ -8,6 +8,7 @@ import {
   submitAffiliateDispute,
 } from '@/lib/affiliateMember'
 import { getServerSupabase } from '@/lib/supabaseServer'
+import { storefrontOrigin } from '@/lib/storefrontOrigin'
 
 async function currentUser() {
   const supabase = await getServerSupabase()
@@ -20,10 +21,10 @@ function clean(value: unknown, max: number) {
   return typeof value === 'string' ? value.trim().slice(0, max) : ''
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const user = await currentUser()
-    return NextResponse.json(await getAffiliateDashboard(user))
+    return NextResponse.json(await getAffiliateDashboard(user, storefrontOrigin(req)))
   } catch (error) {
     const status = error instanceof AffiliateError ? error.status : 500
     if (!(error instanceof AffiliateError)) console.error('Affiliate dashboard failed', error)
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
         evidenceUrl: clean(body.evidenceUrl, 500),
       })
     } else throw new AffiliateError('Action tidak dikenali', 400)
-    return NextResponse.json({ ok: true, data: await getAffiliateDashboard(user) })
+    return NextResponse.json({ ok: true, data: await getAffiliateDashboard(user, storefrontOrigin(req)) })
   } catch (error) {
     const status = error instanceof AffiliateError ? error.status : 500
     if (!(error instanceof AffiliateError)) console.error('Affiliate member action failed', error)

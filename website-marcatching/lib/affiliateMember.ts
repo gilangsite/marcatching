@@ -235,7 +235,7 @@ export async function submitAffiliateDispute(user: User, input: {
   await supabaseAdmin.from('affiliate_statements').update({ status: 'disputed' }).eq('id', statement.id).neq('status', 'paid')
 }
 
-export async function getAffiliateDashboard(user: User) {
+export async function getAffiliateDashboard(user: User, storeOrigin: string) {
   const email = await requireCourseMember(user)
   await supabaseAdmin.rpc('promote_mature_affiliate_commissions')
   const terms = await publishedTerms()
@@ -285,7 +285,7 @@ export async function getAffiliateDashboard(user: User) {
       currentVersion,
       eligible: program.eligibility_type === 'all_members' || owned.has(program.product_id),
       enrollment,
-      affiliateUrl: link?.token ? `https://marcatching.com/a/${link.token}` : null,
+      affiliateUrl: link?.token ? `${storeOrigin}/a/${link.token}` : null,
     }
   }))
 

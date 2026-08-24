@@ -5,26 +5,21 @@ import {
   privacyHash,
 } from '@/lib/affiliateTracking'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-
-function storeOrigin(req: NextRequest) {
-  const host = req.headers.get('host') || req.nextUrl.host
-  const isLocal = host.includes('localhost') || host.includes('127.0.0.1')
-  if (isLocal) return req.nextUrl.origin
-  return 'https://marcatching.com'
-}
+import { affiliateCookieDomain, storefrontOrigin } from '@/lib/storefrontOrigin'
 
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ token: string }> },
 ) {
   const { token } = await context.params
+  const storeOrigin = storefrontOrigin(req)
   const { data: link } = await supabaseAdmin
     .from('affiliate_links')
     .select('id, affiliate_member_id, program_id, is_active')
     .eq('token', token)
     .maybeSingle()
 
-  if (!link) return NextResponse.redirect(new URL('/store', storeOrigin(req)))
+  if (!link) return NextResponse.redirect(new URL('/store', storeOrigin))
 
   const [{ data: program }, { data: member }, { data: enrollment }] = await Promise.all([
     supabaseAdmin.from('affiliate_programs').select('id, product_id, status, attribution_window_days').eq('id', link.program_id).maybeSingle(),
@@ -40,13 +35,13 @@ export async function GET(
       .maybeSingle(),
   ])
 
-  if (!program) return NextResponse.redirect(new URL('/store', storeOrigin(req)))
+  if (!program) return NextResponse.redirect(new URL('/store', storeOrigin))
   const { data: product } = await supabaseAdmin
     .from('products')
     .select('slug')
     .eq('id', program.product_id)
     .maybeSingle()
-  const destination = new URL(product?.slug ? `/product/${product.slug}` : '/store', storeOrigin(req))
+  const destination = new URL(product?.slug ? `/product/${product.slug}` : '/store', storeOrigin)
 
   if (!link.is_active || program.status !== 'active' || member?.status !== 'active' || !enrollment || !product) {
     return NextResponse.redirect(destination)
@@ -88,7 +83,7 @@ export async function GET(
     sameSite: 'lax',
     path: '/',
     maxAge,
-    domain: req.nextUrl.hostname.endsWith('marcatching.com') ? '.marcatching.com' : undefined,
+    domain: affiliateCookieDomain(storeOrigin),
   })
   return response
 }
