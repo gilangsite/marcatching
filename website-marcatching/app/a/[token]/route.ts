@@ -59,31 +59,39 @@ export async function GET(
     (version.ends_at && new Date(version.ends_at).getTime() <= now)
   ) return NextResponse.redirect(destination)
 
-  const { data: click } = await supabaseAdmin
-    .from('affiliate_clicks')
-    .insert({
-      affiliate_link_id: link.id,
-      affiliate_member_id: link.affiliate_member_id,
-      program_id: link.program_id,
-      program_version_id: version.id,
-      ip_hash: privacyHash(req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null),
-      user_agent_hash: privacyHash(req.headers.get('user-agent')),
-      referrer: req.headers.get('referer')?.slice(0, 500) || null,
-      landing_path: destination.pathname,
-    })
-    .select('click_id')
-    .single()
-  if (!click) return NextResponse.redirect(destination)
+  try {
+    const { data: click, error: clickError } = await supabaseAdmin
+      .from('affiliate_clicks')
+      .insert({
+        affiliate_link_id: link.id,
+        affiliate_member_id: link.affiliate_member_id,
+        program_id: link.program_id,
+        program_version_id: version.id,
+        ip_hash: privacyHash(req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null),
+        user_agent_hash: privacyHash(req.headers.get('user-agent')),
+        referrer: req.headers.get('referer')?.slice(0, 500) || null,
+        landing_path: destination.pathname,
+      })
+      .select('click_id')
+      .single()
+    if (clickError || !click) {
+      console.error('[affiliate] Click was not recorded', clickError?.message || 'No click returned')
+      return NextResponse.redirect(destination)
+    }
 
-  const maxAge = Number(program.attribution_window_days) * 86_400
-  const response = NextResponse.redirect(destination)
-  response.cookies.set(AFFILIATE_COOKIE, createAttributionCookie(click.click_id, new Date(Date.now() + maxAge * 1000)), {
-    httpOnly: true,
-    secure: req.nextUrl.protocol === 'https:',
-    sameSite: 'lax',
-    path: '/',
-    maxAge,
-    domain: affiliateCookieDomain(storeOrigin),
-  })
-  return response
+    const maxAge = Number(program.attribution_window_days) * 86_400
+    const response = NextResponse.redirect(destination)
+    response.cookies.set(AFFILIATE_COOKIE, createAttributionCookie(click.click_id, new Date(Date.now() + maxAge * 1000)), {
+      httpOnly: true,
+      secure: req.nextUrl.protocol === 'https:',
+      sameSite: 'lax',
+      path: '/',
+      maxAge,
+      domain: affiliateCookieDomain(storeOrigin),
+    })
+    return response
+  } catch (error) {
+    console.error('[affiliate] Tracking failed; continuing to product', error instanceof Error ? error.message : error)
+    return NextResponse.redirect(destination)
+  }
 }
