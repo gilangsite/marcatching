@@ -26,6 +26,8 @@ type AdminData = Record<string, any> & {
   configuration: {
     attributionSecretConfigured: boolean;
     encryptionKeyConfigured: boolean;
+    encryptionKeyStatus: 'ready' | 'missing' | 'invalid';
+    encryptionKeyLength: number;
     appsScriptPaymentSecretConfigured: boolean;
   };
   metrics: Record<string, number>;
@@ -248,7 +250,7 @@ export default function AffiliateTab() {
           <div className={styles.panelTitle}><div><span>Operational policy</span><h2>Konfigurasi tetap MVP</h2></div></div>
           <div className={styles.runtimeChecks}>
             <div><span className={`${styles.pill} ${data.configuration.attributionSecretConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.attributionSecretConfigured ? 'Ready' : 'Missing'}</span><p>Affiliate attribution secret</p></div>
-            <div><span className={`${styles.pill} ${data.configuration.encryptionKeyConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.encryptionKeyConfigured ? 'Ready' : 'Missing'}</span><p>Affiliate data encryption key</p></div>
+            <div><span className={`${styles.pill} ${data.configuration.encryptionKeyConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.encryptionKeyConfigured ? 'Ready' : data.configuration.encryptionKeyStatus === 'invalid' ? 'Invalid' : 'Missing'}</span><p>Affiliate data encryption key{data.configuration.encryptionKeyStatus === 'invalid' ? ` · ${data.configuration.encryptionKeyLength} karakter terdeteksi, membutuhkan 64 karakter hex` : ''}</p></div>
             <div><span className={`${styles.pill} ${data.configuration.appsScriptPaymentSecretConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.appsScriptPaymentSecretConfigured ? 'Ready' : 'Missing'}</span><p>Apps Script payment secret</p></div>
           </div>
           {!data.configuration.attributionSecretConfigured && <p className={styles.configWarning}><ShieldAlert size={16} /> Link tetap dapat membuka produk, tetapi click, cookie, attribution, dan komisi tidak akan tercatat sampai environment Preview diperbaiki dan deployment dibuat ulang.</p>}

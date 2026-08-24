@@ -3,7 +3,7 @@ import 'server-only'
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 
 function encryptionKey() {
-  const raw = process.env.AFFILIATE_DATA_ENCRYPTION_KEY || ''
+  const raw = (process.env.AFFILIATE_DATA_ENCRYPTION_KEY || '').trim()
   const key = /^[a-f\d]{64}$/i.test(raw) ? Buffer.from(raw, 'hex') : Buffer.from(raw, 'base64')
   if (key.length !== 32) throw new Error('Affiliate data encryption key must be 32 bytes')
   return key

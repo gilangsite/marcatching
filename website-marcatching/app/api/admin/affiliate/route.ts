@@ -20,15 +20,18 @@ function integer(value: unknown, min: number, max: number) {
 }
 
 function affiliateRuntimeConfiguration() {
-  const attributionSecret = process.env.AFFILIATE_ATTRIBUTION_SECRET || ''
-  const encryptionSecret = process.env.AFFILIATE_DATA_ENCRYPTION_KEY || ''
+  const attributionSecret = (process.env.AFFILIATE_ATTRIBUTION_SECRET || '').trim()
+  const encryptionSecret = (process.env.AFFILIATE_DATA_ENCRYPTION_KEY || '').trim()
   const encryptionBytes = /^[a-f\d]{64}$/i.test(encryptionSecret)
     ? Buffer.from(encryptionSecret, 'hex')
     : Buffer.from(encryptionSecret, 'base64')
+  const encryptionKeyConfigured = encryptionBytes.length === 32
 
   return {
     attributionSecretConfigured: attributionSecret.length >= 24,
-    encryptionKeyConfigured: encryptionBytes.length === 32,
+    encryptionKeyConfigured,
+    encryptionKeyStatus: !encryptionSecret ? 'missing' : encryptionKeyConfigured ? 'ready' : 'invalid',
+    encryptionKeyLength: encryptionSecret.length,
     appsScriptPaymentSecretConfigured: Boolean(process.env.APPS_SCRIPT_PAYMENT_SECRET),
   }
 }
