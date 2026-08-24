@@ -86,6 +86,8 @@ function doPost(e) {
       return handleCheckout(data);
     } else if (data.action === 'paymentPaid') {
       return handlePaymentPaid(data);
+    } else if (data.action === 'affiliatePayoutPaid') {
+      return handleAffiliatePayoutPaid(data);
     } else if (data.action === 'upload') {
       return handleImageUpload(data);
     } else if (data.action === 'uploadPdf') {
@@ -126,6 +128,53 @@ function doPost(e) {
       message: error.toString(),
       stack: error.stack
     })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ─── AFFILIATE PAYOUT EMAIL ──────────────────────────────────
+function handleAffiliatePayoutPaid(data) {
+  try {
+    var expectedSecret = PropertiesService.getScriptProperties().getProperty('PAYMENT_WEBHOOK_SECRET');
+    if (!expectedSecret || !data.paymentSecret || String(data.paymentSecret) !== String(expectedSecret)) {
+      throw new Error('Unauthorized affiliate payout notification');
+    }
+    var safe = function(value) { return escapeEmailHtml(String(value || '-')); };
+    var receipt = Utilities.newBlob(
+      Utilities.base64Decode(data.receiptBase64 || ''),
+      'application/pdf',
+      data.receiptFilename || 'marcatching-affiliate-slip.pdf'
+    );
+    var htmlBody = '<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#172033;">' +
+      '<div style="background:#0d3369;padding:28px;color:#fff;border-radius:14px 14px 0 0;">' +
+        '<div style="font-size:12px;letter-spacing:1.5px;font-weight:800;opacity:.75;">MARCATCHING AFFILIATE</div>' +
+        '<h1 style="margin:10px 0 4px;font-size:26px;">Komisi sudah ditransfer</h1>' +
+        '<p style="margin:0;opacity:.8;">Slip payout terlampir pada email ini.</p>' +
+      '</div>' +
+      '<div style="padding:28px;border:1px solid #e2e8f0;border-top:0;border-radius:0 0 14px 14px;">' +
+        '<p>Halo <strong>' + safe(data.affiliateName) + '</strong>,</p>' +
+        '<table width="100%" cellpadding="8" style="border-collapse:collapse;background:#f8fafc;border-radius:10px;">' +
+          '<tr><td>Periode</td><td align="right"><strong>' + safe(data.periodStart) + ' s/d ' + safe(data.periodEnd) + '</strong></td></tr>' +
+          '<tr><td>Penjualan teratribusi</td><td align="right"><strong>' + formatRupiah(data.attributedRevenue || 0) + '</strong></td></tr>' +
+          '<tr><td>Komisi bruto</td><td align="right"><strong>' + formatRupiah(data.grossCommission || 0) + '</strong></td></tr>' +
+          '<tr><td>Total diterima</td><td align="right" style="color:#0d3369;font-size:18px;"><strong>' + formatRupiah(data.netPayout || 0) + '</strong></td></tr>' +
+          '<tr><td>Referensi transfer</td><td align="right"><strong>' + safe(data.transferReference) + '</strong></td></tr>' +
+        '</table>' +
+        '<div style="text-align:center;margin:26px 0 12px;">' +
+          '<a href="' + safe(data.dashboardUrl) + '" style="display:inline-block;padding:13px 24px;border-radius:9px;color:#fff;background:#0d3369;text-decoration:none;font-weight:800;">Lihat Statement / Ajukan Banding</a>' +
+        '</div>' +
+        '<p style="color:#64748b;font-size:12px;line-height:1.6;">Jika ada ketidaksesuaian, ajukan banding melalui dashboard maksimal tiga hari setelah statement diterbitkan.</p>' +
+      '</div></div>';
+    MailApp.sendEmail({
+      to: data.email,
+      bcc: 'marcatching.id@gmail.com',
+      name: 'Marcatching Affiliate',
+      subject: 'Slip Komisi Affiliate — ' + formatRupiah(data.netPayout || 0),
+      htmlBody: htmlBody,
+      attachments: [receipt]
+    });
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success' })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 

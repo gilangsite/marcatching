@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fulfillOrder, notifyPaidOrder } from '@/lib/commerce'
+import { accrueAffiliateCommission, reverseAffiliateCommission } from '@/lib/affiliateTracking'
 import { normalizeMidtransStatus, verifyMidtransSignature } from '@/lib/midtrans'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
@@ -49,6 +50,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, ignored: true })
     }
 
+    // Midtrans may retry or deliver notifications out of order. Never let a
+    // stale pending/failed/expired event downgrade a verified payment, and
+    // never resurrect a refunded order with a late paid event.
+    if (
+      (order.payment_status === 'paid' && ['pending', 'failed', 'expired'].includes(paymentStatus)) ||
+      (order.payment_status === 'refunded' && paymentStatus !== 'refunded')
+    ) {
+      return NextResponse.json({ received: true, ignored: true, stale: true })
+    }
+
     const now = new Date().toISOString()
     const updatePayload: Record<string, unknown> = {
       payment_status: paymentStatus,
@@ -74,6 +85,12 @@ export async function POST(req: NextRequest) {
 
     if (paymentStatus === 'paid') {
       try {
+        await accrueAffiliateCommission(order.id)
+      } catch {
+        console.error('Paid order affiliate accrual failed')
+        return NextResponse.json({ message: 'Affiliate accrual failed' }, { status: 500 })
+      }
+      try {
         await fulfillOrder(order.id)
       } catch {
         console.error('Paid order fulfillment failed')
@@ -84,6 +101,15 @@ export async function POST(req: NextRequest) {
       } catch {
         console.error('Paid order admin notification failed')
         return NextResponse.json({ message: 'Admin notification failed' }, { status: 500 })
+      }
+    }
+
+    if (paymentStatus === 'refunded' || paymentStatus === 'failed' || paymentStatus === 'expired') {
+      try {
+        await reverseAffiliateCommission(order.id, `Midtrans status: ${paymentStatus}`)
+      } catch {
+        console.error('Affiliate commission reversal failed')
+        return NextResponse.json({ message: 'Affiliate reversal failed' }, { status: 500 })
       }
     }
 

@@ -14,7 +14,7 @@ import {
   FileArchive, FileText, BarChart3, Users, MousePointer, TrendingUp, RefreshCw, Calendar,
   Newspaper, UserCircle, FolderOpen, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Bold, Italic, Minus, ChevronDown, ChevronUp, MoveVertical, Navigation, ShoppingCart, Store, PartyPopper,
-  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit, Megaphone
+  TrendingDown, DollarSign, Globe as GlobeAnalytics, Lock, ArrowLeft, LayoutGrid, Shapes, MessageSquare, BrainCircuit, Megaphone, BadgePercent
 } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link, Contact, Product, Voucher, Order, CourseMaterial, AddonItem, Article, ArticleBlock, ArticleCategory, ArticleAuthor, NavLink, ProductCategory, StorePageBlock, StoreProduct } from '@/lib/supabaseClient'
@@ -28,6 +28,7 @@ import SecurityTab from './SecurityTab'
 import SurveyTab from './SurveyTab'
 import CreatorWorkspaceTab from './CreatorWorkspaceTab'
 import PromotionsTab from './PromotionsTab'
+import AffiliateTab from './AffiliateTab'
 
 // ─── Admin Toast Event ────────────────────────────────────────
 type AdminToastType = 'success' | 'error'
@@ -555,7 +556,7 @@ function HomeFinancePulse({
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces' | 'promotions'
+  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces' | 'promotions' | 'affiliate'
   const [tab, setTab] = useState<TabType>('menu')
   const [showOtherTabs, setShowOtherTabs] = useState(false)
   const tabMeta: Record<TabType, { eyebrow: string; label: string }> = {
@@ -577,6 +578,7 @@ function AdminDashboardInner() {
     survey: { eyebrow: 'Research', label: 'Survey' },
     'creator-workspaces': { eyebrow: 'Creator Intelligence', label: 'Creator Workspaces' },
     promotions: { eyebrow: 'Growth', label: 'Promotions' },
+    affiliate: { eyebrow: 'Revenue', label: 'Affiliate' },
   }
   const activeTabMeta = tabMeta[tab]
 
@@ -1625,6 +1627,7 @@ function AdminDashboardInner() {
         <nav className={styles.sidenav}>
           <button className={`${styles.navItem} ${tab === 'analytics' ? styles.navActive : ''}`} onClick={() => { setTab('analytics'); setIsSidebarOpen(false) }}><BarChart3 size={18} /> Analytics</button>
           <button className={`${styles.navItem} ${tab === 'finance' ? styles.navActive : ''}`} onClick={() => { setTab('finance'); setIsSidebarOpen(false) }}><DollarSign size={18} /> Finance</button>
+          <button className={`${styles.navItem} ${tab === 'affiliate' ? styles.navActive : ''}`} onClick={() => { setTab('affiliate'); setIsSidebarOpen(false) }}><BadgePercent size={18} /> Affiliate</button>
           <button className={`${styles.navItem} ${tab === 'links' ? styles.navActive : ''}`} onClick={() => { setTab('links'); setIsSidebarOpen(false) }}><ExternalLink size={18} /> Links &amp; Buttons</button>
           <button className={`${styles.navItem} ${tab === 'navigation' ? styles.navActive : ''}`} onClick={() => { setTab('navigation'); setIsSidebarOpen(false) }}><Navigation size={18} /> Navigation</button>
           <button className={`${styles.navItem} ${tab === 'ecommerce' ? styles.navActive : ''}`} onClick={() => { setTab('ecommerce'); setIsSidebarOpen(false) }}><ShoppingCart size={18} /> E-Commerce</button>
@@ -1748,6 +1751,7 @@ function AdminDashboardInner() {
               {([
                 { tab: 'analytics', Icon: BarChart3,    label: 'Analytics', desc: 'Traffic, CTR, source', color: '#0d3369' },
                 { tab: 'finance',   Icon: DollarSign,   label: 'Finance',   desc: 'Cashflow signal', color: '#1e40af' },
+                { tab: 'affiliate', Icon: BadgePercent, label: 'Affiliate', desc: 'Links & commission', color: '#0d3369' },
                 { tab: 'orders',    Icon: ClipboardList,label: 'Orders',    desc: 'Buyer follow-up', color: '#0d3369' },
                 { tab: 'products',  Icon: Package,      label: 'Products',  desc: 'Offer suite', color: '#0d3369' },
                 { tab: 'ecourse',   Icon: BookMarked,   label: 'E-Course',  desc: 'Learning assets', color: '#1e40af' },
@@ -2125,6 +2129,7 @@ function AdminDashboardInner() {
         {tab === 'survey' && <SurveyTab />}
         {tab === 'creator-workspaces' && <CreatorWorkspaceTab />}
         {tab === 'promotions' && <PromotionsTab products={products} />}
+        {tab === 'affiliate' && <AffiliateTab />}
 
         {/* ── E-COMMERCE TAB ─── */}
         {tab === 'ecommerce' && (

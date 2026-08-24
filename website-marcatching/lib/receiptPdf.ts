@@ -175,3 +175,78 @@ export function createReceiptPdf(data: ReceiptData) {
 
   return buildPdf(commands.join('\n'))
 }
+
+export type AffiliateReceiptData = {
+  payoutId: string
+  statementId: string
+  affiliateName: string
+  email: string
+  periodStart: string
+  periodEnd: string
+  attributedRevenue: number
+  grossCommission: number
+  reversal: number
+  adjustment: number
+  taxWithheld: number
+  transferFee: number
+  netPayout: number
+  commissionCount: number
+  bankName: string
+  accountName: string
+  accountNumberLast4: string
+  transferReference: string
+  paidAt: string
+}
+
+export function createAffiliateReceiptPdf(data: AffiliateReceiptData) {
+  const commands: string[] = []
+  const navy: [number, number, number] = [0.05, 0.2, 0.41]
+  const muted: [number, number, number] = [0.39, 0.45, 0.54]
+  const green: [number, number, number] = [0.09, 0.5, 0.24]
+  const rows: Array<[string, string, boolean?]> = [
+    ['Penjualan teratribusi', formatRupiah(data.attributedRevenue)],
+    ['Komisi bruto', formatRupiah(data.grossCommission)],
+    ['Reversal / refund', `-${formatRupiah(data.reversal)}`],
+    ['Penyesuaian', formatRupiah(data.adjustment)],
+    ['Pajak dipotong', `-${formatRupiah(data.taxWithheld)}`],
+    ['Biaya transfer', `-${formatRupiah(data.transferFee)}`],
+    ['TOTAL DITERIMA', formatRupiah(data.netPayout), true],
+  ]
+
+  commands.push('1 1 1 rg 0 0 595 842 re f')
+  commands.push(`${navy.join(' ')} rg 0 700 595 142 re f`)
+  commands.push(textCommand({ x: 48, y: 792, text: 'MARCATCHING', size: 18, bold: true, color: [1, 1, 1] }))
+  commands.push(textCommand({ x: 48, y: 754, text: 'SLIP KOMISI AFFILIATE', size: 24, bold: true, color: [1, 1, 1] }))
+  commands.push(textCommand({ x: 48, y: 730, text: 'Payout telah ditransfer dan tercatat di ledger', size: 11, color: [0.82, 0.88, 0.95] }))
+
+  commands.push('0.973 0.98 0.988 rg 44 608 507 66 re f')
+  commands.push(textCommand({ x: 58, y: 650, text: 'PAYOUT ID', size: 9, bold: true, color: muted }))
+  commands.push(textCommand({ x: 58, y: 630, text: data.payoutId, size: 10, bold: true, color: navy }))
+  commands.push(textCommand({ x: 330, y: 650, text: 'TANGGAL TRANSFER', size: 9, bold: true, color: muted }))
+  commands.push(textCommand({ x: 330, y: 630, text: formatPaidAt(data.paidAt), size: 10.5, bold: true }))
+
+  commands.push(textCommand({ x: 48, y: 574, text: 'AFFILIATE', size: 9, bold: true, color: muted }))
+  commands.push(textCommand({ x: 48, y: 553, text: data.affiliateName, size: 13, bold: true }))
+  commands.push(textCommand({ x: 48, y: 535, text: data.email, size: 10, color: muted }))
+  commands.push(textCommand({ x: 330, y: 574, text: 'PERIODE', size: 9, bold: true, color: muted }))
+  commands.push(textCommand({ x: 330, y: 553, text: `${data.periodStart} s/d ${data.periodEnd}`, size: 10.5, bold: true }))
+  commands.push(textCommand({ x: 330, y: 535, text: `${data.commissionCount} komisi`, size: 10, color: muted }))
+
+  commands.push(`${navy.join(' ')} RG 1 w 44 504 m 551 504 l S`)
+  let y = 474
+  for (const [label, amount, total] of rows) {
+    if (total) commands.push('0.94 0.97 1 rg 44 ' + (y - 13) + ' 507 38 re f')
+    commands.push(textCommand({ x: 58, y, text: label, size: total ? 11 : 10, bold: total, color: total ? navy : muted }))
+    commands.push(textCommand({ x: 420, y, text: amount, size: total ? 14 : 10.5, bold: true, color: total ? navy : [0.06, 0.09, 0.16] }))
+    y -= total ? 48 : 31
+  }
+
+  commands.push(textCommand({ x: 48, y: 210, text: 'DETAIL TRANSFER', size: 9, bold: true, color: muted }))
+  commands.push(textCommand({ x: 48, y: 188, text: `${data.bankName} - ${data.accountName} - **** ${data.accountNumberLast4}`, size: 11, bold: true }))
+  commands.push(textCommand({ x: 48, y: 169, text: `Referensi: ${data.transferReference}`, size: 10, color: muted }))
+  commands.push(textCommand({ x: 48, y: 105, text: 'Slip ini dibuat otomatis dari ledger Marcatching dan tidak menghapus riwayat saldo.', size: 9.5, color: muted }))
+  commands.push(textCommand({ x: 48, y: 86, text: 'Banding ketidaksesuaian diajukan melalui course.marcatching.com/affiliate.', size: 9.5, color: muted }))
+  commands.push(textCommand({ x: 48, y: 36, text: 'www.marcatching.com', size: 9, bold: true, color: navy }))
+  commands.push(textCommand({ x: 430, y: 36, text: 'PAID', size: 11, bold: true, color: green }))
+  return buildPdf(commands.join('\n'))
+}

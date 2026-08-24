@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { accrueAffiliateCommission, createOrderItemsAndAttribution } from '@/lib/affiliateTracking'
 import { calculateCart, CommerceError, fulfillOrder, notifyPaidOrder } from '@/lib/commerce'
 import { recordCheckout } from '@/lib/courseEmail'
 import { createSnapTransaction, type MidtransItem } from '@/lib/midtrans'
@@ -80,6 +81,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Pesanan belum berhasil dibuat' }, { status: 500 })
     }
 
+    try {
+      await createOrderItemsAndAttribution({
+        req,
+        orderId,
+        buyerEmail: email,
+        items: [cart.main, ...cart.addons].map(item => ({
+          productId: item.id,
+          productName: item.name,
+          unitPriceRupiah: item.basePrice,
+          voucherDiscountRupiah: item.voucherDiscount,
+          finalAmountRupiah: item.finalPrice,
+        })),
+      })
+    } catch {
+      console.error('Checkout order item or affiliate attribution insert failed')
+      await supabaseAdmin
+        .from('orders')
+        .update({ payment_status: 'creation_failed', payment_updated_at: new Date().toISOString() })
+        .eq('id', orderId)
+      return NextResponse.json({ message: 'Pesanan belum berhasil disiapkan' }, { status: 500 })
+    }
+
     void supabaseAdmin.rpc('increment_checkout_clicks', { product_id_arg: cart.main.id })
 
     const localStatusUrl = statusUrl(req, orderId, publicStatusToken)
@@ -104,6 +127,12 @@ export async function POST(req: NextRequest) {
         await fulfillOrder(orderId)
       } catch {
         console.error('Free order fulfillment failed')
+      }
+
+      try {
+        await accrueAffiliateCommission(orderId)
+      } catch {
+        console.error('Free order affiliate accrual failed')
       }
 
       try {

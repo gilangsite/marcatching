@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   BookOpen,
+  BadgePercent,
   ChevronRight,
   HelpCircle,
   LayoutDashboard,
@@ -23,6 +24,7 @@ const navigation = [
   { href: '/workspace', label: 'Creator Workspace', description: 'Revenue operating system', icon: Sparkles },
   { href: '/prompt-library', label: 'Prompt Library', description: 'Copy prompt siap pakai', icon: BookOpen },
   { href: '/store', label: 'Store', description: 'Cari & beli produk Marcatching', icon: ShoppingBag },
+  { href: '/affiliate', label: 'Affiliate', description: 'Bagikan link & dapatkan komisi', icon: BadgePercent },
 ]
 
 function getDisplayName(email: string) {
@@ -58,6 +60,8 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   const displayName = useMemo(() => getDisplayName(email), [email])
   const currentLabel = pathname?.startsWith('/store')
     ? 'Store'
+    : pathname?.startsWith('/affiliate')
+      ? 'Affiliate'
     : pathname?.startsWith('/prompt-library')
       ? 'Prompt Library'
       : pathname?.startsWith('/workspace')
