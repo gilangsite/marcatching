@@ -121,20 +121,20 @@ export default function AffiliatePage() {
             <p>Tidak perlu form pendaftaran baru. Akun course-mu menjadi identitas affiliate setelah menerima syarat program.</p>
           </div>
           <div className={styles.activationActions}>
-            <button className={styles.secondaryButton} onClick={() => setTermsOpen(value => !value)}>
+            <button className={styles.secondaryButton} disabled={!data.terms} onClick={() => setTermsOpen(value => !value)}>
               <FileText size={16} /> Baca S&K
             </button>
-            <label className={styles.checkRow}>
+            {data.terms ? <label className={styles.checkRow}>
               <input type="checkbox" checked={termsAccepted} onChange={event => setTermsAccepted(event.target.checked)} />
-              Saya memahami dan menyetujui versi {data.terms?.version || '—'}
-            </label>
+              Saya memahami dan menyetujui versi {data.terms.version}
+            </label> : <p className={styles.termsUnavailable}><FileText size={16} /> S&K masih berstatus draft dan belum dipublikasikan oleh tim Marcatching.</p>}
             <button className={styles.primaryButton} disabled={!termsAccepted || !data.terms || Boolean(busy)} onClick={() => action('activate')}>
               {busy === 'activate' ? <Loader2 className={styles.spin} size={16} /> : <ChevronRight size={16} />}
               Aktifkan affiliate
             </button>
           </div>
         </section>
-        {termsOpen && <section className={styles.termsCard}><h2>{data.terms?.title || 'S&K belum tersedia'}</h2><pre>{data.terms?.content}</pre></section>}
+        {termsOpen && data.terms && <section className={styles.termsCard}><h2>{data.terms.title}</h2><pre>{data.terms.content}</pre></section>}
         {message && <p className={styles.toast}>{message}</p>}
       </div>
     )

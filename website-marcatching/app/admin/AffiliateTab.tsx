@@ -138,6 +138,8 @@ export default function AffiliateTab() {
 
   const commissionPreview = Math.round((Number(form.calculatorPrice) || 0) * (Number(form.commissionPercent) || 0) / 100)
   const validProducts = data.products
+  const publishedTerms = data.terms.find(row => row.status === 'published')
+  const latestTerms = data.terms[0]
 
   return (
     <div className={styles.page}>
@@ -151,6 +153,15 @@ export default function AffiliateTab() {
           <button key={item} className={section === item ? styles.active : ''} onClick={() => setSection(item)}>{item}</button>
         ))}
       </nav>
+
+      {!publishedTerms && <section className={styles.termsAlert}>
+        <ShieldAlert size={22} />
+        <div className={styles.termsAlertCopy}>
+          <strong>S&amp;K affiliate belum dipublikasikan</strong>
+          <p>Draft v{latestTerms?.version || 1} sudah tersimpan. Review isi dokumen lalu publish dari Settings agar S&amp;K muncul dan dapat disetujui di dashboard course.</p>
+        </div>
+        <button className={styles.textButton} onClick={() => setSection('settings')}>Review &amp; publish S&amp;K</button>
+      </section>}
 
       {section === 'overview' && <>
         <section className={styles.metrics}>
@@ -213,7 +224,27 @@ export default function AffiliateTab() {
 
       {section === 'disputes' && <section className={styles.panel}><div className={styles.panelTitle}><div><span>Appeal desk</span><h2>Banding ketidaksesuaian</h2></div></div><div className={styles.disputeList}>{data.disputes.map(item => <article key={item.id}><div><span className={`${styles.pill} ${styles[`pill_${item.status}`] || ''}`}>{item.status}</span><h3>{memberById.get(item.affiliate_member_id)?.display_name || 'Affiliate'} · {formatMoney(item.disputed_amount_rupiah)}</h3><p>{item.reason}</p><small>Statement {String(item.statement_id).slice(0, 8)} · {date(item.created_at)}</small></div>{['submitted', 'reviewing'].includes(item.status) && <div><textarea placeholder="Catatan keputusan" value={disputeNotes[item.id] || ''} onChange={e => setDisputeNotes({ ...disputeNotes, [item.id]: e.target.value })} /><span><button className={styles.textButton} onClick={() => action('resolve_dispute', { disputeId: item.id, resolution: 'rejected', adminNote: disputeNotes[item.id] })}>Tolak</button><button className={styles.primary} onClick={() => action('resolve_dispute', { disputeId: item.id, resolution: 'resolved', adminNote: disputeNotes[item.id] })}>Selesaikan</button></span></div>}</article>)}{!data.disputes.length && <p className={styles.empty}>Belum ada banding.</p>}</div></section>}
 
-      {section === 'settings' && <div className={styles.settingsGrid}><section className={styles.panel}><div className={styles.panelTitle}><div><span>Versioned legal consent</span><h2>Syarat & Ketentuan</h2></div></div><label className={styles.stack}>Judul<input value={terms.title} onChange={e => setTerms({ ...terms, title: e.target.value })} /></label><label className={styles.stack}>Isi<textarea rows={24} value={terms.content} onChange={e => setTerms({ ...terms, content: e.target.value })} /></label><button className={styles.primary} disabled={terms.content.length < 200 || Boolean(busy)} onClick={() => action('publish_terms', terms)}><FileText size={16} /> Publish sebagai versi baru</button></section><section className={styles.panel}><div className={styles.panelTitle}><div><span>Operational policy</span><h2>Konfigurasi tetap MVP</h2></div></div><dl className={styles.configList}><div><dt>Attribution</dt><dd>Last valid click</dd></div><div><dt>Default cookie</dt><dd>30 hari</dd></div><div><dt>Default hold</dt><dd>14 hari</dd></div><div><dt>Minimum payout</dt><dd>Rp50.000</dd></div><div><dt>Settlement</dt><dd>Tanggal 1</dd></div><div><dt>Banding</dt><dd>Tanggal 1–3 / 3 hari</dd></div><div><dt>Transfer</dt><dd>Maks. tanggal 5</dd></div><div><dt>Transfer fee</dt><dd>Ditanggung Marcatching</dd></div></dl><p className={styles.hint}>Nilai kritis disimpan pada snapshot setiap program/order. Ubah konstanta global lewat migration baru agar audit trail tetap jelas.</p></section></div>}
+      {section === 'settings' && <div className={styles.settingsGrid}>
+        <section className={styles.panel}>
+          <div className={styles.panelTitle}><div><span>Versioned legal consent</span><h2>Syarat &amp; Ketentuan</h2></div></div>
+          <div className={styles.termsStatus}>
+            <span className={`${styles.pill} ${publishedTerms ? styles.pill_published : styles.pill_pending}`}>
+              {publishedTerms ? `Published v${publishedTerms.version}` : `Draft v${latestTerms?.version || 1}`}
+            </span>
+            <p>{publishedTerms ? 'Versi ini sudah tampil di dashboard course. Publish lagi hanya jika isi S&K benar-benar berubah.' : 'Belum tampil di dashboard course. Review isi draft di bawah, lalu publish versi pertama.'}</p>
+          </div>
+          <label className={styles.stack}>Judul<input value={terms.title} onChange={e => setTerms({ ...terms, title: e.target.value })} /></label>
+          <label className={styles.stack}>Isi<textarea rows={24} value={terms.content} onChange={e => setTerms({ ...terms, content: e.target.value })} /></label>
+          <button className={styles.primary} disabled={terms.content.length < 200 || Boolean(busy)} onClick={() => action('publish_terms', terms)}>
+            <FileText size={16} /> {publishedTerms ? 'Publish sebagai versi baru' : 'Publish S&K pertama'}
+          </button>
+        </section>
+        <section className={styles.panel}>
+          <div className={styles.panelTitle}><div><span>Operational policy</span><h2>Konfigurasi tetap MVP</h2></div></div>
+          <dl className={styles.configList}><div><dt>Attribution</dt><dd>Last valid click</dd></div><div><dt>Default cookie</dt><dd>30 hari</dd></div><div><dt>Default hold</dt><dd>14 hari</dd></div><div><dt>Minimum payout</dt><dd>Rp50.000</dd></div><div><dt>Settlement</dt><dd>Tanggal 1</dd></div><div><dt>Banding</dt><dd>Tanggal 1–3 / 3 hari</dd></div><div><dt>Transfer</dt><dd>Maks. tanggal 5</dd></div><div><dt>Transfer fee</dt><dd>Ditanggung Marcatching</dd></div></dl>
+          <p className={styles.hint}>Nilai kritis disimpan pada snapshot setiap program/order. Ubah konstanta global lewat migration baru agar audit trail tetap jelas.</p>
+        </section>
+      </div>}
 
       {notice && <div className={styles.notice}>{notice}</div>}
     </div>
