@@ -19,6 +19,20 @@ function integer(value: unknown, min: number, max: number) {
   return parsed
 }
 
+function affiliateRuntimeConfiguration() {
+  const attributionSecret = process.env.AFFILIATE_ATTRIBUTION_SECRET || ''
+  const encryptionSecret = process.env.AFFILIATE_DATA_ENCRYPTION_KEY || ''
+  const encryptionBytes = /^[a-f\d]{64}$/i.test(encryptionSecret)
+    ? Buffer.from(encryptionSecret, 'hex')
+    : Buffer.from(encryptionSecret, 'base64')
+
+  return {
+    attributionSecretConfigured: attributionSecret.length >= 24,
+    encryptionKeyConfigured: encryptionBytes.length === 32,
+    appsScriptPaymentSecretConfigured: Boolean(process.env.APPS_SCRIPT_PAYMENT_SECRET),
+  }
+}
+
 async function dashboard() {
   await supabaseAdmin.rpc('promote_mature_affiliate_commissions')
   const [products, programs, versions, members, accounts, clicks, commissions, adjustments, cycles, statements, payouts, emailDeliveries, disputes, terms] = await Promise.all([
@@ -50,6 +64,7 @@ async function dashboard() {
     members: members.data || [], accounts: accounts.data || [], clicks: clicks.data || [],
     commissions: commissionRows, adjustments: adjustmentRows, cycles: cycles.data || [], statements: statements.data || [],
     payouts: payouts.data || [], emailDeliveries: emailDeliveries.data || [], disputes: disputes.data || [], terms: terms.data || [],
+    configuration: affiliateRuntimeConfiguration(),
     metrics: {
       activeAffiliates: (members.data || []).filter(row => row.status === 'active').length,
       validClicks: clicks.count ?? (clicks.data || []).length,

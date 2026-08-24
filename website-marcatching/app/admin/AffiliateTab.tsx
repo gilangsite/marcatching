@@ -23,6 +23,11 @@ type AdminData = Record<string, any> & {
   products: Array<any>; programs: Array<any>; versions: Array<any>; members: Array<any>;
   accounts: Array<any>; clicks: Array<any>; commissions: Array<any>; adjustments: Array<any>; cycles: Array<any>;
   statements: Array<any>; payouts: Array<any>; emailDeliveries: Array<any>; disputes: Array<any>; terms: Array<any>;
+  configuration: {
+    attributionSecretConfigured: boolean;
+    encryptionKeyConfigured: boolean;
+    appsScriptPaymentSecretConfigured: boolean;
+  };
   metrics: Record<string, number>;
 }
 
@@ -241,6 +246,12 @@ export default function AffiliateTab() {
         </section>
         <section className={styles.panel}>
           <div className={styles.panelTitle}><div><span>Operational policy</span><h2>Konfigurasi tetap MVP</h2></div></div>
+          <div className={styles.runtimeChecks}>
+            <div><span className={`${styles.pill} ${data.configuration.attributionSecretConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.attributionSecretConfigured ? 'Ready' : 'Missing'}</span><p>Affiliate attribution secret</p></div>
+            <div><span className={`${styles.pill} ${data.configuration.encryptionKeyConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.encryptionKeyConfigured ? 'Ready' : 'Missing'}</span><p>Affiliate data encryption key</p></div>
+            <div><span className={`${styles.pill} ${data.configuration.appsScriptPaymentSecretConfigured ? styles.pill_active : styles.pill_failed}`}>{data.configuration.appsScriptPaymentSecretConfigured ? 'Ready' : 'Missing'}</span><p>Apps Script payment secret</p></div>
+          </div>
+          {!data.configuration.attributionSecretConfigured && <p className={styles.configWarning}><ShieldAlert size={16} /> Link tetap dapat membuka produk, tetapi click, cookie, attribution, dan komisi tidak akan tercatat sampai environment Preview diperbaiki dan deployment dibuat ulang.</p>}
           <dl className={styles.configList}><div><dt>Attribution</dt><dd>Last valid click</dd></div><div><dt>Default cookie</dt><dd>30 hari</dd></div><div><dt>Default hold</dt><dd>14 hari</dd></div><div><dt>Minimum payout</dt><dd>Rp50.000</dd></div><div><dt>Settlement</dt><dd>Tanggal 1</dd></div><div><dt>Banding</dt><dd>Tanggal 1–3 / 3 hari</dd></div><div><dt>Transfer</dt><dd>Maks. tanggal 5</dd></div><div><dt>Transfer fee</dt><dd>Ditanggung Marcatching</dd></div></dl>
           <p className={styles.hint}>Nilai kritis disimpan pada snapshot setiap program/order. Ubah konstanta global lewat migration baru agar audit trail tetap jelas.</p>
         </section>

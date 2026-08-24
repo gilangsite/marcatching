@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { notifyPaidCheckout, sendCourseAccessEmail } from '@/lib/courseEmail'
+import { notifyPaidCheckout, sendCourseAccessEmail, type CheckoutNotificationInput } from '@/lib/courseEmail'
 import type { AddonItem, Product, Voucher } from '@/lib/supabaseClient'
 
 export class CommerceError extends Error {
@@ -241,6 +241,47 @@ type PaidNotifiableOrder = {
   payment_status: string
 }
 
+async function affiliateSaleNotification(orderId: string): Promise<CheckoutNotificationInput['affiliate']> {
+  const { data: attribution, error: attributionError } = await supabaseAdmin
+    .from('affiliate_attributions')
+    .select('id, affiliate_member_id, commission_bps')
+    .eq('order_id', orderId)
+    .eq('status', 'valid')
+    .maybeSingle()
+
+  if (attributionError) {
+    console.error('Affiliate sale notification attribution lookup failed')
+    return null
+  }
+  if (!attribution) return null
+
+  const [{ data: member, error: memberError }, { data: commission, error: commissionError }] = await Promise.all([
+    supabaseAdmin
+      .from('affiliate_members')
+      .select('display_name, affiliate_code')
+      .eq('id', attribution.affiliate_member_id)
+      .maybeSingle(),
+    supabaseAdmin
+      .from('affiliate_commissions')
+      .select('commission_amount_rupiah, status')
+      .eq('attribution_id', attribution.id)
+      .maybeSingle(),
+  ])
+
+  if (memberError || commissionError || !member || !commission) {
+    console.error('Affiliate sale notification commission lookup failed')
+    return null
+  }
+
+  return {
+    name: member.display_name,
+    code: member.affiliate_code,
+    commissionPercent: Number(attribution.commission_bps) / 100,
+    commissionAmount: Number(commission.commission_amount_rupiah) || 0,
+    commissionStatus: commission.status,
+  }
+}
+
 export async function notifyPaidOrder(orderId: string) {
   const { data, error } = await supabaseAdmin
     .from('orders')
@@ -253,6 +294,8 @@ export async function notifyPaidOrder(orderId: string) {
   if (order.status !== 'confirmed' || order.payment_status !== 'paid') {
     throw new CommerceError('Order belum memiliki pembayaran terverifikasi')
   }
+
+  const affiliate = await affiliateSaleNotification(order.id)
 
   await notifyPaidCheckout({
     orderId: order.id,
@@ -272,6 +315,7 @@ export async function notifyPaidOrder(orderId: string) {
     paymentType: order.payment_type,
     midtransOrderId: order.midtrans_order_id,
     midtransTransactionId: order.midtrans_transaction_id,
+    affiliate,
   })
 }
 

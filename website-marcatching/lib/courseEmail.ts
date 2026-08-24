@@ -84,6 +84,13 @@ export type CheckoutNotificationInput = {
   midtransOrderId?: string | null
   midtransTransactionId?: string | null
   paymentUrl?: string | null
+  affiliate?: {
+    name: string
+    code: string
+    commissionPercent: number
+    commissionAmount: number
+    commissionStatus: string
+  } | null
 }
 
 function checkoutNotificationPayload(input: CheckoutNotificationInput) {
@@ -118,6 +125,7 @@ function checkoutNotificationPayload(input: CheckoutNotificationInput) {
     midtransOrderId: input.midtransOrderId || '',
     midtransTransactionId: input.midtransTransactionId || '',
     paymentUrl: input.paymentUrl || '',
+    affiliate: input.affiliate || null,
   }
 }
 

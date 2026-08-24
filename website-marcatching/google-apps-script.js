@@ -477,7 +477,19 @@ function sendAdminNotificationEmail(data) {
     }
   }
 
-  var subject = 'Pembelian Baru: ' + allProducts.map(function(p) { return p.name; }).join(' + ') + ' — Marcatching';
+  var affiliate = data.affiliate || null;
+  var subject = (affiliate ? '[AFFILIATE] ' : '[DIRECT] ') + 'Pembelian Baru: ' + allProducts.map(function(p) { return p.name; }).join(' + ') + ' — Marcatching';
+  var saleSourceHtml = affiliate
+    ? '<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:18px 20px;margin-bottom:20px;">' +
+        '<h3 style="font-size:12px;color:#047857;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;font-weight:800;">Penjualan Affiliate</h3>' +
+        '<table style="width:100%;font-size:13px;border-collapse:collapse;">' +
+          '<tr><td style="padding:5px 0;color:#6b7280;width:42%;">KOL / Affiliate</td><td style="padding:5px 0;color:#065f46;font-weight:800;">' + escapeEmailHtml(affiliate.name || '-') + '</td></tr>' +
+          '<tr><td style="padding:5px 0;color:#6b7280;">Kode</td><td style="padding:5px 0;color:#065f46;font-weight:800;">' + escapeEmailHtml(affiliate.code || '-') + '</td></tr>' +
+          '<tr><td style="padding:5px 0;color:#6b7280;">Rate komisi</td><td style="padding:5px 0;color:#065f46;font-weight:800;">' + Number(affiliate.commissionPercent || 0) + '%</td></tr>' +
+          '<tr><td style="padding:5px 0;color:#6b7280;">Komisi tercatat</td><td style="padding:5px 0;color:#065f46;font-weight:800;">' + formatRupiah(affiliate.commissionAmount || 0) + ' (' + escapeEmailHtml(affiliate.commissionStatus || 'pending') + ')</td></tr>' +
+        '</table>' +
+      '</div>'
+    : '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin-bottom:20px;color:#475569;font-size:13px;"><strong>Sumber penjualan:</strong> Direct / tanpa link affiliate</div>';
 
   // Build product rows HTML for admin
   var productRowsHtml = allProducts.map(function(p, i) {
@@ -506,11 +518,13 @@ function sendAdminNotificationEmail(data) {
       '<div style="background:#0d3369;padding:28px 24px;text-align:center;">' +
         '<img src="https://www.marcatching.com/logo-type-white.png" alt="Marcatching" style="height:28px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />' +
         '<h1 style="color:#ffffff;font-size:18px;margin:0;font-weight:700;">Ada Pembelian Baru!</h1>' +
-        '<p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk dari <strong style="color:#ffffff;">' + (data.fullName || '-') + '</strong></p>' +
+        '<p style="color:rgba(255,255,255,0.75);font-size:13px;margin:6px 0 0;">Order masuk dari <strong style="color:#ffffff;">' + (data.fullName || '-') + '</strong> · ' + (affiliate ? 'Affiliate' : 'Direct') + '</p>' +
       '</div>' +
 
       '<div style="padding:28px 24px;">' +
         '<p style="font-size:14px;color:#374151;margin:0 0 20px;line-height:1.6;">Halo Gilang, ada order baru yang masuk. Berikut detail pembeliannya:</p>' +
+
+        saleSourceHtml +
 
         '<div style="background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #e2e8f0;">' +
           '<h3 style="font-size:12px;color:#94a3b8;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Data Pembeli</h3>' +
@@ -559,6 +573,23 @@ function sendAdminNotificationEmail(data) {
 var CHECKOUT_STATUS_COLUMN = 16;
 var CHECKOUT_ADMIN_NOTIFIED_COLUMN = 17;
 var CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN = 18;
+var CHECKOUT_SALE_SOURCE_COLUMN = 19;
+var CHECKOUT_AFFILIATE_CODE_COLUMN = 20;
+var CHECKOUT_AFFILIATE_NAME_COLUMN = 21;
+var CHECKOUT_AFFILIATE_RATE_COLUMN = 22;
+var CHECKOUT_AFFILIATE_COMMISSION_COLUMN = 23;
+
+function affiliateCheckoutColumns(data) {
+  var affiliate = data.affiliate || null;
+  if (!affiliate) return ['Direct', '', '', '', ''];
+  return [
+    'Affiliate',
+    safeSheetText(affiliate.code || ''),
+    safeSheetText(affiliate.name || ''),
+    Number(affiliate.commissionPercent || 0) + '%',
+    formatRupiah(affiliate.commissionAmount || 0)
+  ];
+}
 
 function getCheckoutSheet() {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
@@ -568,7 +599,8 @@ function getCheckoutSheet() {
       'Timestamp', 'Order ID', 'Produk Utama', 'Add-On Products', 'Full Name', 'Email',
       'WhatsApp', 'Background', 'Referral Source', 'Voucher Code',
       'Harga Utama', 'Add-On Total', 'Subtotal', 'Voucher Discount',
-      'Total Bayar', 'Status', 'Admin Notified At', 'Buyer Paid Notified At'
+      'Total Bayar', 'Status', 'Admin Notified At', 'Buyer Paid Notified At',
+      'Sale Source', 'Affiliate Code', 'Affiliate Name', 'Affiliate Rate', 'Affiliate Commission'
     ]);
   } else {
     if (!sheet.getRange(1, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue()) {
@@ -576,6 +608,11 @@ function getCheckoutSheet() {
     }
     if (!sheet.getRange(1, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).getValue()) {
       sheet.getRange(1, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).setValue('Buyer Paid Notified At');
+    }
+    var affiliateHeaders = ['Sale Source', 'Affiliate Code', 'Affiliate Name', 'Affiliate Rate', 'Affiliate Commission'];
+    for (var headerIndex = 0; headerIndex < affiliateHeaders.length; headerIndex++) {
+      var column = CHECKOUT_SALE_SOURCE_COLUMN + headerIndex;
+      if (!sheet.getRange(1, column).getValue()) sheet.getRange(1, column).setValue(affiliateHeaders[headerIndex]);
     }
   }
 
@@ -620,7 +657,8 @@ function saveCheckoutRow(sheet, data, status) {
     return existingRow;
   }
 
-  sheet.appendRow(rowValues.concat(['', '']));
+  var affiliateColumns = status === 'paid' ? affiliateCheckoutColumns(data) : ['', '', '', '', ''];
+  sheet.appendRow(rowValues.concat(['', '']).concat(affiliateColumns));
   return sheet.getLastRow();
 }
 
@@ -669,6 +707,7 @@ function handlePaymentPaid(data) {
     if (!rowNumber) rowNumber = saveCheckoutRow(sheet, data, 'paid');
 
     sheet.getRange(rowNumber, CHECKOUT_STATUS_COLUMN).setValue('paid');
+    sheet.getRange(rowNumber, CHECKOUT_SALE_SOURCE_COLUMN, 1, 5).setValues([affiliateCheckoutColumns(data)]);
     var adminNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_ADMIN_NOTIFIED_COLUMN).getValue();
     var buyerPaidNotifiedAt = sheet.getRange(rowNumber, CHECKOUT_BUYER_PAID_NOTIFIED_COLUMN).getValue();
     var duplicateNotifications = Boolean(adminNotifiedAt && buyerPaidNotifiedAt);
@@ -967,6 +1006,12 @@ function recordPaidOrderIncome(data) {
   ];
   if (data.midtransTransactionId) detailParts.push('Transaction ' + String(data.midtransTransactionId));
   if (data.voucherCode) detailParts.push('Voucher ' + String(data.voucherCode));
+  if (data.affiliate) {
+    detailParts.push('Affiliate ' + String(data.affiliate.code || '-') + ' (' + String(data.affiliate.name || '-') + ')');
+    detailParts.push('Commission ' + formatRupiah(data.affiliate.commissionAmount || 0));
+  } else {
+    detailParts.push('Source Direct');
+  }
 
   var rowValues = [[
     dateValue,

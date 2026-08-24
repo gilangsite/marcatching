@@ -584,6 +584,46 @@
   margin: 0;
 }
 
+.runtimeChecks {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.runtimeChecks div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid rgba(184, 214, 242, 0.1);
+  border-radius: 9px;
+  background: rgba(15, 30, 41, 0.72);
+}
+
+.runtimeChecks p {
+  margin: 0;
+  color: var(--affiliate-muted);
+  font-size: 11px;
+}
+
+.configWarning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 11px;
+  border: 1px solid rgba(224, 103, 103, 0.28);
+  border-radius: 9px;
+  color: #f2b0b0;
+  background: rgba(126, 40, 40, 0.24);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.configWarning svg {
+  flex: 0 0 auto;
+}
+
 .configList div {
   display: flex;
   justify-content: space-between;
