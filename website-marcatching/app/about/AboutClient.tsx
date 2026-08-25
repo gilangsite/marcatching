@@ -357,6 +357,7 @@ function HeroProductSpotlight({ product }: { product: ProductCardData }) {
 
   return (
     <motion.div className={styles.heroProductCard} initial={{ opacity: 0, y: 34, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.28 }} transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}>
+      <p className={styles.heroProductUnlock}>Unlock the Full Marcatching System: Brand Memory, Prompt Library, Agentic Dashboard, and Affiliate Revenue, only by purchasing the product below.</p>
       <div className={styles.heroProductVisual}>
         {image ? <Image src={image} alt={`${product.name} product cover`} fill sizes="(max-width: 760px) 90vw, 48vw" className={styles.heroProductImage} /> : <div className={styles.heroProductFallback}><Bot /><span>Your first AI agent</span></div>}
         <span className={styles.heroProductBadge}>Hero Product</span>

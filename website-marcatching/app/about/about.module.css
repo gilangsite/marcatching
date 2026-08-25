@@ -380,23 +380,27 @@
 
 /* Hero product */
 .heroProduct {
+  --hero-product-background: #070d14;
   color: var(--ex-text);
-  background:
-    radial-gradient(circle at 22% 50%, rgba(78, 148, 215, 0.13), transparent 31rem),
-    linear-gradient(180deg, #e8edf1 0, #08111a 14%, #05090e 86%, #e8eef3 100%);
+  padding-top: 0;
+  overflow: visible;
+  background: var(--hero-product-background);
 }
+.heroProduct > .shell { position: relative; z-index: 3; transform: translateY(clamp(-5rem, -5vw, -3rem)); margin-bottom: clamp(-5rem, -5vw, -3rem); }
 .heroProductCard {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(21rem, 0.9fr);
-  gap: clamp(1.5rem, 4vw, 4.5rem);
+  column-gap: clamp(1.5rem, 4vw, 4.5rem);
+  row-gap: clamp(0.75rem, 1.5vw, 1.25rem);
   align-items: center;
   padding: clamp(0.75rem, 1.5vw, 1.1rem);
   overflow: hidden;
   border: 1px solid var(--ex-line-strong);
   border-radius: clamp(1.4rem, 3vw, 2.5rem);
-  background: rgba(7, 13, 20, 0.94);
+  background: var(--hero-product-background);
   box-shadow: 0 3rem 8rem rgba(0, 0, 0, 0.42), inset 0 1px rgba(255,255,255,0.04);
 }
+.heroProductUnlock { grid-column: 1 / -1; max-width: 68rem; margin: 0 auto; padding: clamp(0.8rem, 1.6vw, 1.25rem) clamp(1rem, 3vw, 3rem) clamp(0.35rem, 0.8vw, 0.7rem); color: #8e9baa; font-size: clamp(0.68rem, 0.85vw, 0.8rem); font-weight: 560; letter-spacing: 0.055em; line-height: 1.65; text-align: center; }
 .heroProductVisual {
   position: relative;
   min-height: clamp(30rem, 48vw, 43rem);
@@ -782,7 +786,8 @@
   .dataCopy { order: 2; }
   .dataVisual { order: 3; grid-column: auto; height: 14rem; }
   .dataVisual,.dataChapter:nth-child(even) .dataVisual { transform: none; }
-  .heroProduct { background: linear-gradient(180deg, #e8edf1 0, #08111a 7%, #05090e 93%, #e8eef3 100%); }
+  .heroProduct { background: var(--hero-product-background); }
+  .heroProduct > .shell { transform: translateY(-2.25rem); margin-bottom: -2.25rem; }
   .heroProductCard { gap: 0; padding: 0.65rem; border-radius: 1.5rem; }
   .heroProductVisual { min-height: 0; aspect-ratio: 1 / 1.08; border-radius: 1.05rem; }
   .heroProductImage { padding: 1.5rem; }
