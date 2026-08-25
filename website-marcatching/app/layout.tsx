@@ -1,7 +1,25 @@
 import type { Metadata, Viewport } from 'next'
+import { DM_Sans, Montserrat } from 'next/font/google'
 import './globals.css'
 import AnalyticsTracker from '@/components/AnalyticsTracker'
 import PWARegister from '@/components/PWARegister'
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+  fallback: ['Arial', 'sans-serif'],
+})
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-montserrat',
+  display: 'swap',
+  preload: false,
+  fallback: ['Arial', 'sans-serif'],
+})
 
 // ----------------------------------------------------------------
 // Viewport — termasuk theme color untuk browser chrome & iOS
@@ -91,7 +109,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="id">
+    <html lang="id" className={`${dmSans.variable} ${montserrat.variable}`}>
       <body>
         <AnalyticsTracker />
         <PWARegister />
@@ -100,4 +118,3 @@ export default function RootLayout({
     </html>
   )
 }
-

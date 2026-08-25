@@ -30,8 +30,6 @@ function getYouTubeId(url: string): string | null {
 
 // ── Global styles injected once ──────────────────────────────
 const PAGE_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap');
-
 /* Sparkle orbs - very low opacity decorative movement */
 @keyframes orbDrift1 {
   0%   { transform: translate(0px, 0px) scale(1); }
@@ -151,7 +149,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         fontSize: sizeMap[c.size || 'h2'] || sizeMap.h2,
         fontWeight: 900,
         marginBottom: '1.2rem',
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: 'var(--font)',
         letterSpacing: '-0.03em',
         lineHeight: 1.15,
         textAlign: (c.align as any) || 'left',
@@ -174,7 +172,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
         lineHeight: 1.75,
         color: textColor,
         textAlign: (c.align as any) || 'left',
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: 'var(--font)',
       }}>
         <div dangerouslySetInnerHTML={{ __html: c.text || '' }} />
       </div>
@@ -235,7 +233,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             />
           )}
         </div>
-        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
+        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: 'var(--font)' }}>{c.caption}</p>}
       </ImageWrapper>
     )
   }
@@ -244,7 +242,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
     return (
       <div style={{ marginBottom: '1.5rem', width: '100%' }}>
         <VideoEmbed url={c.video_url} title={c.caption || 'Video'} />
-        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: "'DM Sans', sans-serif" }}>{c.caption}</p>}
+        {c.caption && <p style={{ fontSize: '0.8rem', color: theme === 'black' ? '#6b7280' : '#9ca3af', textAlign: 'center', marginTop: '0.5rem', fontFamily: 'var(--font)' }}>{c.caption}</p>}
       </div>
     )
   }
@@ -276,7 +274,7 @@ function CampaignBlockRenderer({ block, theme }: { block: CampaignBlock, theme: 
             textDecoration: 'none',
             background: bg,
             color: textCol,
-            fontFamily: "'DM Sans', sans-serif",
+            fontFamily: 'var(--font)',
             boxShadow: theme === 'black'
               ? '0 4px 20px rgba(0,0,0,0.4)'
               : '0 4px 20px rgba(13,51,105,0.18)',
@@ -315,7 +313,7 @@ function CampaignProductCard({ product, isComingSoon, theme }: { product: Produc
         boxShadow: theme === 'black'
           ? '0 4px 24px rgba(0,0,0,0.45)'
           : '0 4px 20px rgba(0,0,0,0.05)',
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: 'var(--font)',
         width: '100%',
       }}
     >
@@ -383,7 +381,7 @@ export default function CampaignPublicClient({ campaign, products, navLinks }: {
       <SparkleBackground theme={theme} />
 
       {/* Page content above background */}
-      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', fontFamily: "'DM Sans', sans-serif" }}>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', fontFamily: 'var(--font)' }}>
         <Navbar navLinks={navLinks} />
         <div style={{
           color: theme === 'black' ? '#f9fafb' : '#0f172a',
@@ -391,7 +389,7 @@ export default function CampaignPublicClient({ campaign, products, navLinks }: {
         }}>
           <div style={{ maxWidth: 620, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {(!blocks || blocks.length === 0) && (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: theme === 'black' ? '#6b7280' : '#94a3b8', fontFamily: "'DM Sans', sans-serif" }}>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: theme === 'black' ? '#6b7280' : '#94a3b8', fontFamily: 'var(--font)' }}>
                 Campaign ini belum memiliki konten.
               </div>
             )}

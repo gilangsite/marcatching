@@ -3600,7 +3600,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
                               onChange={html => updateBlock(block.id, { text: html } as any)}
                               placeholder="Tulis paragraf... (pilih teks untuk format)"
                               minHeight={100}
-                              style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family || 'DM Sans', background: '#0a0a0a', border: '1px solid #1e293b' }}
+                              style={{ fontSize: block.size || '1rem', color: block.color || '#ffffff', textAlign: (block.align as any) || 'left', fontWeight: block.weight === 'bold' ? 700 : block.weight === 'semibold' ? 600 : 400, fontStyle: block.italic ? 'italic' : 'normal', fontFamily: block.font_family === 'Montserrat' ? 'var(--font-heading)' : 'var(--font)', background: '#0a0a0a', border: '1px solid #1e293b' }}
                             />
                             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:8 }}>
                               <select className="select" style={{ flex:1, padding:'8px 12px', fontSize:'0.82rem' }} value={block.size || '1rem'} onChange={e => updateBlock(block.id, { size: e.target.value } as any)}>

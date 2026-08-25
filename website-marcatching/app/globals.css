@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
 /* ─── Design Tokens ──────────────────────────────────────── */
 :root {
   --navy: #0d3369;
@@ -14,7 +12,8 @@
   --gray-800: #e5e5e5;
   --text-primary: #ffffff;
   --text-secondary: #d4d4d4;
-  --font: 'DM Sans', sans-serif;
+  --font: var(--font-dm-sans), Arial, sans-serif;
+  --font-heading: var(--font-montserrat), Arial, sans-serif;
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;

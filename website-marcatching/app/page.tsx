@@ -71,38 +71,37 @@ export default async function HomePage() {
   }
 
   const sections = config.ecosystem_sections || []
-  const resolvedSections: ResolvedEcosystemSection[] = []
-
-  for (const section of sections) {
-    const resolvedItems: ResolvedEcosystemItem[] = []
-    for (const item of section.items || []) {
+  const resolvedSections: ResolvedEcosystemSection[] = await Promise.all(sections.map(async section => {
+    const resolvedItems = (await Promise.all((section.items || []).map(async item => {
       if (item.type === 'article' && item.ref_id) {
         const { data: article } = await supabase
           .from('articles')
           .select('*, article_categories(name, slug), article_authors(name, photo_url)')
           .eq('id', item.ref_id)
           .single()
-        if (article) resolvedItems.push({ ...item, data: article as ArticleCardData })
+        return article ? { ...item, data: article as ArticleCardData } as ResolvedEcosystemItem : null
       } else if (item.type === 'product' && item.ref_id) {
         const { data: product } = await supabase
           .from('products')
           .select('*')
           .eq('id', item.ref_id)
           .single()
-        if (product) resolvedItems.push({ ...item, data: product as ProductCardData })
+        return product ? { ...item, data: product as ProductCardData } as ResolvedEcosystemItem : null
       } else if (item.type === 'survey' && item.ref_id) {
         const { data: survey } = await supabase
           .from('surveys')
           .select('*')
           .eq('id', item.ref_id)
           .single()
-        if (survey) resolvedItems.push({ ...item, data: survey as SurveyCardData })
+        return survey ? { ...item, data: survey as SurveyCardData } as ResolvedEcosystemItem : null
       } else if (item.type === 'content') {
-        resolvedItems.push(item)
+        return item as ResolvedEcosystemItem
       }
-    }
-    resolvedSections.push({ ...section, items: resolvedItems })
-  }
+      return null
+    }))).filter((item): item is ResolvedEcosystemItem => item !== null)
+
+    return { ...section, items: resolvedItems }
+  }))
 
   return (
     <AboutClient

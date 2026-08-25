@@ -5,11 +5,8 @@ import { useEffect } from 'react'
 /**
  * PWARegister
  *
- * Komponen ini melakukan dua hal:
- * 1. Mendaftarkan Service Worker (/sw.js) ke browser
- * 2. Mendeteksi saat SW baru tersedia (setelah Vercel deploy)
- *    dan memuat ulang halaman secara otomatis agar user
- *    langsung mendapatkan versi terbaru tanpa harus menutup app.
+ * Mendaftarkan service worker notification-only dan membersihkan cache halaman
+ * dari versi lama yang pernah memakai stale-while-revalidate.
  *
  * Komponen ini tidak merender apapun — hanya efek samping.
  */
@@ -36,9 +33,25 @@ export default function PWARegister() {
     }
 
     let refreshing = false
+    let focusHandler: (() => void) | null = null
+    const hadControllerAtMount = Boolean(navigator.serviceWorker.controller)
+
+    async function clearLegacyPageCaches() {
+      if (!('caches' in window)) return
+      const keys = await caches.keys()
+      await Promise.all(
+        keys
+          .filter((key) => key.startsWith('marcatching-'))
+          .map((key) => caches.delete(key))
+      )
+    }
 
     async function registerSW() {
       try {
+        // Remove HTML cached by the previous worker before registering the
+        // network-only replacement. This is safe to repeat on every origin.
+        await clearLegacyPageCaches()
+
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
           // Selalu ambil sw.js langsung dari network, bukan cache browser.
@@ -47,9 +60,10 @@ export default function PWARegister() {
         })
 
         // Cek update setiap kali halaman mendapat fokus (user kembali ke tab)
-        window.addEventListener('focus', () => {
+        focusHandler = () => {
           registration.update().catch(() => {})
-        })
+        }
+        window.addEventListener('focus', focusHandler)
 
         // --------------------------------------------------------
         // Deteksi SW baru: ada dua skenario
@@ -87,13 +101,17 @@ export default function PWARegister() {
 
     // Listener: saat SW controller berubah (SW baru mengambil alih),
     // reload halaman agar user mendapatkan konten terbaru.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
+    const handleControllerChange = () => {
+      // A first-time registration should not reload a page that is already
+      // correct. Reload only when replacing a worker that controlled the tab.
+      if (!hadControllerAtMount) return
       // Guard agar reload hanya terjadi sekali
       if (refreshing) return
       refreshing = true
       console.log('[PWA] New version available — reloading...')
       window.location.reload()
-    })
+    }
+    navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
 
     // --------------------------------------------------------
     // Global Click Interceptor untuk PWA cross-subdomain
@@ -129,7 +147,7 @@ export default function PWARegister() {
           e.preventDefault()
           window.location.assign(url.href)
         }
-      } catch (err) {
+      } catch {
         // Abaikan jika URL tidak valid
       }
     }
@@ -140,6 +158,8 @@ export default function PWARegister() {
 
     return () => {
       document.removeEventListener('click', handleGlobalClick)
+      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+      if (focusHandler) window.removeEventListener('focus', focusHandler)
     }
   }, [])
 

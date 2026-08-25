@@ -1,117 +1,35 @@
-// ============================================================
-// Marcatching Service Worker
-// Strategi: Stale-While-Revalidate + Auto Update
-// Setiap kali Vercel deploy baru, SW versi baru akan aktif
-// otomatis tanpa perlu user menutup aplikasi.
-// ============================================================
+// Marcatching service worker.
+//
+// Next.js gives every CSS/JS build a content-hashed URL. Caching an HTML
+// document independently from those assets can therefore serve old HTML that
+// points at chunks which no longer exist after a Vercel deployment. That was
+// the source of the occasional unstyled first visit.
+//
+// Keep the worker for push notifications and update signalling, but let the
+// browser/Vercel handle every navigation and static asset directly.
 
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = `marcatching-${CACHE_VERSION}`;
+const CACHE_VERSION = 'v2-network-only';
+const LEGACY_CACHE_PREFIX = 'marcatching-';
 
-// Aset statis yang di-pre-cache saat install
-const PRECACHE_URLS = [
-  '/',
-  '/offline',
-];
-
-// ============================================================
-// INSTALL: Pre-cache aset penting
-// ============================================================
-self.addEventListener('install', (event) => {
-  // skipWaiting() memastikan SW baru langsung aktif
-  // tanpa menunggu semua tab ditutup terlebih dahulu
+self.addEventListener('install', () => {
+  // Activate this repair immediately so legacy page caches are removed.
   self.skipWaiting();
-
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_URLS).catch((err) => {
-        // Jangan gagalkan install jika pre-cache gagal
-        console.warn('[SW] Pre-cache warning:', err);
-      });
-    })
-  );
 });
 
-// ============================================================
-// ACTIVATE: Bersihkan cache lama dari versi sebelumnya
-// ============================================================
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name.startsWith('marcatching-') && name !== CACHE_NAME)
-          .map((name) => {
-            console.log('[SW] Deleting old cache:', name);
-            return caches.delete(name);
-          })
+          .filter((name) => name.startsWith(LEGACY_CACHE_PREFIX))
+          .map((name) => caches.delete(name))
       );
     }).then(() => {
-      // Ambil kontrol semua client segera setelah aktif
+      // Take over existing tabs so the old fetch handler stops serving pages.
       return self.clients.claim();
     })
   );
 });
-
-// ============================================================
-// FETCH: Strategi Stale-While-Revalidate
-// - Sajikan dari cache (cepat) sambil fetch update di background
-// - Cocok untuk konten yang sering berubah (halaman, API)
-// ============================================================
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Hanya tangani request GET dari origin yang sama
-  if (request.method !== 'GET' || url.origin !== self.location.origin) {
-    return;
-  }
-
-  // Bypass cache untuk Next.js internals, API routes, dan Admin Dashboard
-  if (
-    url.pathname.startsWith('/_next/') ||
-    url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/admin') ||
-    url.hostname.startsWith('inside.') ||
-    url.pathname === '/sw.js'
-  ) {
-    return;
-  }
-
-  // Stale-While-Revalidate untuk halaman HTML & aset publik
-  event.respondWith(staleWhileRevalidate(request));
-});
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-
-  // Fetch dari network di background (update cache)
-  const networkFetchPromise = fetch(request)
-    .then((networkResponse) => {
-      if (networkResponse && networkResponse.status === 200) {
-        cache.put(request, networkResponse.clone());
-      }
-      return networkResponse;
-    })
-    .catch(() => {
-      // Network gagal — tidak apa-apa jika ada cache
-      return null;
-    });
-
-  // Kembalikan cache jika ada (cepat), sambil update di background
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-
-  // Tidak ada cache — tunggu network
-  const networkResponse = await networkFetchPromise;
-  if (networkResponse) return networkResponse;
-
-  // Fallback terakhir: halaman offline (jika ada)
-  const offlineFallback = await cache.match('/offline');
-  return offlineFallback || new Response('Offline', { status: 503 });
-}
 
 // ============================================================
 // MESSAGE: Terima perintah dari client (force update, dll.)
