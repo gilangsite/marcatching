@@ -1,12 +1,9 @@
 export type ExperienceSectionId =
   | 'hero'
   | 'problem'
-  | 'gap'
   | 'data'
   | 'build'
   | 'ecosystem'
-  | 'impact'
-  | 'pillars'
   | 'founder'
   | 'paths'
   | 'finale'
@@ -96,25 +93,22 @@ export type ExperienceConfig = {
 }
 
 export const EXPERIENCE_SECTIONS: { id: ExperienceSectionId; label: string }[] = [
-  { id: 'hero', label: 'Intelligence Core' },
-  { id: 'problem', label: 'The Problem' },
-  { id: 'gap', label: 'AI Adoption Gap' },
-  { id: 'data', label: 'Data Urgency' },
-  { id: 'build', label: 'What We Build' },
-  { id: 'ecosystem', label: 'Ecosystem' },
-  { id: 'impact', label: 'Impact' },
-  { id: 'pillars', label: 'Pillars' },
-  { id: 'founder', label: 'Founder' },
-  { id: 'paths', label: 'Choose Your Path' },
-  { id: 'finale', label: 'Build the System' },
+  { id: 'hero', label: 'The Ecosystem' },
+  { id: 'problem', label: 'Why It Matters' },
+  { id: 'data', label: 'Why It Feels Different' },
+  { id: 'build', label: 'Core System' },
+  { id: 'ecosystem', label: 'Connected Growth' },
+  { id: 'founder', label: 'Built by an Operator' },
+  { id: 'paths', label: 'Built for You' },
+  { id: 'finale', label: 'Start Building' },
 ]
 
 export const NOISE_TERMS = [
-  'Content', 'Trends', 'Likes', 'AI', 'Ads',
-  'Audience', 'Funnel', 'Conversion', 'Revenue', 'Data',
+  'Generic AI', 'Blank Brief', 'Lost Context',
+  'Random Content', 'Split Tools', 'Zero Recall',
 ]
 
-export const SYSTEM_FLOW = ['Content', 'Trust', 'Offer', 'Conversion', 'Revenue']
+export const SYSTEM_FLOW = ['Brand Memory', 'Prompt Library', 'Skill Engine', 'Store', 'Affiliate']
 
 export const AI_PIPELINE = [
   'Research', 'Content', 'Campaign', 'Automation', 'Customer Journey', 'Decision',
@@ -122,39 +116,31 @@ export const AI_PIPELINE = [
 
 export const DATA_CHAPTERS = [
   {
-    id: 'economy',
-    value: 146,
-    prefix: 'USD ',
-    suffix: 'B',
-    label: 'Indonesia digital economy projection',
-    source: 'Projection cited by the existing Marcatching homepage · 2025',
+    id: 'memory',
+    display: 'Remembered',
+    label: 'Brand Memory membuat setiap workflow dimulai dari identitasmu, bukan dari prompt kosong.',
+    source: 'Positioning, audience, voice, offer, dan friction tetap hadir saat kamu berpindah dari satu pekerjaan ke pekerjaan berikutnya.',
     visual: 'bars',
   },
   {
-    id: 'internet',
-    value: 212,
-    prefix: '',
-    suffix: ' juta',
-    label: 'Internet users in Indonesia',
-    source: 'Statista · 2024 · as cited by Marcatching',
+    id: 'prompts',
+    display: 'Ready',
+    label: 'Prompt Library menghilangkan rasa buntu saat kamu harus mulai menulis, meriset, atau merancang campaign.',
+    source: 'Pilih pekerjaan yang ingin diselesaikan. Konteks brand ikut terhubung agar output terasa lebih spesifik dan siap digunakan.',
     visual: 'network',
   },
   {
-    id: 'integration',
-    value: 26,
-    prefix: '',
-    suffix: '%',
-    label: 'Businesses with real AI integration',
-    source: 'Compared with 93% confidence · existing homepage figure',
+    id: 'skills',
+    display: 'Repeatable',
+    label: 'Marcatching Skill Engine mengubah keahlian menjadi workflow spesialis yang dapat dipakai berulang kali.',
+    source: 'Gunakan versi original atau buat Skill yang dipersonalisasi dengan Brand Memory dan requirement milikmu sendiri.',
     visual: 'rings',
   },
   {
-    id: 'efficiency',
-    value: 50,
-    prefix: '+',
-    suffix: '%',
-    label: 'Potential workflow efficiency increase',
-    source: 'McKinsey · 2023 · as cited by Marcatching',
+    id: 'affiliate',
+    display: 'Earnable',
+    label: 'Affiliate Program mengubah distribusi dan kepercayaan audiens menjadi channel penghasilan yang transparan.',
+    source: 'Bagikan produk yang relevan, pantau klik dan komisi, lalu kelola payout dari workspace member yang sama.',
     visual: 'flow',
   },
 ] as const
@@ -162,44 +148,44 @@ export const DATA_CHAPTERS = [
 export const CAPABILITIES = [
   {
     number: '01',
-    title: 'Market Intelligence',
-    description: 'Membaca tren, kompetitor, perilaku audiens, dan peluang kategori agar bisnis tidak bergerak berdasarkan asumsi.',
-    input: 'Market noise',
-    process: 'Signal decoding',
-    output: 'Strategic direction',
-    flow: ['Noise', 'Signals', 'Strategic Direction'],
+    title: 'Brand Memory',
+    description: 'Isi konteks brand sekali—positioning, audience, voice, offer, dan friction—lalu bawa identitas yang sama ke setiap workflow Marcatching.',
+    input: 'Brand truth',
+    process: 'brand-memory.md',
+    output: 'Consistent context',
+    flow: ['Brand Truth', 'Memory', 'Personalization', 'Recall'],
   },
   {
     number: '02',
-    title: 'Brand Perception System',
-    description: 'Membantu bisnis mendesain cara audiens melihat, memahami, dan mempercayai brand.',
-    input: 'Product',
-    process: 'Meaning design',
-    output: 'Preference',
-    flow: ['Product', 'Meaning', 'Trust', 'Preference'],
+    title: 'Prompt Library',
+    description: 'Buka prompt untuk riset, copywriting, campaign, content, atau conversion dengan Brand Memory yang otomatis ikut memberi konteks.',
+    input: 'Next marketing task',
+    process: 'Context-aware prompt',
+    output: 'Sharper first output',
+    flow: ['Choose Task', 'Attach Memory', 'Run Prompt', 'Refine'],
   },
   {
     number: '03',
-    title: 'AI-Powered Marketing Workflow',
-    description: 'Mengintegrasikan AI ke dalam proses riset, content ideation, copywriting, campaign planning, automation, dan decision-making.',
-    input: 'Raw intelligence',
-    process: 'Human + AI workflow',
-    output: 'Faster decisions',
-    flow: ['Research', 'Ideation', 'Production', 'Automation', 'Decision'],
+    title: 'Marcatching Skill Engine',
+    description: 'Ubah produk Skill yang kamu miliki menjadi operating workflow original atau versi personal yang membawa Brand Memory milikmu.',
+    input: 'Execution goal',
+    process: 'Skill + Brand Memory',
+    output: 'Repeatable workflow',
+    flow: ['Own Skill', 'Add Memory', 'Personalize', 'Execute'],
   },
   {
     number: '04',
-    title: 'Growth & Conversion Architecture',
-    description: 'Menyusun sistem yang menghubungkan attention, trust, offer, funnel, dan revenue menjadi satu ekosistem yang terukur.',
-    input: 'Attention',
-    process: 'Conversion system',
-    output: 'Revenue',
-    flow: ['Attention', 'Trust', 'Offer', 'Conversion', 'Revenue'],
+    title: 'Affiliate Revenue System',
+    description: 'Aktifkan program sebagai member, bagikan link produk yang relevan, lalu pantau atribusi, komisi, dan payout dalam satu workspace.',
+    input: 'Audience trust',
+    process: 'Trackable affiliate link',
+    output: 'Commission income',
+    flow: ['Choose Product', 'Share Link', 'Track Sale', 'Earn'],
   },
 ] as const
 
 export const ECOSYSTEM_FLOW = [
-  'Insight', 'Article', 'Survey', 'Course', 'Tools', 'Implementation', 'Impact',
+  'Course', 'Brand Memory', 'Prompt Library', 'Skill Engine', 'Store', 'Affiliate Income',
 ]
 
 export const PILLARS = [

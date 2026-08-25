@@ -17,11 +17,11 @@ export const dynamic = 'force-static'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Marcatching - Marketing Intelligence',
-  description: 'Marketing isn\'t selling. It\'s system design. Kami membongkar cara kerja sistem di balik kebisingan pasar.',
+  title: 'Marcatching — Build Your Brand, Workflow, and Revenue',
+  description: 'Satu ecosystem untuk membangun brand yang diingat, menjalankan digital marketing dengan Brand Memory, Prompt Library, dan Skill Engine, lalu bertumbuh melalui Marcatching Affiliate Program.',
   openGraph: {
-    title: 'Marcatching - Marketing Intelligence',
-    description: 'Marketing isn\'t selling. It\'s system design.',
+    title: 'Marcatching — Learn. Build. Earn.',
+    description: 'Bangun brand yang diingat, jalankan workflow yang terasa milikmu, dan buka jalur penghasilan baru dalam satu ecosystem Marcatching.',
     url: 'https://marcatching.com',
   },
 }

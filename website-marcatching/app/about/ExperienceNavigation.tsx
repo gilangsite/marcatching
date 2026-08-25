@@ -8,10 +8,10 @@ import { useExperience } from './ExperienceStore'
 import styles from './ExperienceNavigation.module.css'
 
 const primaryLinks = [
-  { href: '#problem', label: 'Why it matters', section: 'problem' },
-  { href: '#build', label: 'Systems', section: 'build' },
+  { href: '#problem', label: 'Why Marcatching', section: 'problem' },
+  { href: '#build', label: 'Core System', section: 'build' },
   { href: '#ecosystem', label: 'Ecosystem', section: 'ecosystem' },
-  { href: '#founder', label: 'Founder', section: 'founder' },
+  { href: '#paths', label: 'For You', section: 'paths' },
 ] as const
 
 export default function ExperienceNavigation({ navLinks, ctaUrl }: { navLinks: NavLink[]; ctaUrl: string }) {
@@ -40,7 +40,7 @@ export default function ExperienceNavigation({ navLinks, ctaUrl }: { navLinks: N
           {primaryLinks.map((item) => (
             <a key={item.href} href={item.href} className={`${styles.link} ${activeSection === item.section ? styles.linkActive : ''}`} aria-current={activeSection === item.section ? 'location' : undefined}>{item.label}</a>
           ))}
-          <Link href={ctaUrl} className={styles.navCta}>Start building</Link>
+          <Link href={ctaUrl} className={styles.navCta}>Explore Store</Link>
         </div>
 
         <button type="button" className={styles.menuButton} onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="experience-mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}><span /></button>
@@ -48,7 +48,7 @@ export default function ExperienceNavigation({ navLinks, ctaUrl }: { navLinks: N
         <div className={styles.mobilePanel} id="experience-mobile-menu" aria-hidden={!open}>
           <div className={styles.mobilePrimary}>
             {primaryLinks.map((item) => <a key={item.href} href={item.href} className={styles.mobileLink} onClick={() => setOpen(false)}>{item.label}</a>)}
-            <Link href={ctaUrl} className={styles.mobileLink} onClick={() => setOpen(false)}>Start building</Link>
+            <Link href={ctaUrl} className={styles.mobileLink} onClick={() => setOpen(false)}>Explore Store</Link>
           </div>
           <div className={styles.mobileMeta}>
             {navLinks.filter((item) => item.url).map((item) => <Link key={item.id} href={item.url ?? '/'} onClick={() => setOpen(false)}>{item.title}</Link>)}
