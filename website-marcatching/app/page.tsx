@@ -11,7 +11,10 @@ import type {
   SurveyCardData,
 } from './about/experience-data'
 
-export const dynamic = 'force-dynamic'
+// Public, non-personalized content can be served immediately from the edge.
+// Revalidate frequently so dashboard edits become visible within one minute.
+export const dynamic = 'force-static'
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Marcatching - Marketing Intelligence',

@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { supabase } from '@/lib/supabaseClient'
 import type { Link as LinkType, Contact, Product, NavLink } from '@/lib/supabaseClient'
@@ -48,11 +47,10 @@ async function getNavLinks(): Promise<NavLink[]> {
   return data ?? []
 }
 
-export const revalidate = 0
-
-function formatRupiah(num: number): string {
-  return 'Rp ' + num.toLocaleString('id-ID')
-}
+// This landing page is public and identical for every visitor. Keeping a short
+// ISR window avoids blocking the first paint on several database round-trips.
+export const dynamic = 'force-static'
+export const revalidate = 60
 
 // Konversi URL relatif menjadi absolute ke marcatching.com
 // Diperlukan karena halaman ini berjalan di subdomain page.marcatching.com
