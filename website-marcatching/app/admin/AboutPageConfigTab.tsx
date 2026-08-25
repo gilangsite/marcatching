@@ -74,7 +74,7 @@ export default function AboutPageConfigTab() {
 
   useEffect(() => {
     // Fetch available products, articles, surveys for dropdowns
-    supabase.from('products').select('id, name').order('name').then(({ data }) => { if (data) setProducts(data) })
+    supabase.from('products').select('id, name').eq('is_active', true).eq('is_coming_soon', false).order('name').then(({ data }) => { if (data) setProducts(data) })
     supabase.from('articles').select('id, title').order('created_at', { ascending: false }).then(({ data }) => { if (data) setArticles(data) })
     supabase.from('surveys').select('id, title').order('created_at', { ascending: false }).then(({ data }) => { if (data) setSurveys(data) })
 
@@ -233,6 +233,18 @@ export default function AboutPageConfigTab() {
             <label className="label">Button URL (Bottom CTA)</label>
             <input className="input" value={form.cta_url} onChange={e => setForm(f => ({ ...f, cta_url: e.target.value }))} />
           </div>
+        </div>
+
+        <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
+
+        <h3 className={styles.formTitle}>Hero Product</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Pilih satu produk aktif untuk ditampilkan besar di homepage. Nama, gambar, harga, diskon, dan checkout diambil langsung dari data produk.</p>
+        <div className="form-group">
+          <label className="label">Product for Homepage</label>
+          <select className="input" value={form.embed_product_id} onChange={e => setForm(f => ({ ...f, embed_product_id: e.target.value }))} style={{ appearance: 'auto', WebkitAppearance: 'menulist' }}>
+            <option value="">Tidak menampilkan Hero Product</option>
+            {products.map(product => <option key={product.id} value={product.id}>{product.name}</option>)}
+          </select>
         </div>
 
         <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
@@ -407,11 +419,11 @@ export default function AboutPageConfigTab() {
 
         <hr style={{ borderColor: 'rgba(0,0,0,0.05)', margin: '30px 0' }} />
 
-        <h3 className={styles.formTitle}>Impact Stats (Live Count)</h3>
-        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Angka yang ditampilkan di section "Marcatching Impact in Motion". Counter akan animate dari 0 ke angka ini.</p>
+        <h3 className={styles.formTitle}>Homepage Live Count</h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Angka ini tampil secara realtime pada homepage dan bergerak dari nol ke nilai terbaru.</p>
         <div className={styles.formGrid}>
           <div className="form-group">
-            <label className="label">UMKM Terbantu</label>
+            <label className="label">Brand Terbantu</label>
             <input className="input" type="number" min={0} value={form.stat_umkm_helped} onChange={e => setForm(f => ({ ...f, stat_umkm_helped: parseInt(e.target.value) || 0 }))} />
           </div>
           <div className="form-group">

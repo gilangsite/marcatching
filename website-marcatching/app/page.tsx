@@ -3,12 +3,8 @@ import { supabase } from '@/lib/supabaseClient'
 import type { NavLink } from '@/lib/supabaseClient'
 import AboutClient from './about/AboutClient'
 import type {
-  ArticleCardData,
   ExperienceConfig,
   ProductCardData,
-  ResolvedEcosystemItem,
-  ResolvedEcosystemSection,
-  SurveyCardData,
 } from './about/experience-data'
 
 // Public, non-personalized content can be served immediately from the edge.
@@ -17,11 +13,11 @@ export const dynamic = 'force-static'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Marcatching — Build Your Brand, Workflow, and Revenue',
-  description: 'Satu ecosystem untuk membangun brand yang diingat, menjalankan digital marketing dengan Brand Memory, Prompt Library, dan Skill Engine, lalu bertumbuh melalui Marcatching Affiliate Program.',
+  title: 'Marcatching | AI That Remembers Your Brand',
+  description: 'Personalized AI for sharper brand decisions, faster marketing execution, and new revenue streams through one Marcatching ecosystem.',
   openGraph: {
-    title: 'Marcatching — Learn. Build. Earn.',
-    description: 'Bangun brand yang diingat, jalankan workflow yang terasa milikmu, dan buka jalur penghasilan baru dalam satu ecosystem Marcatching.',
+    title: 'Generic AI Is Dead. Yours Remembers.',
+    description: 'Brand Memory, Prompt Library, Agentic Dashboard, and Revenue Stream in one personalized ecosystem.',
     url: 'https://marcatching.com',
   },
 }
@@ -43,8 +39,8 @@ export default async function HomePage() {
 
   const defaultConfig: ExperienceConfig = {
     contact_email: 'gilang@marcatching.com',
-    cta_text: 'Marcatching Store',
-    cta_url: '/store',
+    cta_text: 'Get Your First AI Agent',
+    cta_url: '/course/login',
     founder_name: 'Gilang Ramadhan',
     founder_photo_url: '',
     founder_quote: 'Kesuksesan di era AI milik mereka yang mampu mensintesis raw data buatan mesin menjadi arah kreatif yang memiliki nyawa. Marketing bukan sekadar tentang barang apa yang kamu kemas, tapi sistem apa yang kamu desain untuk mengunci perhatian audiens secara elegan.',
@@ -73,44 +69,23 @@ export default async function HomePage() {
     ...((configRes ?? {}) as Partial<ExperienceConfig>),
   }
 
-  const sections = config.ecosystem_sections || []
-  const resolvedSections: ResolvedEcosystemSection[] = await Promise.all(sections.map(async section => {
-    const resolvedItems = (await Promise.all((section.items || []).map(async item => {
-      if (item.type === 'article' && item.ref_id) {
-        const { data: article } = await supabase
-          .from('articles')
-          .select('*, article_categories(name, slug), article_authors(name, photo_url)')
-          .eq('id', item.ref_id)
-          .single()
-        return article ? { ...item, data: article as ArticleCardData } as ResolvedEcosystemItem : null
-      } else if (item.type === 'product' && item.ref_id) {
-        const { data: product } = await supabase
-          .from('products')
-          .select('*')
-          .eq('id', item.ref_id)
-          .single()
-        return product ? { ...item, data: product as ProductCardData } as ResolvedEcosystemItem : null
-      } else if (item.type === 'survey' && item.ref_id) {
-        const { data: survey } = await supabase
-          .from('surveys')
-          .select('*')
-          .eq('id', item.ref_id)
-          .single()
-        return survey ? { ...item, data: survey as SurveyCardData } as ResolvedEcosystemItem : null
-      } else if (item.type === 'content') {
-        return item as ResolvedEcosystemItem
-      }
-      return null
-    }))).filter((item): item is ResolvedEcosystemItem => item !== null)
-
-    return { ...section, items: resolvedItems }
-  }))
+  let heroProduct: ProductCardData | null = null
+  if (config.embed_product_id) {
+    const { data } = await supabase
+      .from('products')
+      .select('id, slug, name, sub_headline, description, image_url, price_before_discount, price_after_discount, discount_percentage')
+      .eq('id', config.embed_product_id)
+      .eq('is_active', true)
+      .eq('is_coming_soon', false)
+      .maybeSingle()
+    heroProduct = data as ProductCardData | null
+  }
 
   return (
     <AboutClient
       navLinks={navLinks}
       config={config}
-      resolvedSections={resolvedSections}
+      heroProduct={heroProduct}
     />
   )
 }

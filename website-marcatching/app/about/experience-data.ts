@@ -2,6 +2,7 @@ export type ExperienceSectionId =
   | 'hero'
   | 'problem'
   | 'data'
+  | 'hero-product'
   | 'build'
   | 'ecosystem'
   | 'founder'
@@ -33,8 +34,11 @@ export type ProductCardData = {
   slug: string
   name: string
   sub_headline?: string | null
+  description?: string | null
   image_url?: string | null
+  price_before_discount?: number | null
   price_after_discount?: number | null
+  discount_percentage?: number | null
 }
 
 export type SurveyCardData = {
@@ -95,9 +99,10 @@ export type ExperienceConfig = {
 export const EXPERIENCE_SECTIONS: { id: ExperienceSectionId; label: string }[] = [
   { id: 'hero', label: 'The Ecosystem' },
   { id: 'problem', label: 'Why It Matters' },
-  { id: 'data', label: 'Why It Feels Different' },
+  { id: 'data', label: 'What You Get' },
+  { id: 'hero-product', label: 'Hero Product' },
   { id: 'build', label: 'Core System' },
-  { id: 'ecosystem', label: 'Connected Growth' },
+  { id: 'ecosystem', label: 'Testimonials' },
   { id: 'founder', label: 'Built by an Operator' },
   { id: 'paths', label: 'Built for You' },
   { id: 'finale', label: 'Start Building' },
@@ -108,7 +113,7 @@ export const NOISE_TERMS = [
   'Random Content', 'Split Tools', 'Zero Recall',
 ]
 
-export const SYSTEM_FLOW = ['Brand Memory', 'Prompt Library', 'Skill Engine', 'Store', 'Affiliate']
+export const SYSTEM_FLOW = ['Brand Memory', 'Prompt Library', 'Agentic Dashboard', 'Revenue Stream']
 
 export const AI_PIPELINE = [
   'Research', 'Content', 'Campaign', 'Automation', 'Customer Journey', 'Decision',
@@ -117,30 +122,30 @@ export const AI_PIPELINE = [
 export const DATA_CHAPTERS = [
   {
     id: 'memory',
-    display: 'Remembered',
-    label: 'Brand Memory membuat setiap workflow dimulai dari identitasmu, bukan dari prompt kosong.',
-    source: 'Positioning, audience, voice, offer, dan friction tetap hadir saat kamu berpindah dari satu pekerjaan ke pekerjaan berikutnya.',
+    display: 'Brand Memory',
+    label: 'AI yang mengenali cara brand-mu berpikir, berbicara, dan memilih.',
+    source: 'Simpan positioning, audience, voice, offer, dan friction sekali. Setiap workflow berikutnya dimulai dengan konteks yang sudah siap.',
     visual: 'bars',
   },
   {
     id: 'prompts',
-    display: 'Ready',
-    label: 'Prompt Library menghilangkan rasa buntu saat kamu harus mulai menulis, meriset, atau merancang campaign.',
-    source: 'Pilih pekerjaan yang ingin diselesaikan. Konteks brand ikut terhubung agar output terasa lebih spesifik dan siap digunakan.',
+    display: 'Prompt Library',
+    label: 'Titik mulai yang tepat untuk setiap kebutuhan marketing brand-mu.',
+    source: 'Pilih tujuanmu. Brand Memory langsung memberi konteks agar riset, copy, dan campaign terasa spesifik sejak output pertama.',
     visual: 'network',
   },
   {
     id: 'skills',
-    display: 'Repeatable',
-    label: 'Marcatching Skill Engine mengubah keahlian menjadi workflow spesialis yang dapat dipakai berulang kali.',
-    source: 'Gunakan versi original atau buat Skill yang dipersonalisasi dengan Brand Memory dan requirement milikmu sendiri.',
+    display: 'Agentic Dashboard',
+    label: 'Satu ruang untuk melihat konteks, prioritas, dan next action tanpa berpindah arah.',
+    source: 'Agent-mu membawa kebutuhan brand ke dalam workflow yang terstruktur, sehingga keputusan penting bisa dibuat lebih cepat dan tepat.',
     visual: 'rings',
   },
   {
     id: 'affiliate',
-    display: 'Earnable',
-    label: 'Affiliate Program mengubah distribusi dan kepercayaan audiens menjadi channel penghasilan yang transparan.',
-    source: 'Bagikan produk yang relevan, pantau klik dan komisi, lalu kelola payout dari workspace member yang sama.',
+    display: 'Revenue Stream',
+    label: 'Pertumbuhan brand yang tidak berhenti di attention.',
+    source: 'Jual produk, bagikan solusi yang relevan, pantau affiliate income, dan lihat setiap peluang revenue dari dashboard yang sama.',
     visual: 'flow',
   },
 ] as const
@@ -149,7 +154,7 @@ export const CAPABILITIES = [
   {
     number: '01',
     title: 'Brand Memory',
-    description: 'Isi konteks brand sekali—positioning, audience, voice, offer, dan friction—lalu bawa identitas yang sama ke setiap workflow Marcatching.',
+    description: 'Isi positioning, audience, voice, offer, dan friction sekali. Setiap agent dan prompt langsung bekerja dari identitas brand-mu.',
     input: 'Brand truth',
     process: 'brand-memory.md',
     output: 'Consistent context',
@@ -158,7 +163,7 @@ export const CAPABILITIES = [
   {
     number: '02',
     title: 'Prompt Library',
-    description: 'Buka prompt untuk riset, copywriting, campaign, content, atau conversion dengan Brand Memory yang otomatis ikut memberi konteks.',
+    description: 'Pilih kebutuhanmu dan mulai dari prompt yang sudah punya arah. Brand Memory membuat output pertama terasa lebih dekat dengan keputusan final.',
     input: 'Next marketing task',
     process: 'Context-aware prompt',
     output: 'Sharper first output',
@@ -166,26 +171,26 @@ export const CAPABILITIES = [
   },
   {
     number: '03',
-    title: 'Marcatching Skill Engine',
-    description: 'Ubah produk Skill yang kamu miliki menjadi operating workflow original atau versi personal yang membawa Brand Memory milikmu.',
-    input: 'Execution goal',
-    process: 'Skill + Brand Memory',
-    output: 'Repeatable workflow',
-    flow: ['Own Skill', 'Add Memory', 'Personalize', 'Execute'],
+    title: 'Agentic Dashboard',
+    description: 'Kelola agent, Brand Memory, workflow, dan prioritas dari satu dashboard yang memahami kebutuhan brand-mu sebelum memberi next action.',
+    input: 'Brand objective',
+    process: 'Context + Agent',
+    output: 'Clear next action',
+    flow: ['Set Objective', 'Read Memory', 'Choose Action', 'Move'],
   },
   {
     number: '04',
-    title: 'Affiliate Revenue System',
-    description: 'Aktifkan program sebagai member, bagikan link produk yang relevan, lalu pantau atribusi, komisi, dan payout dalam satu workspace.',
-    input: 'Audience trust',
-    process: 'Trackable affiliate link',
-    output: 'Commission income',
-    flow: ['Choose Product', 'Share Link', 'Track Sale', 'Earn'],
+    title: 'Revenue Stream',
+    description: 'Ubah produk, distribusi, dan kepercayaan audiens menjadi revenue yang bisa dilacak melalui store dan affiliate workspace.',
+    input: 'Product or audience',
+    process: 'Store + Affiliate',
+    output: 'Trackable revenue',
+    flow: ['Choose Offer', 'Share Value', 'Track Revenue', 'Earn'],
   },
 ] as const
 
 export const ECOSYSTEM_FLOW = [
-  'Course', 'Brand Memory', 'Prompt Library', 'Skill Engine', 'Store', 'Affiliate Income',
+  'Brand Memory', 'Prompt Library', 'Agentic Dashboard', 'Revenue Stream',
 ]
 
 export const PILLARS = [

@@ -7,7 +7,6 @@ import Link from 'next/link'
 import {
   ArrowDown,
   ArrowRight,
-  BarChart3,
   BookOpen,
   BrainCircuit,
   Bot,
@@ -15,12 +14,12 @@ import {
   ChevronRight,
   CircleDollarSign,
   Compass,
-  ExternalLink,
   FileText,
   Hammer,
   Mail,
   Network,
   PackageOpen,
+  Quote,
   Send,
   Sparkles,
   Workflow,
@@ -32,40 +31,26 @@ import { ExperienceRuntime } from './ExperienceStore'
 import {
   CAPABILITIES,
   DATA_CHAPTERS,
-  ECOSYSTEM_FLOW,
   NOISE_TERMS,
   SYSTEM_FLOW,
-  type ArticleCardData,
   type ExperienceConfig,
   type ProductCardData,
-  type ResolvedEcosystemItem,
-  type ResolvedEcosystemSection,
-  type SurveyCardData,
 } from './experience-data'
 import {
+  AnimatedCounter,
   AnimatedUnderlineLink,
   ExpandableCard,
   ImageMaskReveal,
   MagneticButton,
   SpotlightCard,
   TextReveal,
-  TiltCard,
 } from './Interactions'
 import styles from './about.module.css'
 
 type AboutClientProps = {
   navLinks: NavLink[]
   config: ExperienceConfig
-  resolvedSections?: ResolvedEcosystemSection[]
-}
-
-function formatDate(dateString?: string | null) {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+  heroProduct?: ProductCardData | null
 }
 
 function getDriveThumb(url?: string | null, size = 'w1000-h1000') {
@@ -75,28 +60,6 @@ function getDriveThumb(url?: string | null, size = 'w1000-h1000') {
     if (match?.[1]) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=${size}`
   }
   return url
-}
-
-function getArticleImage(article: ArticleCardData) {
-  const image = article.content?.find((block) => block.type === 'image' && block.url)
-  return getDriveThumb(image?.url)
-}
-
-function stripHtml(value?: string | null) {
-  if (!value) return ''
-  return value.replace(/<[^>]*>?/gm, '').trim()
-}
-
-function isArticle(data: ResolvedEcosystemItem['data']): data is ArticleCardData {
-  return Boolean(data && 'published_at' in data)
-}
-
-function isProduct(data: ResolvedEcosystemItem['data']): data is ProductCardData {
-  return Boolean(data && 'name' in data && 'price_after_discount' in data)
-}
-
-function isSurvey(data: ResolvedEcosystemItem['data']): data is SurveyCardData {
-  return Boolean(data && 'title' in data && 'description' in data && !('published_at' in data))
 }
 
 function SectionHeading({ eyebrow, title, body, align = 'left' }: {
@@ -129,7 +92,7 @@ function FlowLine({ nodes, compact = false }: { nodes: readonly string[]; compac
 
 function ContentEngineGraphic() {
   return (
-    <div className={styles.contentEngine} aria-label="Brand Memory mengalir ke Prompt Library dan Skill Engine, menjadi konten, lalu membuka pertumbuhan dan penghasilan">
+    <div className={styles.contentEngine} aria-label="Brand Memory mengalir ke Prompt Library dan Agentic Dashboard, lalu membuka revenue stream">
       <div className={styles.engineNode}>
         <span>01</span>
         <BrainCircuit aria-hidden="true" />
@@ -151,11 +114,11 @@ function ContentEngineGraphic() {
       <div className={styles.engineOutputs}>
         <div className={styles.engineOutput}>
           <FileText aria-hidden="true" />
-          <div><strong>Content</strong><small>Stay on-brand</small></div>
+          <div><strong>Decision</strong><small>Clear next action</small></div>
         </div>
         <div className={styles.engineOutput}>
           <PackageOpen aria-hidden="true" />
-          <div><strong>Skill Engine</strong><small>Repeatable workflow</small></div>
+          <div><strong>Agentic Dashboard</strong><small>Personal workflow</small></div>
         </div>
       </div>
 
@@ -164,108 +127,19 @@ function ContentEngineGraphic() {
       <div className={`${styles.engineNode} ${styles.engineMoney}`}>
         <span>04</span>
         <CircleDollarSign aria-hidden="true" />
-        <strong>Growth & Income</strong>
-        <small>Build, sell & earn</small>
+        <strong>Revenue Stream</strong>
+        <small>Build, sell, earn</small>
       </div>
     </div>
   )
-}
-
-function EcosystemCard({ item }: { item: ResolvedEcosystemItem }) {
-  const data = item.data
-
-  if (item.type === 'article' && isArticle(data)) {
-    const image = getArticleImage(data)
-    return (
-      <TiltCard className={styles.ecoCardWrap}>
-        <SpotlightCard className={styles.ecoCard}>
-          <Link href={`/article/${data.slug}`} aria-label={`Read ${data.title}`}>
-            <div className={styles.ecoMedia}>
-              {image ? <Image src={image} alt={`Editorial image for ${data.title}`} fill sizes="(max-width: 760px) 82vw, 360px" className={styles.ecoImage} /> : <div className={styles.ecoPlaceholder}><Network /><span>Intelligence editorial</span></div>}
-              <span className={styles.ecoType}>{data.article_categories?.name ?? 'Article'}</span>
-            </div>
-            <div className={styles.ecoBody}>
-              <h3>{data.title}</h3>
-              {data.excerpt && <p>{data.excerpt}</p>}
-              <div className={styles.ecoMeta}><span>{formatDate(data.published_at)}</span><span>{data.view_count ?? 0} views</span></div>
-            </div>
-          </Link>
-        </SpotlightCard>
-      </TiltCard>
-    )
-  }
-
-  if (item.type === 'product' && isProduct(data)) {
-    return (
-      <TiltCard className={styles.ecoCardWrap}>
-        <SpotlightCard className={styles.ecoCard}>
-          <Link href={`/product/${data.slug}`} aria-label={`Explore ${data.name}`}>
-            <div className={styles.ecoMedia}>
-              {data.image_url ? <Image src={data.image_url} alt={`${data.name} product cover`} fill sizes="(max-width: 760px) 82vw, 360px" className={`${styles.ecoImage} ${styles.productImage}`} /> : <div className={styles.ecoPlaceholder}><BookOpen /><span>Digital product</span></div>}
-              <span className={styles.ecoType}>Store</span>
-            </div>
-            <div className={styles.ecoBody}>
-              <h3>{data.name}</h3>
-              {data.sub_headline && <p>{data.sub_headline}</p>}
-              <div className={styles.ecoMeta}><span>Product system</span><span>{data.price_after_discount ? `Rp ${data.price_after_discount.toLocaleString('id-ID')}` : 'Explore'}</span></div>
-            </div>
-          </Link>
-        </SpotlightCard>
-      </TiltCard>
-    )
-  }
-
-  if (item.type === 'survey' && isSurvey(data)) {
-    const image = getDriveThumb(data.image_url)
-    return (
-      <TiltCard className={styles.ecoCardWrap}>
-        <SpotlightCard className={styles.ecoCard}>
-          <Link href={`/survey/${data.slug}`} aria-label={`Start ${data.title}`}>
-            <div className={styles.ecoMedia}>
-              {image ? <Image src={image} alt={`Survey cover for ${data.title}`} fill sizes="(max-width: 760px) 82vw, 360px" className={styles.ecoImage} /> : <div className={styles.ecoPlaceholder}><BarChart3 /><span>Business diagnosis</span></div>}
-              <span className={styles.ecoType}>Survey</span>
-            </div>
-            <div className={styles.ecoBody}>
-              <h3>{data.title}</h3>
-              <p>{stripHtml(data.description).slice(0, 130) || 'Diagnosis marketing untuk menemukan titik ungkit berikutnya.'}</p>
-              <div className={styles.ecoMeta}><span>UMKM intelligence</span><span>Start survey</span></div>
-            </div>
-          </Link>
-        </SpotlightCard>
-      </TiltCard>
-    )
-  }
-
-  if (item.type === 'content') {
-    const image = getDriveThumb(item.content_image_url)
-    return (
-      <TiltCard className={styles.ecoCardWrap}>
-        <SpotlightCard className={styles.ecoCard}>
-          <a href={item.content_url ?? '#'} target="_blank" rel="noopener noreferrer" aria-label={`View ${item.content_title ?? 'Marcatching content'}`}>
-            <div className={styles.ecoMedia}>
-              {image ? <Image src={image} alt={`${item.content_title ?? 'Marcatching'} content cover`} fill sizes="(max-width: 760px) 82vw, 360px" className={styles.ecoImage} /> : <div className={styles.ecoPlaceholder}><Sparkles /><span>Field note</span></div>}
-              <span className={styles.ecoType}>Content</span>
-            </div>
-            <div className={styles.ecoBody}>
-              <h3>{item.content_title ?? 'Marcatching field notes'}</h3>
-              <p>Insight praktis dan edukasi marketing yang siap diaplikasikan.</p>
-              <div className={styles.ecoMeta}><span>Social intelligence</span><span>View <ExternalLink size={12} /></span></div>
-            </div>
-          </a>
-        </SpotlightCard>
-      </TiltCard>
-    )
-  }
-
-  return null
 }
 
 function SystemPreview({ number }: { number: string }) {
   const titles: Record<string, string> = {
     '01': 'Brand Memory',
     '02': 'Prompt Library',
-    '03': 'Skill Engine',
-    '04': 'Affiliate Revenue',
+    '03': 'Agentic Dashboard',
+    '04': 'Revenue Stream',
   }
 
   return (
@@ -301,9 +175,9 @@ function SystemPreview({ number }: { number: string }) {
 
       {number === '03' && (
         <div className={styles.workflowUi}>
-          <div><b>Input</b><span><i>Owned Skill</i><em>Ready</em></span><span><i>Brand Memory</i><em>Synced</em></span></div>
-          <div><b>Engine</b><span><i>Requirements</i><em>Read</em></span><span><i>Personalization</i><em>Active</em></span></div>
-          <div><b>Output</b><span><i>Your workflow</i><em>.ZIP</em></span><span><i>Ready to run</i><em>Now</em></span></div>
+          <div><b>Context</b><span><i>Brand Memory</i><em>Synced</em></span><span><i>Objective</i><em>Ready</em></span></div>
+          <div><b>Agent</b><span><i>Priority</i><em>Clear</em></span><span><i>Decision</i><em>Focused</em></span></div>
+          <div><b>Action</b><span><i>Next move</i><em>Ready</em></span><span><i>Dashboard</i><em>Live</em></span></div>
         </div>
       )}
 
@@ -315,7 +189,7 @@ function SystemPreview({ number }: { number: string }) {
             <span style={{ width: '56%' }}><i>Eligible sales</i><b>Verified</b></span>
             <span style={{ width: '34%' }}><i>Commission</i><b>Earned</b></span>
           </div>
-          <div className={styles.revenueUi}><span>Affiliate workspace</span><strong>Payout ready</strong><i>Clear history & status</i></div>
+          <div className={styles.revenueUi}><span>Revenue workspace</span><strong>Income visible</strong><i>Clear history and status</i></div>
         </div>
       )}
     </div>
@@ -386,23 +260,23 @@ function DataMotionGraphic({ type }: { type: (typeof DATA_CHAPTERS)[number]['vis
   if (type === 'rings') {
     return (
       <div className={`${styles.dataVisual} ${styles.aiMotion}`} aria-hidden="true">
-        <div className={styles.motionToolbar}><span><Sparkles /> Marcatching Skill Engine</span><em>Personalizing</em></div>
+        <div className={styles.motionToolbar}><span><Sparkles /> Agentic Dashboard</span><em>Personalizing</em></div>
         <div className={styles.aiProcess}>
           <div className={styles.taskQueue}>
             {[
               ['01', 'Read memory'],
-              ['02', 'Load workflow'],
-              ['03', 'Apply quality gate'],
+              ['02', 'Set priority'],
+              ['03', 'Choose next action'],
             ].map(([number, label], index) => (
               <span key={number} style={{ '--task-index': index } as CSSProperties}><i>{number}</i><b>{label}</b><Check /></span>
             ))}
           </div>
           <div className={styles.aiStream}><i /><i /><i /></div>
-          <div className={styles.aiCore}><span /><span /><Bot /><small>Skill</small></div>
-          <div className={styles.aiResult}><small>Output</small><strong>Yours</strong><span>.zip</span></div>
+          <div className={styles.aiCore}><span /><span /><Bot /><small>Agent</small></div>
+          <div className={styles.aiResult}><small>Decision</small><strong>Clear</strong><span>now</span></div>
         </div>
         <div className={styles.aiProgress}>
-          {['Context', 'Workflow', 'Output'].map((label, index) => (
+          {['Context', 'Priority', 'Action'].map((label, index) => (
             <div key={label} style={{ '--progress-index': index } as CSSProperties}><span>{label}</span><i><b /></i><Check /></div>
           ))}
         </div>
@@ -412,7 +286,7 @@ function DataMotionGraphic({ type }: { type: (typeof DATA_CHAPTERS)[number]['vis
 
   return (
     <div className={`${styles.dataVisual} ${styles.efficiencyMotion}`} aria-hidden="true">
-      <div className={styles.motionToolbar}><span><CircleDollarSign /> Affiliate Revenue</span><em>Tracking</em></div>
+      <div className={styles.motionToolbar}><span><CircleDollarSign /> Revenue Stream</span><em>Tracking</em></div>
       <div className={styles.efficiencyMetrics}>
         <div className={styles.costCard}><span><CircleDollarSign /> Commission</span><strong>Tracked</strong><small><ArrowRight /> Clear status</small></div>
         <div className={styles.outputCard}><span><Sparkles /> Payout</span><strong>Ready</strong><small><Check /> Verified history</small></div>
@@ -431,11 +305,84 @@ function DataMotionGraphic({ type }: { type: (typeof DATA_CHAPTERS)[number]['vis
   )
 }
 
-export default function AboutClient({ navLinks, config, resolvedSections = [] }: AboutClientProps) {
+const TESTIMONIAL_DRAFTS = [
+  'Brand Memory bikin aku berhenti copy paste briefing yang sama. finally 😭',
+  'Prompt Library-nya bukan cuma banyak. Pas dibuka tuh langsung kebayang mau ngerjain apa.',
+  'Baru kali ini AI ngerti tone brand aku tanpa harus dijelasin muter muter.',
+  'Agentic Dashboard bikin kerjaan yang tadinya rame di kepala jadi kelihatan next step-nya.',
+  'jujur awalnya kupikir bakal ribet. ternyata tinggal isi konteks terus jalan.',
+  'Yang paling kerasa itu keputusan konten jadi lebih cepet. Nggak bengong lama lagi.',
+  'Brand Memory is the real deal. Output-nya jadi nggak berasa template internet.',
+  'Prompt buat campaign-nya kepake bangettt. detail tapi masih gampang diikutin.',
+  'Aku suka karena semuanya nyambung. Dari brand, prompt, action, sampai revenue.',
+  'Dashboard-nya bikin aku sadar ternyata banyak kerjaan bisa diberesin lebih simple.',
+  'Finally punya AI yang ngomongnya nggak berubah ubah tiap buka chat baru.',
+  'Buat tim kecil ini ngebantu banget. Arah brand jadi nggak cuma ada di kepala founder.',
+  'sumpah bagian revenue stream bikin affiliate jauh lebih enak dipantau wkwk',
+  'Tidak terasa seperti membeli kumpulan prompt. Lebih seperti punya sistem kerja sendiri.',
+  'My brand finally sounds like my brand. sesimpel itu sih.',
+  'Aku paling suka Prompt Library karena nggak perlu mikir harus mulai nanya apa.',
+  'Baru isi Brand Memory sekali, tapi efeknya kebawa ke mana mana. smart banget.',
+  'Agent-nya bantu milih prioritas, bukan malah nambah seribu ide baru. I NEED THIS.',
+  'Kalau lagi hectic, dashboard ini bikin aku balik fokus ke keputusan yang penting.',
+  'bagussss bangettt buat yang capek hasil AI selalu generik 😭🫶',
+  'Revenue stream-nya jelas. Klik kelihatan, komisi kelihatan, nggak nebak nebak.',
+  'Sebagai marketer, aku appreciate konteksnya. Cepat, tapi tetap masuk akal buat brand.',
+  'Nggak nyangka satu Brand Memory bisa bikin workflow terasa sepersonal ini.',
+  'Prompt-nya enak dibaca dan nggak sok pinter. langsung bisa dipakai kerja.',
+  'simple, kepake, dan bikin aku jauh lebih yakin pas ambil keputusan.',
+] as const
+
+const RANDOMIZED_TESTIMONIAL_DRAFTS = TESTIMONIAL_DRAFTS.map(
+  (_, index) => TESTIMONIAL_DRAFTS[(index * 7) % TESTIMONIAL_DRAFTS.length],
+)
+
+function formatCurrency(value?: number | null) {
+  return `Rp ${Math.max(0, Number(value) || 0).toLocaleString('id-ID')}`
+}
+
+function plainText(value?: string | null) {
+  if (!value) return ''
+  return value.replace(/<[^>]*>?/gm, '').trim()
+}
+
+function HeroProductSpotlight({ product }: { product: ProductCardData }) {
+  const before = Math.max(0, Number(product.price_before_discount) || 0)
+  const after = Math.max(0, Number(product.price_after_discount) || 0)
+  const discount = Math.max(
+    0,
+    Number(product.discount_percentage) || (before > after && before > 0 ? Math.round((1 - after / before) * 100) : 0),
+  )
+  const image = getDriveThumb(product.image_url, 'w1200-h1200')
+
+  return (
+    <motion.div className={styles.heroProductCard} initial={{ opacity: 0, y: 34, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.28 }} transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}>
+      <div className={styles.heroProductVisual}>
+        {image ? <Image src={image} alt={`${product.name} product cover`} fill sizes="(max-width: 760px) 90vw, 48vw" className={styles.heroProductImage} /> : <div className={styles.heroProductFallback}><Bot /><span>Your first AI agent</span></div>}
+        <span className={styles.heroProductBadge}>Hero Product</span>
+      </div>
+      <div className={styles.heroProductCopy}>
+        <span>Built around your brand</span>
+        <h2>{product.name}</h2>
+        {(product.sub_headline || product.description) && <p>{product.sub_headline || plainText(product.description).slice(0, 180)}</p>}
+        <div className={styles.heroProductPricing}>
+          {before > after && <del>{formatCurrency(before)}</del>}
+          <strong>{formatCurrency(after)}</strong>
+          {discount > 0 && <em>Save {discount}%</em>}
+        </div>
+        <MagneticButton href={`/product/${product.slug}/checkout`}>Get Your First AI Agent <ArrowRight size={17} /></MagneticButton>
+      </div>
+    </motion.div>
+  )
+}
+
+export default function AboutClient({ navLinks, config, heroProduct = null }: AboutClientProps) {
   const [waOpen, setWaOpen] = useState(false)
   const [waName, setWaName] = useState('')
   const [waMessage, setWaMessage] = useState('')
+  const [showSkipTestimonials, setShowSkipTestimonials] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
+  const testimonialsRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!waOpen) return
@@ -447,29 +394,45 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
     return () => document.removeEventListener('keydown', close)
   }, [waOpen])
 
+  useEffect(() => {
+    const section = testimonialsRef.current
+    if (!section) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowSkipTestimonials(entry.isIntersecting),
+      { threshold: 0.02, rootMargin: '-8% 0px -8%' },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   const sendWhatsApp = () => {
     if (!waName.trim() && !waMessage.trim()) return
     const text = `Halo, nama saya ${waName.trim()}.\n\n${waMessage.trim()}`
     window.open(`https://wa.me/62895412747584?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
   }
 
+  const skipTestimonials = () => {
+    document.getElementById('founder')?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }
+
+  const firstAgentUrl = heroProduct ? `/product/${heroProduct.slug}/checkout` : '/course/login'
+
   return (
     <div className={styles.experience}>
       <ExperienceRuntime />
-      <ExperienceNavigation navLinks={navLinks} ctaUrl={config.cta_url || config.store_url || '/store'} />
+      <ExperienceNavigation navLinks={navLinks} ctaUrl="/course/login" />
 
       <main className={styles.main}>
         <section className={`${styles.chapter} ${styles.hero}`} id="hero" data-experience-section="hero">
           <div className={styles.heroLayout}>
             <div className={styles.heroContent}>
-              <span className={styles.heroLabel}>Marcatching ecosystem · Learn. Build. Earn.</span>
-              <h1><span className={styles.heroTitleLine}>Build a brand people remember.</span><span className={`${styles.heroTitleLine} ${styles.heroTitleAccent}`}>Run it with a system that grows.</span></h1>
-              <p>
-                Marcatching menyatukan pengembangan brand, workflow digital marketing, pertumbuhan KOL, dan affiliate income—dengan Brand Memory yang menjaga setiap prompt, Skill, dan campaign tetap terasa seperti milikmu.
-              </p>
+              <span className={styles.heroLabel}>AI built around your brand</span>
+              <h1><span className={styles.heroTitleLine}>Generic AI is dead.</span><span className={`${styles.heroTitleLine} ${styles.heroTitleAccent}`}>Yours remembers.</span></h1>
               <div className={styles.heroActions}>
-                <MagneticButton href={config.cta_url || config.store_url || '/store'}>Mulai dari Marcatching Store <ArrowRight size={17} /></MagneticButton>
-                <AnimatedUnderlineLink href="#build">Lihat core system <ArrowRight size={15} /></AnimatedUnderlineLink>
+                <MagneticButton href={firstAgentUrl}>Get Your First AI Agent <ArrowRight size={17} /></MagneticButton>
               </div>
             </div>
             <ContentEngineGraphic />
@@ -479,7 +442,7 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
 
         <section className={`${styles.chapter} ${styles.problem}`} id="problem" data-experience-section="problem">
           <div className={styles.shell}>
-            <SectionHeading eyebrow="02 · The real friction" title={<>Your brand should not reset<br /><em>every time you open a new tool.</em></>} body="Kamu mungkin sudah punya ide, produk, audiens, dan AI. Yang menguras energi adalah menjelaskan semuanya dari awal lagi—lalu menerima output generik yang tidak terdengar seperti brand-mu, tidak nyambung ke workflow berikutnya, dan tidak ikut membangun revenue." />
+            <SectionHeading eyebrow="02 · The real friction" title={<>Your brand deserves more<br /><em>than generic answers.</em></>} body="Marcatching mempersonalisasi AI dari kebutuhan brand-mu. Konteks yang tepat membuat setiap keputusan terasa lebih cepat, lebih jelas, dan lebih tepat." />
             <div className={styles.noiseLab}>
               <div className={styles.noiseCloud} aria-label="Disconnected marketing concepts">
                 {NOISE_TERMS.map((term, index) => <span key={term} style={{ '--noise-index': index } as CSSProperties}>{term}</span>)}
@@ -487,19 +450,24 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
               <div className={styles.systemPanel}>
                 <div className={styles.systemPanelHeader}><span>Marcatching resolution</span><strong>One memory. Multiple workflows.</strong></div>
                 <FlowLine nodes={SYSTEM_FLOW} />
-                <p>Satu identitas brand mengalir dari strategi ke eksekusi, dari produk ke distribusi, hingga ke affiliate income. Kamu tidak lagi mengoleksi tools—kamu membangun sistem yang saling menguatkan.</p>
+                <p>Satu identitas brand mengalir dari strategi ke eksekusi, lalu dari produk ke revenue. Bukan lebih banyak tools. Satu sistem yang tahu apa yang brand-mu butuhkan.</p>
               </div>
+            </div>
+            <div className={styles.liveMetrics} aria-label="Live Marcatching impact">
+              <div><BrainCircuit /><AnimatedCounter value={config.stat_umkm_helped} className={styles.liveMetricValue} /><span>Brands Helped</span></div>
+              <div><Network /><AnimatedCounter value={config.stat_total_reach} className={styles.liveMetricValue} /><span>Total Reach</span></div>
+              <div><PackageOpen /><AnimatedCounter value={config.stat_product_sold} className={styles.liveMetricValue} /><span>Products Sold</span></div>
             </div>
           </div>
         </section>
 
         <section className={`${styles.chapter} ${styles.data}`} id="data" data-experience-section="data">
           <div className={styles.shell}>
-            <SectionHeading eyebrow="03 · Why it feels different" title={<>The system remembers.<br /><em>You keep moving.</em></>} body="Marcatching dirancang untuk mengurangi beban memulai ulang. Setiap layer menjaga konteks, mempercepat next action, dan membuka lebih dari satu cara untuk bertumbuh." />
+            <SectionHeading eyebrow="03 · Your advantage" title={<>What Do You<br /><em>Get Here?</em></>} body="Personalized to your brand. Built for faster, sharper decisions." />
             <div className={styles.dataChapters}>
               {DATA_CHAPTERS.map((chapter, index) => (
                 <article className={styles.dataChapter} key={chapter.id}>
-                  <div className={styles.dataIndex}>Advantage {String(index + 1).padStart(2, '0')}</div>
+                  <div className={styles.dataIndex}><span>{String(index + 1).padStart(2, '0')}</span></div>
                   <div className={styles.dataNumber}>{chapter.display}</div>
                   <div className={styles.dataCopy}><h3>{chapter.label}</h3><p>{chapter.source}</p></div>
                   <DataMotionGraphic type={chapter.visual} />
@@ -509,10 +477,19 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
           </div>
         </section>
 
+        {heroProduct && (
+          <section className={`${styles.chapter} ${styles.heroProduct}`} id="hero-product" data-experience-section="hero-product">
+            <div className={styles.shell}><HeroProductSpotlight product={heroProduct} /></div>
+          </section>
+        )}
+
         <section className={`${styles.chapter} ${styles.build}`} id="build" data-experience-section="build">
           <div className={styles.shell}>
             <div className={styles.buildLayout}>
-              <div className={styles.buildSticky}><SectionHeading eyebrow="04 · The core system" title={<>One brand memory.<br /><em>Four ways to move forward.</em></>} body="Setiap bagian bisa dipakai sendiri. Nilai terbesarnya muncul saat semuanya bekerja dari konteks brand yang sama." /></div>
+              <div className={styles.buildSticky}>
+                <SectionHeading eyebrow="04 · The core system" title={<>One brand memory.<br /><em>Four ways to move forward.</em></>} body="Setiap bagian bekerja dari konteks brand yang sama. Hasilnya lebih personal, keputusan lebih cepat, dan next action lebih jelas." />
+                <MagneticButton href="/course/login" className={styles.buildCta}>Enter Your Agentic Dashboard <ArrowRight size={16} /></MagneticButton>
+              </div>
               <div className={styles.moduleList}>
                 {CAPABILITIES.map((capability) => (
                   <SpotlightCard className={styles.moduleCard} key={capability.number}>
@@ -533,24 +510,18 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
           </div>
         </section>
 
-        <section className={`${styles.chapter} ${styles.ecosystem}`} id="ecosystem" data-experience-section="ecosystem">
+        <section ref={testimonialsRef} className={`${styles.chapter} ${styles.ecosystem} ${styles.testimonials}`} id="ecosystem" data-experience-section="ecosystem">
           <div className={styles.shell}>
-            <SectionHeading eyebrow="05 · The ecosystem" title={<>One ecosystem.<br /><em>Multiple ways to grow—and earn.</em></>} body="Belajar lewat Course, simpan konteks di Brand Memory, eksekusi dengan Prompt Library dan Skill Engine, lalu gunakan Store dan Affiliate Program untuk memperluas revenue." />
-            <FlowLine nodes={ECOSYSTEM_FLOW} compact />
-
-            <div className={styles.ecosystemGateways}>
-              <GatewayCard href="/course" number="01" title="Course & Creator Workspace" body="Pelajari sistemnya, simpan Brand Memory, dan ubah insight menjadi next action yang jelas." />
-              <GatewayCard href="/prompt-library" number="02" title="Prompt Library & Skill Engine" body="Mulai lebih cepat dengan prompt siap pakai dan Skill yang dapat dipersonalisasi untuk brand-mu." />
-              <GatewayCard href={config.store_url || '/store'} number="03" title="Store & Affiliate Program" body="Checkout workflow pertamamu, lalu promosikan produk yang relevan melalui affiliate workspace member." />
+            <SectionHeading eyebrow="05 · Voice wall preview" title={<>The kind of relief<br /><em>your brand should feel.</em></>} body="25 human tone copy drafts for the testimonial experience. Replace each one with a verified customer quote before treating it as social proof." />
+            <div className={styles.testimonialGrid}>
+              {RANDOMIZED_TESTIMONIAL_DRAFTS.map((quote, index) => (
+                <motion.article key={`${index}-${quote}`} className={styles.testimonialCard} initial={{ opacity: 0, x: index % 2 === 0 ? -38 : 38, y: 18, scale: 0.96 }} whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.62, delay: (index % 4) * 0.055, ease: [0.22, 1, 0.36, 1] }}>
+                  <Quote aria-hidden="true" />
+                  <p>{quote}</p>
+                  <div><span>Review copy draft</span><b>{String(index + 1).padStart(2, '0')}</b></div>
+                </motion.article>
+              ))}
             </div>
-
-            {resolvedSections.map((section) => (
-              <div className={styles.ecosystemGroup} key={section.id}>
-                <div className={styles.ecosystemGroupHead}><h3>{section.title}</h3><span>{section.items.length.toString().padStart(2, '0')} modules</span></div>
-                <div className={styles.ecosystemRail}>{section.items.map((item) => <EcosystemCard item={item} key={item.id} />)}</div>
-              </div>
-            ))}
-
           </div>
         </section>
 
@@ -589,7 +560,7 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
                   <li><Check size={15} />Prompt dan Skill yang mengubah strategi menjadi pekerjaan siap jalan.</li>
                   <li><Check size={15} />Course dan Store yang memperluas sistem sesuai fase pertumbuhanmu.</li>
                 </ul>
-                <MagneticButton href={config.cta_url || config.store_url || '/store'}>Temukan workflow pertamamu <ArrowRight size={16} /></MagneticButton>
+                <MagneticButton href="/course/login">Build Your Brand System <ArrowRight size={16} /></MagneticButton>
               </SpotlightCard>
               <SpotlightCard className={styles.pathCard}>
                 <div className={styles.pathHead}><span>02</span><CircleDollarSign /></div><h3>For KOL & Affiliates</h3><p>Untuk kamu yang sudah punya kepercayaan audiens dan ingin mengubah distribusi menjadi channel penghasilan yang lebih terstruktur.</p>
@@ -609,9 +580,9 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
           <TextReveal className={styles.finaleContent}>
             <span className={styles.eyebrow}>08 · Your system starts here</span>
             <h2>Build the brand.<br /><em>Own the workflow. Earn from the growth.</em></h2>
-            <p>Mulai dari satu produk atau course. Brand Memory, Prompt Library, Skill Engine, Store, dan Affiliate Program akan membantumu terus bergerak dari sana.</p>
+            <p>One memory. Clearer decisions. More ways to grow.</p>
             <div className={styles.finaleActions}>
-              <MagneticButton href={config.cta_url || config.store_url || '/store'}>Mulai dari Marcatching Store <ArrowRight size={17} /></MagneticButton>
+              <MagneticButton href={firstAgentUrl}>Get Your First AI Agent <ArrowRight size={17} /></MagneticButton>
               <AnimatedUnderlineLink href="/course/login">Sudah jadi member? Masuk</AnimatedUnderlineLink>
             </div>
           </TextReveal>
@@ -623,6 +594,14 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
         <nav aria-label="Footer navigation"><Link href="/prompt-library">Prompt Library</Link><Link href={config.store_url || '/store'}>Store</Link><Link href="/course/login">Member Login</Link><a href={`mailto:${config.contact_email}`}><Mail size={14} /> Contact</a></nav>
         <p>© {new Date().getFullYear()} Marcatching. All rights reserved.</p>
       </footer>
+
+      <AnimatePresence>
+        {showSkipTestimonials && (
+          <motion.button type="button" className={styles.skipTestimonials} onClick={skipTestimonials} initial={{ opacity: 0, y: 22, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: 18, x: '-50%' }} transition={{ duration: 0.24 }}>
+            Skip Testimonials <ArrowDown size={15} />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       <button type="button" className={styles.contactButton} onClick={() => setWaOpen(true)} aria-label="Open WhatsApp contact"><Image src="/logo-shape-white.png" alt="" width={25} height={25} /><span>Talk to Marcatching</span></button>
 
@@ -641,13 +620,5 @@ export default function AboutClient({ navLinks, config, resolvedSections = [] }:
         )}
       </AnimatePresence>
     </div>
-  )
-}
-
-function GatewayCard({ href, number, title, body }: { href: string; number: string; title: string; body: string }) {
-  return (
-    <SpotlightCard className={styles.gatewayCard}>
-      <Link href={href}><span>{number}</span><div><h3>{title}</h3><p>{body}</p></div><ArrowRight /></Link>
-    </SpotlightCard>
   )
 }

@@ -16,8 +16,8 @@ export async function GET() {
     // Default configuration if no row exists yet
     const defaultConfig = {
       contact_email: 'gilang@marcatching.com',
-      cta_text: 'Marcatching Store',
-      cta_url: '/store',
+      cta_text: 'Get Your First AI Agent',
+      cta_url: '/course/login',
       founder_name: 'Gilang Ramadhan',
       founder_photo_url: '',
       founder_quote: 'Kesuksesan di era AI milik mereka yang mampu mensintesis raw data buatan mesin menjadi arah kreatif yang memiliki nyawa. Marketing bukan sekadar tentang barang apa yang kamu kemas, tapi sistem apa yang kamu desain untuk mengunci perhatian audiens secara elegan.',
@@ -29,7 +29,6 @@ export async function GET() {
       tiktok_url: 'https://www.tiktok.com/@marcatching',
       survey_url: '/survey',
       store_url: '/store',
-      // Impact stats
       // Impact stats
       stat_umkm_helped: 0,
       stat_total_reach: 0,
