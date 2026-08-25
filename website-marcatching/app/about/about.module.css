@@ -787,14 +787,21 @@
   .dataVisual { order: 3; grid-column: auto; height: 14rem; }
   .dataVisual,.dataChapter:nth-child(even) .dataVisual { transform: none; }
   .heroProduct { background: var(--hero-product-background); }
-  .heroProduct > .shell { transform: translateY(-2.25rem); margin-bottom: -2.25rem; }
-  .heroProductCard { gap: 0; padding: 0.65rem; border-radius: 1.5rem; }
-  .heroProductVisual { min-height: 0; aspect-ratio: 1 / 1.08; border-radius: 1.05rem; }
-  .heroProductImage { padding: 1.5rem; }
-  .heroProductCopy { padding: 2rem 1rem 1.5rem; }
-  .heroProductCopy h2 { font-size: clamp(2.7rem, 13vw, 4rem); }
-  .heroProductCopy > p { font-size: 0.92rem; }
-  .heroProductPricing { margin: 1.5rem 0; }
+  .heroProduct > .shell { transform: translateY(-1.75rem); margin-bottom: -1.75rem; }
+  .heroProductCard { gap: 0; padding: 0.5rem; border-radius: 1.25rem; }
+  .heroProductUnlock { padding: 0.55rem 0.75rem 0.45rem; font-size: 0.6rem; letter-spacing: 0.035em; line-height: 1.5; }
+  .heroProductVisual { min-height: 0; max-height: 15.5rem; aspect-ratio: 16 / 10; border-radius: 0.9rem; }
+  .heroProductImage { padding: 0.65rem; }
+  .heroProductBadge { left: 0.75rem; top: 0.75rem; padding: 0.38rem 0.55rem; font-size: 0.52rem; }
+  .heroProductCopy { padding: 1.25rem 0.75rem 1rem; }
+  .heroProductCopy > span { font-size: 0.56rem; }
+  .heroProductCopy h2 { max-width: 15ch; margin-top: 0.7rem; font-size: clamp(1.9rem, 8.5vw, 2.55rem); line-height: 0.95; letter-spacing: -0.055em; }
+  .heroProductCopy > p { margin-top: 0.85rem; font-size: 0.82rem; line-height: 1.55; }
+  .heroProductPricing { gap: 0.5rem 0.65rem; margin: 1rem 0; }
+  .heroProductPricing del { font-size: 0.75rem; }
+  .heroProductPricing strong { font-size: 1.5rem; }
+  .heroProductPricing em { padding: 0.35rem 0.55rem; font-size: 0.58rem; }
+  .heroProductCopy > a { min-height: 3rem; padding: 0.7rem 1rem; font-size: 0.82rem; }
   .aiProcess { grid-template-columns: 1.08fr .18fr .56fr .58fr; gap: .22rem; height: 6.7rem; padding: .38rem .55rem 0; }
   .taskQueue { gap: .22rem; }
   .taskQueue > span { grid-template-columns: .72rem 1fr .62rem; gap: .2rem; padding: .28rem .3rem; }
@@ -804,9 +811,14 @@
   .aiResult strong { font-size: 1.18rem; }
   .aiProgress { grid-template-rows: repeat(3,minmax(0,1fr)); gap: .18rem; height: 3.35rem; margin: 0 .55rem; padding: .34rem .5rem; overflow: hidden; }
   .aiProgress > div { min-height: 0; grid-template-columns: 2.8rem 1fr .55rem; gap: .3rem; font-size: .36rem; line-height: 1; }
-  .moduleSummary { grid-template-columns: 2.4rem 1fr; padding: 1.4rem; }
-  .moduleSummary h3 { font-size: 1.65rem; }
-  .systemPreview { height: 14.5rem; transform: none; }
+  .moduleList { gap: 0.8rem; }
+  .moduleCard { border-radius: 1.05rem; }
+  .moduleSummary { grid-template-columns: 2rem minmax(0, 1fr); gap: 0.7rem; padding: 1rem; }
+  .moduleNumber { grid-column: 1; grid-row: auto; align-self: center; }
+  .moduleSummary h3 { grid-column: 2; align-self: center; font-size: 1.4rem; }
+  .moduleSummary p { grid-column: 1 / -1; margin-top: 0.15rem; font-size: 0.84rem; line-height: 1.55; }
+  .systemPreview { grid-column: 1 / -1; height: 11rem; margin-top: 0.45rem; border-radius: 0.8rem; transform: none; }
+  .moduleOpen { grid-column: 1 / -1; margin-top: 0.4rem; font-size: 0.62rem; }
   .previewToolbar { grid-template-columns: 3rem 1fr; }
   .previewToolbar > i { display: none; }
   .ioGrid { grid-template-columns: 1fr; }
@@ -818,10 +830,12 @@
   .ecoCardWrap { width: 100%; }
   .ecosystemGateways { grid-template-columns: 1fr; }
   .gatewayCard a { min-height: 10rem; }
-  .testimonialGrid { grid-template-columns: 1fr; gap: 1rem; }
-  .testimonialCard { min-height: calc(100svh - 7rem); padding: clamp(1.5rem, 7vw, 2.4rem); border-radius: 1.5rem; }
-  .testimonialCard > p { max-width: 24ch; font-size: clamp(1.55rem, 7vw, 2.4rem); }
-  .skipTestimonials { bottom: calc(1rem + env(safe-area-inset-bottom)); }
+  .testimonialGrid { grid-template-columns: 1fr; gap: 0.75rem; margin-top: 2.25rem; }
+  .testimonialCard { min-height: clamp(15rem, 75vw, 18rem); padding: 1.25rem; border-radius: 1.2rem; }
+  .testimonialCard > svg { width: 1rem; height: 1rem; }
+  .testimonialCard > p { max-width: 27ch; margin: 1.25rem 0; font-size: clamp(1.2rem, 5.2vw, 1.55rem); line-height: 1.22; }
+  .testimonialCard > div { padding-top: 0.7rem; font-size: 0.56rem; }
+  .skipTestimonials { min-height: 2.8rem; bottom: calc(1rem + env(safe-area-inset-bottom)); padding: 0.65rem 0.9rem; font-size: 0.66rem; }
   .impactHeader { display: block; }
   .updateLabel { width: fit-content; margin-top: 1.5rem; white-space: normal; }
   .impactGrid { grid-template-columns: 1fr; margin-top: 2.5rem; }
