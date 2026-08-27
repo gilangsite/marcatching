@@ -11,16 +11,23 @@ import {
   BrainCircuit,
   Bot,
   Check,
+  CheckCircle2,
   ChevronRight,
   CircleDollarSign,
   Compass,
+  Copy,
+  Download,
+  FileArchive,
   FileText,
   Hammer,
   Mail,
+  MousePointer2,
   Network,
   PackageOpen,
+  Paperclip,
   Quote,
   Send,
+  Settings2,
   Sparkles,
   Workflow,
   X,
@@ -131,6 +138,159 @@ function ContentEngineGraphic() {
         <small>Build, sell, earn</small>
       </div>
     </div>
+  )
+}
+
+function DemoSidebar({ active }: { active: 'memory' | 'skills' | 'prompts' }) {
+  return (
+    <aside className={styles.demoSidebar} aria-hidden="true">
+      <div className={styles.demoSidebarBrand}><b>M</b><span>marcatching</span></div>
+      <small>Member workspace</small>
+      <nav>
+        <span><i>01</i> Learning Home</span>
+        <span className={active === 'memory' ? styles.demoNavActive : ''}><i>02</i> Creator Workspace</span>
+        <span className={active === 'prompts' ? styles.demoNavActive : ''}><i>03</i> Prompt Library</span>
+        <span className={active === 'skills' ? styles.demoNavActive : ''}><i>04</i> Skill Library</span>
+      </nav>
+      <div className={styles.demoMember}><b>G</b><span>Gilang&apos;s workspace<small>Brand system active</small></span></div>
+    </aside>
+  )
+}
+
+function BrandEcosystemHero() {
+  const answerLines = [
+    ['01', 'Core direction', 'Position Marcatching as the memory layer between brand thinking and AI execution.'],
+    ['02', 'Audience tension', 'They do not need more outputs. They need answers that already understand the brand.'],
+    ['03', 'Campaign idea', 'Build a 90-day narrative around “Stop briefing AI from zero.”'],
+    ['04', 'Content system', 'Turn one strategic belief into research, carousel, short video, email, and landing page.'],
+    ['05', 'Next action', 'Launch the proof-led campaign with one clear Brand Memory transformation.'],
+    ['06', 'Measurement plan', 'Track message recall, qualified replies, assisted conversion, and repeated prompt quality.'],
+  ] as const
+
+  return (
+    <figure className={styles.ecosystemDemo} aria-labelledby="ecosystem-demo-title">
+      <figcaption className={styles.ecosystemDemoCaption}>
+        <span id="ecosystem-demo-title">Brand Memory → Skill → Better answer</span>
+        <span><i /> 15 sec · seamless loop</span>
+      </figcaption>
+
+      <div className={styles.demoViewport}>
+        <div className={styles.demoBrowserBar} aria-hidden="true">
+          <span><i /><i /><i /></span>
+          <div><b>course.marcatching.com</b><em>Secure workspace</em></div>
+          <Image src="/logo-shape-white.png" alt="" width={18} height={18} />
+        </div>
+
+        <div className={styles.demoFilm} aria-hidden="true">
+          <section className={`${styles.demoScene} ${styles.demoSceneMemory}`} aria-label="Brand brief dibuat menjadi Brand Memory">
+            <DemoSidebar active="memory" />
+            <div className={styles.demoCourseCanvas}>
+              <header><span><BrainCircuit /> Creator Workspace</span><b>Brand Memory</b></header>
+              <div className={styles.demoMemoryBackground} aria-hidden="true">
+                <div><span>Audience OS</span><b>Ready</b></div><div><span>Brand Voice</span><b>Syncing</b></div><div><span>Offer</span><b>Ready</b></div>
+              </div>
+              <div className={styles.demoBriefModal}>
+                <span><Sparkles /> Brand Memory Builder</span>
+                <h3>Tell us all about your brand.</h3>
+                <p>Satu brief ini menjadi konteks yang ikut ke setiap workflow.</p>
+                <div className={styles.demoBriefField}>
+                  <span className={styles.demoTypedBrief}>
+                    <span>Marcatching adalah marketing intelligence brand untuk founder,</span>
+                    <span>marketer, dan creator yang ingin AI memahami brand mereka.</span>
+                    <span>Tone: sharp, calm, premium. Fokus: consumer psychology,</span>
+                    <span>brand positioning, AI workflow, dan execution clarity.</span>
+                  </span>
+                  <i />
+                </div>
+                <button type="button" tabIndex={-1}>Generate Brand Memory <ArrowRight /></button>
+              </div>
+            </div>
+            <div className={styles.demoBeatLabel}><b>01</b><span>Capture the brand<small>One context, ready to reuse</small></span></div>
+          </section>
+
+          <section className={`${styles.demoScene} ${styles.demoSceneSkill}`} aria-label="Skill dikustomisasi dan dibuat dari Brand Memory">
+            <DemoSidebar active="skills" />
+            <div className={styles.demoCourseCanvas}>
+              <header><span><Sparkles /> Marcatching Skill Builder</span><b>Ready to create</b></header>
+              <div className={styles.demoSkillHeader}>
+                <span>Personalized Skill</span>
+                <h3>Ubah Brand Memory menjadi Skill yang benar-benar milikmu.</h3>
+              </div>
+              <article className={styles.demoSkillCard}>
+                <div className={styles.demoSkillVisual}><FileArchive /><span>/marcatching-skill</span></div>
+                <div className={styles.demoSkillMeta}><b><CheckCircle2 /> Ready to create</b><small>Original & personalized Skill · .zip</small></div>
+                <h4>Marcatching Brand Strategist</h4>
+                <p>Strategi, content, dan decision system yang membaca Brand Memory sebelum bekerja.</p>
+                <div className={styles.demoSkillChecks}><span><Check /> Skill dimiliki</span><span><Check /> Brand Memory lengkap</span></div>
+                <button type="button" tabIndex={-1}><Settings2 /> Customize Skill</button>
+              </article>
+              <div className={styles.demoCustomizeModal}>
+                <span><Sparkles /> Customize Skill</span>
+                <h3>Marcatching Brand Strategist</h3>
+                <label>Prioritas brand saat ini<textarea readOnly tabIndex={-1} value="Menjaga premium clarity sambil mempercepat campaign execution." /></label>
+                <label>Hal yang harus selalu dihindari<textarea readOnly tabIndex={-1} value="Generic tips, jargon tanpa konteks, dan hard-selling." /></label>
+                <button type="button" tabIndex={-1}>Create personalized Skill</button>
+              </div>
+              <div className={styles.demoExportToast}><Download /><span><b>2 files downloaded</b><small>marcatching-skill.zip · brand-memory.md</small></span><CheckCircle2 /></div>
+            </div>
+            <div className={styles.demoBeatLabel}><b>02</b><span>Customize the Skill<small>Brand logic packaged inside</small></span></div>
+          </section>
+
+          <section className={`${styles.demoScene} ${styles.demoSceneInstall}`} aria-label="Brand Memory dan Marcatching Skill dipasang pada AI generatif">
+            <div className={styles.demoAiShell}>
+              <aside><Bot /><span>New chat</span><span>Projects</span><span>Skills</span><small>Generative AI</small></aside>
+              <main>
+                <header><span>Marcatching Brand System</span><b>Private workspace</b></header>
+                <div className={styles.demoInstallCard}>
+                  <div className={styles.demoInstallIcon}><Sparkles /></div>
+                  <span>Connect your brand system</span>
+                  <h3>Install context once.<br />Use it in every prompt.</h3>
+                  <p>Drag Brand Memory into this workspace. Your installed Skill will read it before answering.</p>
+                  <div className={styles.demoDropZone}>
+                    <Paperclip />
+                    <span><b>Drop brand-memory.md here</b><small>Brand context for this workspace</small></span>
+                    <div className={styles.demoAttachedMemory}><FileText /><span><b>brand-memory.md</b><small>Context attached</small></span><Check /></div>
+                  </div>
+                  <div className={styles.demoInstalledSkill}><CheckCircle2 /><span><small>Installed Skill</small><b>/marcatching-skill</b></span></div>
+                  <button type="button" tabIndex={-1}><Paperclip /> Insert files</button>
+                  <div className={styles.demoDraggedFile}><FileText /><span><b>brand-memory.md</b><small>Markdown · Brand context</small></span></div>
+                </div>
+              </main>
+            </div>
+            <div className={styles.demoBeatLabel}><b>03</b><span>Install in generative AI<small>Memory and Skill connected</small></span></div>
+          </section>
+
+          <section className={`${styles.demoScene} ${styles.demoSceneAnswer}`} aria-label="Prompt Library menghasilkan jawaban AI yang panjang dan personal">
+            <div className={styles.demoPromptRail}>
+              <div className={styles.demoPromptBrand}><b>M</b><span>Prompt Library<small>Context-aware action</small></span></div>
+              <article>
+                <span>Brand strategy · Premium perception</span>
+                <h3>Build a 90-day brand growth direction</h3>
+                <p>Analyze our Brand Memory, identify the strongest strategic tension, then create a campaign system...</p>
+                <button type="button" tabIndex={-1}><Copy /> Copy prompt</button>
+                <em><Check /> Copied</em>
+              </article>
+            </div>
+            <div className={styles.demoChat}>
+              <header><span><Bot /> Generative AI</span><b><CheckCircle2 /> /marcatching-skill active</b></header>
+              <div className={styles.demoChatBody}>
+                <div className={styles.demoUserPrompt}>Using our Brand Memory and /marcatching-skill, build a 90-day brand growth direction. Identify the strongest audience tension, define the core narrative, map weekly content across carousel, short video, email, and landing page, then finish with priorities, KPIs, and the next action. Keep every recommendation specific, premium, and ready to execute.</div>
+                <div className={styles.demoThinking}><span>M</span><div><i /><i /><i /></div><small>/marcatching-skill is thinking with Brand Memory</small></div>
+                <div className={styles.demoAnswerCard}>
+                  <div className={styles.demoAnswerIntro}><span>M</span><div><small>MARCATCHING STRATEGIC RESPONSE</small><h3>Your 90-Day Brand Growth System</h3><p>I read your Brand Memory first. The opportunity is not “more AI content”—it is owning the category of AI that remembers how a brand thinks.</p></div></div>
+                  <div className={styles.demoAnswerScroll}>
+                    {answerLines.map(([number, title, copy]) => <div key={number}><b>{number}</b><span><strong>{title}</strong><p>{copy}</p></span></div>)}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.demoComposer}><span>Ask with your Brand Memory...</span><button type="button" tabIndex={-1}><Send /></button></div>
+            </div>
+            <div className={styles.demoBeatLabel}><b>04</b><span>Prompt with memory<small>Long, specific, on-brand answer</small></span></div>
+          </section>
+        </div>
+        <span className={styles.demoCursor} aria-hidden="true"><MousePointer2 /></span>
+      </div>
+    </figure>
   )
 }
 
@@ -444,6 +604,7 @@ export default function AboutClient({ navLinks, config, heroProduct = null }: Ab
         <section className={`${styles.chapter} ${styles.problem}`} id="problem" data-experience-section="problem">
           <div className={styles.shell}>
             <SectionHeading eyebrow="02 · The real friction" title={<>Your brand deserves more<br /><em>than generic answers.</em></>} body="Marcatching mempersonalisasi AI dari kebutuhan brand-mu. Konteks yang tepat membuat setiap keputusan terasa lebih cepat, lebih jelas, dan lebih tepat." />
+            <BrandEcosystemHero />
             <div className={styles.noiseLab}>
               <div className={styles.noiseCloud} aria-label="Disconnected marketing concepts">
                 {NOISE_TERMS.map((term, index) => <span key={term} style={{ '--noise-index': index } as CSSProperties}>{term}</span>)}
