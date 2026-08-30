@@ -299,6 +299,9 @@
   background: #050a0f;
   box-shadow: 0 2.5rem 7rem rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.045);
   font-size: clamp(7px, 1.08vw, 15px);
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  container-type: inline-size;
   isolation: isolate;
 }
 .demoViewport::after {
@@ -400,8 +403,8 @@
 .demoTypedBrief > span:nth-child(3) { animation: demoTypeLineThree 15s steps(57,end) infinite; }
 .demoTypedBrief > span:nth-child(4) { animation: demoTypeLineFour 15s steps(55,end) infinite; }
 .demoBriefField > i { position: absolute; left: 1.1em; top: 1.32em; width: 1px; height: 1.15em; background: #9dd2ff; box-shadow: 0 0 .55em rgba(157,210,255,.6); animation: demoCaret 15s steps(1,end) infinite; }
-.demoBriefModal > button,.demoSkillCard > button,.demoCustomizeModal > button,.demoInstallCard > button,.demoPromptRail article > button,.demoComposer > button { display: inline-flex; align-items: center; justify-content: center; gap: .55em; border: 0; font-family: inherit; font-weight: 780; }
-.demoBriefModal > button { float: right; min-height: 3.15em; margin-top: 1.25em; padding: 0 1.3em; border-radius: .65em; color: #07111a; background: #e6f3fc; font-size: .72em; }
+.demoBriefModal > button,.demoSkillCard > button,.demoCustomizeModal > button,.demoInstallCard > button,.demoPromptRail article > button,.demoComposer > button { display: inline-flex; align-items: center; justify-content: center; gap: .55em; max-width: 100%; border: 0; appearance: none; -webkit-appearance: none; font-family: inherit; font-size: inherit; font-weight: 780; line-height: 1; white-space: nowrap; }
+.demoBriefModal > button { float: right; min-height: 2.6cqw; height: 2.6cqw; max-height: 2.6cqw; margin-top: 1em; padding: 0 .95em; border-radius: .58em; color: #07111a; background: #e6f3fc; font-size: .61em; }
 .demoBriefModal > button svg { width: 1em; }
 .demoCursor {
   position: absolute;
@@ -469,7 +472,7 @@
 .demoCustomizeModal { position: absolute; z-index: 9; right: 2.2em; top: 5em; width: 52%; padding: 1.55em; border: 1px solid rgba(151,201,239,.21); border-radius: 1em; background: #0d1117; box-shadow: 0 2em 5em rgba(0,0,0,.58); opacity: 0; transform: translateY(1.2em) scale(.96); animation: demoCustomizeModal 15s var(--ex-ease) infinite; }
 .demoCustomizeModal h3 { font-size: 1.2em; }
 .demoCustomizeModal label { display: grid; gap: .4em; margin-top: .85em; color: #dceaf4; font-size: .63em; font-weight: 680; }
-.demoCustomizeModal textarea { height: 4.5em; resize: none; padding: .7em; border: 1px solid rgba(255,255,255,.11); border-radius: .55em; outline: 0; color: #aebfcb; background: rgba(255,255,255,.025); font: inherit; font-size: .92em; line-height: 1.4; }
+.demoCustomizeModal textarea { height: 4.5em; resize: none; padding: .7em; border: 1px solid rgba(255,255,255,.11); border-radius: .55em; outline: 0; color: #aebfcb; background: rgba(255,255,255,.025); font: inherit; font-size: .92em !important; line-height: 1.4; -webkit-text-size-adjust: none; text-size-adjust: none; }
 .demoCustomizeModal > button { float: right; min-height: 2.8em; margin-top: 1em; padding: 0 1.1em; border-radius: .55em; color: #07111a; background: #e8f3fb; font-size: .63em; }
 .demoExportToast { position: absolute; z-index: 11; right: 3em; bottom: 3.7em; display: grid; grid-template-columns: 2.2em 1fr 1.5em; align-items: center; gap: .8em; width: 30em; padding: .9em 1em; border: 1px solid rgba(116,203,165,.2); border-radius: .75em; color: #93d8b8; background: #0b1715; box-shadow: 0 1.5em 3em rgba(0,0,0,.36); opacity: 0; transform: translateY(1.2em); animation: demoExportToast 15s var(--ex-ease) infinite; }
 .demoExportToast > svg { width: 1.3em; }
@@ -523,9 +526,9 @@
 .demoPromptRail article > span { color: #78b8e4; font-size: .58em; font-weight: 780; letter-spacing: .07em; text-transform: uppercase; }
 .demoPromptRail article h3 { margin-top: .65em; color: #edf5fa; font-size: 1.18em; font-weight: 570; line-height: 1.22; }
 .demoPromptRail article p { margin-top: .7em; color: #74899a; font-size: .65em; line-height: 1.6; }
-.demoPromptRail article > button { width: 100%; min-height: 3em; margin-top: 1.2em; border-radius: .58em; color: #06101a; background: #dfeef8; font-size: .64em; }
+.demoPromptRail article > button { width: 62%; min-height: 2.4cqw; height: 2.4cqw; max-height: 2.4cqw; margin-top: 1em; padding: 0 .9em; border-radius: .52em; color: #06101a; background: #dfeef8; font-size: .55em; }
 .demoPromptRail article > button svg { width: 1.05em; }
-.demoPromptRail article > em { position: absolute; right: 1.4em; bottom: 1.35em; display: flex; align-items: center; gap: .35em; padding: .4em .6em; border-radius: .5em; color: #a9e3c8; background: #123026; font-size: .56em; font-style: normal; opacity: 0; transform: translateY(.6em); animation: demoCopiedBadge 15s var(--ex-ease) infinite; }
+.demoPromptRail article > em { position: absolute; right: 1.4em; bottom: 1.38em; display: flex; align-items: center; gap: .28em; min-height: 2.1cqw; height: 2.1cqw; max-height: 2.1cqw; padding: 0 .45em; border-radius: .42em; color: #a9e3c8; background: #123026; font-size: .45em; font-style: normal; line-height: 1; opacity: 0; transform: translateY(.6em); animation: demoCopiedBadge 15s var(--ex-ease) infinite; }
 .demoPromptRail article > em svg { width: 1em; }
 .demoChat { position: relative; overflow: hidden; background: #0b0d10; }
 .demoChat > header span,.demoChat > header b { display: flex; align-items: center; gap: .5em; }
