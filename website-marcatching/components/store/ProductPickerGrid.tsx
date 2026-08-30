@@ -25,18 +25,21 @@ interface ProductPickerGridProps {
   emptyLabel?: string
   /** Cap on the scrollable grid area (e.g. inside a modal). Pass 'none' to let it flow with the page instead. */
   maxHeight?: string
+  /** Use storefront-sized cards instead of the denser modal picker layout. */
+  displayMode?: 'picker' | 'store'
 }
 
-export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = '55vh' }: ProductPickerGridProps) {
+export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = '55vh', displayMode = 'picker' }: ProductPickerGridProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<ProductCategory[]>([])
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
 
   useEffect(() => {
     let mounted = true
-    async function load() {
+    async function loadCatalog() {
       const [{ data: productRows }, { data: categoryRows }] = await Promise.all([
         supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false }),
         supabase.from('product_categories').select('*').order('order_index'),
@@ -46,7 +49,27 @@ export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = 
       setCategories((categoryRows || []) as ProductCategory[])
       setLoading(false)
     }
-    void load()
+
+    async function loadOwnedProducts() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.access_token) return
+
+        const response = await fetch('/api/store/owned-products', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: 'no-store',
+        })
+        if (!response.ok || !mounted) return
+
+        const payload = await response.json() as { ownedProductIds?: string[] }
+        if (mounted) setOwnedIds(new Set(payload.ownedProductIds || []))
+      } catch {
+        // Ownership is supplementary UI; catalog loading should remain unaffected.
+      }
+    }
+
+    void loadCatalog()
+    void loadOwnedProducts()
     return () => { mounted = false }
   }, [])
 
@@ -70,13 +93,18 @@ export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = 
 
   function goToCheckout(product: Product) {
     if (product.is_coming_soon) return
-    window.location.href = `/product/${product.slug}/checkout`
+    const { hostname, port, protocol } = window.location
+    const isLocal = hostname === 'localhost' || hostname.endsWith('.localhost')
+    const storefrontOrigin = isLocal
+      ? `${protocol}//localhost${port ? `:${port}` : ''}`
+      : 'https://www.marcatching.com'
+    window.location.assign(`${storefrontOrigin}/product/${encodeURIComponent(product.slug)}/checkout`)
   }
 
   const showEmptyLockedState = lockedCategorySlug && !loading && !lockedCategory
 
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${displayMode === 'store' ? styles.storeLayout : ''}`}>
       <div className={styles.toolbar}>
         <div className={styles.searchBox}>
           <Search size={16} />
@@ -126,6 +154,7 @@ export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = 
               const thumb = getDriveThumb(product.image_url)
               const cat = categories.find(c => c.id === product.category_id)
               const hasDiscount = product.price_before_discount > product.price_after_discount
+              const isOwned = ownedIds.has(product.id)
               return (
                 <button
                   key={product.id}
@@ -136,11 +165,18 @@ export function ProductPickerGrid({ lockedCategorySlug, emptyLabel, maxHeight = 
                 >
                   <div className={styles.cardThumb}>
                     {thumb ? (
-                      <Image src={thumb} alt={product.name} fill className={styles.cardThumbImg} sizes="220px" />
+                      <Image
+                        src={thumb}
+                        alt={product.name}
+                        fill
+                        className={styles.cardThumbImg}
+                        sizes={displayMode === 'store' ? '(max-width: 640px) 44vw, 280px' : '220px'}
+                      />
                     ) : (
                       <div className={styles.cardThumbPlaceholder}><ShoppingBag size={22} /></div>
                     )}
                     {cat && !lockedCategorySlug && <span className={styles.cardCatBadge}>{cat.name}</span>}
+                    {isOwned && <span className={styles.cardOwnedBadge}>Owned</span>}
                     {product.is_coming_soon && <span className={styles.cardSoonBadge}>Coming Soon</span>}
                   </div>
                   <div className={styles.cardBody}>

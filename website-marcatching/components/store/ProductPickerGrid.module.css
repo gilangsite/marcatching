@@ -83,8 +83,16 @@
   gap: 16px;
 }
 
+.storeLayout .grid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 280px));
+  justify-content: center;
+  gap: 24px;
+}
+
 .card {
   display: flex;
+  width: 100%;
+  min-width: 0;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -154,6 +162,24 @@
   background: #ffd58f;
 }
 
+.cardOwnedBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #ffffff;
+  background: #168454;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.cardOwnedBadge + .cardSoonBadge {
+  top: 38px;
+}
+
 .cardBody {
   display: flex;
   flex-direction: column;
@@ -197,4 +223,62 @@
   color: rgba(255, 255, 255, 0.35);
   font-size: 0.78rem;
   text-decoration: line-through;
+}
+
+@media (max-width: 640px) {
+  .storeLayout {
+    gap: 14px;
+  }
+
+  .storeLayout .toolbar {
+    gap: 10px;
+  }
+
+  .storeLayout .gridScroll {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .storeLayout .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .storeLayout .cardBody {
+    gap: 3px;
+    padding: 11px;
+  }
+
+  .storeLayout .cardName {
+    font-size: 0.82rem;
+  }
+
+  .storeLayout .cardSub {
+    font-size: 0.7rem;
+  }
+
+  .storeLayout .cardPriceRow {
+    flex-wrap: wrap;
+    gap: 3px 7px;
+    margin-top: 5px;
+  }
+
+  .storeLayout .cardPrice {
+    font-size: 0.78rem;
+  }
+
+  .storeLayout .cardPriceOld {
+    font-size: 0.68rem;
+  }
+
+  .storeLayout .cardCatBadge,
+  .storeLayout .cardOwnedBadge,
+  .storeLayout .cardSoonBadge {
+    padding: 2px 7px;
+    font-size: 0.58rem;
+  }
+
+  .storeLayout .cardOwnedBadge + .cardSoonBadge {
+    top: 32px;
+  }
 }

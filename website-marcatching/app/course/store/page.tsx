@@ -13,7 +13,7 @@ export default function CourseStorePage() {
         <p>Cari dan beli produk langsung dari sini. Klik salah satu produk untuk lanjut ke checkout.</p>
       </div>
       <div className={styles.body}>
-        <ProductPickerGrid maxHeight="none" />
+        <ProductPickerGrid maxHeight="none" displayMode="store" />
       </div>
     </div>
   )
