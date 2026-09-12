@@ -5,7 +5,7 @@ import { Reorder } from 'framer-motion'
 import { Plus, Pencil, Trash2, X, Check, Megaphone, StopCircle, GripVertical } from 'lucide-react'
 import type { Product, PromotionWithProducts } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 
 type PromotionForm = {
   headline: string

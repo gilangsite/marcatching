@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Lock, Eye, EyeOff, MonitorSmartphone, Clock, LogOut } from 'lucide-react'
 import styles from './admin.module.css'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 
 export default function SecurityTab() {
   const [step, setStep] = useState<1 | 2>(1)

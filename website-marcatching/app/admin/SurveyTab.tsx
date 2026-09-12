@@ -9,7 +9,7 @@ import {
   Printer, Download, FileText
 } from 'lucide-react'
 import styles from './admin.module.css'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 
 // ─── Types ────────────────────────────────────────────────────
 export type QuestionType = 'short_answer' | 'long_answer' | 'dropdown' | 'checkbox' | 'radio' | 'rating'

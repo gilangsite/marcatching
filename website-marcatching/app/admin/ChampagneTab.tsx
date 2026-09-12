@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabaseClient'
 import type { Campaign, CampaignBlock, Product } from '@/lib/supabaseClient'
 import styles from './admin.module.css'
 import RichTextEditor from '@/components/RichTextEditor'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 
 export default function ChampagneTab({ products }: { products: Product[] }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])

@@ -7,7 +7,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react'
 import styles from './admin.module.css'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 
 // ─── Types ────────────────────────────────────────────────────
 export type FinanceType = 'income' | 'cost'

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense, FormEvent, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { Reorder, useDragControls, motion, AnimatePresence } from 'framer-motion'
 import Cropper from 'react-easy-crop'
 import {
@@ -29,16 +30,11 @@ import SurveyTab from './SurveyTab'
 import CreatorWorkspaceTab from './CreatorWorkspaceTab'
 import PromotionsTab from './PromotionsTab'
 import AffiliateTab from './AffiliateTab'
+import { showAdminToast, type AdminToastType } from './toast'
+
+const ContentCreationTab = dynamic(() => import('./ContentCreationTab'), { ssr: false, loading: () => <p>Memuat Content Creation…</p> })
 
 // ─── Admin Toast Event ────────────────────────────────────────
-type AdminToastType = 'success' | 'error'
-
-export function showAdminToast(message: string = 'Updated Successfully', type: AdminToastType = 'success') {
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('show-admin-toast', { detail: { message, type } }))
-  }
-}
-
 function AdminToast() {
   const [toast, setToast] = useState<{ message: string; type: AdminToastType } | null>(null)
   const timerRef = useRef<number | null>(null)
@@ -556,7 +552,7 @@ function HomeFinancePulse({
 function AdminDashboardInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces' | 'promotions' | 'affiliate'
+  type TabType = 'menu' | 'links' | 'contact' | 'products' | 'vouchers' | 'orders' | 'ecourse' | 'analytics' | 'articles' | 'navigation' | 'ecommerce' | 'aboutpage' | 'champagne' | 'finance' | 'security' | 'survey' | 'creator-workspaces' | 'promotions' | 'affiliate' | 'content-creation'
   const [tab, setTab] = useState<TabType>('menu')
   const [showOtherTabs, setShowOtherTabs] = useState(false)
   const tabMeta: Record<TabType, { eyebrow: string; label: string }> = {
@@ -579,6 +575,7 @@ function AdminDashboardInner() {
     'creator-workspaces': { eyebrow: 'Creator Intelligence', label: 'Creator Workspaces' },
     promotions: { eyebrow: 'Growth', label: 'Promotions' },
     affiliate: { eyebrow: 'Revenue', label: 'Affiliate' },
+    'content-creation': { eyebrow: 'Marcatching Studio', label: 'Content Creation' },
   }
   const activeTabMeta = tabMeta[tab]
 
@@ -1641,6 +1638,7 @@ function AdminDashboardInner() {
           <button className={`${styles.navItem} ${tab === 'contact' ? styles.navActive : ''}`} onClick={() => { setTab('contact'); setIsSidebarOpen(false) }}><Mail size={18} /> Contact Info</button>
           <button className={`${styles.navItem} ${tab === 'security' ? styles.navActive : ''}`} onClick={() => { setTab('security'); setIsSidebarOpen(false) }}><Lock size={18} /> Keamanan</button>
           <button className={`${styles.navItem} ${tab === 'survey' ? styles.navActive : ''}`} onClick={() => { setTab('survey'); setIsSidebarOpen(false) }}><ClipboardList size={18} /> Survey</button>
+          <button className={`${styles.navItem} ${tab === 'content-creation' ? styles.navActive : ''}`} onClick={() => { setTab('content-creation'); setIsSidebarOpen(false) }}><ImageIcon size={18} /> Content Creation</button>
           <button className={`${styles.navItem} ${tab === 'creator-workspaces' ? styles.navActive : ''}`} onClick={() => { setTab('creator-workspaces'); setIsSidebarOpen(false) }}><BrainCircuit size={18} /> Creator Workspaces</button>
           <button className={`${styles.navItem} ${tab === 'promotions' ? styles.navActive : ''}`} onClick={() => { setTab('promotions'); setIsSidebarOpen(false) }}><Megaphone size={18} /> Promotions</button>
 
@@ -1831,6 +1829,7 @@ function AdminDashboardInner() {
                         { tab: 'contact',    Icon: Mail,         label: 'Contact',    color: '#1e40af' },
                         { tab: 'security',   Icon: Lock,         label: 'Keamanan',   color: '#0d3369' },
                         { tab: 'survey',     Icon: ClipboardList,label: 'Survey',     color: '#0d3369' },
+                        { tab: 'content-creation', Icon: ImageIcon, label: 'Content Creation', color: '#6d4aff' },
                         { tab: 'creator-workspaces', Icon: BrainCircuit, label: 'Creator Workspaces', color: '#1e40af' },
                         { tab: 'promotions', Icon: Megaphone, label: 'Promotions', color: '#0d3369' },
                       ] as const).map((item) => (
@@ -2127,6 +2126,7 @@ function AdminDashboardInner() {
 
         {/* ── SURVEY TAB ─── */}
         {tab === 'survey' && <SurveyTab />}
+        {tab === 'content-creation' && <ContentCreationTab />}
         {tab === 'creator-workspaces' && <CreatorWorkspaceTab />}
         {tab === 'promotions' && <PromotionsTab products={products} />}
         {tab === 'affiliate' && <AffiliateTab />}
@@ -3800,7 +3800,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
       </main>
 
       {/* ─ Mobile Bottom Navigation ─ */}
-      <nav className={styles.bottomNav}>
+      {tab !== 'content-creation' && <nav className={styles.bottomNav}>
         <button
           className={`${styles.bottomNavItem} ${tab === 'menu' ? styles.bottomNavItemActive : ''}`}
           onClick={() => setTab('menu')}
@@ -3829,7 +3829,7 @@ Silakan kembali ke halaman checkout Marcatching dan selesaikan pembayaran melalu
           <UserCircle size={20} strokeWidth={tab === 'security' ? 2.5 : 2} className={styles.bottomNavIcon} />
           Profile
         </button>
-      </nav>
+      </nav>}
     </div>
   )
 }

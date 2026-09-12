@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { showAdminToast } from './page'
+import { showAdminToast } from './toast'
 import { Plus, X, Check, Camera, Upload } from 'lucide-react'
 import Cropper from 'react-easy-crop'
 import styles from './admin.module.css'
