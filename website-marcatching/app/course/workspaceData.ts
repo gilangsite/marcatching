@@ -1,3 +1,5 @@
+import { createVisualIdentityMarkdown, emptyVisualIdentity, type VisualIdentity } from './visualIdentity'
+
 export type JourneySection =
   | 'audience'
   | 'revenue'
@@ -186,6 +188,8 @@ export type WorkspaceData = {
   skillRequirements: Record<string, Record<string, string>>
   brandInterview: BrandInterview | null
   refinedMemory: RefinedBrandMemory | null
+  /** Optional colors, fonts and style notes. Written into brand-memory.md verbatim, never rewritten by the AI. */
+  visualIdentity: VisualIdentity
 }
 
 export const journeyOrder: JourneySection[] = [
@@ -333,6 +337,7 @@ export const defaultWorkspaceData: WorkspaceData = {
   skillRequirements: {},
   brandInterview: null,
   refinedMemory: null,
+  visualIdentity: { ...emptyVisualIdentity },
 }
 
 const revenueInputLabels: Array<[keyof WorkspaceData['revenue'], string]> = [
@@ -471,6 +476,7 @@ function createRefinedBrandMemoryMarkdown(data: WorkspaceData, refined: RefinedB
     lines.push(`## ${title}`, refined.sections[key] || 'Belum ada informasi.', '')
   }
   lines.push('## Primary CTA', data.conversion.primaryCta || 'Belum diisi di Conversion Map.', '')
+  lines.push(createVisualIdentityMarkdown(data.visualIdentity), '')
   if (refined.gaps.length) {
     lines.push('## Belum Diketahui', 'Hal berikut belum dijawab creator. Jangan diisi dengan asumsi:', ...refined.gaps.map(gap => `- ${gap}`), '')
   }
@@ -513,6 +519,8 @@ export function createBrandMemoryMarkdown(data: WorkspaceData, updatedAt = new D
     '',
     '## Primary CTA',
     data.conversion.primaryCta || 'Belum diisi di Conversion Map.',
+    '',
+    createVisualIdentityMarkdown(data.visualIdentity),
     '',
     '## Output Quality Gate',
     data.memory.qualityGate,

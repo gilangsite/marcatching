@@ -11,6 +11,7 @@ import {
   type RefinedBrandMemory,
   type WorkspaceData,
 } from '../../app/course/workspaceData'
+import { contrastRatio, contrastWarnings, emptyVisualIdentity, fontOptions, googleFontsPreviewUrl, normalizeHex, sanitizeVisualIdentity } from '../../app/course/visualIdentity'
 
 // `server-only` is resolved by Next's bundler, not by Node, so stub it for the server modules under test.
 const moduleLoader = Module as unknown as { _load: (request: string, ...rest: unknown[]) => unknown }
@@ -113,4 +114,57 @@ test('Gemini responses are validated: headings flattened, unknown numbers flagge
 
   gemini({}, { status: 429 })
   await assert.rejects(() => askClarifyingQuestions(inputs, []), /Kuota AI/)
+})
+
+test('hex codes are normalized and invalid ones are dropped, never guessed', () => {
+  assert.equal(normalizeHex('#1e3a8a'), '#1E3A8A')
+  assert.equal(normalizeHex('1E3A8A'), '#1E3A8A')
+  assert.equal(normalizeHex('#fa0'), '#FFAA00')
+  for (const bad of ['', '#12', '#12345', 'blue', '#GGGGGG', '#1E3A8A; background:red', null, 5]) assert.equal(normalizeHex(bad), '')
+  const identity = sanitizeVisualIdentity({ primaryColor: 'blue', secondaryColor: '#abc', headingFont: ' Poppins ', mood: 'x'.repeat(200) })
+  assert.equal(identity.primaryColor, '')
+  assert.equal(identity.secondaryColor, '#AABBCC')
+  assert.equal(identity.headingFont, 'Poppins')
+  assert.equal(identity.mood.length, 60)
+  assert.deepEqual(sanitizeVisualIdentity(undefined), emptyVisualIdentity)
+})
+
+test('contrast helper matches known WCAG values and flags unreadable palettes', () => {
+  assert.equal(contrastRatio('#000000', '#FFFFFF').toFixed(1), '21.0')
+  assert.equal(contrastRatio('#777777', '#FFFFFF').toFixed(1), '4.5')
+  assert.equal(contrastRatio('nope', '#FFFFFF'), 0)
+  const bad = { ...emptyVisualIdentity, textColor: '#CCCCCC', backgroundColor: '#FFFFFF' }
+  assert.equal(contrastWarnings(bad).length, 1)
+  assert.equal(contrastWarnings({ ...emptyVisualIdentity, textColor: '#111111', backgroundColor: '#FFFFFF' }).length, 0)
+})
+
+test('visual identity reaches brand-memory.md verbatim in both raw and AI versions, and tells the AI not to invent when empty', () => {
+  const data = workspace()
+  assert.match(createBrandMemoryMarkdown(data), /## Visual Identity\nBelum diisi creator\. Jangan mengarang/)
+
+  data.visualIdentity = { ...emptyVisualIdentity, primaryColor: '#1E3A8A', secondaryColor: '#F59E0B', headingFont: 'Poppins', bodyFont: 'Fontku Sendiri', mood: 'Minimalis & bersih', tagline: 'Kopi tanpa drama' }
+  const raw = createBrandMemoryMarkdown(data)
+  assert.match(raw, /\| Primary \| #1E3A8A \|/)
+  assert.match(raw, /\| Secondary \| #F59E0B \|/)
+  assert.doesNotMatch(raw, /Accent/)
+  assert.match(raw, /Heading: \*\*Poppins\*\* \(Google Fonts, sans-serif\)\. Fallback: sans-serif/)
+  assert.match(raw, /Body: \*\*Fontku Sendiri\*\*\. Jika font ini tidak tersedia/)
+  assert.match(raw, /Tagline: "Kopi tanpa drama"/)
+
+  data.refinedMemory = refined(data, 'approved')
+  const ai = createBrandMemoryMarkdown(data)
+  assert.match(ai, /## Offer\nisi offer/)
+  assert.match(ai, /\| Primary \| #1E3A8A \|/)
+
+  // Changing the palette is not a change to the AI-written text, so it must not invalidate the approval.
+  data.visualIdentity.primaryColor = '#000000'
+  assert.match(createBrandMemoryMarkdown(data), /## Offer\nisi offer/)
+})
+
+test('font preview URL only asks Google for weights each family really has', () => {
+  const url = googleFontsPreviewUrl()
+  assert.match(url, /family=Bebas\+Neue&/)
+  assert.match(url, /family=DM\+Serif\+Display&/)
+  assert.match(url, /family=Poppins:wght@400;700/)
+  assert.equal(new Set(fontOptions.map(font => font.name)).size, fontOptions.length)
 })

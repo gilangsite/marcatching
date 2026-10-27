@@ -63,6 +63,8 @@ import {
 } from '../workspaceData'
 import SkillLibrary from '../SkillLibrary'
 import BrandMemoryRefiner from './BrandMemoryRefiner'
+import VisualIdentityEditor from './VisualIdentityEditor'
+import { sanitizeVisualIdentity } from '../visualIdentity'
 import styles from './workspace.module.css'
 
 const LEGACY_STORAGE_KEY = 'marcatching-creator-workspace-v1'
@@ -402,6 +404,7 @@ function mergeWorkspaceData(parsed: unknown): WorkspaceData {
       : {},
     brandInterview: sanitizeBrandInterview(saved.brandInterview),
     refinedMemory: sanitizeRefinedMemory(saved.refinedMemory),
+    visualIdentity: sanitizeVisualIdentity(saved.visualIdentity),
   }
 }
 
@@ -1286,6 +1289,7 @@ export default function WorkspaceClient() {
           notify={notify}
           ready={memoryFields.every(field => workspace.memory[field.key].trim().length >= 100)}
         />
+        <VisualIdentityEditor value={workspace.visualIdentity} onChange={visualIdentity => setWorkspace(current => ({ ...current, visualIdentity }))} />
         <SkillLibrary compact />
       </div>
     )
