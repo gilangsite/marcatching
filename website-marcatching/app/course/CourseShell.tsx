@@ -8,6 +8,7 @@ import {
   BookOpen,
   BadgePercent,
   ChevronRight,
+  Globe,
   HelpCircle,
   LayoutDashboard,
   LogOut,
@@ -22,6 +23,7 @@ import styles from './shell.module.css'
 const navigation = [
   { href: '/', label: 'Learning Home', description: 'Course dan progress', icon: LayoutDashboard },
   { href: '/workspace', label: 'Creator Workspace', description: 'Revenue operating system', icon: Sparkles },
+  { href: '/landing', label: 'Landing Page', description: 'Satu link untuk brand-mu', icon: Globe },
   { href: '/prompt-library', label: 'Prompt Library', description: 'Copy prompt siap pakai', icon: BookOpen },
   { href: '/store', label: 'Store', description: 'Cari & beli produk Marcatching', icon: ShoppingBag },
   { href: '/affiliate', label: 'Affiliate', description: 'Bagikan link & dapatkan komisi', icon: BadgePercent },
@@ -66,9 +68,11 @@ export default function CourseShell({ children }: { children: React.ReactNode })
       ? 'Prompt Library'
       : pathname?.startsWith('/workspace')
         ? 'Creator Workspace'
-        : pathname === '/' || pathname === '/course'
-          ? 'Learning Home'
-          : 'Course'
+        : pathname?.startsWith('/landing')
+          ? 'Landing Page'
+          : pathname === '/' || pathname === '/course'
+            ? 'Learning Home'
+            : 'Course'
 
   async function handleLogout() {
     await supabase.auth.signOut()

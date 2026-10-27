@@ -10,7 +10,7 @@ export type JourneySection =
   | 'metrics'
   | 'deliverables'
 
-export type WorkspaceSection = 'overview' | JourneySection | 'calendar' | 'landing'
+export type WorkspaceSection = 'overview' | JourneySection | 'calendar'
 
 export type SocialPlatform = 'instagram' | 'tiktok' | 'youtube'
 
@@ -227,7 +227,6 @@ export const workspaceSections: Array<{
   { id: 'metrics', label: 'Metric Scorecard', description: 'Catatan perkembangan per bulan' },
   { id: 'deliverables', label: 'Deliverables', description: 'Status output yang harus selesai' },
   { id: 'calendar', label: '30-Day Map', description: 'Rencana eksekusi setelah setup' },
-  { id: 'landing', label: 'Landing Page', description: 'Halaman link brand-mu di page.marcatching.com' },
 ]
 
 export const defaultAudience: AudienceDimension[] = [
@@ -421,6 +420,11 @@ export function hashBrandMemoryInputs(data: WorkspaceData) {
 }
 
 const brandMemorySectionKeys = brandMemorySections.map(section => section.key)
+
+/** True once the four AI Memory paragraphs are written; the gate for Skills and the landing page. */
+export function memoryParagraphsReady(data: WorkspaceData) {
+  return (['voice', 'redLines', 'audienceFacts', 'qualityGate'] as const).every(key => typeof data.memory?.[key] === 'string' && data.memory[key].trim().length >= 100)
+}
 
 export function sanitizeBrandProfile(value: unknown): BrandProfile {
   const saved = value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {}
