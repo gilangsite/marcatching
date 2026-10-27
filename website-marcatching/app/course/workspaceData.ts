@@ -10,7 +10,7 @@ export type JourneySection =
   | 'metrics'
   | 'deliverables'
 
-export type WorkspaceSection = 'overview' | JourneySection | 'calendar'
+export type WorkspaceSection = 'overview' | JourneySection | 'calendar' | 'landing'
 
 export type SocialPlatform = 'instagram' | 'tiktok' | 'youtube'
 
@@ -136,6 +136,14 @@ export type RefinedBrandMemory = {
 
 export type BrandMemoryInput = { id: string; group: string; label: string; value: string }
 
+/** Optional public-facing details. They fill the starter buttons and description of the member's landing page. */
+export type BrandProfile = {
+  description: string
+  website: string
+  whatsapp: string
+  email: string
+}
+
 export type WorkspaceData = {
   version: 2
   creatorName: string
@@ -190,6 +198,7 @@ export type WorkspaceData = {
   refinedMemory: RefinedBrandMemory | null
   /** Optional colors, fonts and style notes. Written into brand-memory.md verbatim, never rewritten by the AI. */
   visualIdentity: VisualIdentity
+  brandProfile: BrandProfile
 }
 
 export const journeyOrder: JourneySection[] = [
@@ -218,6 +227,7 @@ export const workspaceSections: Array<{
   { id: 'metrics', label: 'Metric Scorecard', description: 'Catatan perkembangan per bulan' },
   { id: 'deliverables', label: 'Deliverables', description: 'Status output yang harus selesai' },
   { id: 'calendar', label: '30-Day Map', description: 'Rencana eksekusi setelah setup' },
+  { id: 'landing', label: 'Landing Page', description: 'Halaman link brand-mu di page.marcatching.com' },
 ]
 
 export const defaultAudience: AudienceDimension[] = [
@@ -338,6 +348,7 @@ export const defaultWorkspaceData: WorkspaceData = {
   brandInterview: null,
   refinedMemory: null,
   visualIdentity: { ...emptyVisualIdentity },
+  brandProfile: { description: '', website: '', whatsapp: '', email: '' },
 }
 
 const revenueInputLabels: Array<[keyof WorkspaceData['revenue'], string]> = [
@@ -384,6 +395,7 @@ export function collectBrandMemoryInputs(data: WorkspaceData): BrandMemoryInput[
   add('profile.creatorName', 'Identitas', 'Nama brand/creator', data.creatorName)
   add('profile.businessType', 'Identitas', 'Jenis bisnis', data.businessType)
   add('profile.primaryGoal', 'Identitas', 'Tujuan utama', data.primaryGoal)
+  add('profile.description', 'Identitas', 'Deskripsi brand', data.brandProfile?.description)
   const socials = (Array.isArray(data.socialProfiles) ? data.socialProfiles : [])
     .filter(profile => profile.url?.trim())
     .map(profile => `${profile.platform}: ${profile.url.trim()}${profile.audienceCount > 0 ? ` (${profile.audienceCount} audiens)` : ''}`)
@@ -409,6 +421,16 @@ export function hashBrandMemoryInputs(data: WorkspaceData) {
 }
 
 const brandMemorySectionKeys = brandMemorySections.map(section => section.key)
+
+export function sanitizeBrandProfile(value: unknown): BrandProfile {
+  const saved = value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {}
+  return {
+    description: cleanString(saved.description, 400),
+    website: cleanString(saved.website, 300),
+    whatsapp: cleanString(saved.whatsapp, 40),
+    email: cleanString(saved.email, 120),
+  }
+}
 
 function cleanString(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : ''

@@ -23,6 +23,7 @@ import {
   Eye,
   FileText,
   FlaskConical,
+  Globe,
   LayoutDashboard,
   Lightbulb,
   Link2,
@@ -47,6 +48,7 @@ import {
   createBrandMemoryMarkdown,
   journeyOrder,
   sanitizeBrandInterview,
+  sanitizeBrandProfile,
   sanitizeRefinedMemory,
   workspaceSections,
   type AudienceDimension,
@@ -64,6 +66,8 @@ import {
 import SkillLibrary from '../SkillLibrary'
 import BrandMemoryRefiner from './BrandMemoryRefiner'
 import VisualIdentityEditor from './VisualIdentityEditor'
+import BrandProfileFields from './BrandProfileFields'
+import LandingPageBuilder from './LandingPageBuilder'
 import { sanitizeVisualIdentity } from '../visualIdentity'
 import styles from './workspace.module.css'
 
@@ -83,6 +87,7 @@ const sectionIcons: Record<WorkspaceSection, React.ComponentType<{ size?: number
   metrics: BarChart3,
   deliverables: ClipboardCheck,
   calendar: CalendarDays,
+  landing: Globe,
 }
 
 const journeyCopy: Record<JourneySection, { label: string; eyebrow: string; intro: string }> = {
@@ -405,6 +410,7 @@ function mergeWorkspaceData(parsed: unknown): WorkspaceData {
     brandInterview: sanitizeBrandInterview(saved.brandInterview),
     refinedMemory: sanitizeRefinedMemory(saved.refinedMemory),
     visualIdentity: sanitizeVisualIdentity(saved.visualIdentity),
+    brandProfile: sanitizeBrandProfile(saved.brandProfile),
   }
 }
 
@@ -980,6 +986,10 @@ export default function WorkspaceClient() {
             )
           })}
         </div>
+        <div className={styles.profileSetup}>
+          <h3>Profil brand <small>Opsional. Dipakai untuk landing page brand-mu nanti</small></h3>
+          <BrandProfileFields workspace={workspace} setWorkspace={setWorkspace} />
+        </div>
         <div className={styles.guideFooter}>
           <Link href="/" className={styles.quietLink}><ArrowLeft size={15} /> Kembali ke Learning Home</Link>
           <button type="button" className={styles.primaryButtonLarge} onClick={completeSocialSetup}>Simpan profile & mulai <ArrowRight size={17} /></button>
@@ -1167,6 +1177,18 @@ export default function WorkspaceClient() {
     if (section === 'experiments') return renderExperimentSection()
     if (section === 'metrics') return renderMetricsSection()
     if (section === 'deliverables') return <DeliverableList deliverables={workspace.deliverables} onStatus={(id, status) => setWorkspace(current => ({ ...current, deliverables: current.deliverables.map(item => item.id === id ? { ...item, status } : item) }))} />
+    if (section === 'landing') {
+      return (
+        <LandingPageBuilder
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          persist={() => persistWorkspace(workspace, true)}
+          notify={notify}
+          memoryReady={memoryFields.every(field => workspace.memory[field.key].trim().length >= 100)}
+          onOpenMemory={() => setActiveSection('memory')}
+        />
+      )
+    }
     return renderCalendarSection()
   }
 
@@ -1290,6 +1312,16 @@ export default function WorkspaceClient() {
           ready={memoryFields.every(field => workspace.memory[field.key].trim().length >= 100)}
         />
         <VisualIdentityEditor value={workspace.visualIdentity} onChange={visualIdentity => setWorkspace(current => ({ ...current, visualIdentity }))} />
+        {memoryFields.every(field => workspace.memory[field.key].trim().length >= 100) && (
+          <section className={styles.landingCta}>
+            <Globe size={18} />
+            <div>
+              <strong>Langkah berikutnya: buat landing page brand-mu</strong>
+              <p>Satu link untuk semua tombol, foto, dan video brand-mu di page.marcatching.com. Nama brand, sosial media, dan deskripsi terisi otomatis dari yang sudah kamu tulis.</p>
+            </div>
+            <button type="button" className={styles.primaryButton} onClick={() => setActiveSection('landing')}>Buat landing page <ArrowRight size={15} /></button>
+          </section>
+        )}
         <SkillLibrary compact />
       </div>
     )

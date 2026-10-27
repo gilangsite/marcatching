@@ -1669,3 +1669,40 @@
 .workspacePage .viFontList button {
   white-space: normal;
 }
+
+/* Optional brand profile (first-run setup + landing page builder) */
+.profileSetup { display: grid; gap: 0.7rem; margin-top: 1.4rem; text-align: left; }
+.profileSetup h3 { color: #e6f0f7; font-size: 0.8rem; }
+.profileSetup h3 small { margin-left: 0.5rem; color: var(--dim); font-size: 0.62rem; font-weight: 500; }
+
+.profileGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.profileGrid label { display: grid; gap: 0.35rem; }
+.profileGrid label > b { color: var(--muted); font-size: 0.64rem; font-weight: 600; }
+.profileGrid input,
+.profileGrid textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  outline: 0;
+  color: #eaf3f9;
+  background: rgba(3, 7, 11, 0.68);
+  font-family: inherit;
+  font-size: 0.74rem;
+}
+.profileGrid input { min-height: 2.5rem; padding: 0 0.75rem; }
+.profileGrid textarea { resize: vertical; padding: 0.65rem 0.75rem; line-height: 1.6; }
+.profileGrid input:focus,
+.profileGrid textarea:focus { border-color: var(--line-strong); }
+.profileGrid label > small { color: var(--dim); font-size: 0.58rem; text-align: right; }
+.profileWide { grid-column: 1 / -1; }
+
+@media (max-width: 720px) {
+  .profileGrid { grid-template-columns: 1fr; }
+}
+
+.landingCta { display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 0.9rem; color: var(--accent); background: linear-gradient(90deg, rgba(140, 198, 255, 0.07), var(--surface)); }
+.landingCta > div { min-width: 0; flex: 1; }
+.landingCta strong { color: #e9f3fa; font-size: 0.78rem; }
+.landingCta p { margin-top: 0.25rem; color: var(--muted); font-size: 0.66rem; line-height: 1.6; }
+.landingCta > svg { flex: 0 0 auto; }
+@media (max-width: 720px) { .landingCta { flex-wrap: wrap; } .landingCta > button { width: 100%; justify-content: center; } }
