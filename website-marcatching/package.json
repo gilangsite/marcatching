@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test:content": "tsx --test tests/content-creation/model.test.ts",
     "test:brand-memory": "tsx --test tests/brand-memory/brand-memory.test.ts",
+    "test:llm": "tsx --test tests/llm/llm.test.ts",
     "test:landing": "tsx --test tests/landing-page/landing-page.test.ts tests/landing-page/workspace-merge.test.ts",
     "test:content:e2e": "playwright test --config playwright.content.config.ts"
   },

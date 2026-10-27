@@ -35,6 +35,8 @@ export async function polishDescription(input: PolishInput): Promise<PolishResul
     ].filter(Boolean).join('\n\n'),
     schema,
     temperature: 0.4,
+    // One short sentence: if a model has not answered in 15s it is not going to, so move on quickly.
+    timeoutMs: 15_000,
   })
 
   const raw = data && typeof data === 'object' ? (data as { description?: unknown }).description : ''

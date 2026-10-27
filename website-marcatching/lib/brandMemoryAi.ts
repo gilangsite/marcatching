@@ -152,6 +152,7 @@ export async function askClarifyingQuestions(inputs: BrandMemoryInput[], answere
     user: `<jawaban_creator>\n${renderInputs(inputs)}\n</jawaban_creator>\n\n<jawaban_klarifikasi>\n${renderAnswers(answered)}\n</jawaban_klarifikasi>`,
     schema: analyzeSchema,
     temperature: 0.2,
+    timeoutMs: 25_000,
   })
   const raw = data && typeof data === 'object' ? (data as { questions?: unknown }).questions : []
   const seen = new Set(answered.map(item => item.question.toLowerCase()))
@@ -189,6 +190,8 @@ export async function writeBrandMemory(inputs: BrandMemoryInput[], answered: Ans
     user: `<jawaban_creator>\n${renderInputs(inputs)}\n</jawaban_creator>\n\n<jawaban_klarifikasi>\n${renderAnswers(answered)}\n</jawaban_klarifikasi>`,
     schema: generateSchema,
     temperature: 0.25,
+    // The whole document is written in one go (about 25s in practice), so allow a longer answer than the other calls.
+    timeoutMs: 38_000,
   })
 
   const record = data && typeof data === 'object' ? data as { sections?: unknown; gaps?: unknown } : {}

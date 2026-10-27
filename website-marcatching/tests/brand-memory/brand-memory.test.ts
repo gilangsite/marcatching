@@ -112,8 +112,9 @@ test('Gemini responses are validated: headings flattened, unknown numbers flagge
   const questions = await askClarifyingQuestions(inputs, [])
   assert.deepEqual(questions.map(question => question.topic), ['voice', 'snapshot'])
 
+  // Every model reports quota/overload: all are tried, then the member gets a clear "temporary" message.
   gemini({}, { status: 429 })
-  await assert.rejects(() => askClarifyingQuestions(inputs, []), /Kuota AI/)
+  await assert.rejects(() => askClarifyingQuestions(inputs, []), /sedang penuh/)
 })
 
 test('hex codes are normalized and invalid ones are dropped, never guessed', () => {
