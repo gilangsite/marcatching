@@ -173,7 +173,7 @@ export async function askClarifyingQuestions(inputs: BrandMemoryInput[], answere
 }
 
 /** Numbers like "1.000" and "1000" compare equal; list markers ("1.") are ignored. */
-function numberTokens(value: string) {
+export function numberTokens(value: string) {
   const tokens = new Set<string>()
   for (const match of value.replace(/^\s*\d+[.)]\s/gm, '').matchAll(/\d[\d.,]*/g)) {
     const digits = match[0].replace(/[.,]/g, '')
@@ -211,4 +211,10 @@ export async function writeBrandMemory(inputs: BrandMemoryInput[], answered: Ans
     : []
 
   return { sections, gaps, warnings, model }
+}
+
+/** Multi-digit numbers present in `output` that never appear in `source`. */
+export function unknownNumbers(output: string, source: string) {
+  const known = numberTokens(source)
+  return [...numberTokens(output)].filter(token => !known.has(token))
 }

@@ -1,33 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getMemberFromRequest } from '@/lib/memberApiAuth'
 import { LlmError } from '@/lib/llm'
+import { HOUR_MS, takeQuota } from '@/lib/rateLimit'
 import { askClarifyingQuestions, parseAnswers, parseInputs, writeBrandMemory } from '@/lib/brandMemoryAi'
 
 export const maxDuration = 60
 
-const WINDOW_MS = 60 * 60 * 1000
-const MAX_CALLS_PER_WINDOW = 12
+const MAX_CALLS_PER_WINDOW = 20
 const MAX_BODY_BYTES = 120_000
 const MIN_INPUT_CHARS = 200
-
-// Best-effort guard against runaway cost on the free tier. It is per server instance, so it caps a single
-// user hammering one instance but is not a hard global quota; move to a table if limits must be exact.
-const recentCalls = new Map<string, number[]>()
-
-function takeQuota(userId: string) {
-  const now = Date.now()
-  const calls = (recentCalls.get(userId) || []).filter(time => now - time < WINDOW_MS)
-  if (calls.length >= MAX_CALLS_PER_WINDOW) {
-    recentCalls.set(userId, calls)
-    return false
-  }
-  calls.push(now)
-  recentCalls.set(userId, calls)
-  if (recentCalls.size > 5000) {
-    for (const [key, times] of recentCalls) if (!times.some(time => now - time < WINDOW_MS)) recentCalls.delete(key)
-  }
-  return true
-}
 
 function fail(message: string, status: number) {
   return NextResponse.json({ message }, { status, headers: { 'Cache-Control': 'private, no-store' } })
@@ -53,7 +34,8 @@ export async function POST(request: NextRequest) {
   if (totalChars < MIN_INPUT_CHARS) return fail('Lengkapi dulu jawaban di Creator Workspace sebelum dirapikan AI.', 400)
 
   if (body.action !== 'analyze' && body.action !== 'generate') return fail('Aksi tidak dikenal.', 400)
-  if (!takeQuota(user.id)) return fail('Kamu sudah memakai AI cukup banyak dalam satu jam terakhir. Coba lagi nanti.', 429)
+  // One shared AI budget per member across Brand Memory and landing page polishing.
+  if (!takeQuota(`ai:${user.id}`, MAX_CALLS_PER_WINDOW, HOUR_MS)) return fail('Kamu sudah memakai AI cukup banyak dalam satu jam terakhir. Coba lagi nanti.', 429)
 
   try {
     if (body.action === 'analyze') {
