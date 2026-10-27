@@ -80,7 +80,7 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} ${pathname?.startsWith('/landing') ? styles.shellStickyContent : ''}`}>
       <header className={styles.mobileHeader}>
         <button
           type="button"

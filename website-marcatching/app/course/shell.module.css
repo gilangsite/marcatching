@@ -10,6 +10,16 @@
     #03070b;
 }
 
+/*
+ * .shell clips horizontal overflow with `hidden`, which also turns it into the scroll container that
+ * `position: sticky` looks at, so nothing inside ever sticks (the page scrolls, not .shell). `clip` crops the
+ * same way without creating a scroll container. Opt-in per page: the Landing Page preview needs it, while the
+ * Creator Workspace menu has never stuck and should not start doing so here.
+ */
+.shellStickyContent {
+  overflow-x: clip;
+}
+
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
