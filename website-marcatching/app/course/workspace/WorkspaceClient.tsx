@@ -46,6 +46,8 @@ import {
   calculateWorkspaceProgress,
   createBrandMemoryMarkdown,
   journeyOrder,
+  sanitizeBrandInterview,
+  sanitizeRefinedMemory,
   workspaceSections,
   type AudienceDimension,
   type CalendarItem,
@@ -60,6 +62,7 @@ import {
   type WorkspaceSection,
 } from '../workspaceData'
 import SkillLibrary from '../SkillLibrary'
+import BrandMemoryRefiner from './BrandMemoryRefiner'
 import styles from './workspace.module.css'
 
 const LEGACY_STORAGE_KEY = 'marcatching-creator-workspace-v1'
@@ -397,6 +400,8 @@ function mergeWorkspaceData(parsed: unknown): WorkspaceData {
           })
         )
       : {},
+    brandInterview: sanitizeBrandInterview(saved.brandInterview),
+    refinedMemory: sanitizeRefinedMemory(saved.refinedMemory),
   }
 }
 
@@ -1274,6 +1279,13 @@ export default function WorkspaceClient() {
           ))}
           {workspace.memory.experimentLearnings && <div className={styles.experimentMemory}><span>Experiment learnings</span><p>{workspace.memory.experimentLearnings}</p></div>}
         </div>
+        <BrandMemoryRefiner
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          persist={() => persistWorkspace(workspace, true)}
+          notify={notify}
+          ready={memoryFields.every(field => workspace.memory[field.key].trim().length >= 100)}
+        />
         <SkillLibrary compact />
       </div>
     )

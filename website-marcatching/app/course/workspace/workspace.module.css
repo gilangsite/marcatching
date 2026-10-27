@@ -1421,3 +1421,94 @@
   .metricRow > span:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
   .metricRow > span:last-child { border-bottom: 0; }
 }
+
+/* AI-refined Brand Memory */
+.aiPanel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, rgba(140, 198, 255, 0.06), var(--surface));
+}
+
+.aiPanelHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--accent);
+}
+
+.aiPanelHead > svg { flex: 0 0 auto; margin-top: 0.1rem; }
+.aiPanelHead > div { min-width: 0; flex: 1; }
+.aiPanelHead strong { color: #e9f3fa; font-size: 0.8rem; }
+.aiPanelHead p { margin-top: 0.25rem; color: var(--muted); font-size: 0.68rem; line-height: 1.6; }
+.aiPanelHead > b { flex: 0 0 auto; padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 999px; color: #91a2b1; font-size: 0.58rem; white-space: nowrap; }
+.aiPanelHead > b.aiBadgeActive { border-color: rgba(157, 224, 193, 0.4); color: #9de0c1; }
+
+.aiFine { color: var(--dim); font-size: 0.6rem; line-height: 1.6; }
+
+.aiQuestions { display: grid; gap: 0.7rem; }
+
+.aiQuestions label {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.aiQuestions label > span { display: flex; align-items: center; gap: 0.5rem; }
+.aiQuestions label > span b { color: var(--accent); font-size: 0.6rem; }
+.aiQuestions label > span small { color: var(--dim); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.aiQuestions label > strong { color: #e8f2f9; font-size: 0.74rem; line-height: 1.55; }
+.aiQuestions label > em { color: var(--muted); font-size: 0.63rem; font-style: normal; line-height: 1.55; }
+
+.aiQuestions textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  outline: 0;
+  color: #eaf3f9;
+  background: rgba(3, 7, 11, 0.68);
+  font-family: inherit;
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.aiQuestions textarea:focus { border-color: var(--line-strong); }
+
+.aiActions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.aiActions small { color: var(--dim); font-size: 0.62rem; }
+
+.aiNote,
+.aiError {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.6rem;
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.aiNote { border: 1px solid rgba(255, 207, 133, 0.25); color: #f2d9a8; background: rgba(255, 207, 133, 0.06); }
+.aiError { border: 1px solid rgba(255, 170, 170, 0.3); color: #ffaaaa; background: rgba(255, 170, 170, 0.06); }
+.aiNote > svg,
+.aiError > svg { flex: 0 0 auto; margin-top: 0.1rem; }
+
+.aiGaps { padding: 0.85rem 1rem; border: 1px solid var(--line); border-radius: 0.75rem; background: var(--surface-soft); }
+.aiGaps strong { color: #dceaf4; font-size: 0.7rem; }
+.aiGaps ul { margin: 0.5rem 0 0.4rem 1.1rem; color: var(--muted); font-size: 0.66rem; line-height: 1.65; }
+.aiGaps p { color: var(--dim); font-size: 0.6rem; line-height: 1.55; }
+
+.spin { animation: aiSpin 0.9s linear infinite; }
+@keyframes aiSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 720px) {
+  .aiPanelHead { flex-wrap: wrap; }
+  .aiActions > button { flex: 1 1 100%; justify-content: center; }
+}

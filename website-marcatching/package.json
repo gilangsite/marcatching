@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:content": "tsx --test tests/content-creation/model.test.ts",
+    "test:brand-memory": "tsx --test tests/brand-memory/brand-memory.test.ts",
     "test:content:e2e": "playwright test --config playwright.content.config.ts"
   },
   "dependencies": {
